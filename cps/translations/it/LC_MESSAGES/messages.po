@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 23:55+0000\n"
+"POT-Creation-Date: 2026-06-10 00:20+0000\n"
 "PO-Revision-Date: 2025-11-24 17:12+0100\n"
 "Last-Translator: Massimo Pissarello <mapi68@gmail.com>\n"
 "Language-Team: Italian\n"
@@ -1221,34 +1221,34 @@ msgstr "Nessuna"
 msgid "Duplicate Books"
 msgstr "Libro duplicato"
 
-#: cps/duplicates.py:1367
+#: cps/duplicates.py:1188
 msgid "Duplicate group already dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1389
+#: cps/duplicates.py:1210
 #, fuzzy
 msgid "Duplicate group dismissed"
 msgstr "Libro duplicato"
 
-#: cps/duplicates.py:1432
+#: cps/duplicates.py:1253
 #, fuzzy
 msgid "Duplicate group restored"
 msgstr "Libro duplicato"
 
-#: cps/duplicates.py:1434
+#: cps/duplicates.py:1255
 msgid "Duplicate group was not dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1506
+#: cps/duplicates.py:1327
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "Duplicati"
 
-#: cps/duplicates.py:1575
+#: cps/duplicates.py:1396
 msgid "Duplicate scan completed (fallback)"
 msgstr ""
 
-#: cps/duplicates.py:1650
+#: cps/duplicates.py:1471
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "Ruolo non valido"

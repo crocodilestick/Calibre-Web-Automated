@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 23:55+0000\n"
+"POT-Creation-Date: 2026-06-10 00:20+0000\n"
 "PO-Revision-Date: 2026-05-12 00:06+0200\n"
 "Last-Translator: Gabor L. <nom@il.thx>\n"
 "Language-Team: \n"
@@ -1236,31 +1236,31 @@ msgstr "Nincs"
 msgid "Duplicate Books"
 msgstr "Ismétlődő könyvek"
 
-#: cps/duplicates.py:1367
+#: cps/duplicates.py:1188
 msgid "Duplicate group already dismissed"
 msgstr "Ismétlődő csoport már elutasítva"
 
-#: cps/duplicates.py:1389
+#: cps/duplicates.py:1210
 msgid "Duplicate group dismissed"
 msgstr "Ismétlődő könyvcsoport elutasítva"
 
-#: cps/duplicates.py:1432
+#: cps/duplicates.py:1253
 msgid "Duplicate group restored"
 msgstr "Ismétlődő könyvcsoport visszaállítva"
 
-#: cps/duplicates.py:1434
+#: cps/duplicates.py:1255
 msgid "Duplicate group was not dismissed"
 msgstr "Ismétlődő csoport nem lett elutasítva"
 
-#: cps/duplicates.py:1506
+#: cps/duplicates.py:1327
 msgid "Duplicate scan queued"
 msgstr "Ismétlődő könyvek ellenőrzése ütemezve"
 
-#: cps/duplicates.py:1575
+#: cps/duplicates.py:1396
 msgid "Duplicate scan completed (fallback)"
 msgstr "Ismétlődő keresés befejezve (tartalék mód)"
 
-#: cps/duplicates.py:1650
+#: cps/duplicates.py:1471
 msgid "Invalid resolution strategy"
 msgstr "Érvénytelen megoldási stratégia"
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-09 23:55+0000\n"
+"POT-Creation-Date: 2026-06-10 00:20+0000\n"
 "PO-Revision-Date: 2021-05-13 11:00+0000\n"
 "Last-Translator: Jonatan Nyberg <jonatan.nyberg.karl@gmail.com>\n"
 "Language-Team: \n"
@@ -1210,34 +1210,34 @@ msgstr "Ingen"
 msgid "Duplicate Books"
 msgstr "Ta bort boken"
 
-#: cps/duplicates.py:1367
+#: cps/duplicates.py:1188
 msgid "Duplicate group already dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1389
+#: cps/duplicates.py:1210
 #, fuzzy
 msgid "Duplicate group dismissed"
 msgstr "Ta bort boken"
 
-#: cps/duplicates.py:1432
+#: cps/duplicates.py:1253
 #, fuzzy
 msgid "Duplicate group restored"
 msgstr "Ta bort boken"
 
-#: cps/duplicates.py:1434
+#: cps/duplicates.py:1255
 msgid "Duplicate group was not dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1506
+#: cps/duplicates.py:1327
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "Inga resultat hittades"
 
-#: cps/duplicates.py:1575
+#: cps/duplicates.py:1396
 msgid "Duplicate scan completed (fallback)"
 msgstr ""
 
-#: cps/duplicates.py:1650
+#: cps/duplicates.py:1471
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "Ogiltig roll"

@@ -17,6 +17,13 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- Adding several books at once to a Kobo-synced shelf now syncs them to
+  Hardcover, just like adding one book does. Before, only single adds reached
+  Hardcover — "add all" from search results, multi-select adds, and
+  add-series-to-shelf silently skipped it. The sync now runs as a background
+  task (visible under Tasks, cancellable), so adding a long series doesn't
+  hold the page open on an external service — and single adds respond faster
+  for the same reason.
 - The experimental "SQL" duplicate-scan mode no longer produces different (and
   sometimes wrong) results than the default mode. It grouped co-authored books
   into multiple duplicate groups at once and skipped a title normalization the

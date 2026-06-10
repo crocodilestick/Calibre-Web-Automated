@@ -18,9 +18,32 @@ from . import calibre_db, config, db, logger, ub
 from .render_template import render_title_template
 from .usermanagement import login_required_if_no_ano, user_login_required
 from .services import hardcover
+from .services.worker import WorkerThread
+from .tasks.hardcover_sync import TaskHardcoverBulkSync
 log = logger.create()
 
 shelf = Blueprint('shelf', __name__)
+
+
+def queue_hardcover_sync(shelf_obj, book_ids):
+    """Queue the background Hardcover get-or-add for books just added to a
+    Kobo-synced shelf (fork #381). Single source of truth for the gate the
+    inline single-add sync used to apply: every add path — single, search
+    mass-add, multi-select, add-series — calls this after its commit, so the
+    button used no longer changes whether Hardcover hears about the book.
+    The token is captured here because the worker thread has no request
+    context."""
+    if not (shelf_obj.kobo_sync and config.config_hardcover_sync and bool(hardcover)):
+        return
+    if not book_ids:
+        return
+    token = current_user.hardcover_token
+    if not token:
+        log.info("User %s has no Hardcover token, cannot sync shelf %s to Hardcover",
+                 current_user.name, shelf_obj.name)
+        return
+    WorkerThread.add(current_user.name,
+                     TaskHardcoverBulkSync(token, list(book_ids), shelf_obj.name))
 
 
 @shelf.route("/shelf/add/<int:shelf_id>/<int:book_id>", methods=["POST"])
@@ -98,20 +121,10 @@ def add_to_shelf(shelf_id, book_id):
     # Hardcover sync runs for BOTH response flavors — it used to sit after
     # the non-XHR early-return below, so plain form adds (no JS) silently
     # skipped Hardcover while XHR adds synced. Same book, same shelf, same
-    # user intent — the transport must not change the outcome.
-    if shelf.kobo_sync and config.config_hardcover_sync and bool(hardcover):
-        try:
-            hardcoverClient = hardcover.HardcoverClient(current_user.hardcover_token)
-            # Will add the book to Hardcover if it doesn't exist,
-            # and leave it alone otherwise
-            # (updating status is handled in update_reading_progress
-            # and the book may be blacklisted from syncing)
-            if not hardcoverClient.get_user_book(book.identifiers):
-                hardcoverClient.add_book(book.identifiers)
-        except hardcover.MissingHardcoverToken:
-            log.info(f"User {current_user.name} has no Hardcover token, cannot add to Hardcover")
-        except Exception as e:
-            log.debug(f"Failed to create Hardcover client for {current_user.name}: {e}")
+    # user intent — the transport must not change the outcome. The get-or-add
+    # itself runs as a background task now: inline it blocked the response on
+    # up to two external API calls (fork #381).
+    queue_hardcover_sync(shelf, [book_id])
 
     if not xhr:
         log.debug("Book has been added to shelf: {}".format(shelf.name))
@@ -165,6 +178,7 @@ def search_to_shelf(shelf_id):
         try:
             ub.session.merge(shelf)
             ub.session.commit()
+            queue_hardcover_sync(shelf, books_for_shelf)
             flash(_("Books have been added to shelf: %(sname)s", sname=shelf.name), category="success")
         except (OperationalError, InvalidRequestError) as e:
             ub.session.rollback()
@@ -185,10 +199,9 @@ def add_series_to_shelf(shelf_id, series_id):
     plumbing as the search page's "add all" dropdown): flash + redirect back.
     Books land in ``series_index`` order so the shelf reads 1, 2, 3…; books
     already on the shelf are skipped. ``common_filters()`` applies, so a
-    user can only bulk-add books they are allowed to see. Hardcover sync is
-    deliberately not attempted inline — both existing bulk paths skip it
-    too, and a per-book external API loop doesn't belong in a request
-    handler (tracked as the bulk-shelf Hardcover parity follow-up).
+    user can only bulk-add books they are allowed to see. Hardcover sync
+    runs as a queued background task (fork #381) — a per-book external API
+    loop doesn't belong in a request handler.
     """
     def _back():
         if "HTTP_REFERER" in request.environ:
@@ -244,6 +257,7 @@ def add_series_to_shelf(shelf_id, series_id):
         flash(_("Oops! Database Error: %(error)s.", error=getattr(e, 'orig', e)), category="error")
         return _back()
 
+    queue_hardcover_sync(shelf, [book.id for book in to_add])
     log.debug("Series %s (%d books) added to shelf: %s", series.name, len(to_add), shelf.name)
     flash(_("%(count)d books of series '%(name)s' added to shelf: %(sname)s",
             count=len(to_add), name=series.name, sname=shelf.name), category="success")
@@ -669,6 +683,7 @@ def add_selected_to_shelf():
         return jsonify({'status': 'error', 'message': 'You are not allowed to add books to this shelf'}), 403
 
     success_count = 0
+    added_ids = []
     errors = []
 
     if not book_ids:
@@ -697,6 +712,7 @@ def add_selected_to_shelf():
         maxOrder += 1
         new_entry = ub.BookShelf(shelf=shelf.id, book_id=book_id, order=maxOrder)
         shelf.books.append(new_entry)
+        added_ids.append(book_id)
         success_count += 1
 
     if success_count > 0:
@@ -704,6 +720,7 @@ def add_selected_to_shelf():
         try:
             ub.session.merge(shelf)
             ub.session.commit()
+            queue_hardcover_sync(shelf, added_ids)
             log.info(f"Successfully added {success_count} books to shelf: {shelf.name}")
         except (OperationalError, InvalidRequestError) as e:
             ub.session.rollback()

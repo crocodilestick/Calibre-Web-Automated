@@ -16,14 +16,16 @@ This module provides a client for interacting with Hardcover's GraphQL API to:
 """
 
 from datetime import datetime
+from os import getenv
 import requests
 
 from .. import logger
 
 log = logger.create()
 
-# API Configuration
-GRAPHQL_ENDPOINT = "https://api.hardcover.app/v1/graphql"
+# API Configuration. The env override exists for integration testing against
+# a local mock; production deployments leave it unset.
+GRAPHQL_ENDPOINT = getenv("HARDCOVER_API_ENDPOINT", "https://api.hardcover.app/v1/graphql")
 REQUEST_TIMEOUT = 10  # seconds
 
 # Book Status Constants (Hardcover status IDs)

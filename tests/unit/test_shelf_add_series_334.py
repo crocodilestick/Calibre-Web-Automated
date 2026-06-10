@@ -285,7 +285,9 @@ class TestHardcoverTransportParity:
         """In add_to_shelf, the Hardcover sync must run before the xhr/non-xhr
         response branches — both transports get the same outcome."""
         body = SHELF_PY.split("def add_to_shelf", 1)[1].split("\n@shelf.route", 1)[0]
-        hardcover_pos = body.find("config.config_hardcover_sync")
+        # Since fork #381 the sync is a queued task; the enqueue call is the
+        # transport-parity point and must still precede the response split.
+        hardcover_pos = body.find("queue_hardcover_sync(shelf, [book_id])")
         response_split_pos = body.find('flash(_("Book has been added to shelf')
         assert hardcover_pos != -1 and response_split_pos != -1
         assert hardcover_pos < response_split_pos, (

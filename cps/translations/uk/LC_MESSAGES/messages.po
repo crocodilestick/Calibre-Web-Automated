@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-10 00:20+0000\n"
+"POT-Creation-Date: 2026-06-10 00:56+0000\n"
 "PO-Revision-Date: 2017-04-30 00:47+0300\n"
 "Last-Translator: ABIS Team <biblio.if.abis@gmail.com>\n"
 "Language-Team: \n"
@@ -405,9 +405,9 @@ msgstr ""
 
 #: cps/admin.py:1822 cps/admin.py:1825 cps/admin.py:2321 cps/admin.py:2555
 #: cps/admin.py:2672 cps/admin.py:2940 cps/editbooks.py:1073
-#: cps/editbooks.py:1927 cps/shelf.py:93 cps/shelf.py:172 cps/shelf.py:244
-#: cps/shelf.py:307 cps/shelf.py:357 cps/shelf.py:432 cps/shelf.py:515
-#: cps/shelf.py:640 cps/tasks/convert.py:145 cps/web.py:2964
+#: cps/editbooks.py:1927 cps/shelf.py:116 cps/shelf.py:186 cps/shelf.py:257
+#: cps/shelf.py:321 cps/shelf.py:371 cps/shelf.py:446 cps/shelf.py:529
+#: cps/shelf.py:654 cps/tasks/convert.py:145 cps/web.py:2964
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr ""
@@ -2121,192 +2121,192 @@ msgstr ""
 msgid "Advanced Search"
 msgstr "Розширений пошук"
 
-#: cps/shelf.py:34 cps/shelf.py:133 cps/shelf.py:201
+#: cps/shelf.py:57 cps/shelf.py:146 cps/shelf.py:214
 msgid "Invalid shelf specified"
 msgstr ""
 
-#: cps/shelf.py:40 cps/shelf.py:206
+#: cps/shelf.py:63 cps/shelf.py:219
 #, fuzzy
 msgid "Sorry you are not allowed to add a book to that shelf"
 msgstr "Вибачте, але у вас немає дозволу для видалення книги з цієї полиці"
 
-#: cps/shelf.py:49
+#: cps/shelf.py:72
 #, python-format
 msgid "Book is already part of the shelf: %(shelfname)s"
 msgstr ""
 
-#: cps/shelf.py:63
+#: cps/shelf.py:86
 #, python-format
 msgid "%(book_id)s is a invalid Book Id. Could not be added to Shelf"
 msgstr ""
 
-#: cps/shelf.py:118
+#: cps/shelf.py:131
 #, python-format
 msgid "Book has been added to shelf: %(sname)s"
 msgstr "Книга додана на книжкову полицю: %(sname)s"
 
-#: cps/shelf.py:138
+#: cps/shelf.py:151
 msgid "You are not allowed to add a book to the shelf"
 msgstr ""
 
-#: cps/shelf.py:156
+#: cps/shelf.py:169
 #, python-format
 msgid "Books are already part of the shelf: %(name)s"
 msgstr ""
 
-#: cps/shelf.py:168
+#: cps/shelf.py:182
 #, python-format
 msgid "Books have been added to shelf: %(sname)s"
 msgstr ""
 
-#: cps/shelf.py:175
+#: cps/shelf.py:189
 #, python-format
 msgid "Could not add books to shelf: %(sname)s"
 msgstr ""
 
-#: cps/shelf.py:212
+#: cps/shelf.py:225
 msgid "Invalid series specified"
 msgstr ""
 
-#: cps/shelf.py:221
+#: cps/shelf.py:234
 #, python-format
 msgid "Series has no books you can see: %(name)s"
 msgstr ""
 
-#: cps/shelf.py:228
+#: cps/shelf.py:241
 #, fuzzy, python-format
 msgid "All books of series '%(name)s' are already on shelf: %(sname)s"
 msgstr "Книга додана на книжкову полицю: %(sname)s"
 
-#: cps/shelf.py:248
+#: cps/shelf.py:262
 #, fuzzy, python-format
 msgid "%(count)d books of series '%(name)s' added to shelf: %(sname)s"
 msgstr "Книга додана на книжкову полицю: %(sname)s"
 
-#: cps/shelf.py:313
+#: cps/shelf.py:327
 #, python-format
 msgid "Book has been removed from shelf: %(sname)s"
 msgstr "Книга видалена з книжкової полиці: %(sname)s"
 
-#: cps/shelf.py:322
+#: cps/shelf.py:336
 msgid "Sorry you are not allowed to remove a book from this shelf"
 msgstr ""
 
-#: cps/shelf.py:332
+#: cps/shelf.py:346
 msgid "Create a Shelf"
 msgstr "створити книжкову полицю"
 
-#: cps/shelf.py:340 cps/shelf.py:398
+#: cps/shelf.py:354 cps/shelf.py:412
 #, fuzzy
 msgid "Sorry you are not allowed to edit this shelf"
 msgstr "Вибачте, але у вас немає дозволу для видалення книги з цієї полиці"
 
-#: cps/shelf.py:342
+#: cps/shelf.py:356
 msgid "Edit a shelf"
 msgstr "Змінити книжкову полицю"
 
-#: cps/shelf.py:351
+#: cps/shelf.py:365
 msgid "Error deleting Shelf"
 msgstr ""
 
-#: cps/shelf.py:353
+#: cps/shelf.py:367
 msgid "Shelf successfully deleted"
 msgstr ""
 
-#: cps/shelf.py:444
+#: cps/shelf.py:458
 #, python-format
 msgid "Change order of Shelf: '%(name)s'"
 msgstr "Змінити розташування книжкової полиці '%(name)s'"
 
-#: cps/shelf.py:481
+#: cps/shelf.py:495
 msgid "Sorry you are not allowed to create a public shelf"
 msgstr ""
 
-#: cps/shelf.py:498
+#: cps/shelf.py:512
 #, python-format
 msgid "Shelf %(title)s created"
 msgstr "Створена книжкова полиця %(title)s"
 
-#: cps/shelf.py:501
+#: cps/shelf.py:515
 #, python-format
 msgid "Shelf %(title)s changed"
 msgstr "Книжкова полиця %(title)s змінена"
 
-#: cps/shelf.py:519
+#: cps/shelf.py:533
 msgid "There was an error"
 msgstr "Сталась помилка"
 
-#: cps/shelf.py:543
+#: cps/shelf.py:557
 #, python-format
 msgid "A public shelf with the name '%(title)s' already exists."
 msgstr ""
 
-#: cps/shelf.py:554
+#: cps/shelf.py:568
 #, python-format
 msgid "A private shelf with the name '%(title)s' already exists."
 msgstr ""
 
-#: cps/shelf.py:645
+#: cps/shelf.py:659
 #, python-format
 msgid "Shelf: '%(name)s'"
 msgstr "Книжкова полиця: '%(name)s'"
 
-#: cps/shelf.py:651
+#: cps/shelf.py:665
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr ""
 "Помилка при відкриванні полиці. Полиця не існує або до неї відсутній доступ"
 
-#: cps/shelf.py:955
+#: cps/shelf.py:972
 #, python-format
 msgid "Invalid order mode: %(mode)s"
 msgstr ""
 
-#: cps/shelf.py:959
+#: cps/shelf.py:976
 msgid "Invalid payload: 'order' must be a list"
 msgstr ""
 
-#: cps/shelf.py:983
+#: cps/shelf.py:1000
 msgid "Could not save order"
 msgstr ""
 
-#: cps/shelf.py:991 cps/templates/layout.html:411
+#: cps/shelf.py:1008 cps/templates/layout.html:411
 #, fuzzy
 msgid "Reorder Shelves"
 msgstr "Виключити серії"
 
-#: cps/shelf.py:996
+#: cps/shelf.py:1013
 msgid "Name (A → Z)"
 msgstr ""
 
-#: cps/shelf.py:997
+#: cps/shelf.py:1014
 msgid "Name (Z → A)"
 msgstr ""
 
-#: cps/shelf.py:998
+#: cps/shelf.py:1015
 msgid "Book count (most → fewest)"
 msgstr ""
 
-#: cps/shelf.py:999
+#: cps/shelf.py:1016
 msgid "Book count (fewest → most)"
 msgstr ""
 
-#: cps/shelf.py:1000
+#: cps/shelf.py:1017
 msgid "Created (newest → oldest)"
 msgstr ""
 
-#: cps/shelf.py:1001
+#: cps/shelf.py:1018
 msgid "Created (oldest → newest)"
 msgstr ""
 
-#: cps/shelf.py:1002
+#: cps/shelf.py:1019
 msgid "Modified (recent → oldest)"
 msgstr ""
 
-#: cps/shelf.py:1003
+#: cps/shelf.py:1020
 msgid "Modified (oldest → recent)"
 msgstr ""
 
-#: cps/shelf.py:1004
+#: cps/shelf.py:1021
 msgid "Manual (drag below)"
 msgstr ""
 
@@ -2874,6 +2874,14 @@ msgstr ""
 #: cps/tasks/duplicate_scan.py:293
 #, python-format
 msgid "Duplicate scan completed: %(count)s groups auto-resolved"
+msgstr ""
+
+#: cps/tasks/hardcover_sync.py:41
+msgid "Syncing shelf additions to Hardcover"
+msgstr ""
+
+#: cps/tasks/hardcover_sync.py:119
+msgid "Hardcover Sync"
 msgstr ""
 
 #: cps/tasks/mail.py:280

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-10 00:20+0000\n"
+"POT-Creation-Date: 2026-06-10 00:56+0000\n"
 "PO-Revision-Date: 2026-05-12 00:06+0200\n"
 "Last-Translator: Gabor L. <nom@il.thx>\n"
 "Language-Team: \n"
@@ -427,9 +427,9 @@ msgstr "Siker! A Gmail-fiók hitelesítve."
 
 #: cps/admin.py:1822 cps/admin.py:1825 cps/admin.py:2321 cps/admin.py:2555
 #: cps/admin.py:2672 cps/admin.py:2940 cps/editbooks.py:1073
-#: cps/editbooks.py:1927 cps/shelf.py:93 cps/shelf.py:172 cps/shelf.py:244
-#: cps/shelf.py:307 cps/shelf.py:357 cps/shelf.py:432 cps/shelf.py:515
-#: cps/shelf.py:640 cps/tasks/convert.py:145 cps/web.py:2964
+#: cps/editbooks.py:1927 cps/shelf.py:116 cps/shelf.py:186 cps/shelf.py:257
+#: cps/shelf.py:321 cps/shelf.py:371 cps/shelf.py:446 cps/shelf.py:529
+#: cps/shelf.py:654 cps/tasks/convert.py:145 cps/web.py:2964
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Hoppá! Adatbázis hiba: %(error)s."
@@ -2187,190 +2187,190 @@ msgstr ""
 msgid "Advanced Search"
 msgstr "Részletes keresés"
 
-#: cps/shelf.py:34 cps/shelf.py:133 cps/shelf.py:201
+#: cps/shelf.py:57 cps/shelf.py:146 cps/shelf.py:214
 msgid "Invalid shelf specified"
 msgstr "A megadott polc érvénytelen!"
 
-#: cps/shelf.py:40 cps/shelf.py:206
+#: cps/shelf.py:63 cps/shelf.py:219
 msgid "Sorry you are not allowed to add a book to that shelf"
 msgstr "Nincs engedélye könyvet hozzáadni ehhez a polchoz"
 
-#: cps/shelf.py:49
+#: cps/shelf.py:72
 #, python-format
 msgid "Book is already part of the shelf: %(shelfname)s"
 msgstr "A könyv már a következő polcon van: %(shelfname)s"
 
-#: cps/shelf.py:63
+#: cps/shelf.py:86
 #, python-format
 msgid "%(book_id)s is a invalid Book Id. Could not be added to Shelf"
 msgstr ""
 "%(book_id)s érvénytelen könyvazonosító. Nem lehetett hozzáadni a polchoz"
 
-#: cps/shelf.py:118
+#: cps/shelf.py:131
 #, python-format
 msgid "Book has been added to shelf: %(sname)s"
 msgstr "A könyv hozzá lett adva a következő polchoz: %(sname)s"
 
-#: cps/shelf.py:138
+#: cps/shelf.py:151
 msgid "You are not allowed to add a book to the shelf"
 msgstr "Nem adhat hozzá könyvet a polchoz"
 
-#: cps/shelf.py:156
+#: cps/shelf.py:169
 #, python-format
 msgid "Books are already part of the shelf: %(name)s"
 msgstr "A könyvek már a következő polcon vannak: %(name)s"
 
-#: cps/shelf.py:168
+#: cps/shelf.py:182
 #, python-format
 msgid "Books have been added to shelf: %(sname)s"
 msgstr "A könyvek hozzá lettek adva a következő polchoz: %(sname)s"
 
-#: cps/shelf.py:175
+#: cps/shelf.py:189
 #, python-format
 msgid "Could not add books to shelf: %(sname)s"
 msgstr "Nem sikerült hozzáadni a könyveket a polchoz: %(sname)s"
 
-#: cps/shelf.py:212
+#: cps/shelf.py:225
 #, fuzzy
 msgid "Invalid series specified"
 msgstr "A megadott polc érvénytelen!"
 
-#: cps/shelf.py:221
+#: cps/shelf.py:234
 #, fuzzy, python-format
 msgid "Series has no books you can see: %(name)s"
 msgstr "Nem sikerült hozzáadni a könyveket a polchoz: %(sname)s"
 
-#: cps/shelf.py:228
+#: cps/shelf.py:241
 #, fuzzy, python-format
 msgid "All books of series '%(name)s' are already on shelf: %(sname)s"
 msgstr "A könyvek már a következő polcon vannak: %(name)s"
 
-#: cps/shelf.py:248
+#: cps/shelf.py:262
 #, fuzzy, python-format
 msgid "%(count)d books of series '%(name)s' added to shelf: %(sname)s"
 msgstr "A könyvek hozzá lettek adva a következő polchoz: %(sname)s"
 
-#: cps/shelf.py:313
+#: cps/shelf.py:327
 #, python-format
 msgid "Book has been removed from shelf: %(sname)s"
 msgstr "A könyv el lett távolítva a polcról: %(sname)s"
 
-#: cps/shelf.py:322
+#: cps/shelf.py:336
 msgid "Sorry you are not allowed to remove a book from this shelf"
 msgstr "Sajnálom, de nem távolíthat el könyvet erről a polcról"
 
-#: cps/shelf.py:332
+#: cps/shelf.py:346
 msgid "Create a Shelf"
 msgstr "Polc létrehozása"
 
-#: cps/shelf.py:340 cps/shelf.py:398
+#: cps/shelf.py:354 cps/shelf.py:412
 msgid "Sorry you are not allowed to edit this shelf"
 msgstr "Nincs engedélye szerkeszteni ezt a polcot"
 
-#: cps/shelf.py:342
+#: cps/shelf.py:356
 msgid "Edit a shelf"
 msgstr "Polc szerkesztése"
 
-#: cps/shelf.py:351
+#: cps/shelf.py:365
 msgid "Error deleting Shelf"
 msgstr "Hiba a polc törlése során"
 
-#: cps/shelf.py:353
+#: cps/shelf.py:367
 msgid "Shelf successfully deleted"
 msgstr "Polc sikeresen törölve"
 
-#: cps/shelf.py:444
+#: cps/shelf.py:458
 #, python-format
 msgid "Change order of Shelf: '%(name)s'"
 msgstr "A következő polc átrendezése: %(name)s"
 
-#: cps/shelf.py:481
+#: cps/shelf.py:495
 msgid "Sorry you are not allowed to create a public shelf"
 msgstr "Sajnáljuk, de nem hozhat létre nyilvános polcot"
 
-#: cps/shelf.py:498
+#: cps/shelf.py:512
 #, python-format
 msgid "Shelf %(title)s created"
 msgstr "A következő polc létre lett hozva: %(title)s"
 
-#: cps/shelf.py:501
+#: cps/shelf.py:515
 #, python-format
 msgid "Shelf %(title)s changed"
 msgstr "A következő polc megváltoztatva: %(title)s"
 
-#: cps/shelf.py:519
+#: cps/shelf.py:533
 msgid "There was an error"
 msgstr "Hiba történt"
 
-#: cps/shelf.py:543
+#: cps/shelf.py:557
 #, python-format
 msgid "A public shelf with the name '%(title)s' already exists."
 msgstr "Már létezik egy nyilvános polc a '%(title)s' névvel."
 
-#: cps/shelf.py:554
+#: cps/shelf.py:568
 #, python-format
 msgid "A private shelf with the name '%(title)s' already exists."
 msgstr "Már létezik egy saját polc a „%(title)s” névvel."
 
-#: cps/shelf.py:645
+#: cps/shelf.py:659
 #, python-format
 msgid "Shelf: '%(name)s'"
 msgstr "Polc: '%(name)s'"
 
-#: cps/shelf.py:651
+#: cps/shelf.py:665
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr "Hiba a polc megnyitásakor. A polc nem létezik vagy nem elérhető"
 
-#: cps/shelf.py:955
+#: cps/shelf.py:972
 #, python-format
 msgid "Invalid order mode: %(mode)s"
 msgstr "Érvénytelen rendezési mód: %(mode)s"
 
-#: cps/shelf.py:959
+#: cps/shelf.py:976
 msgid "Invalid payload: 'order' must be a list"
 msgstr ""
 
-#: cps/shelf.py:983
+#: cps/shelf.py:1000
 msgid "Could not save order"
 msgstr "Nem sikerült menteni a sorrendet"
 
-#: cps/shelf.py:991 cps/templates/layout.html:411
+#: cps/shelf.py:1008 cps/templates/layout.html:411
 msgid "Reorder Shelves"
 msgstr "Polcok átrendezése"
 
-#: cps/shelf.py:996
+#: cps/shelf.py:1013
 msgid "Name (A → Z)"
 msgstr "Név (A → Z)"
 
-#: cps/shelf.py:997
+#: cps/shelf.py:1014
 msgid "Name (Z → A)"
 msgstr "Név (Z → A)"
 
-#: cps/shelf.py:998
+#: cps/shelf.py:1015
 msgid "Book count (most → fewest)"
 msgstr "Könyvek száma (legtöbb → legkevesebb)"
 
-#: cps/shelf.py:999
+#: cps/shelf.py:1016
 msgid "Book count (fewest → most)"
 msgstr "Könyvek száma (legkevesebb → legtöbb)"
 
-#: cps/shelf.py:1000
+#: cps/shelf.py:1017
 msgid "Created (newest → oldest)"
 msgstr "Létrehozva (legújabb → legrégebbi)"
 
-#: cps/shelf.py:1001
+#: cps/shelf.py:1018
 msgid "Created (oldest → newest)"
 msgstr "Létrehozva (legrégebbi → legújabb)"
 
-#: cps/shelf.py:1002
+#: cps/shelf.py:1019
 msgid "Modified (recent → oldest)"
 msgstr "Módosítva (legutóbbi → legrégebbi)"
 
-#: cps/shelf.py:1003
+#: cps/shelf.py:1020
 msgid "Modified (oldest → recent)"
 msgstr "Módosítva (legrégebbi → legutóbbi)"
 
-#: cps/shelf.py:1004
+#: cps/shelf.py:1021
 msgid "Manual (drag below)"
 msgstr "Kézi (húzd át alább)"
 
@@ -2948,6 +2948,15 @@ msgid "Duplicate scan completed: %(count)s groups auto-resolved"
 msgstr ""
 "Ismétlődők keresése befejeződött: %(count)s csoport automatikusan "
 "megszüntetve"
+
+#: cps/tasks/hardcover_sync.py:41
+msgid "Syncing shelf additions to Hardcover"
+msgstr ""
+
+#: cps/tasks/hardcover_sync.py:119
+#, fuzzy
+msgid "Hardcover Sync"
+msgstr "Hardcover szinkronizáció engedélyezése"
 
 #: cps/tasks/mail.py:280
 msgid "E-mail"

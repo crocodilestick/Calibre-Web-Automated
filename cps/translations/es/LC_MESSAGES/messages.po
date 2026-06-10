@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-10 00:20+0000\n"
+"POT-Creation-Date: 2026-06-10 00:56+0000\n"
 "PO-Revision-Date: 2025-11-17 12:21-0300\n"
 "Last-Translator: minakmostoles <xxx@xxx.com>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -436,9 +436,9 @@ msgstr "¡Éxito! Cuenta de Gmail verificada."
 
 #: cps/admin.py:1822 cps/admin.py:1825 cps/admin.py:2321 cps/admin.py:2555
 #: cps/admin.py:2672 cps/admin.py:2940 cps/editbooks.py:1073
-#: cps/editbooks.py:1927 cps/shelf.py:93 cps/shelf.py:172 cps/shelf.py:244
-#: cps/shelf.py:307 cps/shelf.py:357 cps/shelf.py:432 cps/shelf.py:515
-#: cps/shelf.py:640 cps/tasks/convert.py:145 cps/web.py:2964
+#: cps/editbooks.py:1927 cps/shelf.py:116 cps/shelf.py:186 cps/shelf.py:257
+#: cps/shelf.py:321 cps/shelf.py:371 cps/shelf.py:446 cps/shelf.py:529
+#: cps/shelf.py:654 cps/tasks/convert.py:145 cps/web.py:2964
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "¡Ups! Error en la base de datos: %(error)s."
@@ -2229,199 +2229,199 @@ msgstr ""
 msgid "Advanced Search"
 msgstr "Búsqueda avanzada"
 
-#: cps/shelf.py:34 cps/shelf.py:133 cps/shelf.py:201
+#: cps/shelf.py:57 cps/shelf.py:146 cps/shelf.py:214
 msgid "Invalid shelf specified"
 msgstr "Estantería especificada no válida"
 
-#: cps/shelf.py:40 cps/shelf.py:206
+#: cps/shelf.py:63 cps/shelf.py:219
 msgid "Sorry you are not allowed to add a book to that shelf"
 msgstr "Lo sentimos, no tiene permisos para agregar un libro a esa estantería"
 
-#: cps/shelf.py:49
+#: cps/shelf.py:72
 #, python-format
 msgid "Book is already part of the shelf: %(shelfname)s"
 msgstr "El libro ya forma parte de la estantería: %(shelfname)s"
 
-#: cps/shelf.py:63
+#: cps/shelf.py:86
 #, python-format
 msgid "%(book_id)s is a invalid Book Id. Could not be added to Shelf"
 msgstr ""
 "%(book_id)s es un identificador de libro no válido. No se ha podido añadir a "
 "la estantería"
 
-#: cps/shelf.py:118
+#: cps/shelf.py:131
 #, python-format
 msgid "Book has been added to shelf: %(sname)s"
 msgstr "El libro fue agregado a la estantería: %(sname)s"
 
-#: cps/shelf.py:138
+#: cps/shelf.py:151
 msgid "You are not allowed to add a book to the shelf"
 msgstr "No tienes permiso para añadir un libro a la estantería"
 
-#: cps/shelf.py:156
+#: cps/shelf.py:169
 #, python-format
 msgid "Books are already part of the shelf: %(name)s"
 msgstr "Los libros ya forman parte de la estantería: %(name)s"
 
-#: cps/shelf.py:168
+#: cps/shelf.py:182
 #, python-format
 msgid "Books have been added to shelf: %(sname)s"
 msgstr "Los libros han sido añadidos a la estantería: %(sname)s"
 
-#: cps/shelf.py:175
+#: cps/shelf.py:189
 #, python-format
 msgid "Could not add books to shelf: %(sname)s"
 msgstr "No se pudieron agregar libros a la estantería: %(sname)s"
 
-#: cps/shelf.py:212
+#: cps/shelf.py:225
 #, fuzzy
 msgid "Invalid series specified"
 msgstr "Estantería especificada no válida"
 
-#: cps/shelf.py:221
+#: cps/shelf.py:234
 #, fuzzy, python-format
 msgid "Series has no books you can see: %(name)s"
 msgstr "No se pudieron agregar libros a la estantería: %(sname)s"
 
-#: cps/shelf.py:228
+#: cps/shelf.py:241
 #, fuzzy, python-format
 msgid "All books of series '%(name)s' are already on shelf: %(sname)s"
 msgstr "Los libros ya forman parte de la estantería: %(name)s"
 
-#: cps/shelf.py:248
+#: cps/shelf.py:262
 #, fuzzy, python-format
 msgid "%(count)d books of series '%(name)s' added to shelf: %(sname)s"
 msgstr "Los libros han sido añadidos a la estantería: %(sname)s"
 
-#: cps/shelf.py:313
+#: cps/shelf.py:327
 #, python-format
 msgid "Book has been removed from shelf: %(sname)s"
 msgstr "El libro fue eliminado de la estantería: %(sname)s"
 
-#: cps/shelf.py:322
+#: cps/shelf.py:336
 msgid "Sorry you are not allowed to remove a book from this shelf"
 msgstr "Lo siento, no tienes permiso para remover un libro de esta estantería"
 
-#: cps/shelf.py:332
+#: cps/shelf.py:346
 msgid "Create a Shelf"
 msgstr "Crear una Estantería"
 
-#: cps/shelf.py:340 cps/shelf.py:398
+#: cps/shelf.py:354 cps/shelf.py:412
 msgid "Sorry you are not allowed to edit this shelf"
 msgstr "Lo siento, no tienes permiso para editar esta estantería"
 
-#: cps/shelf.py:342
+#: cps/shelf.py:356
 msgid "Edit a shelf"
 msgstr "Editar una estantería"
 
-#: cps/shelf.py:351
+#: cps/shelf.py:365
 msgid "Error deleting Shelf"
 msgstr "Error al borrar la estantería"
 
-#: cps/shelf.py:353
+#: cps/shelf.py:367
 msgid "Shelf successfully deleted"
 msgstr "Estantería eliminada con éxito"
 
-#: cps/shelf.py:444
+#: cps/shelf.py:458
 #, python-format
 msgid "Change order of Shelf: '%(name)s'"
 msgstr "Cambiar orden de la estantería: '%(name)s'"
 
-#: cps/shelf.py:481
+#: cps/shelf.py:495
 msgid "Sorry you are not allowed to create a public shelf"
 msgstr "Lo siento, no tienes permisos para crear una estantería pública"
 
-#: cps/shelf.py:498
+#: cps/shelf.py:512
 #, python-format
 msgid "Shelf %(title)s created"
 msgstr "Estantería %(title)s creada"
 
-#: cps/shelf.py:501
+#: cps/shelf.py:515
 #, python-format
 msgid "Shelf %(title)s changed"
 msgstr "Estantería %(title)s cambiada"
 
-#: cps/shelf.py:519
+#: cps/shelf.py:533
 msgid "There was an error"
 msgstr "Ha ocurrido un error"
 
-#: cps/shelf.py:543
+#: cps/shelf.py:557
 #, python-format
 msgid "A public shelf with the name '%(title)s' already exists."
 msgstr "Ya existe una estantería pública con el nombre '%(title)s'."
 
-#: cps/shelf.py:554
+#: cps/shelf.py:568
 #, python-format
 msgid "A private shelf with the name '%(title)s' already exists."
 msgstr "Ya existe una estantería privada con el nombre '%(title)s'."
 
-#: cps/shelf.py:645
+#: cps/shelf.py:659
 #, python-format
 msgid "Shelf: '%(name)s'"
 msgstr "Estantería: '%(name)s'"
 
-#: cps/shelf.py:651
+#: cps/shelf.py:665
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr ""
 "Error al abrir una estantería. La estantería no existe o no es accesible"
 
-#: cps/shelf.py:955
+#: cps/shelf.py:972
 #, python-format
 msgid "Invalid order mode: %(mode)s"
 msgstr ""
 
-#: cps/shelf.py:959
+#: cps/shelf.py:976
 msgid "Invalid payload: 'order' must be a list"
 msgstr ""
 
-#: cps/shelf.py:983
+#: cps/shelf.py:1000
 msgid "Could not save order"
 msgstr ""
 
-#: cps/shelf.py:991 cps/templates/layout.html:411
+#: cps/shelf.py:1008 cps/templates/layout.html:411
 #, fuzzy
 msgid "Reorder Shelves"
 msgstr "Excluir Estanterías"
 
-#: cps/shelf.py:996
+#: cps/shelf.py:1013
 #, fuzzy
 msgid "Name (A → Z)"
 msgstr "Nombre (A-Z)"
 
-#: cps/shelf.py:997
+#: cps/shelf.py:1014
 #, fuzzy
 msgid "Name (Z → A)"
 msgstr "Nombre (Z-A)"
 
-#: cps/shelf.py:998
+#: cps/shelf.py:1015
 #, fuzzy
 msgid "Book count (most → fewest)"
 msgstr "Cantidad de libros (de mayor a menor)"
 
-#: cps/shelf.py:999
+#: cps/shelf.py:1016
 #, fuzzy
 msgid "Book count (fewest → most)"
 msgstr "Cantidad de libros (de mayor a menor)"
 
-#: cps/shelf.py:1000
+#: cps/shelf.py:1017
 #, fuzzy
 msgid "Created (newest → oldest)"
 msgstr "Creado (más reciente primero)"
 
-#: cps/shelf.py:1001
+#: cps/shelf.py:1018
 #, fuzzy
 msgid "Created (oldest → newest)"
 msgstr "Creado (el más antiguo primero)"
 
-#: cps/shelf.py:1002
+#: cps/shelf.py:1019
 msgid "Modified (recent → oldest)"
 msgstr ""
 
-#: cps/shelf.py:1003
+#: cps/shelf.py:1020
 msgid "Modified (oldest → recent)"
 msgstr ""
 
-#: cps/shelf.py:1004
+#: cps/shelf.py:1021
 #, fuzzy
 msgid "Manual (drag below)"
 msgstr "Manual (arrastra para reordenar)"
@@ -3028,6 +3028,15 @@ msgstr "Escaneo de duplicados completado: %(count)s grupos nuevos"
 msgid "Duplicate scan completed: %(count)s groups auto-resolved"
 msgstr ""
 "Escaneo de duplicados completado: %(count)s grupos resueltos automáticamente"
+
+#: cps/tasks/hardcover_sync.py:41
+msgid "Syncing shelf additions to Hardcover"
+msgstr ""
+
+#: cps/tasks/hardcover_sync.py:119
+#, fuzzy
+msgid "Hardcover Sync"
+msgstr "Activar la sincronización con Hardcover"
 
 #: cps/tasks/mail.py:280
 msgid "E-mail"

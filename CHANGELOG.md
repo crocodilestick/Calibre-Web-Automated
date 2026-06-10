@@ -16,6 +16,14 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Fixed
+- On phones, the book detail page no longer shows an oversized, off-center
+  cover. The cover used to render wider than its column and sit left of center
+  (on the caliBlur theme), pushing the description far down the page. It now
+  caps to its column and centers, and the title/spacing on narrow screens are
+  tightened so the description sits closer to the top. (#288, reported with a
+  screenshot by @iroQuai)
+
 ## [v4.0.160] - 2026-06-10
 
 ### Security

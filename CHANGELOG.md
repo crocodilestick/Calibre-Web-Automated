@@ -16,6 +16,8 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+## [v4.0.160] - 2026-06-10
+
 ### Security
 - Closed a cross-site scripting hole in the comic (CBR/CBZ) reader. The reader
   ran your saved page bookmark through JavaScript's `eval()`, so a bookmark

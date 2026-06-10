@@ -16,6 +16,13 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Security
+- Closed a cross-site scripting hole in the comic (CBR/CBZ) reader. The reader
+  ran your saved page bookmark through JavaScript's `eval()`, so a bookmark
+  value that contained code — which any logged-in account could store for a
+  comic — would execute when the reader page opened. Bookmarks are now read
+  strictly as a page number.
+
 ### Fixed
 - Adding several books at once to a Kobo-synced shelf now syncs them to
   Hardcover, just like adding one book does. Before, only single adds reached

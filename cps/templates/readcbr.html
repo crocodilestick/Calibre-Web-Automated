@@ -194,8 +194,8 @@
     document.onreadystatechange = function () {
       if (document.readyState == "complete") {
           if (calibre.useBookmarks) {
-              currentImage = eval(calibre.bookmark);
-              if (typeof currentImage !== 'number') {
+              currentImage = parseInt(calibre.bookmark, 10);
+              if (!Number.isInteger(currentImage) || currentImage < 0) {
                   currentImage = 0;
               }
           }

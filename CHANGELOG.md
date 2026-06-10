@@ -24,6 +24,10 @@ is for things you can see or feel when running the app.
   strictly as a page number.
 
 ### Fixed
+- The metadata search dialog now lists providers in the order you set under
+  Settings, instead of alphabetically. Whatever provider order you configure
+  for automatic metadata fetching is now also the order the search popup shows
+  and ranks results in, so your preferred source appears first.
 - Adding several books at once to a Kobo-synced shelf now syncs them to
   Hardcover, just like adding one book does. Before, only single adds reached
   Hardcover — "add all" from search results, multi-select adds, and

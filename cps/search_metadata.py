@@ -105,6 +105,43 @@ def _get_global_provider_enabled_map() -> dict:
         return {}
     # Remove redundant return
 
+
+# Helper to load the configured provider hierarchy from CWA settings (fork #405).
+# The interactive search modal must present providers in the order the user
+# configured — the same order the ingest auto-fetch in cps/metadata_helper.py
+# obeys — falling back to alphabetical only for providers not named in the
+# hierarchy. Returns the ordered list of provider ids.
+def _get_provider_hierarchy() -> list:
+    from .metadata_constants import (
+        DEFAULT_METADATA_PROVIDER_HIERARCHY,
+        DEFAULT_METADATA_PROVIDER_HIERARCHY_JSON,
+    )
+    try:
+        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+        from cwa_db import CWA_DB  # type: ignore
+        settings = CWA_DB().get_cwa_settings() or {}
+        hierarchy = json.loads(
+            settings.get('metadata_provider_hierarchy', DEFAULT_METADATA_PROVIDER_HIERARCHY_JSON)
+        )
+        if not isinstance(hierarchy, list):
+            raise ValueError("metadata_provider_hierarchy must be a list")
+        return [p for p in hierarchy if isinstance(p, str)]
+    except Exception as e:
+        log.warning(f"Error loading provider hierarchy, using default: {e}")
+        return list(DEFAULT_METADATA_PROVIDER_HIERARCHY)
+
+
+def _hierarchy_sort_key(hierarchy: list):
+    """Sort key: configured-hierarchy index first (providers not listed sort
+    after all listed ones), then alphabetical by provider id for stability."""
+    order = {pid: idx for idx, pid in enumerate(hierarchy)}
+    big = len(order)
+
+    def key(provider_id: str, name: str = ""):
+        return (order.get(provider_id, big), (name or provider_id).lower())
+
+    return key
+
 # Providers that take a single API token / key plus the config column that
 # stores it and a public signup URL. Used by the metadata-search modal's
 # 🔑 Keys panel so users don't have to leave the modal to plug in a key.
@@ -386,9 +423,17 @@ def metadata_search():
                 "message": message,
                 "duration_ms": elapsed_ms,
             })
-    # Stable sort so rendering is deterministic even though futures complete
-    # out of order.
-    provider_status.sort(key=lambda p: p["name"].lower())
+    # Order provider rows by the configured hierarchy (fork #405) so the modal
+    # presents providers in the order the user set — the same order the ingest
+    # auto-fetch obeys — with alphabetical fallback for providers not listed.
+    _hierarchy = _get_provider_hierarchy()
+    _hkey = _hierarchy_sort_key(_hierarchy)
+    provider_status.sort(key=lambda p: _hkey(p["id"], p["name"]))
+    # Same ordering for the flattened results so the preferred provider's
+    # matches lead; stable sort preserves each provider's internal order.
+    _rank = {pid: idx for idx, pid in enumerate(_hierarchy)}
+    _big = len(_rank)
+    results.sort(key=lambda r: _rank.get((r.get("source") or {}).get("id"), _big))
 
     # Upgrade thumbnail-sized covers to high-DPI variants (Kobo Libra Color
     # etc.) by ISBN/title lookup against iTunes Search API. No-op when the

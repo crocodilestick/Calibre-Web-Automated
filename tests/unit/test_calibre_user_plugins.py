@@ -84,6 +84,18 @@ class TestCalibreUserPluginsHelper:
         assert result is env, "must mutate in place + return the same dict"
         assert env["PATH"] == "/usr/bin", "must not touch other env vars"
 
+    def test_apply_to_env_when_enabled_sets_calibre_config_directory(self, clean_env):
+        # CALIBRE_CONFIG_DIRECTORY is Calibre's documented config variable
+        # and the authoritative way to point subprocesses at
+        # /config/.config/calibre — HOME alone only works for code paths
+        # that derive config from the home dir. (Fork PR #434 diagnosis:
+        # the image's old global CALIBRE_CONFIG_DIR was a misspelling
+        # Calibre ignores.)
+        clean_env.setenv("CWA_CALIBRE_USER_PLUGINS", "true")
+        env = {"PATH": "/usr/bin"}
+        result = calibre_user_plugins.apply_to_env(env)
+        assert result["CALIBRE_CONFIG_DIRECTORY"] == "/config/.config/calibre"
+
     def test_apply_to_env_when_disabled_leaves_HOME_alone(self, clean_env):
         # No env var set
         env = {"PATH": "/usr/bin", "HOME": "/home/abc"}
@@ -101,6 +113,34 @@ class TestCalibreUserPluginsHelper:
         assert "HOME" not in result, (
             "off-state must not silently introduce HOME — it would be "
             "indistinguishable from on-state at runtime"
+        )
+        assert "CALIBRE_CONFIG_DIRECTORY" not in result, (
+            "off-state must not set CALIBRE_CONFIG_DIRECTORY either — "
+            "that variable alone is enough for Calibre to load plugins"
+        )
+
+    def test_config_dir_path(self, clean_env):
+        assert (
+            str(calibre_user_plugins.config_dir()) == "/config/.config/calibre"
+        ), "must match Calibre's expectation AND contain plugins_dir"
+        assert calibre_user_plugins.plugins_dir().parent == (
+            calibre_user_plugins.config_dir()
+        )
+
+    def test_dockerfile_has_no_global_calibre_config_env(self):
+        # Regression vector for fork PR #434: a global CALIBRE_CONFIG_DIR
+        # (misspelled, ignored) or CALIBRE_CONFIG_DIRECTORY (correct, but
+        # would force the plugin opt-in permanently ON) must not reappear
+        # in the image. The per-subprocess opt-in in this module is the
+        # only sanctioned way to point Calibre at /config.
+        dockerfile = (REPO_ROOT / "Dockerfile").read_text(encoding="utf-8")
+        env_lines = [
+            line for line in dockerfile.splitlines()
+            if re.match(r"^\s*ENV\s+CALIBRE_CONFIG", line)
+        ]
+        assert env_lines == [], (
+            f"Dockerfile must not set a global Calibre config variable; "
+            f"found: {env_lines}"
         )
 
     def test_plugins_dir_path(self, clean_env):

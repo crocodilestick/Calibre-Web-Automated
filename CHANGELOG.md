@@ -16,6 +16,17 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Fixed
+- Calibre plugin and configuration loading is now reliable when you opt in
+  with `CWA_CALIBRE_USER_PLUGINS=true`. The image used to set a misspelled
+  environment variable (`CALIBRE_CONFIG_DIR`) that Calibre simply ignores, so
+  Calibre invocations could fall back to a nonexistent home directory and
+  miss plugins installed under `/config/.config/calibre/plugins`. The opt-in
+  now sets Calibre's documented `CALIBRE_CONFIG_DIRECTORY` on every Calibre
+  subprocess it covers (ingest, conversion, cover enforcement, metadata
+  embed). Plugin loading stays off unless you opt in. (Diagnosed by
+  @jasonobrien in #434)
+
 ## [v4.0.161] - 2026-06-12
 
 ### Fixed

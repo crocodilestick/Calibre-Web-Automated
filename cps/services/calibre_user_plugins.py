@@ -8,10 +8,21 @@
 
 When ``CWA_CALIBRE_USER_PLUGINS`` is set to a truthy value (``1`` /
 ``true`` / ``yes`` / ``on``), Calibre subprocess invocations launched by
-the ingest pipeline run with ``HOME=/config`` so that the embedded
-Calibre process loads any plugins the operator has placed under
+the ingest pipeline run with ``HOME=/config`` and
+``CALIBRE_CONFIG_DIRECTORY=/config/.config/calibre`` so that the
+embedded Calibre process loads any plugins the operator has placed under
 ``/config/.config/calibre/plugins/``. The plugins directory is created
 on first use if missing.
+
+``CALIBRE_CONFIG_DIRECTORY`` is Calibre's documented configuration
+variable and is authoritative; ``HOME`` is kept alongside it for any
+Calibre code path that derives dotfile locations from the home
+directory. (The image used to set a misspelled ``CALIBRE_CONFIG_DIR``
+globally in the Dockerfile — Calibre ignores that name, which is why
+plugin loading historically only worked through the HOME override.
+Diagnosed by @jasonobrien in fork PR #434. A global
+``CALIBRE_CONFIG_DIRECTORY`` would defeat this module's off-state, so
+the variable is set here, per-subprocess, gated on the opt-in.)
 
 The default is **off**. Plugin loading is the operator's explicit
 choice — it activates third-party Python code from a user-controlled
@@ -54,8 +65,10 @@ def is_enabled() -> bool:
 
 
 def apply_to_env(env: dict[str, str]) -> dict[str, str]:
-    """If enabled, set ``HOME=/config`` on the given env mapping in
-    place and return it. If disabled, return the env unchanged.
+    """If enabled, set ``HOME=/config`` and
+    ``CALIBRE_CONFIG_DIRECTORY=/config/.config/calibre`` on the given
+    env mapping in place and return it. If disabled, return the env
+    unchanged.
 
     Designed to be called right before ``subprocess.run(..., env=env)``:
 
@@ -70,7 +83,15 @@ def apply_to_env(env: dict[str, str]) -> dict[str, str]:
     """
     if is_enabled():
         env["HOME"] = _HOME
+        env["CALIBRE_CONFIG_DIRECTORY"] = str(config_dir())
     return env
+
+
+def config_dir() -> Path:
+    """Absolute path to the Calibre configuration directory the opt-in
+    points subprocesses at (``/config/.config/calibre``). The plugins
+    directory lives directly beneath it."""
+    return Path(_HOME) / _PLUGINS_SUBPATH.rsplit("/", 1)[0]
 
 
 def plugins_dir() -> Path:

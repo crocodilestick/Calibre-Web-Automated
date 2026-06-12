@@ -294,8 +294,12 @@ RUN \
 # Add unrar from unrar stage
 COPY --from=unrar /usr/bin/unrar-ubuntu /usr/bin/unrar
 
-# Set calibre environment variable
-ENV CALIBRE_CONFIG_DIR=/config/.config/calibre
+# Deliberately NO global CALIBRE_CONFIG_DIRECTORY here. (A misspelled
+# CALIBRE_CONFIG_DIR lived here for a while -- Calibre ignores that name,
+# and setting the real one globally would force user-plugin loading on for
+# every Calibre subprocess. Plugin loading is opt-in via
+# CWA_CALIBRE_USER_PLUGINS; cps/services/calibre_user_plugins.py sets
+# CALIBRE_CONFIG_DIRECTORY per-subprocess when the operator enables it.)
 
 # Ports and volumes
 WORKDIR /config

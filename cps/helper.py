@@ -111,6 +111,29 @@ except (ImportError, RuntimeError) as e:
     MissingDelegateError = BaseException
 
 
+def _resolve_email_body_text(custom_value, default_text):
+    """Return the admin-set body when non-blank, otherwise the default.
+
+    Fork #428 (@iroQuai). Whitespace-only is treated as unset so an admin
+    can't accidentally reduce the message to an empty body. Pure function,
+    no Flask/config access, so it can be unit-tested in isolation.
+    """
+    custom = (custom_value or "").strip()
+    return custom if custom else default_text
+
+
+def get_email_body_text():
+    """Message body for the book-bearing mails the server sends.
+
+    Returns the admin-configured ``mail_body_text`` when set (Edit Email
+    Server Settings), otherwise the shipped translated default. Fork #428
+    (@iroQuai). Used by the send-to-eReader and test-mail paths.
+    """
+    return _resolve_email_body_text(
+        config.mail_body_text,
+        _('This Email has been sent via Calibre-Web NextGen.'))
+
+
 # Convert existing book entry to new format
 def convert_book_format(book_id, calibre_path, old_book_format, new_book_format, user_id,
                         ereader_mail=None, subject=None, blocking=False):
@@ -137,7 +160,7 @@ def convert_book_format(book_id, calibre_path, old_book_format, new_book_format,
         if not subject or not subject.strip():
             subject = _('Send to eReader')
         settings['subject'] = subject
-        settings['body'] = _('This Email has been sent via Calibre-Web NextGen.')
+        settings['body'] = get_email_body_text()
     else:
         settings = dict()
     link = '<a href="{}">{}</a>'.format(url_for('web.show_book', book_id=book.id), escape(book.title))  # prevent xss
@@ -164,7 +187,7 @@ def send_test_mail(ereader_mail, user_name):
         email = strip_whitespaces(email)
         WorkerThread.add(user_name, TaskEmail(_('Calibre-Web NextGen Test Email'), None, None,
                          config.get_mail_settings(), email, N_("Test Email"),
-                                              _('This Email has been sent via Calibre-Web NextGen.')))
+                                              get_email_body_text()))
     return
 
 
@@ -277,7 +300,7 @@ def send_mail(book_id, book_format, convert, ereader_mail, calibrepath, user_id,
                 email = strip_whitespaces(email)
                 WorkerThread.add(user_id, TaskEmail(subject, book.path, converted_file_name,
                                                     config.get_mail_settings(), email,
-                                                    email_text, _('This Email has been sent via Calibre-Web NextGen.'), book.id))
+                                                    email_text, get_email_body_text(), book.id))
             return None
     return _("The requested file could not be read. Maybe wrong permissions?")
 

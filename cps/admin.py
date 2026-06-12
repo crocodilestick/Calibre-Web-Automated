@@ -1814,6 +1814,10 @@ def update_mailsettings():
         config.mail_server = strip_whitespaces(to_save.get('mail_server', ""))
         config.mail_from = strip_whitespaces(to_save.get('mail_from', ""))
         config.mail_login = strip_whitespaces(to_save.get('mail_login', ""))
+    # Fork #428 (@iroQuai): admin-set custom message body. Saved on every
+    # branch (standard / gmail / invalidate) since the textarea is always
+    # submitted; blank reverts to the shipped default at send time.
+    _config_string(to_save, "mail_body_text")
     try:
         config.save()
     except (OperationalError, InvalidRequestError) as e:

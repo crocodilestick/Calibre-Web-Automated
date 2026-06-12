@@ -55,6 +55,12 @@
         <label for="mail_from">{{_('From Email')}}</label>
         <input type="text" class="form-control" name="mail_from" id="mail_from" value="{{content.mail_from}}" required>
       </div>
+      {# Fork #428 (@iroQuai): admin-set message body for mails sent with a book. #}
+      <div class="form-group">
+        <label for="mail_body_text">{{_('Email Message Body')}}</label>
+        <textarea class="form-control" name="mail_body_text" id="mail_body_text" rows="4" maxlength="1000" placeholder="{{_('This Email has been sent via Calibre-Web NextGen.')}}">{% if content.mail_body_text %}{{ content.mail_body_text }}{% endif %}</textarea>
+        <small class="help-block">{{_('Message included with books sent to an eReader and in test emails. Sent as plain text, in any language. Leave blank to use the default.')}}</small>
+      </div>
       <label for="mail_size">{{_('Attachment Size Limit')}}</label>
        <div class="form-group input-group">
         <input type="number" min="1" max="600" step="1" class="form-control" name="mail_size" id="mail_size" value="{% if content.mail_size != None %}{{ (content.mail_size / 1024 / 1024)|int }}{% endif %}" required>

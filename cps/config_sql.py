@@ -57,6 +57,11 @@ class _Settings(_Base):
     mail_size = Column(Integer, default=25*1024*1024)
     mail_server_type = Column(SmallInteger, default=0)
     mail_gmail_token = Column(JSON, default={})
+    # Fork #428 (@iroQuai): admin-set message body for the mails the server
+    # sends with a book (send-to-eReader, test mail). Blank falls back to the
+    # shipped default. Named with the mail_ prefix so it auto-migrates and
+    # flows through get_mail_settings() into the settings page.
+    mail_body_text = Column(String, default="")
 
     config_calibre_dir = Column(String)
     config_calibre_uuid = Column(String)

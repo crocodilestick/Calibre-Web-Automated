@@ -418,8 +418,34 @@ def create_app():
         if request.endpoint not in keep_endpoints:
             session.pop("pending_app_password", None)
 
+    @app.before_request
+    def _desktop_compat_fresh_snapshot():
+        from flask import request
+        # Rollback ends the SERIALIZABLE snapshot so the next query sees Calibre desktop's writes.
+        if not calibre_db._desktop_compat or request.endpoint == 'static':
+            return
+        if calibre_db.session is not None:
+            try:
+                calibre_db.session.rollback()
+                calibre_db.session.expire_all()
+            except Exception as e:
+                log.debug("DESKTOP_COMPAT_MODE: rollback failed, snapshot may be stale: %s", e)
+        # Clear the Flask-session shelf count cache so sidebar counts stay fresh.
+        session.pop('magic_shelf_counts', None)
+
     @app.teardown_appcontext
     def shutdown_session(exception=None):
+        # Close before session_factory.remove(): they operate on different objects (concrete
+        # Session vs scoped proxy), and NullPool needs an explicit close to drop the connection.
+        if calibre_db._desktop_compat and calibre_db.session is not None:
+            try:
+                calibre_db.session.rollback()
+            except Exception:
+                pass
+            try:
+                calibre_db.session.close()
+            except Exception:
+                pass
         if calibre_db.session_factory:
             calibre_db.session_factory.remove()
 

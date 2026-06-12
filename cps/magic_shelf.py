@@ -635,6 +635,9 @@ def build_query_from_rules(rules_json, user_id=None):
 def get_book_ids_for_magic_shelf(shelf_id, sort_order=None, sort_param='stored', bypass_cache=False):
     """Return ordered book IDs for a magic shelf without loading book objects."""
     try:
+        from . import calibre_db
+        if calibre_db._desktop_compat:
+            bypass_cache = True
         if not bypass_cache and current_user.is_authenticated:
             cache = ub.session.query(ub.MagicShelfCache).filter_by(
                 shelf_id=shelf_id,
@@ -657,7 +660,7 @@ def get_book_ids_for_magic_shelf(shelf_id, sort_order=None, sort_param='stored',
         all_ids = [book_id for (book_id,) in query.with_entities(db.Books.id).all()]
         total_count = len(all_ids)
 
-        if current_user.is_authenticated:
+        if current_user.is_authenticated and not bypass_cache:
             ub.session.query(ub.MagicShelfCache).filter_by(
                 shelf_id=shelf_id,
                 user_id=current_user.id,

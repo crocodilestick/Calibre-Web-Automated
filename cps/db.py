@@ -784,6 +784,7 @@ class CalibreDB:
     engine = None
     config = None
     session_factory = None
+    _desktop_compat = False
     # This is a WeakSet so that references here don't keep other CalibreDB
     # instances alive once they reach the end of their respective scopes
     instances = WeakSet()
@@ -962,11 +963,15 @@ class CalibreDB:
                 # Controlled by env var NETWORK_SHARE_MODE (default False)
                 try:
                     nsm = os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
-                    if not nsm and db_writable:
+                    dc = os.getenv('DESKTOP_COMPAT_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
+                    if not nsm and not dc and db_writable:
                         connection.execute(text("PRAGMA calibre.journal_mode=WAL"))
                         connection.execute(text("PRAGMA app_settings.journal_mode=WAL"))
                     else:
-                        reason = "NETWORK_SHARE_MODE=true" if nsm else "metadata.db not writable"
+                        if nsm or dc:
+                            reason = "NETWORK_SHARE_MODE=true" if nsm else "DESKTOP_COMPAT_MODE=true"
+                        else:
+                            reason = "metadata.db not writable"
                         log.warning("WAL mode disabled for calibre/app_settings (%s)", reason)
                 except Exception:
                     pass
@@ -1016,41 +1021,114 @@ class CalibreDB:
                 return None
 
             db_writable = os.access(dbpath, os.W_OK)
+            nsm = os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
+            desktop_compat = os.getenv('DESKTOP_COMPAT_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
 
             try:
-                cls.engine = create_engine('sqlite://',
-                                           echo=False,
-                                           isolation_level="SERIALIZABLE",
-                                           # factory: GIL↔sqlite-mutex deadlock
-                                           # guard, see _SerializedSqliteConnection
-                                           connect_args={'check_same_thread': False, 'timeout': 30,
-                                                         'factory': _SerializedSqliteConnection},
-                                           poolclass=StaticPool)
-                event.listen(cls.engine, "connect", _register_sqlite_udfs)
-                with cls.engine.begin() as connection:
-                    connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
-                    connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
-                    # Try enabling WAL to improve concurrency unless running on a network share
-                    # Controlled by env var NETWORK_SHARE_MODE (default False)
-                    try:
-                        nsm = os.getenv('NETWORK_SHARE_MODE', 'False').lower() in ('1', 'true', 'yes', 'on')
-                        if not nsm and db_writable:
-                            connection.execute(text("PRAGMA calibre.journal_mode=WAL"))
-                            connection.execute(text("PRAGMA app_settings.journal_mode=WAL"))
-                        else:
-                            reason = "NETWORK_SHARE_MODE=true" if nsm else "metadata.db not writable"
-                            log.warning("WAL mode disabled for calibre/app_settings (%s)", reason)
-                    except Exception:
-                        pass
-                    # Wait up to 60s for any external writer (calibredb
-                    # during ingest) before failing the query. Required
-                    # for fork issue #192 — without this, transient
-                    # locks on mergerfs/SMB/NFS surface as immediate
-                    # apsw.BusyError and crash the import.
-                    try:
-                        connection.execute(text("PRAGMA busy_timeout=60000"))
-                    except Exception:
-                        pass
+                if desktop_compat:
+                    # DESKTOP_COMPAT_MODE: use NullPool so every SQLAlchemy session
+                    # gets its own SQLite connection that is fully closed when the
+                    # Flask request ends (teardown_appcontext calls
+                    # session_factory.remove()). This releases the SQLite file lock
+                    # after each request, allowing calibre desktop to open the same
+                    # library between web requests. Intended for use alongside
+                    # NETWORK_SHARE_MODE=true where WAL is disabled and a persistent
+                    # StaticPool connection would otherwise hold the lock indefinitely.
+                    #
+                    # Trade-off: each request pays one extra SMB open/close round-trip.
+                    # Under contention a Flask worker thread blocks for up to busy_timeout
+                    # (60s) — heavy calibre desktop use while the server is active can stall
+                    # the web UI. They serialise rather than corrupt.
+                    from sqlalchemy.pool import NullPool
+
+                    # Capture paths in a closure so the connect listener can reach them
+                    # without keeping a reference to cls (avoids accidental retention).
+                    _dbpath = dbpath
+                    _app_db_path = app_db_path
+
+                    def _attach_and_configure(dbapi_connection, connection_record):
+                        _register_sqlite_udfs(dbapi_connection, connection_record)
+                        cur = dbapi_connection.cursor()
+                        try:
+                            cur.execute("ATTACH DATABASE ? AS calibre", (_dbpath,))
+                            cur.execute("ATTACH DATABASE ? AS app_settings", (_app_db_path,))
+                            cur.execute("PRAGMA busy_timeout=60000")
+                        finally:
+                            cur.close()
+
+                    # One-time startup only: per-connection mode switches checkpoint the WAL
+                    # and destroy any frames Calibre desktop wrote, corrupting its transactions.
+                    if nsm and db_writable:
+                        import sqlite3 as _sqlite3
+                        import time as _time
+                        for _dbfile in (dbpath, app_db_path):
+                            for attempt in range(10):
+                                try:
+                                    _startup_conn = _sqlite3.connect(_dbfile, timeout=6)
+                                    try:
+                                        mode = _startup_conn.execute("PRAGMA journal_mode=DELETE").fetchone()[0]
+                                    finally:
+                                        _startup_conn.close()
+                                    if mode == 'delete':
+                                        break
+                                    # Mode didn't switch (another connection holds WAL); retry.
+                                except Exception:
+                                    pass
+                                _time.sleep(1)
+                            else:
+                                log.warning("DESKTOP_COMPAT_MODE: could not convert %s to DELETE "
+                                            "journal mode after 10 attempts; WAL may still be active.", _dbfile)
+
+                    cls.engine = create_engine('sqlite://',
+                                               echo=False,
+                                               isolation_level="SERIALIZABLE",
+                                               connect_args={'check_same_thread': False, 'timeout': 30,
+                                                             'factory': _SerializedSqliteConnection},
+                                               poolclass=NullPool)
+                    event.listen(cls.engine, "connect", _attach_and_configure)
+                    cls._desktop_compat = True
+                    log.warning(
+                        "DESKTOP_COMPAT_MODE=true: using per-request SQLite connections. "
+                        "calibre desktop can access the library between web requests. "
+                        "WAL mode remains disabled (NETWORK_SHARE_MODE behaviour).")
+                    if not nsm:
+                        log.warning(
+                            "DESKTOP_COMPAT_MODE=true without NETWORK_SHARE_MODE=true: "
+                            "behaviour is technically valid on a local library but untested.")
+                else:
+                    cls._desktop_compat = False
+                    cls.engine = create_engine('sqlite://',
+                                               echo=False,
+                                               isolation_level="SERIALIZABLE",
+                                               # factory: GIL↔sqlite-mutex deadlock
+                                               # guard, see _SerializedSqliteConnection
+                                               connect_args={'check_same_thread': False, 'timeout': 30,
+                                                             'factory': _SerializedSqliteConnection},
+                                               poolclass=StaticPool)
+                    event.listen(cls.engine, "connect", _register_sqlite_udfs)
+                    with cls.engine.begin() as connection:
+                        connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
+                        connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
+                        # Try enabling WAL to improve concurrency unless running on a network share
+                        # Controlled by env var NETWORK_SHARE_MODE (default False)
+                        try:
+                            if not nsm and db_writable:
+                                connection.execute(text("PRAGMA calibre.journal_mode=WAL"))
+                                connection.execute(text("PRAGMA app_settings.journal_mode=WAL"))
+                            else:
+                                reason = "NETWORK_SHARE_MODE=true" if nsm else "metadata.db not writable"
+                                log.warning("WAL mode disabled for calibre/app_settings (%s)", reason)
+                        except Exception:
+                            pass
+                        # Wait up to 60s for any external writer (calibredb
+                        # during ingest) before failing the query. Required
+                        # for fork issue #192 — without this, transient
+                        # locks on mergerfs/SMB/NFS surface as immediate
+                        # apsw.BusyError and crash the import.
+                        try:
+                            connection.execute(text("PRAGMA busy_timeout=60000"))
+                        except Exception:
+                            pass
 
                 conn = cls.engine.connect()
                 # conn.text_factory = lambda b: b.decode(errors = 'ignore') possible fix for #1302
@@ -1096,9 +1174,19 @@ class CalibreDB:
             from .progress_syncing.models import ensure_calibre_db_tables
             if (
                 db_writable
-                and os.getenv('NETWORK_SHARE_MODE', 'False').lower() not in ('1', 'true', 'yes', 'on')
+                and not nsm
+                and not desktop_compat
             ):
                 ensure_calibre_db_tables(conn)
+
+            # With NullPool (DESKTOP_COMPAT_MODE) the setup connection is not the
+            # shared persistent connection — close it so the file lock is released
+            # before normal request handling begins.
+            if desktop_compat:
+                try:
+                    conn.close()
+                except Exception:
+                    pass
 
             cls._init = True
         # End of with cls._reconnect_lock

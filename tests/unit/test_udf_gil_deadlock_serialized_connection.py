@@ -173,8 +173,9 @@ class TestFactoryWiredIntoProductionEngines:
         connect_args dicts carrying the guard factory — both must be 2."""
         src = (REPO_ROOT / "cps" / "db.py").read_text(encoding="utf-8")
         engine_sites = re.findall(r"create_engine\('sqlite://'", src)
-        assert len(engine_sites) == 2, (
-            f"expected exactly 2 in-memory calibre engines in cps/db.py, "
+        assert len(engine_sites) == 3, (
+            f"expected exactly 3 in-memory calibre engines in cps/db.py "
+            f"(StaticPool, NullPool/DESKTOP_COMPAT_MODE, and app-settings), "
             f"found {len(engine_sites)} — update this pin if the architecture "
             f"changed"
         )
@@ -182,8 +183,8 @@ class TestFactoryWiredIntoProductionEngines:
             r"connect_args=\{[^}]*'factory':\s*_SerializedSqliteConnection",
             src,
         )
-        assert len(guarded_connect_args) == 2, (
-            f"expected the deadlock-guard factory in both calibre engines' "
+        assert len(guarded_connect_args) == 3, (
+            f"expected the deadlock-guard factory in all calibre engines' "
             f"connect_args, found {len(guarded_connect_args)} — a calibre "
             f"engine without _SerializedSqliteConnection reopens the "
             f"GIL↔sqlite-mutex freeze"

@@ -309,6 +309,24 @@ Tested and supported. Ingest is a few seconds slower; everything else behaves th
 
 > If files end up owned by root after a copy: this build chowns files back to your `PUID:PGID` after each metadata-change cycle, but if you've copied files in as root before upgrading, run once: `docker exec calibre-web chown -R abc:abc /calibre-library` (replace `abc` if you've customized the user).
 
+### Calibre desktop coexistence
+
+If you want to open the same library in calibre desktop while calibre-web-nextgen is running, set both:
+
+```yaml
+- NETWORK_SHARE_MODE=true
+- DESKTOP_COMPAT_MODE=true
+```
+
+By default, calibre-web-nextgen holds a single SQLite connection open for the life of the process. That blocks calibre desktop from opening the library — on calibre 9.9.0 + macOS it crashes without an error dialog. `DESKTOP_COMPAT_MODE=true` switches to per-request connections so the file lock is released between web requests, letting calibre desktop open the database in the gaps.
+
+Changes you make in calibre desktop (edits, adds, deletes) appear in the web UI on the next page load — no restart needed.
+
+Trade-offs:
+- Each web request pays a small extra overhead to open and close the database connection.
+- If calibre desktop is actively writing when a web request comes in, the request waits up to 60 seconds for the lock. Heavy simultaneous use can slow the web UI.
+- Designed for home-server use where calibre desktop is opened occasionally for bulk edits, not for concurrent heavy use of both.
+
 ### Reverse proxy / Cloudflare Tunnel
 
 Behind multiple proxies (e.g. Cloudflare Tunnel then nginx then CWA), set the proxy count:

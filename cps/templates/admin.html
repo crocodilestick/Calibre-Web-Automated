@@ -295,7 +295,7 @@
       <div class="modal-body text-center">
         <p>{{_('Are you sure you want to restart?')}}</p>
           <div id="spinner" class="spinner"  style="display:none;">
-                <img id="img-spinner" src="{{ url_for('static', filename='css/libs/images/loading-icon.gif') }}"/>
+                <div class="css-spinner" role="status" aria-label="{{ _('Loading') }}"></div>
           </div>
           <p></p>
         <button type="button" class="btn btn-default" id="restart" >{{_('OK')}}</button>
@@ -327,7 +327,7 @@
       </div>
       <div class="modal-body text-center">
           <div id="spinner2" class="spinner2"  style="display:none;">
-                <img id="img-spinner2" src="{{ url_for('static', filename='css/libs/images/loading-icon.gif') }}"/>
+                <div class="css-spinner" role="status" aria-label="{{ _('Loading') }}"></div>
           </div>
           <p></p>
         <div id="DialogContent"></div>

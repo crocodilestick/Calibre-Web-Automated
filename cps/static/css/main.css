@@ -263,7 +263,25 @@ input:-moz-placeholder { color: #454545; }
   z-index: 10;
   left: 50%;
   top: 50%;
-  margin: -33px 0 0 -33px;
+  margin: -24px 0 0 -24px;
+}
+
+/* Pure-CSS loading spinner (replaces the old pixelated loader.gif). Defined
+ * here because the reader page loads main.css, not the app-wide style.css. */
+.css-spinner {
+  width: 48px;
+  height: 48px;
+  border: 5px solid rgba(128, 128, 128, 0.25);
+  border-top-color: var(--color-primary, #45b29d);
+  border-radius: 50%;
+  box-sizing: border-box;
+  animation: css-spinner-rotate 0.8s linear infinite;
+}
+@keyframes css-spinner-rotate {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .css-spinner { animation-duration: 2.4s; }
 }
 
 #tocView,

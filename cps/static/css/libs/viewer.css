@@ -2737,19 +2737,30 @@
   margin-inline:5px;
 }
 
+/* Pure-CSS rotating ring, replacing the old pixelated loading-icon.gif. */
 .pdfViewer .page.loadingIcon::after{
   position:absolute;
-  top:0;
-  left:0;
+  top:50%;
+  left:50%;
+  margin:-24px 0 0 -24px;
   content:"";
-  width:100%;
-  height:100%;
-  background:url("images/loading-icon.gif") center no-repeat;
+  width:48px;
+  height:48px;
+  border:5px solid rgba(128,128,128,0.25);
+  border-top-color:var(--color-primary, #45b29d);
+  border-radius:50%;
+  box-sizing:border-box;
+  animation:pdf-loading-spin 0.8s linear infinite;
   display:none;
   transition-property:display;
   transition-delay:var(--loading-icon-delay);
   z-index:5;
-  contain:strict;
+}
+@keyframes pdf-loading-spin{
+  to{ transform:rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pdfViewer .page.loadingIcon::after { animation-duration: 2.4s; }
 }
 
 .pdfViewer .page.loading::after{

@@ -16,6 +16,14 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Changed
+- Loading spinners are crisp at any size and follow your theme's color. The
+  old animated GIFs (admin Restart/Status dialogs, settings save flashes, the
+  book reader, and the PDF viewer) rendered pixelated and ignored your theme;
+  they're replaced by a smooth CSS ring that matches the theme's primary
+  color, centers correctly everywhere, and slows down rather than freezing
+  when your system asks for reduced motion. (PR #384 by @jbelascoain)
+
 ### Fixed
 - Calibre plugin and configuration loading is now reliable when you opt in
   with `CWA_CALIBRE_USER_PLUGINS=true`. The image used to set a misspelled

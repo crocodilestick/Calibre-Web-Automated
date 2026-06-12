@@ -390,25 +390,45 @@ fieldset[disabled] .btn-primary.active {
   margin-left: 0;
 }
 
-/* Loading-spinner sizing (fork PR #326 audit by @jbelascoain).
- * `loading-icon.gif` is referenced via bare `<img id="img-spinner">`
- * tags with no width/height in five templates (admin Restart/Status
- * modals, config_db.html, config_edit.html, cwa_settings.html). Pin
- * a reasonable size + null out any selector-applied box-shadow (e.g.
- * a hypothetical `.modal img { box-shadow: ... }` that might bleed
- * onto the spinner) at the CSS layer so the spinner renders the same
- * everywhere — and a future swap of the gif binary for a
- * higher-resolution version doesn't regress to a giant rendered
- * spinner. */
+/* Loading spinner (fork: @jbelascoain).
+ * Pure-CSS rotating ring that replaces the old, pixelated
+ * `loading-icon.gif`. The `.spinner` / `.spinner2` wrappers (admin
+ * Restart/Status modals, config_db.html, config_edit.html,
+ * cwa_settings.html) center a single `.css-spinner` element. Scales
+ * crisply at any size and follows the theme's primary color. */
 .spinner,
 .spinner2 {
-  margin: 0 41%;
+  display: flex;
+  justify-content: center;
+  margin: 10px 0;
 }
-#img-spinner,
-#img-spinner2 {
+.css-spinner {
   width: 48px;
   height: 48px;
+  /* Self-center: the flash blocks (config_db / config_edit / cwa_settings)
+   * wrap the spinner in `.text-center` parents, which only center inline
+   * content — a block-level div needs auto margins or it hugs the left
+   * edge of the alert. Inside the `.spinner` flex wrappers auto margins
+   * are equivalent to justify-content: center, so both contexts agree. */
+  margin-left: auto;
+  margin-right: auto;
+  border: 5px solid rgba(128, 128, 128, 0.25);
+  border-top-color: var(--color-primary, #45b29d);
+  border-radius: 50%;
+  box-sizing: border-box;
   box-shadow: none;
+  animation: css-spinner-rotate 0.8s linear infinite;
+}
+@keyframes css-spinner-rotate {
+  to { transform: rotate(360deg); }
+}
+/* Respect users who prefer less motion: spin slower rather than freeze. */
+@media (prefers-reduced-motion: reduce) {
+  .css-spinner { animation-duration: 2.4s; }
+}
+#support_pack {
+  margin-bottom: 10px;
+  margin-left: 8px;
 }
 .intend-form {
   margin-left: 20px;

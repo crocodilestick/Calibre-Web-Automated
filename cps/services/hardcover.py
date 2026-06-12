@@ -105,7 +105,8 @@ class HardcoverClient:
                 }
             }"""
         response = self.execute(query)
-        return (response.get("me")[0] or [{}]).get("account_privacy_setting_id", 1)
+        me = response.get("me") or []
+        return ((me[0] if me else None) or {}).get("account_privacy_setting_id", 1)
 
     def get_user_book(self, ids):
         ids = self.parse_identifiers(ids)
@@ -148,7 +149,9 @@ class HardcoverClient:
             variables["slug"] = ids["hardcover-slug"]
         query += USER_BOOK_FRAGMENT
         response = self.execute(query, variables)
-        return next(iter(response.get("me")[0].get("user_books")), None)
+        me = response.get("me") or []
+        user_books = (me[0].get("user_books") if me else None) or []
+        return next(iter(user_books), None)
 
     # TODO Add option for autocreate if missing books instead of forcing it.
     def update_reading_progress(self, identifiers, progress_percent):
@@ -158,13 +161,23 @@ class HardcoverClient:
             # Book doesn't exist, add it in Reading status
             if not book:
                 book = self.add_book(ids, status=STATUS_READING)
+            if not book:
+                log.warning("Book not on Hardcover and could not be added, skipping progress sync")
+                return
             # Book is either WTR or Read, and we aren't finished reading
             if book.get("status_id") != STATUS_READING and progress_percent != MAX_PROGRESS_PERCENTAGE:
-                book = self.change_book_status(book, STATUS_READING)
+                # A rejected mutation returns user_book: null; keep the fetched row
+                book = self.change_book_status(book, STATUS_READING) or book
             # Book is already marked as read, and we are also done
             if book.get("status_id") == STATUS_READ and progress_percent == MAX_PROGRESS_PERCENTAGE:
                 return
-            pages = book.get("edition", {}).get("pages", 0)
+            # A user_book without a chosen edition serializes as "edition": null —
+            # the key is present, so .get("edition", {}) does not protect here
+            edition = book.get("edition") or {}
+            pages = edition.get("pages") or 0
+            if not pages:
+                log.info("Hardcover user_book has no edition page count; progress not synced. "
+                         "Pick an edition for the book on Hardcover to enable page-based progress.")
             if pages:
                 pages_read = round(pages * (progress_percent / 100))
                 read = next(iter(book.get("user_book_reads")), None)
@@ -187,10 +200,9 @@ class HardcoverClient:
                     variables = {
                         "readId": int(read.get("id")),
                         "pages": pages_read,
-                        "editionId": int(book.get("edition").get("id")),
-                        "startedAt": read.get(
-                            "started_at", datetime.now().strftime("%Y-%m-%d")
-                        ),
+                        "editionId": int(edition["id"]) if edition.get("id") else None,
+                        "startedAt": read.get("started_at")
+                        or datetime.now().strftime("%Y-%m-%d"),
                         "finishedAt": (
                             datetime.now().strftime("%Y-%m-%d")
                             if progress_percent == MAX_PROGRESS_PERCENTAGE
@@ -219,7 +231,10 @@ class HardcoverClient:
         )
         variables = {"id": book.get("id"), "status_id": status}
         response = self.execute(query=mutation, variables=variables)
-        return response.get("update_user_book", {}).get("user_book", {})
+        result = response.get("update_user_book") or {}
+        if result.get("error"):
+            log.warning(f"Hardcover update_user_book error: {result['error']}")
+        return result.get("user_book") or {}
 
 
     def add_journal_entry(self, identifiers, note_text, progress_percent=None, progress_page=None, highlighted_text=None, highlight_color=None):
@@ -270,7 +285,7 @@ class HardcoverClient:
         # Calculate page number and prepare metadata if progress is provided
         metadata = {}
         if progress_percent is not None or progress_page is not None:
-            pages = book.get("edition", {}).get("pages", 0)
+            pages = (book.get("edition") or {}).get("pages") or 0
 
             # Calculate actual page number from percentage or use provided page
             page_number = progress_page if progress_page else round(pages * (progress_percent / 100))
@@ -316,7 +331,7 @@ class HardcoverClient:
             # quote or note in Hardcover,
             "event": "note" if note_text else "quote",
             "privacySettingId": self.privacy,
-            "editionId": int(book.get("edition", {}).get("id")) if book.get("edition") else None,
+            "editionId": int(book["edition"]["id"]) if (book.get("edition") or {}).get("id") else None,
             "tags": [
                 {"tag": "CWA", "category": "general", "spoiler": False},
                 {"tag": "Kobo", "category": "general", "spoiler": False}
@@ -335,12 +350,12 @@ class HardcoverClient:
                 log.error("Empty response from Hardcover API")
                 return None
 
-            errors = response.get("insert_reading_journal", {}).get("errors")
+            errors = (response.get("insert_reading_journal") or {}).get("errors")
             if errors:
                 log.error(f"Hardcover journal entry errors: {errors}")
                 return None
 
-            journal_entry = response.get("insert_reading_journal", {}).get("reading_journal")
+            journal_entry = (response.get("insert_reading_journal") or {}).get("reading_journal")
             if not journal_entry:
                 log.error("No journal entry returned in response")
                 return None
@@ -410,12 +425,12 @@ class HardcoverClient:
                 log.error("Empty response from Hardcover API")
                 return None
 
-            errors = response.get("update_reading_journal", {}).get("errors")
+            errors = (response.get("update_reading_journal") or {}).get("errors")
             if errors:
                 log.error(f"Hardcover journal entry errors: {errors}")
                 return None
 
-            journal_entry = response.get("update_reading_journal", {}).get("reading_journal")
+            journal_entry = (response.get("update_reading_journal") or {}).get("reading_journal")
             if not journal_entry:
                 log.error("No journal entry returned in response")
                 return None
@@ -454,7 +469,7 @@ class HardcoverClient:
             }"""
         variables = {"journal_id": journal_id}
         response = self.execute(query=mutation, variables=variables)
-        return response.get("delete_reading_journal", {}).get("id")
+        return (response.get("delete_reading_journal") or {}).get("id")
 
     def add_book(self, identifiers, status=1):
         ids = self.parse_identifiers(identifiers)
@@ -488,7 +503,10 @@ class HardcoverClient:
             }
         }
         response = self.execute(query=mutation, variables=variables)
-        return response.get("insert_user_book", {}).get("user_book", {})
+        result = response.get("insert_user_book") or {}
+        if result.get("error"):
+            log.warning(f"Hardcover insert_user_book error: {result['error']}")
+        return result.get("user_book") or None
 
     def add_read(self, book, pages=0):
         mutation = """
@@ -511,15 +529,15 @@ class HardcoverClient:
         variables = {
             "id": int(book.get("id")),
             "editionId": (
-                int(book.get("edition").get("id"))
-                if book.get("edition").get("id")
+                int((book.get("edition") or {}).get("id"))
+                if (book.get("edition") or {}).get("id")
                 else None
             ),
             "pages": pages,
             "startedAt": datetime.now().strftime("%Y-%m-%d"),
         }
         response = self.execute(query=mutation, variables=variables)
-        return response.get("insert_user_book_read").get("user_book_read")
+        return (response.get("insert_user_book_read") or {}).get("user_book_read")
 
     def parse_identifiers(self, identifiers):
         if type(identifiers) != dict:

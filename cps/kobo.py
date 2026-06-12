@@ -1510,7 +1510,8 @@ def push_reading_state_to_hardcover(user, book: db.Books, progress_percentage: i
     try:
         hardcoverClient.update_reading_progress(book.identifiers, progress_percentage)
     except Exception as e:
-        log.error(f"Failed to update reading progress for book {book.id} in Hardcover: {e}")
+        log.error(f"Failed to update reading progress for book {book.id} in Hardcover: {e}",
+                  exc_info=True)
 
 
 def get_read_status_for_kobo(ub_book_read):

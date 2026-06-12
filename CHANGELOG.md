@@ -17,6 +17,14 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- Hardcover progress sync no longer dies on books without a chosen edition.
+  Reading on a KOReader/Kobo device synced progress to the library fine, but
+  the push to Hardcover failed every time with `'NoneType' object has no
+  attribute 'get'` — typically when the book's entry on Hardcover has no
+  edition picked, or when Hardcover rejects a status change. The sync now
+  handles those responses, logs Hardcover-side errors with a full traceback,
+  and tells you when a book needs an edition selected on Hardcover for
+  page-based progress. (#433, reported by @SpookyUSAF)
 - Search now opens on phones. Tapping the search icon in the top bar did
   nothing on mobile (most visibly in Safari on iOS) — the icon was covered by
   the header bar, so the tap never reached the search box, and the box never

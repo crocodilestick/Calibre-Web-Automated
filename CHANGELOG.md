@@ -16,6 +16,14 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Added
+- Magic Shelves can now filter on your Calibre custom columns. The rule
+  builder lists every queryable custom column — text, numbers, yes/no,
+  dates, ratings, and fixed-choice columns (which get a proper dropdown of
+  their allowed values) — so shelves like "Mood is cozy" or "Page Count
+  over 400" just work, including the "is empty / is not empty" operators.
+  (PR #387 by @8bitgentleman)
+
 ### Changed
 - Loading spinners are crisp at any size and follow your theme's color. The
   old animated GIFs (admin Restart/Status dialogs, settings save flashes, the

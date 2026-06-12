@@ -1263,6 +1263,29 @@ def preview_magic_shelf():
         return jsonify({"success": False, "message": _("Invalid request")}), 400
 
 
+def _build_custom_columns_json():
+    """Return a list of queryable custom columns for the magic shelf rule builder."""
+    try:
+        cc_list = calibre_db.session.query(db.CustomColumns).filter(
+            db.CustomColumns.datatype.notin_(db.cc_exceptions),
+            db.CustomColumns.mark_for_delete == False  # noqa: E712
+        ).order_by(db.CustomColumns.name).all()
+    except Exception:
+        log.error("Failed to query custom columns for magic shelf rule builder", exc_info=True)
+        return []
+
+    result = []
+    for cc in cc_list:
+        entry = {'id': cc.id, 'label': cc.name, 'datatype': cc.datatype}
+        if cc.datatype == 'enumeration':
+            try:
+                entry['enum_values'] = cc.get_display_dict().get('enum_values', [])
+            except Exception:
+                entry['enum_values'] = []
+        result.append(entry)
+    return result
+
+
 @web.route("/magicshelf", methods=["GET", "POST"])
 @user_login_required
 def create_magic_shelf():
@@ -1368,6 +1391,8 @@ def create_magic_shelf():
         except:
             language_map[lang.lang_code] = lang.lang_code
 
+    custom_columns_json = _build_custom_columns_json()  # list, serialized by tojson in template
+
     return render_title_template('magic_shelf_edit.html',
                                  title=_("Create Magic Shelf"),
                                  page="magic_shelf_create",
@@ -1375,7 +1400,8 @@ def create_magic_shelf():
                                  opds_expose_checked=False,
                                  kobo_magic_sync_enabled=bool(config.config_kobo_sync_magic_shelves),
                                  allowed_icons=ALLOWED_ICONS,
-                                 languages=language_map)
+                                 languages=language_map,
+                                 custom_columns=custom_columns_json)
 
 
 @web.route("/magicshelf/<int:shelf_id>/edit", methods=["GET", "POST"])
@@ -1500,6 +1526,8 @@ def edit_magic_shelf(shelf_id):
         except:
             language_map[lang.lang_code] = lang.lang_code
 
+    custom_columns_json = _build_custom_columns_json()  # list, serialized by tojson in template
+
     return render_title_template('magic_shelf_edit.html',
                                  shelf=shelf,
                                  title=_("Edit Magic Shelf"),
@@ -1508,7 +1536,8 @@ def edit_magic_shelf(shelf_id):
                                  opds_expose_checked=opds_expose_checked,
                                  kobo_magic_sync_enabled=bool(config.config_kobo_sync_magic_shelves),
                                  allowed_icons=ALLOWED_ICONS,
-                                 languages=language_map)
+                                 languages=language_map,
+                                 custom_columns=custom_columns_json)
 
 
 @web.route("/magicshelf/<int:shelf_id>/duplicate", methods=["POST"])

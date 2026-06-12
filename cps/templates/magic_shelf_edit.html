@@ -479,10 +479,12 @@ div.help-panel > .panel-body {
 
 {% set rules_json = shelf.rules|tojson if shelf and shelf.rules else 'null' %}
 {% set languages_json = languages|tojson if languages else '{}' %}
+{% set custom_columns_json = custom_columns|tojson if custom_columns else '[]' %}
 {% block js %}
 {{ super() }}
 <script src="{{ url_for('static', filename='js/moment.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/query-builder.standalone.min.js') }}"></script>
+<script type="application/json" id="custom-columns-data">{{ custom_columns_json|safe }}</script>
 <script>
 $(function() {
     // Initialize tooltips
@@ -630,6 +632,36 @@ $(function() {
             description: 'Whether book has Hardcover identifier'
         }
     ];
+
+    // Append user-defined custom columns from Calibre
+    var customColumns = JSON.parse(document.getElementById('custom-columns-data').textContent || '[]');
+    customColumns.forEach(function(cc) {
+        var field = {
+            id: 'custom_column_' + cc.id,
+            label: cc.label,
+            description: 'Custom column'
+        };
+        if (cc.datatype === 'bool') {
+            field.type = 'integer';
+            field.input = 'radio';
+            field.values = {1: 'Yes', 0: 'No'};
+        } else if (cc.datatype === 'int' || cc.datatype === 'rating') {
+            field.type = 'integer';
+        } else if (cc.datatype === 'float') {
+            field.type = 'double';
+        } else if (cc.datatype === 'datetime') {
+            field.type = 'date';
+            field.validation = {format: 'YYYY-MM-DD'};
+        } else if (cc.datatype === 'enumeration' && cc.enum_values && cc.enum_values.length > 0) {
+            field.type = 'string';
+            field.input = 'select';
+            field.values = {};
+            cc.enum_values.forEach(function(v) { field.values[v] = v; });
+        } else {
+            field.type = 'string';
+        }
+        fields.push(field);
+    });
 
     var operators = [
         {type: 'equal', optgroup: 'basic'},

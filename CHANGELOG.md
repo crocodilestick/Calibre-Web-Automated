@@ -70,6 +70,14 @@ is for things you can see or feel when running the app.
   site was reachable. Search now finds books again, and publisher, description,
   language, rating and publication date populate correctly on the metadata
   screen. Reported by @sltvtr (#431).
+- Dropping an Adobe `.acsm` file into the ingest folder now explains what
+  actually went wrong. An `.acsm` is a download ticket, not a book, so
+  conversion fails — but the log only showed Calibre's cryptic "No plugin to
+  handle input format: acsm" (followed by a stray "None"). The ingest log now
+  spells out the two ways forward: install the ACSM Input plugin via
+  `CWA_CALIBRE_USER_PLUGINS`, or fulfill the ticket in Adobe Digital Editions
+  or Calibre desktop and ingest the downloaded book. Failure mode surfaced by
+  @jbelascoain in #388 (#448).
 
 ## [v4.0.161] - 2026-06-12
 

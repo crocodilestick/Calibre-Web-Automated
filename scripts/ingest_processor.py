@@ -725,6 +725,38 @@ def run_duplicate_scan_for_books(book_ids) -> None:
         )
 
 
+# fork #448: format-specific guidance appended to conversion-failure logs.
+# An .acsm file is an Adobe fulfillment ticket, not a book — stock Calibre
+# has no plugin for it, so ebook-convert dies with the unhelpful
+# "No plugin to handle input format: acsm" and the user is left guessing.
+# Keys are lowercase extensions; values are templates with a {filename} slot.
+_CONVERSION_FAILURE_GUIDANCE = {
+    'acsm': (
+        "ACSM_NOTICE: '{filename}' is an Adobe ACSM fulfillment ticket, not an ebook — "
+        "Calibre can only convert it when an ACSM-capable plugin (e.g. the ACSM Input "
+        "plugin) is installed. Your options: (1) set CWA_CALIBRE_USER_PLUGINS=true and "
+        "place the ACSM Input plugin zip in /config/.config/calibre/plugins (see the "
+        "'Calibre plugins' section of the README), or (2) open the .acsm in Adobe "
+        "Digital Editions or Calibre desktop to download the actual book, then drop "
+        "the downloaded EPUB/PDF into the ingest folder instead. The original file "
+        "has been moved to the failed books folder (processed_books/failed)."
+    ),
+}
+
+
+def conversion_failure_guidance(input_format, filename):
+    """Return user-facing guidance for a failed conversion of input_format,
+    or None when no format-specific advice exists.
+
+    input_format may be None or any case; filename is interpolated into
+    the returned message verbatim.
+    """
+    template = _CONVERSION_FAILURE_GUIDANCE.get((input_format or '').lower())
+    if template is None:
+        return None
+    return template.format(filename=filename)
+
+
 class NewBookProcessor:
     def __init__(self, filepath: str):
         def _normalize_format(value: str) -> str:
@@ -1042,7 +1074,13 @@ class NewBookProcessor:
             return True, target_filepath
 
         except subprocess.CalledProcessError as e:
-            print(f"\n[ingest-processor]: CON_ERROR: {self.filename} could not be converted to {end_format} due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
+            # ebook-convert output is not captured, so e.stderr is always
+            # None here — its real output streamed to the service log above.
+            error_detail = e.stderr if e.stderr else "(see ebook-convert output above)"
+            print(f"\n[ingest-processor]: CON_ERROR: {self.filename} could not be converted to {end_format} due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{error_detail}", flush=True)
+            guidance = conversion_failure_guidance(self.input_format, self.filename)
+            if guidance:
+                print(f"\n[ingest-processor]: {guidance}\n", flush=True)
             self.backup(self.filepath, backup_type="failed")
             return False, ""
 
@@ -1078,7 +1116,8 @@ class NewBookProcessor:
                 return True, target_filepath
 
             except subprocess.CalledProcessError as e:
-                print(f"[ingest-processor]: CON_ERROR: {self.filename} could not be converted to kepub due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
+                error_detail = e.stderr if e.stderr else "(see kepubify output above)"
+                print(f"[ingest-processor]: CON_ERROR: {self.filename} could not be converted to kepub due to the following error:\nEXIT/ERROR CODE: {e.returncode}\n{error_detail}", flush=True)
                 self.backup(converted_filepath, backup_type="failed")
                 return False, ""
             except Exception as e:

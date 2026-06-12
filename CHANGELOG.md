@@ -51,6 +51,12 @@ is for things you can see or feel when running the app.
   subprocess it covers (ingest, conversion, cover enforcement, metadata
   embed). Plugin loading stays off unless you opt in. (Diagnosed by
   @jasonobrien in #434)
+- **LubimyCzytac.pl metadata search returned "no results" for every book.**
+  The Polish catalog redesigned its site, so the provider's search and book-page
+  parsing no longer matched anything — searches came back empty even though the
+  site was reachable. Search now finds books again, and publisher, description,
+  language, rating and publication date populate correctly on the metadata
+  screen. Reported by @sltvtr (#431).
 
 ## [v4.0.161] - 2026-06-12
 

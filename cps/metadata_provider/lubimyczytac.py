@@ -72,28 +72,31 @@ class LubimyCzytac(Metadata):
 
     BASE_URL = "https://lubimyczytac.pl"
 
+    # lubimyczytac.pl redesigned its search results and book pages in 2026.
+    # Search results are now `book-card book-card--l` tiles inside the
+    # `listSearch` container (formerly `authorAllBooks__single`); the book
+    # page moved the description, publisher and edition dates out of the old
+    # `authorAllBooks` / `container book` dt-rows. See fork issue #431.
     BOOK_SEARCH_RESULT_XPATH = (
-        "*//div[@class='listSearch']//div[@class='authorAllBooks__single']"
+        "*//div[@class='listSearch']//div[contains(@class,'book-card--l')]"
     )
-    SINGLE_BOOK_RESULT_XPATH = ".//div[contains(@class,'authorAllBooks__singleText')]"
-    TITLE_PATH = "/div/a[contains(@class,'authorAllBooks__singleTextTitle')]"
+    SINGLE_BOOK_RESULT_XPATH = "."
+    TITLE_PATH = "//a[contains(@class,'book-card__title')]"
     TITLE_TEXT_PATH = f"{TITLE_PATH}//text()"
     URL_PATH = f"{TITLE_PATH}/@href"
-    AUTHORS_PATH = "/div/a[contains(@href,'autor')]//text()"
+    AUTHORS_PATH = "//div[contains(@class,'book-card__author')]//a[contains(@href,'autor')]//text()"
 
-    SIBLINGS = "/following-sibling::dd"
+    SIBLINGS = "/following-sibling::dd[1]"
 
     CONTAINER = "//section[@class='container book']"
-    PUBLISHER = f"{CONTAINER}//dt[contains(text(),'Wydawnictwo:')]{SIBLINGS}/a/text()"
-    LANGUAGES = f"{CONTAINER}//dt[contains(text(),'Język:')]{SIBLINGS}/text()"
-    DESCRIPTION = f"{CONTAINER}//div[@class='collapse-content']"
+    PUBLISHER = "//span[contains(text(),'Wydawnictwo:')]//a/text()"
+    LANGUAGES = f"//dt[contains(text(),'Język:')]{SIBLINGS}//text()"
+    DESCRIPTION = "//div[@id='book-description']"
     SERIES = f"{CONTAINER}//span/a[contains(@href,'/cykl/')]/text()"
-    TRANSLATOR = f"{CONTAINER}//dt[contains(text(),'Tłumacz:')]{SIBLINGS}/a/text()"
+    TRANSLATOR = f"//dt[contains(text(),'Tłumacz:')]{SIBLINGS}//a/text()"
 
-    DETAILS = "//div[@id='book-details']"
-    PUBLISH_DATE = "//dt[contains(@title,'Data pierwszego wydania"
-    FIRST_PUBLISH_DATE = f"{DETAILS}{PUBLISH_DATE} oryginalnego')]{SIBLINGS}[1]/text()"
-    FIRST_PUBLISH_DATE_PL = f"{DETAILS}{PUBLISH_DATE} polskiego')]{SIBLINGS}[1]/text()"
+    FIRST_PUBLISH_DATE = f"//dt[contains(text(),'Data wydania:')]{SIBLINGS}//text()"
+    FIRST_PUBLISH_DATE_PL = f"//dt[contains(text(),'Data 1. wyd. pol.:')]{SIBLINGS}//text()"
     TAGS = "//a[contains(@href,'/ksiazki/t/')]/text()"  # "//nav[@aria-label='breadcrumbs']//a[contains(@href,'/ksiazki/k/')]/span/text()"
 
 
@@ -294,12 +297,22 @@ class LubimyCzytacParser:
         return []
 
     def _parse_from_summary(self, attribute_name: str) -> Optional[str]:
+        # The book page now emits multiple application/ld+json blocks (an
+        # Organization block precedes the Book block), so we can no longer
+        # assume the first one is the book. Pick the Book block that actually
+        # carries the requested attribute. See fork issue #431.
         value = None
-        summary_text = self._parse_xpath_node(xpath=LubimyCzytac.SUMMARY)
-        if summary_text:
-            data = json.loads(summary_text)
-            value = data.get(attribute_name)
-        return value.strip() if value is not None else value
+        for block in self.root.xpath(LubimyCzytac.SUMMARY):
+            try:
+                data = json.loads(block)
+            except (ValueError, TypeError):
+                continue
+            if not isinstance(data, dict):
+                continue
+            if data.get("@type") == "Book" and attribute_name in data:
+                value = data.get(attribute_name)
+                break
+        return value.strip() if isinstance(value, str) else value
 
     def _parse_rating(self) -> Optional[str]:
         rating = self._parse_xpath_node(xpath=LubimyCzytac.RATING)

@@ -55,6 +55,13 @@ is for things you can see or feel when running the app.
   when your system asks for reduced motion. (PR #384 by @jbelascoain)
 
 ### Fixed
+- Hardcover progress sync now survives Hardcover deleting or merging a book.
+  If your book's saved Hardcover ID no longer exists ("We weren't able to
+  find that book. Was it deleted?" in the logs), the sync looks up the
+  book's current ID from its edition or slug and retries instead of
+  giving up. When nothing can be looked up, the log now tells you the fix
+  (refresh the book's metadata) instead of only the raw API error.
+  (Follow-up to #433, reported by @SpookyUSAF)
 - Calibre plugin and configuration loading is now reliable when you opt in
   with `CWA_CALIBRE_USER_PLUGINS=true`. The image used to set a misspelled
   environment variable (`CALIBRE_CONFIG_DIR`) that Calibre simply ignores, so

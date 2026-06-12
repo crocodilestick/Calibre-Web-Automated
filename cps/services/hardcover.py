@@ -478,6 +478,40 @@ class HardcoverClient:
             log.warning("No hardcover-id identifier found for book. Cannot add book to Hardcover. Please fetch metadata to add Hardcover identifiers.")
             return None
 
+        book_id = int(ids.get("hardcover-id"))
+        edition_id = (
+            int(ids.get("hardcover-edition"))
+            if ids.get("hardcover-edition")
+            else None
+        )
+        result = self._insert_user_book(book_id, edition_id, status)
+        error = str(result.get("error") or "")
+        if error:
+            log.warning(f"Hardcover insert_user_book error: {error}")
+        if "find that book" in error.lower():
+            # Hardcover merges duplicate books and retires the old book id,
+            # so a hardcover-id stored in Calibre metadata can go stale
+            # ("We weren't able to find that book. Was it deleted?").
+            # Re-resolve the current id from the other identifiers and
+            # retry once (fork #433 follow-up).
+            resolved = self._resolve_book_id(ids)
+            if resolved and resolved != book_id:
+                log.info(f"Stored hardcover-id {book_id} is stale (book likely "
+                         f"merged on Hardcover); retrying with current id {resolved}")
+                result = self._insert_user_book(resolved, edition_id, status)
+                retry_error = str(result.get("error") or "")
+                if retry_error:
+                    log.warning(f"Hardcover insert_user_book retry error: {retry_error}")
+            else:
+                log.warning(f"Hardcover does not know book id {book_id} and it could "
+                            f"not be re-resolved from the book's other identifiers. "
+                            f"Refresh the book's metadata (Edit book -> Fetch metadata) "
+                            f"to update its Hardcover identifiers.")
+        return result.get("user_book") or None
+
+    def _insert_user_book(self, book_id, edition_id, status):
+        """Run the insert_user_book mutation; returns the (null-normalized)
+        insert_user_book result object, with "error" / "user_book" keys."""
         mutation = (
             """
             mutation ($object: UserBookCreateInput!) {
@@ -492,21 +526,50 @@ class HardcoverClient:
         )
         variables = {
             "object": {
-                "book_id": int(ids.get("hardcover-id")),
-                "edition_id": (
-                    int(ids.get("hardcover-edition"))
-                    if ids.get("hardcover-edition")
-                    else None
-                ),
+                "book_id": book_id,
+                "edition_id": edition_id,
                 "status_id": status,
                 "privacy_setting_id": self.privacy,
             }
         }
         response = self.execute(query=mutation, variables=variables)
-        result = response.get("insert_user_book") or {}
-        if result.get("error"):
-            log.warning(f"Hardcover insert_user_book error: {result['error']}")
-        return result.get("user_book") or None
+        return response.get("insert_user_book") or {}
+
+    def _resolve_book_id(self, ids):
+        """Resolve the CURRENT Hardcover book id for possibly-stale identifiers.
+
+        Editions survive Hardcover book merges (they are re-parented to the
+        canonical book), so the edition id is the strongest signal; the slug
+        is the fallback. Returns the resolved book id or None.
+        """
+        try:
+            if ids.get("hardcover-edition"):
+                query = """
+                    query ($id: Int!) {
+                        editions(where: {id: {_eq: $id}}, limit: 1) {
+                            book_id
+                        }
+                    }"""
+                response = self.execute(query, {"id": int(ids["hardcover-edition"])})
+                editions = response.get("editions") or []
+                resolved = ((editions[0] if editions else None) or {}).get("book_id")
+                if resolved:
+                    return int(resolved)
+            if ids.get("hardcover-slug"):
+                query = """
+                    query ($slug: String!) {
+                        books(where: {slug: {_eq: $slug}}, limit: 1) {
+                            id
+                        }
+                    }"""
+                response = self.execute(query, {"slug": ids["hardcover-slug"]})
+                books = response.get("books") or []
+                resolved = ((books[0] if books else None) or {}).get("id")
+                if resolved:
+                    return int(resolved)
+        except Exception as e:
+            log.warning(f"Could not re-resolve Hardcover book id: {e}")
+        return None
 
     def add_read(self, book, pages=0):
         mutation = """

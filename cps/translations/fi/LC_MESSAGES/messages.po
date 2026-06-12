@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-10 11:44+0000\n"
+"POT-Creation-Date: 2026-06-12 07:25+0000\n"
 "PO-Revision-Date: 2020-01-12 13:56+0100\n"
 "Last-Translator: Samuli Valavuo <svalavuo@gmail.com>\n"
 "Language-Team: \n"
@@ -3436,6 +3436,13 @@ msgstr "Päivitä"
 #: cps/templates/admin.html:296
 msgid "Are you sure you want to restart?"
 msgstr "Haluatko varmasti uudelleenkäynnistää Calibre-Webin?"
+
+#: cps/templates/admin.html:298 cps/templates/admin.html:330
+#: cps/templates/config_db.html:4 cps/templates/config_edit.html:4
+#: cps/templates/cwa_settings.html:4 cps/templates/read.html:74
+#, fuzzy
+msgid "Loading"
+msgstr "Ladataan..."
 
 #: cps/templates/admin.html:301 cps/templates/admin.html:315
 #: cps/templates/admin.html:335 cps/templates/config_db.html:139

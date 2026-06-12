@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-10 11:44+0000\n"
+"POT-Creation-Date: 2026-06-12 07:25+0000\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -3396,6 +3396,13 @@ msgstr "执行更新"
 #: cps/templates/admin.html:296
 msgid "Are you sure you want to restart?"
 msgstr "您确定要重启吗？"
+
+#: cps/templates/admin.html:298 cps/templates/admin.html:330
+#: cps/templates/config_db.html:4 cps/templates/config_edit.html:4
+#: cps/templates/cwa_settings.html:4 cps/templates/read.html:74
+#, fuzzy
+msgid "Loading"
+msgstr "加载中..."
 
 #: cps/templates/admin.html:301 cps/templates/admin.html:315
 #: cps/templates/admin.html:335 cps/templates/config_db.html:139

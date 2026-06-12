@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-10 11:44+0000\n"
+"POT-Creation-Date: 2026-06-12 07:25+0000\n"
 "PO-Revision-Date: 2020-04-29 01:20+0400\n"
 "Last-Translator: ZIZA\n"
 "Language-Team: \n"
@@ -3540,6 +3540,13 @@ msgstr "Выполнить обновление"
 #: cps/templates/admin.html:296
 msgid "Are you sure you want to restart?"
 msgstr "Вы уверены, что хотите перезапустить?"
+
+#: cps/templates/admin.html:298 cps/templates/admin.html:330
+#: cps/templates/config_db.html:4 cps/templates/config_edit.html:4
+#: cps/templates/cwa_settings.html:4 cps/templates/read.html:74
+#, fuzzy
+msgid "Loading"
+msgstr "Загрузка..."
 
 #: cps/templates/admin.html:301 cps/templates/admin.html:315
 #: cps/templates/admin.html:335 cps/templates/config_db.html:139

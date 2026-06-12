@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-10 11:44+0000\n"
+"POT-Creation-Date: 2026-06-12 07:25+0000\n"
 "PO-Revision-Date: 2026-05-12 00:06+0200\n"
 "Last-Translator: Gabor L. <nom@il.thx>\n"
 "Language-Team: \n"
@@ -3473,6 +3473,13 @@ msgstr "Frissítés elkezdése"
 #: cps/templates/admin.html:296
 msgid "Are you sure you want to restart?"
 msgstr "Valóban újra akarja indítani a Calibre-Web Automatedet?"
+
+#: cps/templates/admin.html:298 cps/templates/admin.html:330
+#: cps/templates/config_db.html:4 cps/templates/config_edit.html:4
+#: cps/templates/cwa_settings.html:4 cps/templates/read.html:74
+#, fuzzy
+msgid "Loading"
+msgstr "Betöltés..."
 
 #: cps/templates/admin.html:301 cps/templates/admin.html:315
 #: cps/templates/admin.html:335 cps/templates/config_db.html:139

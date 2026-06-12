@@ -843,9 +843,16 @@ $(function() {
             $('.book-cover-link').each(function() {
                 var $link = $(this);
                 
-                // Add read status toggle button (only if it doesn't exist)
+                // Add read status toggle button (only if it doesn't exist).
+                // Icon shows the ACTION the click performs, matching the
+                // detail-page pair (fork #319 droM4X icon standardization):
+                // unread book -> glyphicon-check ("mark as read"),
+                // read book   -> glyphicon-unchecked ("mark as unread").
                 if ($link.find('.read-toggle-btn').length === 0) {
-                    var $readToggle = $('<div class="read-toggle-btn" title="Toggle Read Status"><span class="glyphicon glyphicon-eye-open"></span></div>');
+                    var linkIsRead = $link.find('.badge.read').length > 0;
+                    var $readToggle = $('<div class="read-toggle-btn"><span class="glyphicon"></span></div>')
+                        .attr('title', linkIsRead ? 'Mark As Unread' : 'Mark As Read');
+                    $readToggle.find('.glyphicon').addClass(linkIsRead ? 'glyphicon-unchecked' : 'glyphicon-check');
                     $link.append($readToggle);
                 }
                 
@@ -1103,12 +1110,15 @@ $(function() {
                         $link.find('.img').append($newBadge);
                     }
                     
-                    // Show success state
+                    // Show success state, then rest on the icon for the
+                    // NEXT action (now-read -> offer "mark unread").
                     $readToggleBtn.addClass('success').removeClass('loading');
                     $readToggleBtn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-ok');
                     setTimeout(function() {
+                        var nowRead = !isCurrentlyRead;
                         $readToggleBtn.removeClass('success');
-                        $readToggleBtn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-eye-open');
+                        $readToggleBtn.attr('title', nowRead ? 'Mark As Unread' : 'Mark As Read');
+                        $readToggleBtn.find('.glyphicon').removeClass().addClass('glyphicon ' + (nowRead ? 'glyphicon-unchecked' : 'glyphicon-check'));
                     }, 1000);
                 }
             },
@@ -1119,7 +1129,8 @@ $(function() {
                 $readToggleBtn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-remove');
                 setTimeout(function() {
                     $readToggleBtn.removeClass('error');
-                    $readToggleBtn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-eye-open');
+                    $readToggleBtn.attr('title', isCurrentlyRead ? 'Mark As Unread' : 'Mark As Read');
+                    $readToggleBtn.find('.glyphicon').removeClass().addClass('glyphicon ' + (isCurrentlyRead ? 'glyphicon-unchecked' : 'glyphicon-check'));
                 }, 2000);
                 
                 // Try to show error message if available

@@ -55,6 +55,12 @@ is for things you can see or feel when running the app.
   when your system asks for reduced motion. (PR #384 by @jbelascoain)
 
 ### Fixed
+- The hover button for marking a book read/unread in the library grid now
+  uses the same checkbox icons as the book page, instead of an eye symbol
+  that looked like a hide/show control. The icon also tells you what the
+  click will do — checkbox for "mark as read", unchecked box for "mark as
+  unread" — and updates after each click. (#319 follow-up, reported by
+  @droM4X)
 - Turning on DEBUG logging no longer fills docker logs with repeating Magic
   Shelf messages. The "Found N total magic shelves", per-shelf "Hiding...",
   and "Filtered to N visible" lines fired on every request — an open browser

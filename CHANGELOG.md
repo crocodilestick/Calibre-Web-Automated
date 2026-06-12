@@ -17,6 +17,13 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Added
+- Admins can now style their instance with their own CSS. A new Custom CSS
+  box under Admin → Edit UI Configuration injects your rules into every page
+  as the last stylesheet, so they override the built-in themes — recolor the
+  navbar, tweak spacing, adjust for your screen, all without editing source,
+  and it survives upgrades because it lives in the database. The box is
+  admin-only and can't accidentally break the page layout. (Issue #323 by
+  @olskar)
 - Magic Shelves can now filter on your Calibre custom columns. The rule
   builder lists every queryable custom column — text, numbers, yes/no,
   dates, ratings, and fixed-choice columns (which get a proper dropdown of

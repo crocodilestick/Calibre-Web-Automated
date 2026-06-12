@@ -124,6 +124,11 @@
       }
 
     </script>
+    {# Fork #323 (@olskar): admin-set custom CSS, last in <head> so it
+       overrides the shipped themes. '</style>' breakout is neutralized in
+       render_template.py, so |safe (raw, un-HTML-escaped) is correct here —
+       HTML-escaping would mangle valid CSS like the '>' child combinator. #}
+    {% if custom_css %}<style id="cwng-custom-css">{{ custom_css|safe }}</style>{% endif %}
   </head>
   {# Fork #205 (@goatdancer4000-sudo / @droM4X): per-user "Hide shelf badges
      on covers" toggle wired to the book-organizer cog button. Setting lives

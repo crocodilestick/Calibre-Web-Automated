@@ -2405,6 +2405,8 @@ def _configuration_update_helper():
 
         # Fork #225 (@froggybottomboys): admin-set server-wide announcement banner.
         _config_string(to_save, "config_server_announcement")
+        # Fork #323 (@olskar): admin-set custom CSS injected site-wide.
+        _config_string(to_save, "config_custom_css")
         # Default-on coupling: when the user first enables Kobo sync, auto-
         # enable cover padding too (the padding section was hidden in the
         # form they just submitted, so they couldn't have set it). They can

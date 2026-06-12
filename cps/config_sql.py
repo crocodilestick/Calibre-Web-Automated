@@ -148,6 +148,12 @@ class _Settings(_Base):
     # side via localStorage keyed by content hash.
     config_server_announcement = Column(String, default="")
 
+    # Fork #323 (@olskar): admin-set custom CSS injected into every page's
+    # <head> as the last stylesheet, so it overrides the shipped themes.
+    # Trust-the-admin model (no per-rule sanitization); the only guard is
+    # neutralizing </style> breakout at render time (see render_template.py).
+    config_custom_css = Column(String, default="")
+
     config_ldap_provider_url = Column(String, default='example.org')
     config_ldap_port = Column(SmallInteger, default=389)
     config_ldap_authentication = Column(SmallInteger, default=constants.LDAP_AUTH_SIMPLE)

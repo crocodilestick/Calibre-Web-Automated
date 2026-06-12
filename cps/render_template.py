@@ -292,6 +292,22 @@ def translations_missing_notification() -> None:
         return
 
 # Returns the template for rendering and includes the instance name
+def _style_safe_css(value):
+    """Make admin-supplied CSS safe to embed raw inside a <style> element.
+
+    Fork #323 (@olskar): the value is rendered with |safe in layout.html so
+    that valid CSS (e.g. the ``>`` child combinator) is not HTML-escaped into
+    entities. The only structural risk in a RAWTEXT <style> element is the
+    sequence ``</style>`` closing it early (an accidental or injected breakout).
+    Neutralizing every ``</`` to ``<\\/`` prevents any end-tag from forming
+    while leaving real CSS untouched -- ``</`` never appears in valid CSS.
+
+    Trust-the-admin model: no per-rule sanitization. Returns ``""`` for falsy
+    input so the layout's ``{% if custom_css %}`` guard hides the empty block.
+    """
+    return (value or '').replace('</', '<\\/')
+
+
 def render_title_template(*args, **kwargs):
     sidebar, simple = get_sidebar_config(kwargs)
     try:
@@ -392,6 +408,9 @@ def render_title_template(*args, **kwargs):
                        # Fork #225 (@froggybottomboys): server-wide announcement banner string;
                        # consumed in layout.html. Empty string = no banner.
                        server_announcement=(getattr(config, 'config_server_announcement', '') or ''),
+                       # Fork #323 (@olskar): admin-set custom CSS, injected as the last
+                       # stylesheet in layout.html's <head> via |safe. See _style_safe_css.
+                       custom_css=_style_safe_css(getattr(config, 'config_custom_css', '')),
                        *args, **kwargs)
     except PermissionError:
         log.error("No permission to access {} file.".format(args[0]))

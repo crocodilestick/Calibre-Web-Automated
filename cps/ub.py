@@ -1518,6 +1518,21 @@ def migrate_config_table(engine, _session):
             log.error("Failed to add config_server_announcement column: %s", e)
             pass
 
+    # Fork #323 (@olskar): admin-set custom CSS injected site-wide.
+    try:
+        _session.execute(text("SELECT config_custom_css FROM settings LIMIT 1"))
+        _session.commit()
+    except exc.OperationalError:  # Column doesn't exist
+        try:
+            _safe_session_rollback(_session, "settings.config_custom_css")
+            _run_ddl_with_retry(
+                engine,
+                "ALTER TABLE settings ADD column 'config_custom_css' String DEFAULT ''",
+            )
+        except Exception as e:
+            log.error("Failed to add config_custom_css column: %s", e)
+            pass
+
     # Add LDAP auto-create users configuration
     try:
         # Test if the new column exists

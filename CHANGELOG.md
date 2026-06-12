@@ -16,6 +16,8 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+## [v4.0.161] - 2026-06-12
+
 ### Fixed
 - Hardcover progress sync no longer dies on books without a chosen edition.
   Reading on a KOReader/Kobo device synced progress to the library fine, but

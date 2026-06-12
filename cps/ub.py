@@ -2624,6 +2624,16 @@ def create_system_magic_shelves_for_user(user_id):
 
 def init_db_thread():
     global app_DB_path
+    if not app_DB_path:
+        # Without this guard, 'sqlite:///{}'.format(None) builds the URL
+        # 'sqlite:///None' and SQLite silently creates (and writes real
+        # data into) a phantom DB file literally named 'None' in the
+        # working directory — that's how the stray 0-byte 'None' file got
+        # committed in #440 (the annotation-backup worker fires this in
+        # contexts where init_db() was never called, e.g. unit tests).
+        raise RuntimeError(
+            "ub.init_db_thread() called before ub.init_db(); app_DB_path "
+            "is unset, refusing to create a stray 'None' SQLite file")
     engine = create_engine('sqlite:///{0}'.format(app_DB_path), echo=False,
                            connect_args={'timeout': 30})
 

@@ -125,6 +125,31 @@ def apply_https_runtime_config():
         log.info(f"SESSION_COOKIE_SECURE set to {app.config['SESSION_COOKIE_SECURE']} (Standard/LDAP login)")
 
 
+# Last-logged magic-shelf filter snapshot per user_id; the before_request
+# hook fires on every request (incl. UI polling), so the DEBUG line is
+# deduped to once per change (cf. _AUTHOR_SORT_DRIFT_WARNED).
+_MAGIC_SHELF_COUNTS_LOGGED = {}
+
+# (user_id, shelf_id) pairs already warned about an orphaned system shelf,
+# so that WARNING fires once per user+shelf instead of on every request.
+_ORPHANED_SYSTEM_SHELF_WARNED = set()
+
+
+def _log_magic_shelf_counts(user_id, total_shelves, visible_shelves,
+                            hidden_templates=(), hidden_shelves=()):
+    snapshot = (total_shelves, visible_shelves,
+                tuple(hidden_templates), tuple(hidden_shelves))
+    if _MAGIC_SHELF_COUNTS_LOGGED.get(user_id) != snapshot:
+        _MAGIC_SHELF_COUNTS_LOGGED[user_id] = snapshot
+        msg = (f"Found {total_shelves} total magic shelves for user {user_id}, "
+               f"{visible_shelves} visible after filtering")
+        if hidden_templates:
+            msg += "; hidden system templates: " + ", ".join(hidden_templates)
+        if hidden_shelves:
+            msg += "; hidden public shelves: " + ", ".join(hidden_shelves)
+        log.debug(msg)
+
+
 def create_app():
     if csrf:
         csrf.init_app(app)
@@ -301,12 +326,14 @@ def create_app():
                         ub.MagicShelf.user_id == current_user.id
                     )
                 ).all()
-                
-                log.debug(f"Found {len(g.magic_shelves_access)} total magic shelves for user {current_user.id} before filtering")
-                
+
+                total_shelves = len(g.magic_shelves_access)
+
                 # Filter out hidden items
                 from . import magic_shelf
                 filtered_shelves = []
+                hidden_template_hits = []
+                hidden_public_hits = []
                 for shelf in g.magic_shelves_access:
                     # Skip hidden system templates
                     if shelf.is_system and shelf.user_id == current_user.id:
@@ -316,29 +343,34 @@ def create_app():
                             if template['name'] == shelf.name:
                                 template_key = key
                                 break
-                        
+
                         # If template_key not found, this is an orphaned/deprecated system shelf
                         if template_key is None:
-                            log.warning(f"System shelf '{shelf.name}' (ID: {shelf.id}) doesn't match any current template - may need migration")
+                            if (current_user.id, shelf.id) not in _ORPHANED_SYSTEM_SHELF_WARNED:
+                                _ORPHANED_SYSTEM_SHELF_WARNED.add((current_user.id, shelf.id))
+                                log.warning(f"System shelf '{shelf.name}' (ID: {shelf.id}) doesn't match any current template - may need migration")
                             # Show it anyway - migration should clean it up on next restart
                             filtered_shelves.append(shelf)
                             continue
-                        
+
                         # Skip if hidden
                         if template_key in hidden_template_keys:
-                            log.debug(f"Hiding system shelf template '{template_key}' for user {current_user.id}")
+                            hidden_template_hits.append(template_key)
                             continue
-                    
+
                     # Skip hidden custom public shelves (not owned by user)
                     if shelf.is_public == 1 and shelf.user_id != current_user.id:
                         if shelf.id in hidden_shelf_ids:
-                            log.debug(f"Hiding public shelf '{shelf.name}' (ID: {shelf.id}) for user {current_user.id}")
+                            hidden_public_hits.append(f"'{shelf.name}' (ID: {shelf.id})")
                             continue
-                    
+
                     filtered_shelves.append(shelf)
-                
+
                 g.magic_shelves_access = filtered_shelves
-                log.debug(f"Filtered to {len(filtered_shelves)} visible magic shelves for user {current_user.id}")
+
+                # Deduplicated — this hook fires on every request
+                _log_magic_shelf_counts(current_user.id, total_shelves, len(filtered_shelves),
+                                        hidden_template_hits, hidden_public_hits)
 
                 # Magic Shelf Count Caching
                 if 'magic_shelf_counts' not in session:

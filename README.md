@@ -42,6 +42,8 @@ Library, settings, users, OAuth tokens, and KOReader sync state are preserved. S
 - [Pair with Shelfmark](#pair-with-shelfmark)
 - [Common configurations](#common-configurations)
   - [Network shares (NFS, SMB, ZFS)](#network-shares-nfs-smb-zfs)
+  - [Calibre desktop coexistence](#calibre-desktop-coexistence)
+  - [Calibre plugins (DeDRM and others)](#calibre-plugins-dedrm-and-others)
   - [Reverse proxy / Cloudflare Tunnel](#reverse-proxy--cloudflare-tunnel)
   - [Hardcover metadata provider](#hardcover-metadata-provider)
   - [KOReader sync](#koreader-sync)
@@ -326,6 +328,34 @@ Trade-offs:
 - Each web request pays a small extra overhead to open and close the database connection.
 - If calibre desktop is actively writing when a web request comes in, the request waits up to 60 seconds for the lock. Heavy simultaneous use can slow the web UI.
 - Designed for home-server use where calibre desktop is opened occasionally for bulk edits, not for concurrent heavy use of both.
+
+### Calibre plugins (DeDRM and others)
+
+calibre-web-nextgen doesn't ship any Calibre plugins, but it can load ones you install yourself — the same plugin `.zip` files Calibre desktop uses. This is how you add things like DRM removal (DeDRM, Obok) or `.acsm` fulfillment (the ACSM Input plugin): you supply the plugins, and they run automatically during ingest, library conversion, and metadata embedding.
+
+1. Turn the feature on in your compose environment, then restart:
+
+   ```yaml
+   - CWA_CALIBRE_USER_PLUGINS=true
+   ```
+
+2. Copy the plugin `.zip` files into the `plugins` folder inside your config volume — from the host that's `<your config folder>/.config/calibre/plugins/` (the folder is created automatically once the option is on).
+
+3. Restart the container again. Each plugin is registered at startup; confirm with:
+
+   ```
+   docker logs calibre-web 2>&1 | grep "Registered Calibre plugin"
+   ```
+
+Plugins that need keys or an account (DeDRM wants your device keys, ACSM Input wants an Adobe login) keep their settings in files next to the zips. Easiest path: configure the plugin in Calibre desktop on your computer first, then copy its settings files (e.g. `plugins/dedrm.json`, the `plugins/DeACSM/` folder) from your desktop Calibre configuration folder into the same container `plugins/` folder and restart.
+
+To add another plugin **after** the first batch is registered, drop the zip in the same folder and run:
+
+```
+docker exec -e HOME=/config calibre-web /app/calibre/calibre-customize -a "/config/.config/calibre/plugins/<plugin file>.zip"
+```
+
+The feature is off by default because it runs third-party plugin code inside your container — only install plugins you trust, from their official release pages. Which plugins are appropriate to use is your call.
 
 ### Reverse proxy / Cloudflare Tunnel
 

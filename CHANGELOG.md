@@ -16,6 +16,8 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+## [v4.0.162] - 2026-06-13
+
 ### Added
 - You can now write your own message for the emails the server sends with a
   book. Edit Email Server Settings has a new "Email Message Body" box; whatever

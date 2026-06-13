@@ -628,7 +628,7 @@ msgid ""
 "authentication"
 msgstr ""
 "La creación automática de usuarios no se puede habilitar sin habilitar la "
-"autenticación mediante proxy inverso."
+"autenticación mediante proxy inverso"
 
 #: cps/admin.py:2485
 msgid "Auto-create users requires a valid reverse proxy header name"
@@ -1025,7 +1025,7 @@ msgstr ""
 
 #: cps/cwa_functions.py:170
 msgid "Theme switching is temporarily disabled until v5.0.0"
-msgstr "El cambio de tema está deshabilitado temporalmente hasta v5.0.0."
+msgstr "El cambio de tema está deshabilitado temporalmente hasta v5.0.0"
 
 #: cps/cwa_functions.py:285
 msgid ""
@@ -1265,7 +1265,7 @@ msgstr "Libros Duplicados"
 
 #: cps/duplicates.py:1188
 msgid "Duplicate group already dismissed"
-msgstr "El grupo de duplicados ya se ha descartado."
+msgstr "El grupo de duplicados ya se ha descartado"
 
 #: cps/duplicates.py:1210
 #, fuzzy
@@ -1279,7 +1279,7 @@ msgstr "Libros Duplicados"
 
 #: cps/duplicates.py:1255
 msgid "Duplicate group was not dismissed"
-msgstr "No se ha descartado el grupo de duplicados."
+msgstr "No se ha descartado el grupo de duplicados"
 
 #: cps/duplicates.py:1327
 #, fuzzy
@@ -1309,7 +1309,7 @@ msgstr "ID del libro faltante o no válido para la carga del formato"
 
 #: cps/editbooks.py:135
 msgid "Cannot upload format: Book no longer exists in library"
-msgstr "No se puede subir el formato: el libro ya no existe en la biblioteca."
+msgstr "No se puede subir el formato: el libro ya no existe en la biblioteca"
 
 #: cps/editbooks.py:160 cps/editbooks.py:187 cps/templates/book_edit.html:56
 #: cps/templates/layout.html:198
@@ -2568,7 +2568,7 @@ msgstr "Estantería mágica&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s"
 
 #: cps/web.py:1231
 msgid "No rules provided"
-msgstr "No se proporcionaron reglas."
+msgstr "No se proporcionaron reglas"
 
 #: cps/web.py:1237
 #, fuzzy
@@ -2577,12 +2577,11 @@ msgstr "Formato de la dirección de correo no válido"
 
 #: cps/web.py:1259
 msgid "Error processing rules"
-msgstr "Error al procesar las reglas."
+msgstr "Error al procesar las reglas"
 
 #: cps/web.py:1263
-#, fuzzy
 msgid "Invalid request"
-msgstr "Rol inválido"
+msgstr "Petición inválida"
 
 #: cps/web.py:1330
 #, fuzzy
@@ -2605,47 +2604,40 @@ msgid "Error creating shelf"
 msgstr "Error al borrar la estantería"
 
 #: cps/templates/layout.html:426 cps/web.py:1397
-#, fuzzy
 msgid "Create Magic Shelf"
-msgstr "Crear una Estantería"
+msgstr "Crear una Magic Shelf"
 
 #: cps/web.py:1457
 msgid "Permission denied to change public status"
-msgstr "Permiso denegado para cambiar el estado público."
+msgstr "Permiso denegado para cambiar el estado público"
 
 #: cps/web.py:1461
-#, fuzzy
 msgid "Shelf name is required"
-msgstr "Este campo es obligatorio"
+msgstr "El nombre de la estantería es obligatorio"
 
 #: cps/web.py:1516
-#, fuzzy
 msgid "Error updating shelf"
-msgstr "Error al borrar la estantería"
+msgstr "Error al actualizar la librería"
 
 #: cps/web.py:1533
-#, fuzzy
 msgid "Edit Magic Shelf"
-msgstr "Editar una estantería"
+msgstr "Editar Magic Shelf"
 
 #: cps/web.py:1550
-#, fuzzy
 msgid "Shelf not found"
-msgstr "Usuario no encontrado"
+msgstr "Estantería no encontrada"
 
 #: cps/web.py:1555
 msgid "Permission denied"
-msgstr "Permiso denegado."
+msgstr "Permiso denegado"
 
 #: cps/web.py:1586
-#, fuzzy
 msgid "Shelf duplicated successfully"
-msgstr "{} usuarios eliminados con éxito"
+msgstr "Estantería duplicada correctamente"
 
 #: cps/web.py:1592
-#, fuzzy
 msgid "Error duplicating shelf"
-msgstr "Error al borrar la estantería"
+msgstr "Error duplicando la estantería"
 
 #: cps/templates/magic_shelf_edit.html:462 cps/web.py:1619
 msgid ""
@@ -2668,21 +2660,19 @@ msgstr ""
 
 #: cps/web.py:1663
 msgid "Shelf already hidden"
-msgstr "La estantería ya está oculta."
+msgstr "La estantería ya está oculta"
 
 #: cps/web.py:1677
-#, fuzzy
 msgid "Error hiding shelf"
-msgstr "Error al borrar la estantería"
+msgstr "Error al ocultar la estantería"
 
 #: cps/web.py:1691
 msgid "Shelf was not hidden"
-msgstr "No se ocultó la estantería."
+msgstr "No se ocultó la estantería"
 
 #: cps/web.py:1700
-#, fuzzy
 msgid "Error unhiding shelf"
-msgstr "Error al borrar la estantería"
+msgstr "Error al mostrar la estantería"
 
 #: cps/templates/admin.html:18 cps/web.py:1847
 msgid "Downloads"
@@ -2717,9 +2707,8 @@ msgid "No email addresses selected"
 msgstr "No se han seleccionado direcciones de correo electrónico"
 
 #: cps/web.py:2323
-#, fuzzy
 msgid "Additional email addresses are disabled for your account."
-msgstr "Seleccionar direcciones de correo electrónico:"
+msgstr "Correos electrónicos adicionales están desactivados para tu cuenta."
 
 #: cps/web.py:2350
 #, fuzzy
@@ -2761,13 +2750,12 @@ msgstr ""
 "correo."
 
 #: cps/web.py:2467
-#, fuzzy
 msgid ""
 "Authentication loop detected. If you're experiencing login issues, please "
 "contact your administrator."
 msgstr ""
-"La instancia de Calibre-Web Automated no está configurada. Por favor, "
-"póngase en contacto con su administrador"
+"Bucle de autenticación detectado. Por favor, póngase en contacto con su "
+"administrador"
 
 #: cps/web.py:2512
 #, fuzzy
@@ -2792,7 +2780,7 @@ msgstr "Por favor, espere un minuto antes de volver a iniciar sesión"
 
 #: cps/web.py:2552
 msgid "Username cannot be empty"
-msgstr "El nombre de usuario no puede estar vacío."
+msgstr "El nombre de usuario no puede estar vacío"
 
 #: cps/web.py:2564
 #, python-format
@@ -2903,19 +2891,16 @@ msgid "Checking available formats..."
 msgstr "Comprobando formatos disponibles..."
 
 #: cps/tasks/auto_send.py:69
-#, fuzzy
 msgid "Sending to eReader..."
-msgstr "Enviar al eReader"
+msgstr "Enviando al eReader"
 
 #: cps/tasks/auto_send.py:86
-#, fuzzy
 msgid "Auto-send completed successfully"
-msgstr "{} usuarios eliminados con éxito"
+msgstr "Enviado automático completado correctamente"
 
 #: cps/tasks/auto_send.py:102
-#, fuzzy
 msgid "Auto-Send"
-msgstr "Enviar"
+msgstr "Auto enviar"
 
 #: cps/tasks/clean.py:18
 msgid "Delete temp folder contents"
@@ -2975,9 +2960,8 @@ msgid "Clean archived book references"
 msgstr "Limpiar referencias de libros archivados"
 
 #: cps/tasks/duplicate_scan.py:36 cps/tasks/duplicate_scan.py:52
-#, fuzzy
 msgid "Duplicate scan"
-msgstr "Duplicados"
+msgstr "Escaneo de duplicados"
 
 #: cps/tasks/duplicate_scan.py:82
 #, fuzzy
@@ -3051,9 +3035,8 @@ msgid "Convert Library – full run"
 msgstr "Convertir biblioteca – ejecución completa"
 
 #: cps/tasks/ops.py:84
-#, fuzzy
 msgid "Convert Library"
-msgstr "En la Biblioteca"
+msgstr "Convertir librería"
 
 #: cps/tasks/ops.py:95
 msgid "EPUB Fixer – full run"
@@ -3277,9 +3260,8 @@ msgid "Send to eReader Email"
 msgstr "Enviar al correo del eReader"
 
 #: cps/templates/admin.html:17 cps/templates/user_edit.html:228
-#, fuzzy
 msgid "Send to eReader Subject"
-msgstr "Enviar al eReader"
+msgstr "Asunto de Send to eReader"
 
 #: cps/templates/admin.html:19 cps/templates/layout.html:212
 #: cps/templates/user_table.html:144
@@ -3483,9 +3465,8 @@ msgid "NextGen Discord Server"
 msgstr ""
 
 #: cps/templates/admin.html:222
-#, fuzzy
 msgid "Run Hardcover Auto-Fetch"
-msgstr "API token de Hardcover"
+msgstr "Ejecutar Hardcover Auto-Fetch"
 
 #: cps/templates/admin.html:227
 msgid "Administration&nbsp;&nbsp;🚀"
@@ -4273,14 +4254,12 @@ msgstr ""
 "restauración junto a las copias de seguridad."
 
 #: cps/templates/config_db.html:121
-#, fuzzy
 msgid "Are you sure? This cannot be undone."
-msgstr "¿Estás seguro de que deseas apagar?"
+msgstr "¿Estás seguro? Está acción no es reversible."
 
 #: cps/templates/config_db.html:121
-#, fuzzy
 msgid "Restore Calibre Database (Last Resort)"
-msgstr "Reconectar la base de datos de Calibre"
+msgstr "Restaurar la base de datos de Calibre"
 
 #: cps/templates/config_db.html:137
 msgid "New db location is invalid, please enter valid path"
@@ -5149,9 +5128,8 @@ msgid "Allow Editing Public Shelves"
 msgstr "Permitir Editar Estanterías Públicas"
 
 #: cps/templates/config_view_edit.html:155
-#, fuzzy
 msgid "Language & Display"
-msgstr "Visualización de una sola página"
+msgstr "Idioma"
 
 #: cps/templates/config_view_edit.html:157
 msgid "Default Language"
@@ -8799,9 +8777,8 @@ msgstr "Mostrar Selección Leidos/No Leidos"
 #~ msgid "Switch Theme"
 #~ msgstr "Cambiar Tema"
 
-#, fuzzy
 #~ msgid "Scanning for duplicates"
-#~ msgstr "Seleccionar duplicados"
+#~ msgstr "Escaneando duplicados"
 
 #, fuzzy
 #~ msgid "Cancel Scan"
@@ -8908,9 +8885,8 @@ msgstr "Mostrar Selección Leidos/No Leidos"
 #~ msgid "CWA Library Conversion Service"
 #~ msgstr "Servicio de conversión de bibliotecas de CWA"
 
-#, fuzzy
 #~ msgid "CWA EPUB Fixer Service"
-#~ msgstr "Servicio de Corrección de Archivos EPUB de CWA para Send-to-Kindle"
+#~ msgstr "Servicio EPUB FIxer de CWA"
 
 #~ msgid "CWA GitHub"
 #~ msgstr "GitHub CWA"

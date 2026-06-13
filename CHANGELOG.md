@@ -16,6 +16,10 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Fixed
+
+- Spanish (`es`): the "Invalid request" error now reads "Petición inválida" instead of the incorrect "Rol inválido" (Invalid role), and punctuation is tidied across 36 shared interface strings to match the source text. Thanks to @pablo-alcaniz.
+
 ## [v4.0.162] - 2026-06-13
 
 ### Added

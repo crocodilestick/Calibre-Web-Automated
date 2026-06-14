@@ -16,6 +16,8 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+## [v4.0.163] - 2026-06-14
+
 ### Fixed
 
 - French (`fr`): the Hardcover integration labels no longer translate the service name "Hardcover" as "livres reliés" (hardback books). "Run Hardcover Auto-Fetch", "Hardcover Token Required" and "Enable Hardcover Auto-Fetch" now keep the Hardcover name so the buttons match the feature. Thanks to @Korri.

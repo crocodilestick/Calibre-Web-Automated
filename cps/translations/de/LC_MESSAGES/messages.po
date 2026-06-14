@@ -1,3 +1,4 @@
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
@@ -12,10 +13,10 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Loco-Source-Locale: de_DE\n"
 "Generated-By: Babel 2.15.0\n"
-"X-Loco-Parser: loco_parse_po\n"
 "X-Generator: Loco https://localise.biz/\n"
+"X-Loco-Parser: loco_parse_po\n"
+"X-Loco-Source-Locale: de_DE\n"
 
 #: cps/about.py:65
 msgid "Statistics"
@@ -724,7 +725,7 @@ msgid ""
 "endpoint."
 msgstr ""
 "Verbindung fehlgeschlagen: Ungültiges JSON in der Antwort. Dies ist "
-"möglicherweise kein OIDC"
+"möglicherweise kein OIDC."
 
 #: cps/admin.py:3019
 #, python-format
@@ -1684,7 +1685,7 @@ msgstr "Bitte keine Datei sondern einen Ordner angeben"
 
 #: cps/helper.py:1636
 msgid "Calibre binaries not viable"
-msgstr "Die Calibre Programmdaten sind nicht verwendbar."
+msgstr "Die Calibre Programmdaten sind nicht verwendbar"
 
 #: cps/helper.py:1645
 #, python-format
@@ -2667,9 +2668,8 @@ msgid "No email addresses selected"
 msgstr "Keine E-Mail-Adresse ausgewählt"
 
 #: cps/web.py:2323
-#, fuzzy
 msgid "Additional email addresses are disabled for your account."
-msgstr "Zusätzliche E-Mail-Adressen eingeben (durch Kommas getrennt):"
+msgstr "Zusätzliche E-Mail-Adressen sind für Ihr Konto deaktiviert."
 
 #: cps/web.py:2350
 msgid "Success! Book queued for sending to the selected address(es)!"
@@ -4262,9 +4262,9 @@ msgid "Logfile Configuration"
 msgstr "Konfiguration der Logdatei"
 
 #: cps/templates/config_edit.html:149
-#, fuzzy
 msgid "Location and name of logfile (/dev/stdout for no entry)"
-msgstr "Pfad und Name der Zugriffs-Logdatei (access.log wenn leergelassen)"
+msgstr ""
+"Speicherort und Name der Protokolldatei (/dev/stdout für keinen Eintrag)"
 
 #: cps/templates/config_edit.html:154
 msgid "Enable Access Log"
@@ -5625,9 +5625,8 @@ msgid "Cover File Max Size (MB):"
 msgstr "Maximale Cover Dateigröße (MB)"
 
 #: cps/templates/cwa_settings.html:416
-#, fuzzy
 msgid "Range: 1-200 MB (default: 15)"
-msgstr "Bereich: 5-120 Minuten (Standard: 15)"
+msgstr "Bereich: 1–200 MB (Standard: 15)"
 
 #: cps/templates/cwa_settings.html:419
 msgid ""
@@ -6589,9 +6588,8 @@ msgid "Failed to update tags"
 msgstr "Aktualisierung der Tags fehlgeschlagen"
 
 #: cps/templates/detail.html:1469
-#, fuzzy
 msgid "Failed to update shelves"
-msgstr "Aktualisierung der Tags fehlgeschlagen"
+msgstr "Aktualisierung der Regale fehlgeschlagen"
 
 #: cps/templates/duplicates.html:497
 msgid "NextGen Duplicates Manager"
@@ -7137,9 +7135,8 @@ msgid "Add Series to Shelf"
 msgstr "Zu Regal hinzufügen"
 
 #: cps/templates/kosync_plugin.html:112
-#, fuzzy
 msgid "KOReader Sync is disabled."
-msgstr "Standard-Login ist deaktiviert."
+msgstr "KOReader Sync ist deaktiviert."
 
 #: cps/templates/kosync_plugin.html:113
 msgid ""
@@ -8203,13 +8200,12 @@ msgstr ""
 "an eine Auswahl gespeicherter Adressen senden können."
 
 #: cps/templates/user_edit.html:239
-#, fuzzy
 msgid ""
 "When disabled, emails will be sent to all configured eReader addresses "
 "without prompting."
 msgstr ""
-"Wenn aktiviert, werden neu hinzugefügte Bücher automatisch an alle oben "
-"konfigurierten E-Mail-Adressen für eReader gesendet."
+"Wenn diese Option deaktiviert ist, werden E-Mails ohne Rückfrage an alle "
+"konfigurierten E-Reader-Adressen gesendet."
 
 #: cps/templates/user_edit.html:247
 msgid "Automatically send new books to my eReader(s)"
@@ -8350,9 +8346,8 @@ msgid "Configure what actions this user is allowed to perform."
 msgstr "Konfigurieren Sie, welche Aktionen dieser Benutzer ausführen darf."
 
 #: cps/templates/user_edit.html:486
-#, fuzzy
 msgid "Magic Shelves Order"
-msgstr "Magische Regale ✨"
+msgstr "Magische Regale Sortierung"
 
 #: cps/templates/user_edit.html:487
 msgid "Choose how your magic shelves are ordered in the sidebar."
@@ -8391,14 +8386,12 @@ msgid "Created (oldest first)"
 msgstr "Erstellt (älteste zuerst)"
 
 #: cps/templates/user_edit.html:500
-#, fuzzy
 msgid "Recently modified"
-msgstr "Zuletzt geändert"
+msgstr "Kürzlich geändert"
 
 #: cps/templates/user_edit.html:501
-#, fuzzy
 msgid "Least recently modified"
-msgstr "Zuletzt geändert"
+msgstr "Zuletzt am wenigsten geändert"
 
 #: cps/templates/user_edit.html:512
 msgid "Manual order is used only when the order mode is set to Manual."
@@ -8755,9 +8748,9 @@ msgstr "Zeige Gelesen/Ungelesen-Abschnitt"
 #~ "        <a href=\"https://github.com/crocodilestick/Calibre-Web-Automated/"
 #~ "wiki/Configuration#database-configuration\">see here</a>!"
 #~ msgstr ""
-#~ "CWA ist so konfiguriert, dass es deine Calibre-Datenbank (<code>metadata."
-#~ "db</code>-Datei) irgendwo in dem Pfad <code>/calibre-library</code> "
-#~ "sucht.\n"
+#~ "CWA ist so konfiguriert, dass es deine Calibre-Datenbank "
+#~ "(<code>metadata.db</code>-Datei) irgendwo in dem Pfad <code>/calibre-"
+#~ "library</code> sucht.\n"
 #~ "        CWA durchsucht automatisch das Verzeichnis, das du auf <code>/"
 #~ "calibre-library</code> in der docker-compose-Datei verbunden hast, um "
 #~ "eine existierende Calibre-\n"

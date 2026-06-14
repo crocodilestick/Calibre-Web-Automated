@@ -3500,7 +3500,7 @@ msgstr ""
 
 #: cps/templates/admin.html:222
 msgid "Run Hardcover Auto-Fetch"
-msgstr "Exécuter la récupération automatique des livres reliés"
+msgstr "Exécuter la récupération automatique des IDs Hardcover"
 
 #: cps/templates/admin.html:227
 msgid "Administration&nbsp;&nbsp;🚀"
@@ -5859,7 +5859,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:557
 msgid "Hardcover Token Required"
-msgstr "Jeton relié requis"
+msgstr "Jeton Hardcover requis"
 
 #: cps/templates/cwa_settings.html:558
 msgid ""
@@ -5874,7 +5874,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:569
 msgid "Enable Hardcover Auto-Fetch"
-msgstr "Activer la récupération automatique des livres reliés"
+msgstr "Activer la récupération automatique Hardcover"
 
 #: cps/templates/cwa_settings.html:571
 msgid ""

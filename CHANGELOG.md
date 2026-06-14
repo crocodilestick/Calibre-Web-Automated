@@ -18,6 +18,7 @@ is for things you can see or feel when running the app.
 
 ### Fixed
 
+- French (`fr`): the Hardcover integration labels no longer translate the service name "Hardcover" as "livres reliés" (hardback books). "Run Hardcover Auto-Fetch", "Hardcover Token Required" and "Enable Hardcover Auto-Fetch" now keep the Hardcover name so the buttons match the feature. Thanks to @Korri.
 - Spanish (`es`): the "Invalid request" error now reads "Petición inválida" instead of the incorrect "Rol inválido" (Invalid role), and punctuation is tidied across 36 shared interface strings to match the source text. Thanks to @pablo-alcaniz.
 - German (`de`): fixed 11 interface strings that showed the wrong text — the cover-size limit read "5-120 Minuten" (minutes) instead of "1–200 MB", "Failed to update shelves" showed the tags message, and "KOReader Sync is disabled" showed the default-login message. OIDC, logfile, email and Magic Shelves labels are corrected too. Thanks to @futurelook.
 

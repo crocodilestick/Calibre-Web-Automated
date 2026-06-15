@@ -8608,6 +8608,9 @@ msgstr "Ausgewählte Regale mit Kobo synchronisieren"
 msgid "Show Read/Unread Section"
 msgstr "Zeige Gelesen/Ungelesen-Abschnitt"
 
+msgid "Site Customization"
+msgstr "Website-Anpassung"
+
 #~ msgid "Drag to Rearrange Order"
 #~ msgstr "Ziehen und ablegen um Reihenfolge zu ändern"
 

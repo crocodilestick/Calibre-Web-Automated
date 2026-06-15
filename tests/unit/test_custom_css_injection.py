@@ -109,8 +109,10 @@ def test_admin_save_handler_present():
     assert '_config_string(to_save, "config_custom_css")' in src
 
 
-def test_config_edit_template_has_textarea():
-    src = _read("templates", "config_edit.html")
+def test_config_view_edit_template_has_textarea():
+    # Fork #463: the Custom CSS field lives on the UI Configuration page
+    # (config_view_edit.html), not the Basic Configuration page.
+    src = _read("templates", "config_view_edit.html")
     assert 'name="config_custom_css"' in src
     assert "<textarea" in src  # free-text multiline, not a single-line input
 

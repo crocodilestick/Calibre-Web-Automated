@@ -8586,6 +8586,9 @@ msgstr "Kiválasztott polcok szinkronizációja Kobo eszközzel"
 msgid "Show Read/Unread Section"
 msgstr "Olvasott/olvasatlan mutatása"
 
+msgid "Site Customization"
+msgstr "Oldal testreszabása"
+
 #~ msgid "Drag to Rearrange Order"
 #~ msgstr "Húzd és dob a sorrend változtatásához"
 

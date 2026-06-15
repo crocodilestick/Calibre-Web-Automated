@@ -157,18 +157,6 @@
           <label for="config_access_logfile">{{_('Location and name of access logfile (access.log for no entry)')}}</label>
           <input type="text" class="form-control" name="config_access_logfile" id="config_access_logfile" value="{% if config.config_access_logfile != None %}{{ config.config_access_logfile }}{% endif %}" autocomplete="off">
         </div>
-        {# Fork #225 (@froggybottomboys): admin-set server-wide announcement banner. #}
-        <div class="form-group">
-          <label for="config_server_announcement">{{_('Server announcement banner')}}</label>
-          <textarea class="form-control" name="config_server_announcement" id="config_server_announcement" rows="2" maxlength="500" placeholder="{{_('Leave blank to hide the banner. Shown at the top of every page until each user dismisses it.')}}">{% if config.config_server_announcement %}{{ config.config_server_announcement }}{% endif %}</textarea>
-          <small class="help-block">{{_('Up to 500 characters. HTML is escaped. Each user dismisses the banner independently; editing the text re-shows it for everyone.')}}</small>
-        </div>
-        {# Fork #323 (@olskar): admin-set custom CSS injected site-wide. #}
-        <div class="form-group">
-          <label for="config_custom_css">{{_('Custom CSS')}}</label>
-          <textarea class="form-control" name="config_custom_css" id="config_custom_css" rows="6" spellcheck="false" placeholder="{{_('e.g. .navbar { background: #2b2b2b; }')}}">{% if config.config_custom_css %}{{ config.config_custom_css }}{% endif %}</textarea>
-          <small class="help-block">{{_('Injected into every page as the last stylesheet, so it overrides the built-in themes. Applies to all users. Leave blank to disable.')}}</small>
-        </div>
   </div>
 
   <div class="settings-container">

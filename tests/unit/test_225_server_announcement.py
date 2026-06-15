@@ -43,7 +43,9 @@ CONFIG_SQL = REPO_ROOT / "cps" / "config_sql.py"
 UB_PY = REPO_ROOT / "cps" / "ub.py"
 ADMIN_PY = REPO_ROOT / "cps" / "admin.py"
 LAYOUT_HTML = REPO_ROOT / "cps" / "templates" / "layout.html"
-CONFIG_EDIT_HTML = REPO_ROOT / "cps" / "templates" / "config_edit.html"
+# Fork #463: banner + custom CSS moved from Basic Configuration to the
+# UI Configuration page (config_view_edit.html).
+CONFIG_VIEW_EDIT_HTML = REPO_ROOT / "cps" / "templates" / "config_view_edit.html"
 
 
 def test_config_column_defined():
@@ -74,30 +76,31 @@ def test_migration_function_exists_and_wired():
 
 
 def test_admin_form_persists_announcement():
-    """_configuration_update_helper must read config_server_announcement
-    from the POSTed form and persist it via _config_string."""
+    """update_view_configuration must read config_server_announcement
+    from the POSTed form and persist it via _config_string (fork #463 moved
+    this off the Basic Configuration page / _configuration_update_helper)."""
     src = ADMIN_PY.read_text()
     match = re.search(
-        r"def _configuration_update_helper\(\):(.*?)(?=\n(?:def \w|class \w))",
+        r"def update_view_configuration\(\):(.*?)(?=\n(?:def \w|class \w|@admi))",
         src, re.DOTALL,
     )
-    assert match, "_configuration_update_helper body not isolatable"
+    assert match, "update_view_configuration body not isolatable"
     body = match.group(1)
     assert re.search(
         r"_config_string\(to_save,\s*[\"']config_server_announcement[\"']\)",
         body,
     ), (
-        "_configuration_update_helper must call "
+        "update_view_configuration must call "
         "_config_string(to_save, 'config_server_announcement')"
     )
 
 
 def test_admin_form_field_in_template():
-    """config_edit.html must surface a textarea / input for the new field
-    so admins can edit it."""
-    src = CONFIG_EDIT_HTML.read_text()
+    """The UI Configuration page (config_view_edit.html) must surface a
+    textarea for the announcement banner so admins can edit it (fork #463)."""
+    src = CONFIG_VIEW_EDIT_HTML.read_text()
     assert "config_server_announcement" in src, (
-        "config_edit.html must include an input/textarea named "
+        "config_view_edit.html must include an input/textarea named "
         "config_server_announcement"
     )
 

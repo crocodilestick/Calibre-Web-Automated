@@ -16,6 +16,15 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Changed
+- The Custom CSS and server announcement banner options moved to the **UI
+  Configuration** admin page. They were previously on Basic Configuration,
+  tucked inside the "Logfile Configuration" section next to the log level — an
+  unintuitive spot that also disagreed with the documentation. They now sit in
+  their own "Site Customization" section on the UI Configuration page. Existing
+  values are preserved; nothing about how custom CSS or the banner behaves has
+  changed, only where you set them. Reported by @Andrew-H2O.
+
 ## [v4.0.164] - 2026-06-15
 
 ### Fixed

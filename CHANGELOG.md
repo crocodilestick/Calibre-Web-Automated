@@ -16,6 +16,8 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+## [v4.0.164] - 2026-06-15
+
 ### Fixed
 - Editing a book whose author shares a name with another author after accents
   are stripped (for example "George Pólya" alongside "George Polya", or two

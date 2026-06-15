@@ -17,7 +17,12 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
-
+- Editing a book whose author shares a name with another author after accents
+  are stripped (for example "George Pólya" alongside "George Polya", or two
+  Chinese names that romanize the same way) no longer fails with a database
+  error. Previously any metadata change to such a book — even just adding a
+  cover — was rejected. Reported on Calibre-Web by @annProg, @apetresc and
+  @wnmurphy.
 - On the caliBlur theme, the read-status quick-action button that appears when
   you hover a book cover now shows the right icon and tooltip the moment a page
   loads. In book lists like Read Books, search results and author pages, an

@@ -1118,6 +1118,44 @@ def identifier_list(to_save, book):
     return result
 
 
+def select_existing_author(candidates, in_aut):
+    """Pick the existing author that ``in_aut`` refers to, from a candidate set.
+
+    The author lookup in :func:`prepare_authors` filters with
+    ``func.lower(db.Authors.name).ilike(in_aut)``. The registered ``lower``
+    SQLite UDF is ``unidecode.unidecode(s.lower())`` (see ``cps/db.py``), so it
+    strips accents and transliterates: "Pólya" and "Polya" both fold to
+    "polya"; "姚尧" and "妖妖" both fold to "yao yao". Those are *distinct*
+    authors in Calibre, so the filter can return several genuinely-different
+    rows. A blind ``.first()`` then picks an arbitrary transliteration twin and
+    the caller renames it onto ``in_aut`` — colliding with the real author's
+    existing ``authors.name`` UNIQUE constraint and failing every metadata edit
+    on the affected book (janeczku/calibre-web #3403).
+
+    Resolution order, so a transliteration twin is never chosen for a rename:
+      1. An exact-name match — that author already *is* ``in_aut``; nothing to
+         rename, no collision possible.
+      2. A true case-only variant (Unicode casefold equality, which does NOT
+         strip accents) — preserves the legitimate "adopt the new casing"
+         rename, e.g. "Stephen King" -> "stephen king".
+      3. Deterministic fallback to the first candidate — covers the legitimate
+         single-author accent correction (DB has only "Polya", user types
+         "Pólya"): there is no twin to collide with, so renaming is correct.
+
+    Returns the chosen ``db.Authors`` row, or ``None`` when ``candidates`` is
+    empty.
+    """
+    if not candidates:
+        return None
+    for cand in candidates:
+        if cand.name == in_aut:
+            return cand
+    for cand in candidates:
+        if cand.name.casefold() == in_aut.casefold():
+            return cand
+    return candidates[0]
+
+
 def prepare_authors(authr, calibre_path, gdrive=False):
     if gdrive:
         calibre_path = ""
@@ -1133,7 +1171,12 @@ def prepare_authors(authr, calibre_path, gdrive=False):
         input_authors = [_('Unknown')]  # prevent empty Author
 
     for in_aut in input_authors:
-        renamed_author = calibre_db.session.query(db.Authors).filter(func.lower(db.Authors.name).ilike(in_aut)).first()
+        # ``func.lower`` is the accent-stripping ``unidecode`` UDF, so this
+        # filter can match several distinct authors that transliterate alike;
+        # select_existing_author avoids renaming a transliteration twin (#3403).
+        author_candidates = calibre_db.session.query(db.Authors).filter(
+            func.lower(db.Authors.name).ilike(in_aut)).all()
+        renamed_author = select_existing_author(author_candidates, in_aut)
         if renamed_author and in_aut != renamed_author.name:
             old_author_name = renamed_author.name
             # rename author in Database
@@ -1188,7 +1231,12 @@ def prepare_authors_on_upload(title, authr):
     db_author = None
     for inp in input_authors:
         # stored_author = calibre_db.session.query(db.Authors).filter(db.Authors.name == inp).first()
-        stored_author = calibre_db.session.query(db.Authors).filter(func.lower(db.Authors.name).ilike(inp)).first()
+        # Same accent-folding lookup as prepare_authors: disambiguate so an
+        # upload by one author isn't attached to a transliteration twin (#3403).
+        stored_author = select_existing_author(
+            calibre_db.session.query(db.Authors).filter(
+                func.lower(db.Authors.name).ilike(inp)).all(),
+            inp)
         if not stored_author:
             if not db_author:
                 db_author = db.Authors(inp, helper.get_sorted_author(inp), "")

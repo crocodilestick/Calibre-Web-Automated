@@ -16,6 +16,15 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Fixed
+
+- On the caliBlur theme, the read-status quick-action button that appears when
+  you hover a book cover now shows the right icon and tooltip the moment a page
+  loads. In book lists like Read Books, search results and author pages, an
+  already-read book used to show "Mark As Read" until you clicked it once;
+  it now correctly shows "Mark As Unread" straight away. (Reported by @droM4X
+  on #319)
+
 ## [v4.0.163] - 2026-06-14
 
 ### Fixed

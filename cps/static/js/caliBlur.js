@@ -849,7 +849,14 @@ $(function() {
                 // unread book -> glyphicon-check ("mark as read"),
                 // read book   -> glyphicon-unchecked ("mark as unread").
                 if ($link.find('.read-toggle-btn').length === 0) {
-                    var linkIsRead = $link.find('.badge.read').length > 0;
+                    // Detect read state from EITHER badge structure: the
+                    // legacy `.badge.read` (random-books strip) and the
+                    // cover_badges macro's `.cover-badge-read` (every real
+                    // listing — library, /read/stored, search, author).
+                    // Listing views only render the latter, so keying off
+                    // `.badge.read` alone left the button initializing to
+                    // "Mark As Read" on already-read books (fork #319 @droM4X).
+                    var linkIsRead = $link.find('.badge.read, .cover-badge-read').length > 0;
                     var $readToggle = $('<div class="read-toggle-btn"><span class="glyphicon"></span></div>')
                         .attr('title', linkIsRead ? 'Mark As Unread' : 'Mark As Read');
                     $readToggle.find('.glyphicon').addClass(linkIsRead ? 'glyphicon-unchecked' : 'glyphicon-check');
@@ -1082,8 +1089,12 @@ $(function() {
         $readToggleBtn.addClass('loading');
         $readToggleBtn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-refresh');
         
-        // Find the existing read badge
-        var $readBadge = $link.find('.badge.read');
+        // Find the existing read badge — match either structure (legacy
+        // `.badge.read` or the cover_badges macro's `.cover-badge-read`),
+        // so the toggle reads the true current state in listing views
+        // instead of always assuming "unread" (fork #319 @droM4X). Without
+        // this, clicking a read book in a listing desyncs the badge.
+        var $readBadge = $link.find('.badge.read, .cover-badge-read');
         var isCurrentlyRead = $readBadge.length > 0;
         
         $.ajax({

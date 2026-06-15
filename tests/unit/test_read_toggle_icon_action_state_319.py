@@ -229,3 +229,77 @@ class TestPassiveBadgesUseGlyphiconCheck:
             "caliBlur.js read-badge insertion must NOT use glyphicon-ok "
             "any more — that's the old inconsistent icon."
         )
+
+
+# ---------------------------------------------------------------------------
+# Read-state DETECTION must cover the cover_badges macro structure.
+#
+# @droM4X (2026-06-13) on the #319 thread:
+#
+#   > the checked icon is also displayed for books that are already marked
+#   > as read. For example, on /read/stored/ (read books) or anywhere else
+#   > a book list is shown. [...] the icon (and the tooltip too) is not
+#   > displayed correctly when the page is initially loaded. After toggling
+#   > the status, the icon updates correctly.
+#
+# Root cause: caliBlur's quick-action JS read state from `.badge.read`
+# only. That badge is rendered solely by the random-books strip
+# (index.html). Every real listing — library grid, /read/stored, search,
+# author — renders read state through the cover_badges macro
+# (image.html), which emits `.cover-badge-read`, a DIFFERENT class. So in
+# any listing the detection returned "unread" for every book, and the
+# hover read-toggle button initialized to "Mark As Read" regardless of
+# the book's actual status. The fix: detect read state from BOTH badge
+# structures at the two detection sites (button init + toggle handler).
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+class TestReadStateDetectionCoversCoverBadge:
+    def test_button_init_detects_cover_badge_read(self, caliblur_js: str):
+        """The read-toggle button's initial icon/title is derived from a
+        read-state probe. That probe must match `.cover-badge-read` (the
+        listing-view badge), not just `.badge.read` (random strip only),
+        or read books in listings load with the wrong icon."""
+        m = re.search(
+            r"\.read-toggle-btn'\)\.length === 0\)\s*\{(.+?)var \$readToggle",
+            caliblur_js,
+            re.DOTALL,
+        )
+        assert m, "read-toggle-btn init block not found in caliBlur.js"
+        block = m.group(1)
+        m2 = re.search(r"var linkIsRead = (.+?);", block)
+        assert m2, "linkIsRead detection line not found in init block"
+        probe = m2.group(1)
+        assert ".cover-badge-read" in probe, (
+            "Button-init read-state probe must include '.cover-badge-read' "
+            "(the cover_badges macro badge used by every listing view). "
+            "Keying off '.badge.read' alone makes read books in "
+            "/read/stored et al. initialize to 'Mark As Read'. "
+            "fork #319 @droM4X 2026-06-13. Got: " + repr(probe)
+        )
+        assert ".badge.read" in probe, (
+            "Probe must still also match the legacy '.badge.read' "
+            "(random-books strip) — both structures exist."
+        )
+
+    def test_toggle_handler_detects_cover_badge_read(self, caliblur_js: str):
+        """The toggle handler reads the current state from `$readBadge`
+        before flipping. It must match `.cover-badge-read` too, otherwise
+        clicking a read book in a listing treats it as unread and desyncs
+        the badge/icon after the AJAX round-trip."""
+        m = re.search(
+            r"var \$readBadge = (.+?);\s*\n\s*var isCurrentlyRead = \$readBadge\.length",
+            caliblur_js,
+            re.DOTALL,
+        )
+        assert m, "$readBadge detection line not found in toggle handler"
+        probe = m.group(1)
+        assert ".cover-badge-read" in probe, (
+            "Toggle handler's $readBadge probe must include "
+            "'.cover-badge-read' so it reads the true state in listing "
+            "views. fork #319 @droM4X 2026-06-13. Got: " + repr(probe)
+        )
+        assert ".badge.read" in probe, (
+            "Probe must still also match the legacy '.badge.read'."
+        )

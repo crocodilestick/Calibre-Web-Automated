@@ -24,6 +24,10 @@ is for things you can see or feel when running the app.
   On wider screens the cover and details sit side-by-side from 1024px up
   (previously only above 1400px), so desktops and landscape tablets use the
   width instead of stranding the cover alone in the middle.
+- The book details page now has a clear **Read** button right under the cover —
+  the full width of the cover — as the obvious way to start reading in your
+  browser. The small "read" icon was removed from the row of action buttons so
+  that row is less cluttered.
 
 ## [v4.0.165] - 2026-06-16
 

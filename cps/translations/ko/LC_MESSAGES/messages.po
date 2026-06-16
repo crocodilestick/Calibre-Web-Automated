@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-16 12:07+0000\n"
+"POT-Creation-Date: 2026-06-16 18:15+0000\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -1428,8 +1428,8 @@ msgstr "Google 드라이브에서 %(format)s 파일을 찾을 수 없습니다: 
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s을(를) 찾을 수 없습니다: %(fn)s"
 
-#: cps/helper.py:161 cps/helper.py:292 cps/templates/detail.html:575
-#: cps/templates/detail.html:579
+#: cps/helper.py:161 cps/helper.py:292 cps/templates/detail.html:608
+#: cps/templates/detail.html:612
 msgid "Send to eReader"
 msgstr "전자책 리더로 보내기"
 
@@ -1889,7 +1889,7 @@ msgid "Books ordered by series"
 msgstr "시리즈별 정렬"
 
 #: cps/opds.py:229 cps/render_template.py:117 cps/templates/book_table.html:113
-#: cps/templates/detail.html:824 cps/templates/search_form.html:108
+#: cps/templates/detail.html:857 cps/templates/search_form.html:108
 #: cps/web.py:2012
 msgid "Languages"
 msgstr "언어"
@@ -2959,9 +2959,9 @@ msgstr "옵션 선택"
 msgid "Add to Shelf"
 msgstr "책장에 추가"
 
-#: cps/templates/_book_organizer.html:116 cps/templates/detail.html:702
-#: cps/templates/detail.html:724 cps/templates/detail.html:883
-#: cps/templates/detail.html:1468 cps/templates/feed.xml:109
+#: cps/templates/_book_organizer.html:116 cps/templates/detail.html:735
+#: cps/templates/detail.html:757 cps/templates/detail.html:916
+#: cps/templates/detail.html:1501 cps/templates/feed.xml:109
 #: cps/templates/feed.xml:111 cps/templates/index.html:162
 #: cps/templates/layout.html:413 cps/templates/layout.html:426
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
@@ -3123,7 +3123,7 @@ msgstr "관리자"
 msgid "Password"
 msgstr "비밀번호"
 
-#: cps/templates/admin.html:24 cps/templates/detail.html:553
+#: cps/templates/admin.html:24 cps/templates/detail.html:586
 #: cps/templates/shelf.html:9 cps/templates/user_table.html:147
 msgid "Download"
 msgstr "다운로드"
@@ -3413,7 +3413,7 @@ msgstr "예"
 #: cps/templates/config_edit.html:663 cps/templates/config_view_edit.html:236
 #: cps/templates/cover_picker.html:189
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:1073
+#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:1106
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
 #: cps/templates/duplicates.html:746 cps/templates/layout.html:603
 #: cps/templates/layout.html:758 cps/templates/modal_dialogs.html:64
@@ -3559,8 +3559,8 @@ msgstr "줄이기"
 msgid "More by"
 msgstr "더보기"
 
-#: cps/templates/book_edit.html:15 cps/templates/detail.html:656
-#: cps/templates/detail.html:658
+#: cps/templates/book_edit.html:15 cps/templates/detail.html:689
+#: cps/templates/detail.html:691
 msgid "Delete Book"
 msgstr "책 삭제"
 
@@ -3613,7 +3613,7 @@ msgstr "오류"
 msgid "Upload Format"
 msgstr "다른 형식 업로드"
 
-#: cps/templates/book_edit.html:90 cps/templates/detail.html:793
+#: cps/templates/book_edit.html:90 cps/templates/detail.html:826
 #, fuzzy
 msgid "Imported as"
 msgstr "업데이트 실패: "
@@ -3637,7 +3637,7 @@ msgstr "발행일"
 
 #: cps/templates/book_edit.html:121 cps/templates/book_edit.html:421
 #: cps/templates/cwa_settings.html:348 cps/templates/cwa_settings.html:350
-#: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:899
+#: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:932
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
@@ -3681,8 +3681,8 @@ msgid "Add Identifier"
 msgstr "식별자 추가"
 
 #: cps/templates/book_edit.html:154 cps/templates/cover_picker.html:12
-#: cps/templates/detail.html:533 cps/templates/detail.html:536
-#: cps/templates/detail.html:649
+#: cps/templates/detail.html:566 cps/templates/detail.html:569
+#: cps/templates/detail.html:682
 #, fuzzy
 msgid "Change cover"
 msgstr "비밀번호 변경"
@@ -3951,7 +3951,7 @@ msgstr "다읍 책이 읽음표시됩니다:"
 msgid "The following books will be marked unread:"
 msgstr "다음 책의 읽음표시가 해제됩니다:"
 
-#: cps/templates/book_table.html:286 cps/templates/detail.html:626
+#: cps/templates/book_table.html:286 cps/templates/detail.html:659
 msgid "Edit Metadata"
 msgstr "메타데이터 편집"
 
@@ -6136,214 +6136,214 @@ msgstr ""
 msgid "Click to See More"
 msgstr "더보기"
 
-#: cps/templates/detail.html:589
+#: cps/templates/detail.html:622
 msgid "Read in Browser"
 msgstr "웹에서 보기"
 
-#: cps/templates/detail.html:607 cps/templates/detail.html:608
-#: cps/templates/detail.html:962 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:640 cps/templates/detail.html:641
+#: cps/templates/detail.html:995 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr "읽지 않음으로 표시"
 
-#: cps/templates/detail.html:607 cps/templates/detail.html:608
-#: cps/templates/detail.html:963 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:640 cps/templates/detail.html:641
+#: cps/templates/detail.html:996 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr "읽음으로 표시"
 
-#: cps/templates/detail.html:609
+#: cps/templates/detail.html:642
 #, fuzzy
 msgid "Marked as read"
 msgstr "읽음으로 표시"
 
-#: cps/templates/detail.html:610
+#: cps/templates/detail.html:643
 #, fuzzy
 msgid "Marked as unread"
 msgstr "읽지 않음으로 표시"
 
-#: cps/templates/detail.html:615 cps/templates/detail.html:616
-#: cps/templates/detail.html:969 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:648 cps/templates/detail.html:649
+#: cps/templates/detail.html:1002 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr "보관함에서 복원"
 
-#: cps/templates/detail.html:615 cps/templates/detail.html:616
-#: cps/templates/detail.html:970 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:648 cps/templates/detail.html:649
+#: cps/templates/detail.html:1003 cps/templates/listenmp3.html:166
 msgid "Add to archive"
 msgstr "보관함에 추가"
 
-#: cps/templates/detail.html:617 cps/templates/listenmp3.html:167
+#: cps/templates/detail.html:650 cps/templates/listenmp3.html:167
 msgid "Archived"
 msgstr "보관됨"
 
-#: cps/templates/detail.html:618
+#: cps/templates/detail.html:651
 #, fuzzy
 msgid "Restored from archive"
 msgstr "보관함에서 복원"
 
-#: cps/templates/detail.html:641
+#: cps/templates/detail.html:674
 msgid "Reloaded metadata from disk"
 msgstr ""
 
-#: cps/templates/detail.html:642
+#: cps/templates/detail.html:675
 msgid "On-disk metadata matches — nothing to update"
 msgstr ""
 
-#: cps/templates/detail.html:643
+#: cps/templates/detail.html:676
 #, fuzzy
 msgid "Could not reload metadata"
 msgstr "메타데이터 편집"
 
-#: cps/templates/detail.html:644 cps/templates/detail.html:645
+#: cps/templates/detail.html:677 cps/templates/detail.html:678
 msgid "Reload metadata from disk"
 msgstr ""
 
-#: cps/templates/detail.html:673 cps/templates/detail.html:674
+#: cps/templates/detail.html:706 cps/templates/detail.html:707
 msgid "Unhide from your library"
 msgstr ""
 
-#: cps/templates/detail.html:673 cps/templates/detail.html:674
+#: cps/templates/detail.html:706 cps/templates/detail.html:707
 #, fuzzy
 msgid "Hide from your library"
 msgstr "검색"
 
-#: cps/templates/detail.html:675
+#: cps/templates/detail.html:708
 #, fuzzy
 msgid "Hidden"
 msgstr "숨긴 책"
 
-#: cps/templates/detail.html:676
+#: cps/templates/detail.html:709
 msgid "Unhidden"
 msgstr ""
 
-#: cps/templates/detail.html:691 cps/templates/detail.html:891
-#: cps/templates/detail.html:892 cps/templates/detail.html:1505
+#: cps/templates/detail.html:724 cps/templates/detail.html:924
+#: cps/templates/detail.html:925 cps/templates/detail.html:1538
 #: cps/templates/listenmp3.html:190 cps/templates/search.html:17
 msgid "Add to shelf"
 msgstr "서재에 추가"
 
-#: cps/templates/detail.html:714 cps/templates/detail.html:885
+#: cps/templates/detail.html:747 cps/templates/detail.html:918
 #, fuzzy
 msgid "Remove from shelf"
 msgstr "보관함에서 복원"
 
-#: cps/templates/detail.html:752
+#: cps/templates/detail.html:785
 #, fuzzy
 msgid "Rating updated"
 msgstr "데이터베이스 설정이 업데이트되었습니다."
 
-#: cps/templates/detail.html:753
+#: cps/templates/detail.html:786
 #, fuzzy
 msgid "Rating cleared"
 msgstr "평점(이상)"
 
-#: cps/templates/detail.html:771 cps/templates/listenmp3.html:62
+#: cps/templates/detail.html:804 cps/templates/listenmp3.html:62
 #, python-format
 msgid "Book %(index)s of %(range)s"
 msgstr "책 %(index)s / %(range)s"
 
-#: cps/templates/detail.html:776
+#: cps/templates/detail.html:809
 msgid "ID"
 msgstr ""
 
-#: cps/templates/detail.html:781
+#: cps/templates/detail.html:814
 msgid "UUID"
 msgstr ""
 
-#: cps/templates/detail.html:784
+#: cps/templates/detail.html:817
 msgid "UUID copied to clipboard"
 msgstr ""
 
-#: cps/templates/detail.html:785
+#: cps/templates/detail.html:818
 msgid "Unable to copy UUID"
 msgstr ""
 
-#: cps/templates/detail.html:786 cps/templates/detail.html:787
+#: cps/templates/detail.html:819 cps/templates/detail.html:820
 msgid "Copy UUID"
 msgstr ""
 
-#: cps/templates/detail.html:798
+#: cps/templates/detail.html:831
 msgid "Date added"
 msgstr ""
 
-#: cps/templates/detail.html:802
+#: cps/templates/detail.html:835
 msgid "Last modified"
 msgstr ""
 
-#: cps/templates/detail.html:807
+#: cps/templates/detail.html:840
 #, fuzzy
 msgid "File sizes"
 msgstr "글자 크기"
 
-#: cps/templates/detail.html:851
+#: cps/templates/detail.html:884
 #, fuzzy
 msgid "Remove tag"
 msgstr "삭제"
 
-#: cps/templates/detail.html:859 cps/templates/detail.html:860
-#: cps/templates/detail.html:1383
+#: cps/templates/detail.html:892 cps/templates/detail.html:893
+#: cps/templates/detail.html:1416
 msgid "Add tag"
 msgstr ""
 
-#: cps/templates/detail.html:905 cps/templates/listenmp3.html:111
+#: cps/templates/detail.html:938 cps/templates/listenmp3.html:111
 msgid "Published"
 msgstr "발행일"
 
-#: cps/templates/detail.html:911
+#: cps/templates/detail.html:944
 #, fuzzy
 msgid "KOReader Progress"
 msgstr "진행률"
 
-#: cps/templates/detail.html:981 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:1014 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "설명:"
 
-#: cps/templates/detail.html:998
+#: cps/templates/detail.html:1031
 msgid "Select eReader Email Addresses"
 msgstr "eReader 이메일 주소 선택"
 
-#: cps/templates/detail.html:1011
+#: cps/templates/detail.html:1044
 msgid "Choose email addresses:"
 msgstr "이메일 주소 선택:"
 
-#: cps/templates/detail.html:1016
+#: cps/templates/detail.html:1049
 msgid "Select All"
 msgstr "모두 선택"
 
-#: cps/templates/detail.html:1037
+#: cps/templates/detail.html:1070
 msgid "Other users' eReaders:"
 msgstr ""
 
-#: cps/templates/detail.html:1052
+#: cps/templates/detail.html:1085
 #, fuzzy
 msgid "Additional email addresses:"
 msgstr "이메일 주소 선택:"
 
-#: cps/templates/detail.html:1053
+#: cps/templates/detail.html:1086
 #, fuzzy
 msgid "Enter additional email addresses (separated by commas):"
 msgstr "이메일 주소 선택:"
 
-#: cps/templates/detail.html:1054
+#: cps/templates/detail.html:1087
 msgid "example@domain.com, another@domain.com"
 msgstr ""
 
-#: cps/templates/detail.html:1055
+#: cps/templates/detail.html:1088
 msgid "Enter one or more email addresses separated by commas"
 msgstr ""
 
-#: cps/templates/detail.html:1060
+#: cps/templates/detail.html:1093
 msgid "Select format:"
 msgstr "형식 선택:"
 
-#: cps/templates/detail.html:1072
+#: cps/templates/detail.html:1105
 msgid "Send"
 msgstr "보내기"
 
-#: cps/templates/detail.html:1361
+#: cps/templates/detail.html:1394
 #, fuzzy
 msgid "Failed to update tags"
 msgstr "표지 경로 생성에 실패했습니다."
 
-#: cps/templates/detail.html:1469
+#: cps/templates/detail.html:1502
 #, fuzzy
 msgid "Failed to update shelves"
 msgstr "표지 경로 생성에 실패했습니다."

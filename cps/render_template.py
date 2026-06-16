@@ -128,6 +128,10 @@ def get_sidebar_config(kwargs=None):
         {"glyph": "glyphicon-trash", "text": _('Archived Books'), "link": 'web.books_list', "id": "archived",
          "visibility": constants.SIDEBAR_ARCHIVED, 'public': (not current_user.is_anonymous), "page": "archived",
          "show_text": _('Show Archived Books'), "config_show": content})
+    sidebar.append(
+        {"glyph": "glyphicon-star", "text": _('Favorites'), "link": 'web.books_list', "id": "favorites",
+         "visibility": constants.SIDEBAR_FAVORITES, 'public': (not current_user.is_anonymous), "page": "favorites",
+         "show_text": _('Show Favorites'), "config_show": content})
     if not simple:
         sidebar.append(
             {"glyph": "glyphicon-th-list", "text": _('Books List'), "link": 'web.books_table', "id": "list",
@@ -161,6 +165,16 @@ def get_sidebar_config(kwargs=None):
         g.book_shelves_map = book_shelves
     else:
         g.book_shelves_map = {}
+
+    # Per-user favorited book ids for the cover star badge — fork #27. One query
+    # per render; the cover_badges macro does an O(1) membership check.
+    if not current_user.is_anonymous:
+        g.favorite_book_ids = {
+            row.book_id for row in ub.session.query(ub.FavoriteBook.book_id)
+            .filter(ub.FavoriteBook.user_id == int(current_user.id)).all()
+        }
+    else:
+        g.favorite_book_ids = set()
 
     return sidebar, simple
 

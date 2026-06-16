@@ -721,6 +721,28 @@ class UserHiddenBook(Base):
     )
 
 
+class FavoriteBook(Base):
+    """Per-user favorited / starred books — fork #27.
+
+    Presence-based (a row exists iff the user has starred that book), mirroring
+    UserHiddenBook rather than ArchivedBook's boolean column: un-starring deletes
+    the row. Starred books get a dedicated /favorites listing and a star badge on
+    their cover. The per-(user, book) unique constraint keeps a fast double-tap
+    from creating duplicate rows.
+    """
+    __tablename__ = 'favorite_book'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'),
+                     nullable=False, index=True)
+    book_id = Column(Integer, nullable=False, index=True)
+    favorited_at = Column(DateTime, default=lambda: datetime.now(timezone.utc))
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'book_id', name='uq_favorite_book'),
+    )
+
+
 class KoboSyncedBooks(Base):
     __tablename__ = 'kobo_synced_books'
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -1242,6 +1264,8 @@ def add_missing_tables(engine, _session):
         HiddenMagicShelfTemplate.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "kobo_annotation_backup"):
         KoboAnnotationBackup.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "favorite_book"):
+        FavoriteBook.__table__.create(bind=engine, checkfirst=True)
 
 
 # migrate all settings missing in registration table
@@ -1377,6 +1401,34 @@ def migrate_user_table(engine, _session):
                 )
     except Exception as e:
         print(f"[Migration] Warning: Could not update duplicates sidebar setting: {e}")
+
+    # Migration to enable favorites sidebar for existing users (one-time) — fork #27
+    try:
+        from . import constants
+        SIDEBAR_FAVORITES = constants.SIDEBAR_FAVORITES
+
+        migration_dir = os.path.join(constants.CONFIG_DIR, ".cwa_migrations")
+        migration_marker = os.path.join(migration_dir, "favorites_sidebar_v1")
+
+        if not os.path.isfile(migration_marker):
+            # Favorites is a general per-user feature, so enable it for every
+            # existing user (not just admins) — otherwise the new sidebar bit
+            # would be off for accounts created before this release.
+            for user in _session.query(User).all():
+                if not (user.sidebar_view & SIDEBAR_FAVORITES):
+                    user.sidebar_view |= SIDEBAR_FAVORITES
+            _session.commit()
+            try:
+                os.makedirs(migration_dir, exist_ok=True)
+                with open(migration_marker, "w", encoding="utf-8") as marker:
+                    marker.write(datetime.now(timezone.utc).isoformat())
+            except Exception as marker_error:
+                print(
+                    f"[Migration] Warning: Could not persist favorites sidebar migration marker: {marker_error}",
+                    flush=True,
+                )
+    except Exception as e:
+        print(f"[Migration] Warning: Could not update favorites sidebar setting: {e}")
         _session.rollback()
 
     # Migration for cover-preview per-user preference columns (Phase 2 of

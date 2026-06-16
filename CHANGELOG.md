@@ -16,6 +16,12 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Added
+- You can now **star your favorite books**. Tap the star on a book's page to
+  favorite it (a gold star also appears on its cover while you browse), then use
+  the new **Favorites** entry in the sidebar to see just your starred books.
+  Favorites are private to your own account.
+
 ### Changed
 - The **book details page** is easier to read, especially on phones. The big
   empty margins that boxed in the cover and info are gone — you get noticeably

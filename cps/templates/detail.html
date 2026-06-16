@@ -695,6 +695,17 @@
                                                 data-toast-off="{{ _('Marked as unread') }}">
                                             <span id="read-icon" class="glyphicon {{ entry.read_status and 'glyphicon-unchecked' or 'glyphicon-check' }}"></span>
                                         </button>
+                                        {# Favorite / star toggle — fork #27. Always available to signed-in
+                                           users (favorites are per-user); flips in place via the form below. #}
+                                        <button type="button" class="btn btn-default action-icon-btn" id="toggle-favorite-btn"
+                                                title="{{ is_favorited and _('Remove from favorites') or _('Add to favorites') }}"
+                                                aria-label="{{ is_favorited and _('Remove from favorites') or _('Add to favorites') }}"
+                                                data-on-title="{{ _('Remove from favorites') }}"
+                                                data-off-title="{{ _('Add to favorites') }}"
+                                                data-toast-on="{{ _('Added to favorites') }}"
+                                                data-toast-off="{{ _('Removed from favorites') }}">
+                                            <span id="favorite-icon" class="glyphicon {{ is_favorited and 'glyphicon-star' or 'glyphicon-star-empty' }}"{% if is_favorited %} style="color:#f5c518"{% endif %}></span>
+                                        </button>
                                         {% if current_user.check_visibility(32768) %}
                                             <button type="button" class="btn btn-default action-icon-btn" id="toggle-archive-btn"
                                                     title="{{ entry.is_archived and _('Restore from archive') or _('Add to archive') }}"
@@ -1048,6 +1059,10 @@
                                            data-unchecked="{{ _('Mark As Read') }}" type="checkbox"
                                            {% if entry.read_status %}checked{% endif %}>
                                 </form>
+                                <form id="favorite_form" action="{{ url_for('web.toggle_favorite', book_id=entry.id) }}" method="POST">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                    <input id="favorite_cb" type="checkbox" {% if is_favorited %}checked{% endif %}>
+                                </form>
                                 {% if current_user.check_visibility(32768) %}
                                     <form id="archived_form" action="{{ url_for('web.toggle_archived', book_id=entry.id) }}" method="POST">
                                         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -1270,6 +1285,39 @@
                     var $btn = $("#toggle-archive-btn");
                     var toastMsg = isArchived ? $btn.data("toast-on") : $btn.data("toast-off");
                     showActionToast(toastMsg, $btn[0]);
+                },
+                error: function () {
+                    $cb.prop("checked", !nextChecked);
+                }
+            });
+        });
+
+        $("#toggle-favorite-btn").on("click", function () {
+            var $cb = $("#favorite_cb");
+            var $form = $("#favorite_form");
+            if (!$cb.length || !$form.length) {
+                return;
+            }
+            var nextChecked = !$cb.prop("checked");
+            $cb.prop("checked", nextChecked);
+            $.ajax({
+                url: $form[0].action,
+                method: "post",
+                data: $form.serialize(),
+                success: function (data) {
+                    if (typeof handleResponse === "function") {
+                        handleResponse(data);
+                    }
+                    var isFavorite = $cb.prop("checked");
+                    // Filled gold star when favorited, empty star when not.
+                    $("#favorite-icon")
+                        .toggleClass("glyphicon-star", isFavorite)
+                        .toggleClass("glyphicon-star-empty", !isFavorite)
+                        .css("color", isFavorite ? "#f5c518" : "");
+                    var $btn = $("#toggle-favorite-btn");
+                    var title = isFavorite ? $btn.data("on-title") : $btn.data("off-title");
+                    $btn.attr("title", title).attr("aria-label", title);
+                    showActionToast(isFavorite ? $btn.data("toast-on") : $btn.data("toast-off"), $btn[0]);
                 },
                 error: function () {
                     $cb.prop("checked", !nextChecked);

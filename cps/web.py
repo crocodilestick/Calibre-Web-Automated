@@ -223,6 +223,25 @@ def toggle_archived(book_id):
     return ""
 
 
+# Per-user favorite / starred books — fork #27. Presence-based toggle: a row in
+# favorite_book exists iff the calling user has starred the book. Returns the
+# resulting state as JSON so the UI can flip the star in place without a reload.
+@web.route("/ajax/togglefavorite/<int:book_id>", methods=['POST'])
+@user_login_required
+def toggle_favorite(book_id):
+    favorite = ub.session.query(ub.FavoriteBook).filter(
+        and_(ub.FavoriteBook.user_id == int(current_user.id),
+             ub.FavoriteBook.book_id == book_id)).first()
+    if favorite:
+        ub.session.delete(favorite)
+        favorited = False
+    else:
+        ub.session.add(ub.FavoriteBook(user_id=int(current_user.id), book_id=book_id))
+        favorited = True
+    ub.session_commit("Book {} favorite bit toggled".format(book_id))
+    return json.dumps({"favorited": favorited})
+
+
 # Per-user hidden books — fork issue #64. Hide removes the book from index
 # pages, search, OPDS feeds, and shelf listings for the calling user only;
 # /hidden lists hidden books with an unhide button. Distinct from archive
@@ -513,6 +532,8 @@ def render_books_list(data, sort_param, book_id, page):
         return render_language_books(page, book_id, order)
     elif data == "archived":
         return render_archived_books(page, order)
+    elif data == "favorites":
+        return render_favorite_books(page, order)
     elif data in ("hidden", "hidden_books"):
         # The 'hidden_books' alias exists because render_hidden_books sets
         # the body CSS class to 'hidden_books' (not 'hidden' — Bootstrap's
@@ -955,6 +976,31 @@ def render_archived_books(page, sort_param):
 
     name = _('Archived Books') + ' (' + str(len(archived_book_ids)) + ')'
     page_name = "archived"
+    return render_title_template('index.html', random=random, entries=entries, pagination=pagination,
+                                 title=name, page=page_name, order=sort_param[1])
+
+
+def render_favorite_books(page, sort_param):
+    """List the current user's favorited / starred books — fork #27. Mirrors
+    render_archived_books: pull the starred book_ids from app.db (ub), then
+    filter the metadata.db listing to those ids."""
+    order = sort_param[0] or []
+    favorite_books = (ub.session.query(ub.FavoriteBook)
+                      .filter(ub.FavoriteBook.user_id == int(current_user.id))
+                      .all())
+    favorite_book_ids = [fav.book_id for fav in favorite_books]
+
+    favorite_filter = db.Books.id.in_(favorite_book_ids)
+
+    entries, random, pagination = calibre_db.fill_indexpage_with_archived_books(page, db.Books,
+                                                                                0,
+                                                                                favorite_filter,
+                                                                                order,
+                                                                                True,
+                                                                                True, config.config_read_column)
+
+    name = _('Favorite Books') + ' (' + str(len(favorite_book_ids)) + ')'
+    page_name = "favorites"
     return render_title_template('index.html', random=random, entries=entries, pagination=pagination,
                                  title=name, page=page_name, order=sort_param[1])
 
@@ -3432,6 +3478,14 @@ def show_book(book_id):
                 ub.UserHiddenBook.book_id == int(book_id),
             ).first() is not None
 
+        # Per-user favorite / starred state — fork #27.
+        is_favorited = False
+        if not current_user.is_anonymous:
+            is_favorited = ub.session.query(ub.FavoriteBook).filter(
+                ub.FavoriteBook.user_id == int(current_user.id),
+                ub.FavoriteBook.book_id == int(book_id),
+            ).first() is not None
+
         # Fork #276 (@magdalar): admin checkboxes for sending to OTHER
         # users' kindle_mail addresses (family eReader management). Only
         # admins see other users' emails — those are PII otherwise.
@@ -3460,6 +3514,7 @@ def show_book(book_id):
                                      kosync_progress=kosync_progress,
                                      kosync_progress_timestamp=kosync_progress_timestamp,
                                      is_hidden=is_hidden,
+                                     is_favorited=is_favorited,
                                      other_users_with_kindle=other_users_with_kindle,
                                      page="book")
     else:

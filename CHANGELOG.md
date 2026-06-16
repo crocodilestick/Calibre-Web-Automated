@@ -29,6 +29,12 @@ is for things you can see or feel when running the app.
   browser. The small "read" icon was removed from the row of action buttons so
   that row is less cluttered.
 
+### Fixed
+- On a phone, tapping the **Search** box (or other text fields) no longer zooms
+  the page in. iOS Safari zooms toward any field whose text is smaller than 16px;
+  the inputs are now sized so that doesn't happen, while pinch-to-zoom still works
+  normally.
+
 ## [v4.0.165] - 2026-06-16
 
 ### Fixed

@@ -35,6 +35,9 @@
     {# Fork #288 mobile sweep: book card titles + authors wrap to 2 lines on
        mobile instead of single-line ellipsis. #}
     <link href="{{ url_for('static', filename='css/fork-mobile-cards.css') }}" rel="stylesheet" media="screen">
+    {# Fork #25: pin form inputs to 16px on phones so iOS Safari doesn't auto-zoom
+       on focus (e.g. tapping the navbar search). Must load after caliBlur.css. #}
+    <link href="{{ url_for('static', filename='css/mobile-input-zoom.css') }}" rel="stylesheet" media="screen">
     <link href="{{ url_for('static', filename='css/cwa.css') }}" rel="stylesheet" media="screen">
     <link href="{{ url_for('static', filename='css/book_organizer.css') }}" rel="stylesheet" media="screen">
     {% if current_user.is_authenticated and (current_user.role_admin() or current_user.role_edit()) %}

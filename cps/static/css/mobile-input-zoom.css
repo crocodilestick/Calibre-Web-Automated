@@ -1,0 +1,35 @@
+/* Fork #25 (operator): stop iOS Safari from auto-zooming the whole page when a
+   form field is tapped on a phone — most visibly the navbar Search box, which on
+   mobile is a collapsed icon that expands into a text input on tap.
+
+   iOS Safari zooms in on focus whenever the focused control's font-size is below
+   16px. caliBlur.css pins every `.form-control` to `font-size: 13px !important`
+   (caliBlur.css "#.form-control { font-size: 13px !important }"), so focusing the
+   search field — or any input — fired the zoom. Because caliBlur uses
+   `!important`, the override must also use `!important`; `#query` is listed
+   explicitly so the navbar search wins on ID specificity regardless of any
+   later-loading stylesheet. This file is linked AFTER caliBlur.css in layout.html.
+
+   Deliberately NOT a `maximum-scale=1` / `user-scalable=no` viewport hack — that
+   disables pinch-to-zoom, an accessibility regression. Phone-only (<= 767px);
+   tablet/desktop keep caliBlur's existing 13px sizing. */
+@media (max-width: 767px) {
+  input[type="text"],
+  input[type="search"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="url"],
+  input[type="tel"],
+  input[type="date"],
+  input[type="datetime-local"],
+  input:not([type]),
+  textarea,
+  select,
+  .form-control,
+  .input-group-sm > .form-control,
+  .input-sm,
+  #query {
+    font-size: 16px !important;
+  }
+}

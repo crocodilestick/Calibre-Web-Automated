@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-16 18:15+0000\n"
+"POT-Creation-Date: 2026-06-16 18:45+0000\n"
 "PO-Revision-Date: 2025-06-07 14:44+0300\n"
 "Last-Translator: UsamaFoad <usamafoad@gmail.com>\n"
 "Language-Team: \n"
@@ -1451,8 +1451,8 @@ msgstr "لم يتم العثور على %(format)s على Google Drive: %(fn)s"
 msgid "%(format)s not found: %(fn)s"
 msgstr "لم يتم العثور على %(format)s: %(fn)s"
 
-#: cps/helper.py:161 cps/helper.py:292 cps/templates/detail.html:608
-#: cps/templates/detail.html:612
+#: cps/helper.py:161 cps/helper.py:292 cps/templates/detail.html:669
+#: cps/templates/detail.html:673
 msgid "Send to eReader"
 msgstr "إرسال إلى القارئ الإلكتروني"
 
@@ -1917,7 +1917,7 @@ msgid "Books ordered by series"
 msgstr "الكتب مرتبة حسب السلسلة"
 
 #: cps/opds.py:229 cps/render_template.py:117 cps/templates/book_table.html:113
-#: cps/templates/detail.html:857 cps/templates/search_form.html:108
+#: cps/templates/detail.html:909 cps/templates/search_form.html:108
 #: cps/web.py:2012
 msgid "Languages"
 msgstr "اللغات"
@@ -2978,9 +2978,9 @@ msgstr "اختر خيارًا"
 msgid "Add to Shelf"
 msgstr "إضافة إلى الرف"
 
-#: cps/templates/_book_organizer.html:116 cps/templates/detail.html:735
-#: cps/templates/detail.html:757 cps/templates/detail.html:916
-#: cps/templates/detail.html:1501 cps/templates/feed.xml:109
+#: cps/templates/_book_organizer.html:116 cps/templates/detail.html:787
+#: cps/templates/detail.html:809 cps/templates/detail.html:968
+#: cps/templates/detail.html:1553 cps/templates/feed.xml:109
 #: cps/templates/feed.xml:111 cps/templates/index.html:162
 #: cps/templates/layout.html:413 cps/templates/layout.html:426
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
@@ -3143,7 +3143,7 @@ msgstr "المسؤول"
 msgid "Password"
 msgstr "كلمة المرور"
 
-#: cps/templates/admin.html:24 cps/templates/detail.html:586
+#: cps/templates/admin.html:24 cps/templates/detail.html:647
 #: cps/templates/shelf.html:9 cps/templates/user_table.html:147
 msgid "Download"
 msgstr "تنزيل"
@@ -3437,7 +3437,7 @@ msgstr "موافق"
 #: cps/templates/config_edit.html:663 cps/templates/config_view_edit.html:236
 #: cps/templates/cover_picker.html:189
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:1106
+#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:1158
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
 #: cps/templates/duplicates.html:746 cps/templates/layout.html:603
 #: cps/templates/layout.html:758 cps/templates/modal_dialogs.html:64
@@ -3583,8 +3583,8 @@ msgstr "تقليل"
 msgid "More by"
 msgstr "المزيد بواسطة"
 
-#: cps/templates/book_edit.html:15 cps/templates/detail.html:689
-#: cps/templates/detail.html:691
+#: cps/templates/book_edit.html:15 cps/templates/detail.html:741
+#: cps/templates/detail.html:743
 msgid "Delete Book"
 msgstr "حذف الكتاب"
 
@@ -3637,7 +3637,7 @@ msgstr "خطأ"
 msgid "Upload Format"
 msgstr "تحميل التنسيق"
 
-#: cps/templates/book_edit.html:90 cps/templates/detail.html:826
+#: cps/templates/book_edit.html:90 cps/templates/detail.html:878
 #, fuzzy
 msgid "Imported as"
 msgstr "فشل التحديث:"
@@ -3661,7 +3661,7 @@ msgstr "تاريخ النشر"
 
 #: cps/templates/book_edit.html:121 cps/templates/book_edit.html:421
 #: cps/templates/cwa_settings.html:348 cps/templates/cwa_settings.html:350
-#: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:932
+#: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:984
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
@@ -3705,8 +3705,8 @@ msgid "Add Identifier"
 msgstr "إضافة معرف"
 
 #: cps/templates/book_edit.html:154 cps/templates/cover_picker.html:12
-#: cps/templates/detail.html:566 cps/templates/detail.html:569
-#: cps/templates/detail.html:682
+#: cps/templates/detail.html:619 cps/templates/detail.html:622
+#: cps/templates/detail.html:734
 #, fuzzy
 msgid "Change cover"
 msgstr "تغيير كلمة المرور"
@@ -3982,7 +3982,7 @@ msgstr ""
 msgid "The following books will be marked unread:"
 msgstr ""
 
-#: cps/templates/book_table.html:286 cps/templates/detail.html:659
+#: cps/templates/book_table.html:286 cps/templates/detail.html:711
 msgid "Edit Metadata"
 msgstr "تحرير البيانات الوصفية"
 
@@ -6140,216 +6140,217 @@ msgstr ""
 msgid "Click to See More"
 msgstr ""
 
-#: cps/templates/detail.html:622
-msgid "Read in Browser"
-msgstr "قراءة في المتصفح"
+#: cps/templates/detail.html:634 cps/templates/image.html:17
+#: cps/templates/listenmp3.html:159
+msgid "Read"
+msgstr "قراءة"
 
-#: cps/templates/detail.html:640 cps/templates/detail.html:641
-#: cps/templates/detail.html:995 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:692 cps/templates/detail.html:693
+#: cps/templates/detail.html:1047 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr "وضع علامة كـ غير مقروء"
 
-#: cps/templates/detail.html:640 cps/templates/detail.html:641
-#: cps/templates/detail.html:996 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:692 cps/templates/detail.html:693
+#: cps/templates/detail.html:1048 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr "وضع علامة كـ مقروء"
 
-#: cps/templates/detail.html:642
+#: cps/templates/detail.html:694
 #, fuzzy
 msgid "Marked as read"
 msgstr "وضع علامة كـ غير مقروء"
 
-#: cps/templates/detail.html:643
+#: cps/templates/detail.html:695
 #, fuzzy
 msgid "Marked as unread"
 msgstr "وضع علامة كـ غير مقروء"
 
-#: cps/templates/detail.html:648 cps/templates/detail.html:649
-#: cps/templates/detail.html:1002 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:700 cps/templates/detail.html:701
+#: cps/templates/detail.html:1054 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr "استعادة من الأرشيف"
 
-#: cps/templates/detail.html:648 cps/templates/detail.html:649
-#: cps/templates/detail.html:1003 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:700 cps/templates/detail.html:701
+#: cps/templates/detail.html:1055 cps/templates/listenmp3.html:166
 msgid "Add to archive"
 msgstr "إضافة إلى الأرشيف"
 
-#: cps/templates/detail.html:650 cps/templates/listenmp3.html:167
+#: cps/templates/detail.html:702 cps/templates/listenmp3.html:167
 msgid "Archived"
 msgstr "مؤرشف"
 
-#: cps/templates/detail.html:651
+#: cps/templates/detail.html:703
 #, fuzzy
 msgid "Restored from archive"
 msgstr "استعادة من الأرشيف"
 
-#: cps/templates/detail.html:674
+#: cps/templates/detail.html:726
 msgid "Reloaded metadata from disk"
 msgstr ""
 
-#: cps/templates/detail.html:675
+#: cps/templates/detail.html:727
 msgid "On-disk metadata matches — nothing to update"
 msgstr ""
 
-#: cps/templates/detail.html:676
+#: cps/templates/detail.html:728
 #, fuzzy
 msgid "Could not reload metadata"
 msgstr "تحرير البيانات الوصفية"
 
-#: cps/templates/detail.html:677 cps/templates/detail.html:678
+#: cps/templates/detail.html:729 cps/templates/detail.html:730
 msgid "Reload metadata from disk"
 msgstr ""
 
-#: cps/templates/detail.html:706 cps/templates/detail.html:707
+#: cps/templates/detail.html:758 cps/templates/detail.html:759
 msgid "Unhide from your library"
 msgstr ""
 
-#: cps/templates/detail.html:706 cps/templates/detail.html:707
+#: cps/templates/detail.html:758 cps/templates/detail.html:759
 #, fuzzy
 msgid "Hide from your library"
 msgstr "البحث في المكتبة"
 
-#: cps/templates/detail.html:708
+#: cps/templates/detail.html:760
 #, fuzzy
 msgid "Hidden"
 msgstr "كتاب مخفي"
 
-#: cps/templates/detail.html:709
+#: cps/templates/detail.html:761
 msgid "Unhidden"
 msgstr ""
 
-#: cps/templates/detail.html:724 cps/templates/detail.html:924
-#: cps/templates/detail.html:925 cps/templates/detail.html:1538
+#: cps/templates/detail.html:776 cps/templates/detail.html:976
+#: cps/templates/detail.html:977 cps/templates/detail.html:1590
 #: cps/templates/listenmp3.html:190 cps/templates/search.html:17
 msgid "Add to shelf"
 msgstr "إضافة إلى الرف"
 
-#: cps/templates/detail.html:747 cps/templates/detail.html:918
+#: cps/templates/detail.html:799 cps/templates/detail.html:970
 #, fuzzy
 msgid "Remove from shelf"
 msgstr "استعادة من الأرشيف"
 
-#: cps/templates/detail.html:785
+#: cps/templates/detail.html:837
 #, fuzzy
 msgid "Rating updated"
 msgstr "تم تحديث إعدادات قاعدة البيانات"
 
-#: cps/templates/detail.html:786
+#: cps/templates/detail.html:838
 #, fuzzy
 msgid "Rating cleared"
 msgstr "التقييم أعلى من"
 
-#: cps/templates/detail.html:804 cps/templates/listenmp3.html:62
+#: cps/templates/detail.html:856 cps/templates/listenmp3.html:62
 #, python-format
 msgid "Book %(index)s of %(range)s"
 msgstr "كتاب %(index)s من %(range)s"
 
-#: cps/templates/detail.html:809
+#: cps/templates/detail.html:861
 msgid "ID"
 msgstr ""
 
-#: cps/templates/detail.html:814
+#: cps/templates/detail.html:866
 msgid "UUID"
 msgstr ""
 
-#: cps/templates/detail.html:817
+#: cps/templates/detail.html:869
 msgid "UUID copied to clipboard"
 msgstr ""
 
-#: cps/templates/detail.html:818
+#: cps/templates/detail.html:870
 msgid "Unable to copy UUID"
 msgstr ""
 
-#: cps/templates/detail.html:819 cps/templates/detail.html:820
+#: cps/templates/detail.html:871 cps/templates/detail.html:872
 msgid "Copy UUID"
 msgstr ""
 
-#: cps/templates/detail.html:831
+#: cps/templates/detail.html:883
 msgid "Date added"
 msgstr ""
 
-#: cps/templates/detail.html:835
+#: cps/templates/detail.html:887
 msgid "Last modified"
 msgstr ""
 
-#: cps/templates/detail.html:840
+#: cps/templates/detail.html:892
 #, fuzzy
 msgid "File sizes"
 msgstr "أحجام الخطوط"
 
-#: cps/templates/detail.html:884
+#: cps/templates/detail.html:936
 #, fuzzy
 msgid "Remove tag"
 msgstr "إزالة"
 
-#: cps/templates/detail.html:892 cps/templates/detail.html:893
-#: cps/templates/detail.html:1416
+#: cps/templates/detail.html:944 cps/templates/detail.html:945
+#: cps/templates/detail.html:1468
 msgid "Add tag"
 msgstr ""
 
-#: cps/templates/detail.html:938 cps/templates/listenmp3.html:111
+#: cps/templates/detail.html:990 cps/templates/listenmp3.html:111
 msgid "Published"
 msgstr "تاريخ النشر"
 
-#: cps/templates/detail.html:944
+#: cps/templates/detail.html:996
 #, fuzzy
 msgid "KOReader Progress"
 msgstr "التقدم"
 
-#: cps/templates/detail.html:1014 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:1066 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "الوصف:"
 
-#: cps/templates/detail.html:1031
+#: cps/templates/detail.html:1083
 #, fuzzy
 msgid "Select eReader Email Addresses"
 msgstr "إرسال إلى بريد قارئ الكتب الإلكترونية"
 
-#: cps/templates/detail.html:1044
+#: cps/templates/detail.html:1096
 #, fuzzy
 msgid "Choose email addresses:"
 msgstr "إرسال إلى بريد قارئ الكتب الإلكترونية"
 
-#: cps/templates/detail.html:1049
+#: cps/templates/detail.html:1101
 #, fuzzy
 msgid "Select All"
 msgstr "تحديد"
 
-#: cps/templates/detail.html:1070
+#: cps/templates/detail.html:1122
 msgid "Other users' eReaders:"
 msgstr ""
 
-#: cps/templates/detail.html:1085
+#: cps/templates/detail.html:1137
 msgid "Additional email addresses:"
 msgstr ""
 
-#: cps/templates/detail.html:1086
+#: cps/templates/detail.html:1138
 msgid "Enter additional email addresses (separated by commas):"
 msgstr ""
 
-#: cps/templates/detail.html:1087
+#: cps/templates/detail.html:1139
 msgid "example@domain.com, another@domain.com"
 msgstr ""
 
-#: cps/templates/detail.html:1088
+#: cps/templates/detail.html:1140
 msgid "Enter one or more email addresses separated by commas"
 msgstr ""
 
-#: cps/templates/detail.html:1093
+#: cps/templates/detail.html:1145
 #, fuzzy
 msgid "Select format:"
 msgstr "حذف التنسيقات:"
 
-#: cps/templates/detail.html:1105
+#: cps/templates/detail.html:1157
 msgid "Send"
 msgstr ""
 
-#: cps/templates/detail.html:1394
+#: cps/templates/detail.html:1446
 #, fuzzy
 msgid "Failed to update tags"
 msgstr "فشل في إنشاء مسار الغلاف"
 
-#: cps/templates/detail.html:1502
+#: cps/templates/detail.html:1554
 #, fuzzy
 msgid "Failed to update shelves"
 msgstr "فشل في إنشاء مسار الغلاف"
@@ -6839,10 +6840,6 @@ msgstr "العودة إلى الرئيسية"
 #: cps/templates/http_error.html:56
 msgid "Logout User"
 msgstr "تسجيل خروج المستخدم"
-
-#: cps/templates/image.html:17 cps/templates/listenmp3.html:159
-msgid "Read"
-msgstr "قراءة"
 
 #: cps/templates/index.html:104
 msgid "Mobile Notice"
@@ -8328,6 +8325,9 @@ msgstr "مزامنة الرفوف المختارة مع Kobo"
 #: cps/templates/user_table.html:158
 msgid "Show Read/Unread Section"
 msgstr "إظهار قسم المقروء/غير المقروء"
+
+#~ msgid "Read in Browser"
+#~ msgstr "قراءة في المتصفح"
 
 #~ msgid "Drag to Rearrange Order"
 #~ msgstr "اسحب لإعادة ترتيب الترتيب"

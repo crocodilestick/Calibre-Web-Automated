@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-16 18:15+0000\n"
+"POT-Creation-Date: 2026-06-16 18:45+0000\n"
 "PO-Revision-Date: 2020-01-12 13:56+0100\n"
 "Last-Translator: Samuli Valavuo <svalavuo@gmail.com>\n"
 "Language-Team: \n"
@@ -1442,8 +1442,8 @@ msgstr "%(format)s ei löytynyt Google Drivesta: %(fn)s"
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s ei löydy: %(fn)s"
 
-#: cps/helper.py:161 cps/helper.py:292 cps/templates/detail.html:608
-#: cps/templates/detail.html:612
+#: cps/helper.py:161 cps/helper.py:292 cps/templates/detail.html:669
+#: cps/templates/detail.html:673
 #, fuzzy
 msgid "Send to eReader"
 msgstr "Lähetä Kindleen"
@@ -1908,7 +1908,7 @@ msgid "Books ordered by series"
 msgstr "Kirjat sarjoittain"
 
 #: cps/opds.py:229 cps/render_template.py:117 cps/templates/book_table.html:113
-#: cps/templates/detail.html:857 cps/templates/search_form.html:108
+#: cps/templates/detail.html:909 cps/templates/search_form.html:108
 #: cps/web.py:2012
 msgid "Languages"
 msgstr "Kielet"
@@ -2993,9 +2993,9 @@ msgstr "valitse vaihtoehto"
 msgid "Add to Shelf"
 msgstr "Lisää hyllyyn"
 
-#: cps/templates/_book_organizer.html:116 cps/templates/detail.html:735
-#: cps/templates/detail.html:757 cps/templates/detail.html:916
-#: cps/templates/detail.html:1501 cps/templates/feed.xml:109
+#: cps/templates/_book_organizer.html:116 cps/templates/detail.html:787
+#: cps/templates/detail.html:809 cps/templates/detail.html:968
+#: cps/templates/detail.html:1553 cps/templates/feed.xml:109
 #: cps/templates/feed.xml:111 cps/templates/index.html:162
 #: cps/templates/layout.html:413 cps/templates/layout.html:426
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
@@ -3158,7 +3158,7 @@ msgstr "Ylläpito"
 msgid "Password"
 msgstr "Salasana"
 
-#: cps/templates/admin.html:24 cps/templates/detail.html:586
+#: cps/templates/admin.html:24 cps/templates/detail.html:647
 #: cps/templates/shelf.html:9 cps/templates/user_table.html:147
 msgid "Download"
 msgstr "Lataa"
@@ -3459,7 +3459,7 @@ msgstr "Ok"
 #: cps/templates/config_edit.html:663 cps/templates/config_view_edit.html:236
 #: cps/templates/cover_picker.html:189
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:1106
+#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:1158
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
 #: cps/templates/duplicates.html:746 cps/templates/layout.html:603
 #: cps/templates/layout.html:758 cps/templates/modal_dialogs.html:64
@@ -3605,8 +3605,8 @@ msgstr "vähennä"
 msgid "More by"
 msgstr "Enemmän"
 
-#: cps/templates/book_edit.html:15 cps/templates/detail.html:689
-#: cps/templates/detail.html:691
+#: cps/templates/book_edit.html:15 cps/templates/detail.html:741
+#: cps/templates/detail.html:743
 msgid "Delete Book"
 msgstr "Poista kirja"
 
@@ -3660,7 +3660,7 @@ msgstr "Virhe"
 msgid "Upload Format"
 msgstr "Lataa tiedostomuoto"
 
-#: cps/templates/book_edit.html:90 cps/templates/detail.html:826
+#: cps/templates/book_edit.html:90 cps/templates/detail.html:878
 #, fuzzy
 msgid "Imported as"
 msgstr "Päivitys epäonnistui:"
@@ -3685,7 +3685,7 @@ msgstr "Julkaisupäivä"
 
 #: cps/templates/book_edit.html:121 cps/templates/book_edit.html:421
 #: cps/templates/cwa_settings.html:348 cps/templates/cwa_settings.html:350
-#: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:932
+#: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:984
 #: cps/templates/hardcover_review_matches.html:148
 #: cps/templates/listenmp3.html:102 cps/templates/search_form.html:16
 msgid "Publisher"
@@ -3729,8 +3729,8 @@ msgid "Add Identifier"
 msgstr ""
 
 #: cps/templates/book_edit.html:154 cps/templates/cover_picker.html:12
-#: cps/templates/detail.html:566 cps/templates/detail.html:569
-#: cps/templates/detail.html:682
+#: cps/templates/detail.html:619 cps/templates/detail.html:622
+#: cps/templates/detail.html:734
 #, fuzzy
 msgid "Change cover"
 msgstr "Salli sananan vaihto"
@@ -4019,7 +4019,7 @@ msgstr ""
 msgid "The following books will be marked unread:"
 msgstr ""
 
-#: cps/templates/book_table.html:286 cps/templates/detail.html:659
+#: cps/templates/book_table.html:286 cps/templates/detail.html:711
 msgid "Edit Metadata"
 msgstr "Muokkaa metadataa"
 
@@ -6187,216 +6187,217 @@ msgstr ""
 msgid "Click to See More"
 msgstr ""
 
-#: cps/templates/detail.html:622
-msgid "Read in Browser"
-msgstr "Lue selaimessa"
+#: cps/templates/detail.html:634 cps/templates/image.html:17
+#: cps/templates/listenmp3.html:159
+msgid "Read"
+msgstr "Luettu"
 
-#: cps/templates/detail.html:640 cps/templates/detail.html:641
-#: cps/templates/detail.html:995 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:692 cps/templates/detail.html:693
+#: cps/templates/detail.html:1047 cps/templates/listenmp3.html:158
 msgid "Mark As Unread"
 msgstr "Merkitse lukemattomaksi"
 
-#: cps/templates/detail.html:640 cps/templates/detail.html:641
-#: cps/templates/detail.html:996 cps/templates/listenmp3.html:158
+#: cps/templates/detail.html:692 cps/templates/detail.html:693
+#: cps/templates/detail.html:1048 cps/templates/listenmp3.html:158
 msgid "Mark As Read"
 msgstr "Merkitse luetuksi"
 
-#: cps/templates/detail.html:642
+#: cps/templates/detail.html:694
 #, fuzzy
 msgid "Marked as read"
 msgstr "Merkitse lukemattomaksi"
 
-#: cps/templates/detail.html:643
+#: cps/templates/detail.html:695
 #, fuzzy
 msgid "Marked as unread"
 msgstr "Merkitse lukemattomaksi"
 
-#: cps/templates/detail.html:648 cps/templates/detail.html:649
-#: cps/templates/detail.html:1002 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:700 cps/templates/detail.html:701
+#: cps/templates/detail.html:1054 cps/templates/listenmp3.html:166
 msgid "Restore from archive"
 msgstr ""
 
-#: cps/templates/detail.html:648 cps/templates/detail.html:649
-#: cps/templates/detail.html:1003 cps/templates/listenmp3.html:166
+#: cps/templates/detail.html:700 cps/templates/detail.html:701
+#: cps/templates/detail.html:1055 cps/templates/listenmp3.html:166
 #, fuzzy
 msgid "Add to archive"
 msgstr "Lisää hyllyyn"
 
-#: cps/templates/detail.html:650 cps/templates/listenmp3.html:167
+#: cps/templates/detail.html:702 cps/templates/listenmp3.html:167
 #, fuzzy
 msgid "Archived"
 msgstr "Hae"
 
-#: cps/templates/detail.html:651
+#: cps/templates/detail.html:703
 #, fuzzy
 msgid "Restored from archive"
 msgstr "Lisää hyllyyn"
 
-#: cps/templates/detail.html:674
+#: cps/templates/detail.html:726
 msgid "Reloaded metadata from disk"
 msgstr ""
 
-#: cps/templates/detail.html:675
+#: cps/templates/detail.html:727
 msgid "On-disk metadata matches — nothing to update"
 msgstr ""
 
-#: cps/templates/detail.html:676
+#: cps/templates/detail.html:728
 #, fuzzy
 msgid "Could not reload metadata"
 msgstr "muokkaa metadataa"
 
-#: cps/templates/detail.html:677 cps/templates/detail.html:678
+#: cps/templates/detail.html:729 cps/templates/detail.html:730
 msgid "Reload metadata from disk"
 msgstr ""
 
-#: cps/templates/detail.html:706 cps/templates/detail.html:707
+#: cps/templates/detail.html:758 cps/templates/detail.html:759
 msgid "Unhide from your library"
 msgstr ""
 
-#: cps/templates/detail.html:706 cps/templates/detail.html:707
+#: cps/templates/detail.html:758 cps/templates/detail.html:759
 #, fuzzy
 msgid "Hide from your library"
 msgstr "Kirjastossa"
 
-#: cps/templates/detail.html:708
+#: cps/templates/detail.html:760
 #, fuzzy
 msgid "Hidden"
 msgstr "Näytä ekirjat"
 
-#: cps/templates/detail.html:709
+#: cps/templates/detail.html:761
 msgid "Unhidden"
 msgstr ""
 
-#: cps/templates/detail.html:724 cps/templates/detail.html:924
-#: cps/templates/detail.html:925 cps/templates/detail.html:1538
+#: cps/templates/detail.html:776 cps/templates/detail.html:976
+#: cps/templates/detail.html:977 cps/templates/detail.html:1590
 #: cps/templates/listenmp3.html:190 cps/templates/search.html:17
 msgid "Add to shelf"
 msgstr "Lisää hyllyyn"
 
-#: cps/templates/detail.html:747 cps/templates/detail.html:918
+#: cps/templates/detail.html:799 cps/templates/detail.html:970
 #, fuzzy
 msgid "Remove from shelf"
 msgstr "Lisää hyllyyn"
 
-#: cps/templates/detail.html:785
+#: cps/templates/detail.html:837
 #, fuzzy
 msgid "Rating updated"
 msgstr "Sähköpostipalvelimen tiedot päivitetty"
 
-#: cps/templates/detail.html:786
+#: cps/templates/detail.html:838
 #, fuzzy
 msgid "Rating cleared"
 msgstr "Arvio enemmän kun"
 
-#: cps/templates/detail.html:804 cps/templates/listenmp3.html:62
+#: cps/templates/detail.html:856 cps/templates/listenmp3.html:62
 #, python-format
 msgid "Book %(index)s of %(range)s"
 msgstr ""
 
-#: cps/templates/detail.html:809
+#: cps/templates/detail.html:861
 msgid "ID"
 msgstr ""
 
-#: cps/templates/detail.html:814
+#: cps/templates/detail.html:866
 msgid "UUID"
 msgstr ""
 
-#: cps/templates/detail.html:817
+#: cps/templates/detail.html:869
 msgid "UUID copied to clipboard"
 msgstr ""
 
-#: cps/templates/detail.html:818
+#: cps/templates/detail.html:870
 msgid "Unable to copy UUID"
 msgstr ""
 
-#: cps/templates/detail.html:819 cps/templates/detail.html:820
+#: cps/templates/detail.html:871 cps/templates/detail.html:872
 msgid "Copy UUID"
 msgstr ""
 
-#: cps/templates/detail.html:831
+#: cps/templates/detail.html:883
 msgid "Date added"
 msgstr ""
 
-#: cps/templates/detail.html:835
+#: cps/templates/detail.html:887
 msgid "Last modified"
 msgstr ""
 
-#: cps/templates/detail.html:840
+#: cps/templates/detail.html:892
 msgid "File sizes"
 msgstr ""
 
-#: cps/templates/detail.html:884
+#: cps/templates/detail.html:936
 msgid "Remove tag"
 msgstr ""
 
-#: cps/templates/detail.html:892 cps/templates/detail.html:893
-#: cps/templates/detail.html:1416
+#: cps/templates/detail.html:944 cps/templates/detail.html:945
+#: cps/templates/detail.html:1468
 msgid "Add tag"
 msgstr ""
 
-#: cps/templates/detail.html:938 cps/templates/listenmp3.html:111
+#: cps/templates/detail.html:990 cps/templates/listenmp3.html:111
 #, fuzzy
 msgid "Published"
 msgstr "Julkaisija"
 
-#: cps/templates/detail.html:944
+#: cps/templates/detail.html:996
 #, fuzzy
 msgid "KOReader Progress"
 msgstr "Edistyminen"
 
-#: cps/templates/detail.html:1014 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:1066 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "Kuvaus:"
 
-#: cps/templates/detail.html:1031
+#: cps/templates/detail.html:1083
 #, fuzzy
 msgid "Select eReader Email Addresses"
 msgstr "Kindle"
 
-#: cps/templates/detail.html:1044
+#: cps/templates/detail.html:1096
 #, fuzzy
 msgid "Choose email addresses:"
 msgstr "Kindle"
 
-#: cps/templates/detail.html:1049
+#: cps/templates/detail.html:1101
 #, fuzzy
 msgid "Select All"
 msgstr "luo hylly"
 
-#: cps/templates/detail.html:1070
+#: cps/templates/detail.html:1122
 msgid "Other users' eReaders:"
 msgstr ""
 
-#: cps/templates/detail.html:1085
+#: cps/templates/detail.html:1137
 msgid "Additional email addresses:"
 msgstr ""
 
-#: cps/templates/detail.html:1086
+#: cps/templates/detail.html:1138
 msgid "Enter additional email addresses (separated by commas):"
 msgstr ""
 
-#: cps/templates/detail.html:1087
+#: cps/templates/detail.html:1139
 msgid "example@domain.com, another@domain.com"
 msgstr ""
 
-#: cps/templates/detail.html:1088
+#: cps/templates/detail.html:1140
 msgid "Enter one or more email addresses separated by commas"
 msgstr ""
 
-#: cps/templates/detail.html:1093
+#: cps/templates/detail.html:1145
 #, fuzzy
 msgid "Select format:"
 msgstr "Poista tiedostomuodot:"
 
-#: cps/templates/detail.html:1105
+#: cps/templates/detail.html:1157
 msgid "Send"
 msgstr ""
 
-#: cps/templates/detail.html:1394
+#: cps/templates/detail.html:1446
 msgid "Failed to update tags"
 msgstr ""
 
-#: cps/templates/detail.html:1502
+#: cps/templates/detail.html:1554
 #, fuzzy
 msgid "Failed to update shelves"
 msgstr "Tiedoston %(file)s tallennus epäonnistui."
@@ -6888,10 +6889,6 @@ msgstr "Palaa kotiin"
 #, fuzzy
 msgid "Logout User"
 msgstr "Kirjaudu ulos"
-
-#: cps/templates/image.html:17 cps/templates/listenmp3.html:159
-msgid "Read"
-msgstr "Luettu"
 
 #: cps/templates/index.html:104
 msgid "Mobile Notice"
@@ -8419,6 +8416,9 @@ msgstr ""
 #, fuzzy
 msgid "Show Read/Unread Section"
 msgstr "Näytä sarjavalinta"
+
+#~ msgid "Read in Browser"
+#~ msgstr "Lue selaimessa"
 
 #~ msgid "Drag to Rearrange Order"
 #~ msgstr "Vedä ja pudota muuttaaksesi järjestystä"

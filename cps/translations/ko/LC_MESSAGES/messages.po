@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-16 19:03+0000\n"
+"POT-Creation-Date: 2026-06-16 19:19+0000\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -907,46 +907,55 @@ msgstr "설치되지 않았습니다."
 msgid "Execution permissions missing"
 msgstr "실행 권한이 없습니다."
 
-#: cps/cover_picker.py:110
+#: cps/cover_picker.py:113
+#, fuzzy
+msgid "Back to edit metadata"
+msgstr "메타데이터 편집"
+
+#: cps/cover_picker.py:116 cps/templates/book_edit.html:18
+msgid "Back to book"
+msgstr ""
+
+#: cps/cover_picker.py:124
 #, fuzzy, python-format
 msgid "Change cover — %(title)s"
 msgstr "저자와 제목 바꾸기"
 
-#: cps/cover_picker.py:197
+#: cps/cover_picker.py:211
 msgid "This book's cover is locked. Unlock it first."
 msgstr ""
 
-#: cps/cover_picker.py:210
+#: cps/cover_picker.py:224
 msgid "Provide a cover URL."
 msgstr ""
 
-#: cps/cover_picker.py:217
+#: cps/cover_picker.py:231
 msgid "This book doesn't have an embedded cover we can extract."
 msgstr ""
 
-#: cps/cover_picker.py:221
+#: cps/cover_picker.py:235
 #, fuzzy
 msgid "Unknown cover source."
 msgstr "연결 오류가 발생했습니다."
 
-#: cps/cover_picker.py:250
+#: cps/cover_picker.py:264
 msgid "Could not save lock state."
 msgstr ""
 
-#: cps/cover_picker.py:297
+#: cps/cover_picker.py:311
 msgid "Only http(s) URLs can be previewed."
 msgstr ""
 
-#: cps/cover_picker.py:321
+#: cps/cover_picker.py:335
 #, fuzzy
 msgid "Could not render the e-reader preview."
 msgstr "지정된 디렉토리를 찾을 수 없습니다."
 
-#: cps/cover_picker.py:324
+#: cps/cover_picker.py:338
 msgid "Could not load a source image to preview."
 msgstr ""
 
-#: cps/cover_picker.py:523 cps/cover_picker.py:537
+#: cps/cover_picker.py:537 cps/cover_picker.py:551
 msgid "Cover save failed."
 msgstr ""
 
@@ -979,7 +988,7 @@ msgstr "타임스탬프"
 msgid "Book ID"
 msgstr "책 ID"
 
-#: cps/cwa_functions.py:1120 cps/templates/book_edit.html:87
+#: cps/cwa_functions.py:1120 cps/templates/book_edit.html:103
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "책 제목"
@@ -1225,7 +1234,7 @@ msgstr "형식 업로드를 위한 책 ID가 없거나 잘못되었습니다."
 msgid "Cannot upload format: Book no longer exists in library"
 msgstr ""
 
-#: cps/editbooks.py:160 cps/editbooks.py:187 cps/templates/book_edit.html:56
+#: cps/editbooks.py:160 cps/editbooks.py:187 cps/templates/book_edit.html:72
 #: cps/templates/layout.html:204
 msgid "Upload done, processing, please wait..."
 msgstr "업로드 완료, 처리 중입니다. 잠시만 기다려 주세요."
@@ -1876,7 +1885,7 @@ msgstr "카테고리"
 msgid "Books ordered by category"
 msgstr "카테고리별 정렬"
 
-#: cps/opds.py:223 cps/render_template.py:107 cps/templates/book_edit.html:105
+#: cps/opds.py:223 cps/render_template.py:107 cps/templates/book_edit.html:121
 #: cps/templates/book_table.html:111 cps/templates/cwa_settings.html:362
 #: cps/templates/cwa_settings.html:364 cps/templates/cwa_settings.html:1103
 #: cps/templates/hardcover_review_matches.html:140
@@ -2056,7 +2065,7 @@ msgstr "중복인 책"
 msgid "Show Duplicate Books"
 msgstr "중복인 책 보기"
 
-#: cps/search.py:53 cps/search.py:438 cps/templates/book_edit.html:299
+#: cps/search.py:53 cps/search.py:438 cps/templates/book_edit.html:315
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:43
 #: cps/templates/index.xml:12 cps/templates/layout.html:167
 #: cps/templates/layout.html:170 cps/templates/search_form.html:247
@@ -2984,7 +2993,7 @@ msgid "Mark as unread"
 msgstr "읽지 않음으로 표시"
 
 #: cps/templates/_book_organizer.html:155 cps/templates/admin.html:27
-#: cps/templates/book_edit.html:21 cps/templates/book_table.html:66
+#: cps/templates/book_edit.html:37 cps/templates/book_table.html:66
 #: cps/templates/book_table.html:145 cps/templates/book_table.html:194
 #: cps/templates/duplicates.html:718 cps/templates/modal_dialogs.html:63
 #: cps/templates/modal_dialogs.html:116 cps/templates/read.html:138
@@ -3405,7 +3414,7 @@ msgid "OK"
 msgstr "예"
 
 #: cps/templates/admin.html:302 cps/templates/admin.html:316
-#: cps/templates/book_edit.html:274 cps/templates/book_table.html:176
+#: cps/templates/book_edit.html:290 cps/templates/book_table.html:176
 #: cps/templates/book_table.html:195 cps/templates/book_table.html:215
 #: cps/templates/book_table.html:235 cps/templates/book_table.html:255
 #: cps/templates/book_table.html:275 cps/templates/book_table.html:333
@@ -3481,8 +3490,8 @@ msgstr ""
 msgid "total entries seen"
 msgstr ""
 
-#: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:56
-#: cps/templates/book_edit.html:73 cps/templates/layout.html:204
+#: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:72
+#: cps/templates/book_edit.html:89 cps/templates/layout.html:204
 #: cps/templates/layout.html:335
 msgid "Uploading..."
 msgstr "업로드 중"
@@ -3559,36 +3568,36 @@ msgstr "줄이기"
 msgid "More by"
 msgstr "더보기"
 
-#: cps/templates/book_edit.html:15 cps/templates/detail.html:741
+#: cps/templates/book_edit.html:31 cps/templates/detail.html:741
 #: cps/templates/detail.html:743
 msgid "Delete Book"
 msgstr "책 삭제"
 
-#: cps/templates/book_edit.html:18
+#: cps/templates/book_edit.html:34
 msgid "Delete formats:"
 msgstr "형식 삭제:"
 
-#: cps/templates/book_edit.html:29
+#: cps/templates/book_edit.html:45
 msgid "Convert book format:"
 msgstr "책 형식 변경:"
 
-#: cps/templates/book_edit.html:34
+#: cps/templates/book_edit.html:50
 msgid "Convert from:"
 msgstr "변환 전 유형:"
 
-#: cps/templates/book_edit.html:36 cps/templates/book_edit.html:43
+#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:59
 msgid "select an option"
 msgstr "옵션 선택"
 
-#: cps/templates/book_edit.html:41
+#: cps/templates/book_edit.html:57
 msgid "Convert to:"
 msgstr "변환 후 유형:"
 
-#: cps/templates/book_edit.html:50
+#: cps/templates/book_edit.html:66
 msgid "Convert book"
 msgstr "책 변환"
 
-#: cps/templates/book_edit.html:56 cps/templates/book_edit.html:339
+#: cps/templates/book_edit.html:72 cps/templates/book_edit.html:355
 #: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
 #: cps/templates/layout.html:204 cps/templates/layout.html:506
 #: cps/templates/layout.html:643 cps/templates/modal_dialogs.html:34
@@ -3596,7 +3605,7 @@ msgstr "책 변환"
 msgid "Close"
 msgstr "닫기"
 
-#: cps/templates/book_edit.html:56 cps/templates/duplicates.html:799
+#: cps/templates/book_edit.html:72 cps/templates/duplicates.html:799
 #: cps/templates/hardcover_review_matches.html:279
 #: cps/templates/hardcover_review_matches.html:288
 #: cps/templates/hardcover_review_matches.html:323
@@ -3609,33 +3618,33 @@ msgstr "닫기"
 msgid "Error"
 msgstr "오류"
 
-#: cps/templates/book_edit.html:61
+#: cps/templates/book_edit.html:77
 msgid "Upload Format"
 msgstr "다른 형식 업로드"
 
-#: cps/templates/book_edit.html:90 cps/templates/detail.html:878
+#: cps/templates/book_edit.html:106 cps/templates/detail.html:878
 #, fuzzy
 msgid "Imported as"
 msgstr "업데이트 실패: "
 
-#: cps/templates/book_edit.html:97 cps/templates/book_edit.html:420
+#: cps/templates/book_edit.html:113 cps/templates/book_edit.html:436
 #: cps/templates/cwa_settings.html:1091 cps/templates/search_form.html:12
 msgid "Author"
 msgstr "저자"
 
-#: cps/templates/book_edit.html:101 cps/templates/search_form.html:52
+#: cps/templates/book_edit.html:117 cps/templates/search_form.html:52
 msgid "Tags"
 msgstr "태그"
 
-#: cps/templates/book_edit.html:109 cps/templates/book_table.html:112
+#: cps/templates/book_edit.html:125 cps/templates/book_table.html:112
 msgid "Series ID"
 msgstr "시리즈 ID"
 
-#: cps/templates/book_edit.html:112
+#: cps/templates/book_edit.html:128
 msgid "Published Date"
 msgstr "발행일"
 
-#: cps/templates/book_edit.html:121 cps/templates/book_edit.html:421
+#: cps/templates/book_edit.html:137 cps/templates/book_edit.html:437
 #: cps/templates/cwa_settings.html:348 cps/templates/cwa_settings.html:350
 #: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:984
 #: cps/templates/hardcover_review_matches.html:148
@@ -3643,97 +3652,97 @@ msgstr "발행일"
 msgid "Publisher"
 msgstr "출판사"
 
-#: cps/templates/book_edit.html:125 cps/templates/cwa_settings.html:1097
+#: cps/templates/book_edit.html:141 cps/templates/cwa_settings.html:1097
 #: cps/templates/listenmp3.html:69
 msgid "Language"
 msgstr "언어"
 
-#: cps/templates/book_edit.html:129 cps/templates/cwa_settings.html:369
+#: cps/templates/book_edit.html:145 cps/templates/cwa_settings.html:369
 #: cps/templates/cwa_settings.html:371
 msgid "Rating"
 msgstr "평점"
 
-#: cps/templates/book_edit.html:133 cps/templates/book_edit.html:422
+#: cps/templates/book_edit.html:149 cps/templates/book_edit.html:438
 #: cps/templates/cwa_settings.html:341 cps/templates/cwa_settings.html:343
 #: cps/templates/search_form.html:154
 msgid "Description"
 msgstr "설명"
 
-#: cps/templates/book_edit.html:137
+#: cps/templates/book_edit.html:153
 msgid "Identifiers"
 msgstr "식별자"
 
-#: cps/templates/book_edit.html:141 cps/templates/book_edit.html:431
+#: cps/templates/book_edit.html:157 cps/templates/book_edit.html:447
 msgid "Identifier Type"
 msgstr "식별자 유형"
 
-#: cps/templates/book_edit.html:142 cps/templates/book_edit.html:432
+#: cps/templates/book_edit.html:158 cps/templates/book_edit.html:448
 msgid "Identifier Value"
 msgstr "식별자 값"
 
-#: cps/templates/book_edit.html:143 cps/templates/book_edit.html:433
+#: cps/templates/book_edit.html:159 cps/templates/book_edit.html:449
 #: cps/templates/user_table.html:24
 msgid "Remove"
 msgstr "삭제"
 
-#: cps/templates/book_edit.html:148
+#: cps/templates/book_edit.html:164
 msgid "Add Identifier"
 msgstr "식별자 추가"
 
-#: cps/templates/book_edit.html:154 cps/templates/cover_picker.html:12
+#: cps/templates/book_edit.html:170 cps/templates/cover_picker.html:12
 #: cps/templates/detail.html:619 cps/templates/detail.html:622
 #: cps/templates/detail.html:734
 #, fuzzy
 msgid "Change cover"
 msgstr "비밀번호 변경"
 
-#: cps/templates/book_edit.html:157
+#: cps/templates/book_edit.html:173
 msgid ""
 "Pick a cover from any source, paste a URL, upload a file, or use the "
 "embedded cover."
 msgstr ""
 
-#: cps/templates/book_edit.html:161
+#: cps/templates/book_edit.html:177
 msgid ""
 "Fetch Cover from URL (JPEG - Image will be downloaded and stored in database)"
 msgstr "URL로 표지 추가 (JPEG 이미지를 다운로드합니다)"
 
-#: cps/templates/book_edit.html:170
+#: cps/templates/book_edit.html:186
 msgid "Upload Cover from Local Disk"
 msgstr "내 컴퓨터에서 표지 업로드"
 
-#: cps/templates/book_edit.html:182 cps/templates/search_form.html:46
+#: cps/templates/book_edit.html:198 cps/templates/search_form.html:46
 #: cps/templates/search_form.html:167
 msgid "Yes"
 msgstr "예"
 
-#: cps/templates/book_edit.html:183 cps/templates/search_form.html:47
+#: cps/templates/book_edit.html:199 cps/templates/search_form.html:47
 #: cps/templates/search_form.html:168
 msgid "No"
 msgstr "아니오"
 
-#: cps/templates/book_edit.html:248
+#: cps/templates/book_edit.html:264
 #, fuzzy
 msgid "Hardcover Sync Blacklist"
 msgstr "Kobo sync 활성화"
 
-#: cps/templates/book_edit.html:252
+#: cps/templates/book_edit.html:268
 msgid "Blacklist annotations from syncing to Hardcover"
 msgstr ""
 
-#: cps/templates/book_edit.html:259
+#: cps/templates/book_edit.html:275
 msgid "Blacklist reading progress from syncing to Hardcover"
 msgstr ""
 
-#: cps/templates/book_edit.html:268
+#: cps/templates/book_edit.html:284
 msgid "View Book on Save"
 msgstr "저장 후 상세정보로"
 
-#: cps/templates/book_edit.html:272 cps/templates/book_edit.html:293
+#: cps/templates/book_edit.html:288 cps/templates/book_edit.html:309
 msgid "Fetch Metadata"
 msgstr "메타데이터 가져오기"
 
-#: cps/templates/book_edit.html:275 cps/templates/config_db.html:111
+#: cps/templates/book_edit.html:291 cps/templates/config_db.html:111
 #: cps/templates/config_edit.html:664 cps/templates/config_view_edit.html:237
 #: cps/templates/email_edit.html:71 cps/templates/read.html:136
 #: cps/templates/schedule_edit.html:47 cps/templates/shelf_edit.html:36
@@ -3741,63 +3750,63 @@ msgstr "메타데이터 가져오기"
 msgid "Save"
 msgstr "저장"
 
-#: cps/templates/book_edit.html:296
+#: cps/templates/book_edit.html:312
 msgid "Keyword"
 msgstr "키워드"
 
-#: cps/templates/book_edit.html:297
+#: cps/templates/book_edit.html:313
 msgid "Search keyword"
 msgstr "키워드 검색"
 
-#: cps/templates/book_edit.html:306
+#: cps/templates/book_edit.html:322
 msgid "Selected metadata fields were applied to the edit form."
 msgstr ""
 
-#: cps/templates/book_edit.html:313
+#: cps/templates/book_edit.html:329
 msgid "API Keys"
 msgstr ""
 
-#: cps/templates/book_edit.html:319
+#: cps/templates/book_edit.html:335
 msgid ""
 "Some metadata sources need an API key. Adding a key here improves cover "
 "quality and unblocks rate-limited services. Keys are stored once for the "
 "whole instance — admins only."
 msgstr ""
 
-#: cps/templates/book_edit.html:321 cps/templates/book_edit.html:335
-#: cps/templates/book_edit.html:417
+#: cps/templates/book_edit.html:337 cps/templates/book_edit.html:351
+#: cps/templates/book_edit.html:433
 msgid "Loading..."
 msgstr "불러오는 중"
 
-#: cps/templates/book_edit.html:326
+#: cps/templates/book_edit.html:342
 msgid "Sort by:"
 msgstr ""
 
-#: cps/templates/book_edit.html:328
+#: cps/templates/book_edit.html:344
 msgid "Provider order (default)"
 msgstr ""
 
-#: cps/templates/book_edit.html:329
+#: cps/templates/book_edit.html:345
 msgid "Cover size — largest first"
 msgstr ""
 
-#: cps/templates/book_edit.html:330
+#: cps/templates/book_edit.html:346
 msgid "Cover size — smallest first"
 msgstr ""
 
-#: cps/templates/book_edit.html:361
+#: cps/templates/book_edit.html:377
 msgid "Apply"
 msgstr ""
 
-#: cps/templates/book_edit.html:418
+#: cps/templates/book_edit.html:434
 msgid "Search error!"
 msgstr "오류가 발생했습니다!"
 
-#: cps/templates/book_edit.html:419
+#: cps/templates/book_edit.html:435
 msgid "No Result(s) found! Please try another keyword."
 msgstr "검색 결과가 없습니다. 다른 검색어로 검색해 보세요."
 
-#: cps/templates/book_edit.html:423
+#: cps/templates/book_edit.html:439
 msgid "Source"
 msgstr "출처"
 
@@ -4959,11 +4968,6 @@ msgstr "허용/거부 태그 추가"
 #: cps/templates/config_view_edit.html:229
 msgid "Add Allowed/Denied custom column values"
 msgstr "허용/거부 사용자 정의 열 값 추가"
-
-#: cps/templates/cover_picker.html:10
-#, fuzzy
-msgid "Back to edit metadata"
-msgstr "메타데이터 편집"
 
 #: cps/templates/cover_picker.html:14
 msgid ""

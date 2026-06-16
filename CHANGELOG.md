@@ -16,6 +16,8 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+## [v4.0.165] - 2026-06-16
+
 ### Fixed
 - On a desktop browser, the **Fetch Metadata** popup on the Edit Book page no
   longer runs off the bottom of the screen when a search returns a long list of

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-15 14:23+0000\n"
+"POT-Creation-Date: 2026-06-16 12:07+0000\n"
 "PO-Revision-Date: 2020-04-29 01:20+0400\n"
 "Last-Translator: ZIZA\n"
 "Language-Team: \n"
@@ -1291,7 +1291,7 @@ msgid "Cannot upload format: Book no longer exists in library"
 msgstr "Невозможно загрузить формат: Канига не существует в библиотеке"
 
 #: cps/editbooks.py:160 cps/editbooks.py:187 cps/templates/book_edit.html:56
-#: cps/templates/layout.html:198
+#: cps/templates/layout.html:201
 msgid "Upload done, processing, please wait..."
 msgstr "Загрузка завершена, обработка, пожалуйста, подождите..."
 
@@ -2020,7 +2020,7 @@ msgstr "Форматы файлов"
 msgid "Books ordered by file formats"
 msgstr "Книги, упорядоченные по форматам файлов"
 
-#: cps/opds.py:247 cps/templates/layout.html:407
+#: cps/opds.py:247 cps/templates/layout.html:410
 #: cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "Полки"
@@ -2049,8 +2049,8 @@ msgstr "Описание"
 msgid "{} Stars"
 msgstr "{} звезд"
 
-#: cps/remotelogin.py:76 cps/templates/layout.html:182
-#: cps/templates/layout.html:223 cps/templates/login.html:11
+#: cps/remotelogin.py:76 cps/templates/layout.html:185
+#: cps/templates/layout.html:226 cps/templates/login.html:11
 #: cps/templates/login.html:39 cps/web.py:2491
 msgid "Login"
 msgstr "Вход"
@@ -2174,8 +2174,8 @@ msgstr "Показать книги с наивысшим рейтингом"
 
 #: cps/search.py:53 cps/search.py:438 cps/templates/book_edit.html:299
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:43
-#: cps/templates/index.xml:12 cps/templates/layout.html:161
-#: cps/templates/layout.html:164 cps/templates/search_form.html:247
+#: cps/templates/index.xml:12 cps/templates/layout.html:164
+#: cps/templates/layout.html:167 cps/templates/search_form.html:247
 msgid "Search"
 msgstr "Поиск"
 
@@ -2206,7 +2206,7 @@ msgstr "Статус прочтения = '%(status)s'"
 msgid "Error on search for custom columns, please restart Calibre-Web"
 msgstr "Ошибка при поиске пользовательских столбцов, перезапустите Calibre-Web"
 
-#: cps/search.py:382 cps/search.py:414 cps/templates/layout.html:172
+#: cps/search.py:382 cps/search.py:414 cps/templates/layout.html:175
 msgid "Advanced Search"
 msgstr "Расширенный поиск"
 
@@ -2359,7 +2359,7 @@ msgstr ""
 msgid "Could not save order"
 msgstr ""
 
-#: cps/shelf.py:1008 cps/templates/layout.html:416
+#: cps/shelf.py:1008 cps/templates/layout.html:419
 #, fuzzy
 msgid "Reorder Shelves"
 msgstr "Исключить полки"
@@ -2400,7 +2400,7 @@ msgstr ""
 msgid "Manual (drag below)"
 msgstr ""
 
-#: cps/tasks_status.py:37 cps/templates/layout.html:209
+#: cps/tasks_status.py:37 cps/templates/layout.html:212
 #: cps/templates/tasks.html:7
 msgid "Tasks"
 msgstr "Задания"
@@ -2576,7 +2576,7 @@ msgstr ""
 msgid "Error creating shelf"
 msgstr "Ошибка удаления полки"
 
-#: cps/templates/layout.html:426 cps/web.py:1397
+#: cps/templates/layout.html:429 cps/web.py:1397
 #, fuzzy
 msgid "Create Magic Shelf"
 msgstr "Создать полку"
@@ -2704,7 +2704,7 @@ msgid "Please wait one minute to register next user"
 msgstr ""
 "Пожалуйста, подождите минуту перед регистрацией следующего пользователя"
 
-#: cps/templates/layout.html:183 cps/templates/layout.html:224
+#: cps/templates/layout.html:186 cps/templates/layout.html:227
 #: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2370
 #: cps/web.py:2374 cps/web.py:2379 cps/web.py:2383 cps/web.py:2389
 #: cps/web.py:2414 cps/web.py:2418 cps/web.py:2431 cps/web.py:2434
@@ -3053,7 +3053,7 @@ msgid "Clearing cover thumbnail cache"
 msgstr "Очистка кэша миниатюр обложек"
 
 #: cps/tasks/upload.py:28 cps/templates/admin.html:22
-#: cps/templates/layout.html:201 cps/templates/user_table.html:146
+#: cps/templates/layout.html:204 cps/templates/user_table.html:146
 msgid "Upload"
 msgstr "Загрузить"
 
@@ -3100,7 +3100,7 @@ msgstr "Добавить на полку"
 #: cps/templates/detail.html:724 cps/templates/detail.html:883
 #: cps/templates/detail.html:1468 cps/templates/feed.xml:109
 #: cps/templates/feed.xml:111 cps/templates/index.html:162
-#: cps/templates/layout.html:410 cps/templates/layout.html:423
+#: cps/templates/layout.html:413 cps/templates/layout.html:426
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:23 cps/templates/shelf_reorder.html:31
 msgid "(Public)"
@@ -3253,7 +3253,7 @@ msgstr "Email для отправки на eReader"
 msgid "Send to eReader Subject"
 msgstr "Отправить на eReader"
 
-#: cps/templates/admin.html:19 cps/templates/layout.html:212
+#: cps/templates/admin.html:19 cps/templates/layout.html:215
 #: cps/templates/user_table.html:144
 msgid "Admin"
 msgstr "Администратор"
@@ -3565,8 +3565,8 @@ msgstr "OK"
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:1073
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
-#: cps/templates/duplicates.html:746 cps/templates/layout.html:600
-#: cps/templates/layout.html:755 cps/templates/modal_dialogs.html:64
+#: cps/templates/duplicates.html:746 cps/templates/layout.html:603
+#: cps/templates/layout.html:758 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/read.html:137
 #: cps/templates/schedule_edit.html:46 cps/templates/shelf.html:125
@@ -3632,8 +3632,8 @@ msgid "total entries seen"
 msgstr ""
 
 #: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:56
-#: cps/templates/book_edit.html:73 cps/templates/layout.html:198
-#: cps/templates/layout.html:329
+#: cps/templates/book_edit.html:73 cps/templates/layout.html:201
+#: cps/templates/layout.html:332
 msgid "Uploading..."
 msgstr "Загрузка..."
 
@@ -3741,8 +3741,8 @@ msgstr "Конвертировать книгу"
 
 #: cps/templates/book_edit.html:56 cps/templates/book_edit.html:339
 #: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:198 cps/templates/layout.html:500
-#: cps/templates/layout.html:637 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:201 cps/templates/layout.html:503
+#: cps/templates/layout.html:640 cps/templates/modal_dialogs.html:34
 #: cps/templates/shelf.html:110 cps/templates/user_edit.html:673
 msgid "Close"
 msgstr "Закрыть"
@@ -3756,7 +3756,7 @@ msgstr "Закрыть"
 #: cps/templates/hardcover_review_matches.html:369
 #: cps/templates/hardcover_review_matches.html:400
 #: cps/templates/hardcover_review_matches.html:409
-#: cps/templates/layout.html:198
+#: cps/templates/layout.html:201
 msgid "Error"
 msgstr "Ошибка"
 
@@ -6706,7 +6706,7 @@ msgstr "Объединить выбранные книги"
 msgid "Dismiss this duplicate group"
 msgstr ""
 
-#: cps/templates/duplicates.html:618 cps/templates/layout.html:354
+#: cps/templates/duplicates.html:618 cps/templates/layout.html:357
 msgid "Dismiss"
 msgstr ""
 
@@ -6767,7 +6767,7 @@ msgstr "Это действие нельзя отменить!"
 msgid "The following books will be permanently deleted:"
 msgstr "Следующие книги будут удалены:"
 
-#: cps/templates/duplicates.html:730 cps/templates/layout.html:552
+#: cps/templates/duplicates.html:730 cps/templates/layout.html:555
 #, fuzzy
 msgid "Merge Books"
 msgstr "Непрочитанные книги"
@@ -6856,7 +6856,7 @@ msgstr "Ограничение размера вложения"
 msgid "Save and Send Test Email"
 msgstr "Сохранить и отправить тестовое письмо"
 
-#: cps/templates/email_edit.html:76 cps/templates/layout.html:140
+#: cps/templates/email_edit.html:76 cps/templates/layout.html:143
 #: cps/templates/shelf_order.html:71 cps/templates/shelf_reorder.html:39
 #: cps/templates/user_table.html:176
 msgid "Back"
@@ -6878,8 +6878,8 @@ msgstr "Введите доменное имя"
 msgid "Denied Domains (Blacklist)"
 msgstr "Запрещенные домены (черный список)"
 
-#: cps/templates/feed.xml:31 cps/templates/layout.html:458
-#: cps/templates/layout.html:484
+#: cps/templates/feed.xml:31 cps/templates/layout.html:461
+#: cps/templates/layout.html:487
 msgid "Next"
 msgstr "Следующая"
 
@@ -7137,198 +7137,198 @@ msgstr ""
 msgid "Download is available after enabling KOReader Sync in NextGen Settings."
 msgstr ""
 
-#: cps/templates/layout.html:140 cps/templates/login.html:51
+#: cps/templates/layout.html:143 cps/templates/login.html:51
 msgid "Home"
 msgstr "Главная"
 
-#: cps/templates/layout.html:147
+#: cps/templates/layout.html:150
 msgid "Toggle Navigation"
 msgstr "Переключить навигацию"
 
-#: cps/templates/layout.html:162
+#: cps/templates/layout.html:165
 msgid "Search Library"
 msgstr "Поиск в библиотеке"
 
-#: cps/templates/layout.html:180 cps/templates/layout.html:216
+#: cps/templates/layout.html:183 cps/templates/layout.html:219
 #: cps/templates/user_edit.html:312 cps/templates/user_edit.html:314
 msgid "Account"
 msgstr "Учетная запись"
 
-#: cps/templates/layout.html:186 cps/templates/layout.html:218
+#: cps/templates/layout.html:189 cps/templates/layout.html:221
 msgid "Logout"
 msgstr "Выйти"
 
-#: cps/templates/layout.html:212 cps/templates/read.html:78
+#: cps/templates/layout.html:215 cps/templates/read.html:78
 #: cps/templates/readcbr.html:71 cps/templates/readcbr.html:97
 #, fuzzy
 msgid "Settings"
 msgstr "Настройки"
 
-#: cps/templates/layout.html:214
+#: cps/templates/layout.html:217
 #, fuzzy
 msgid "Refresh Library"
 msgstr "Обновить библиотеку"
 
-#: cps/templates/layout.html:255
+#: cps/templates/layout.html:258
 msgid "See Changelog"
 msgstr "Смотреть историю изменений"
 
-#: cps/templates/layout.html:265
+#: cps/templates/layout.html:268
 #, fuzzy
 msgid "Open Duplicates"
 msgstr "Дубликаты"
 
-#: cps/templates/layout.html:287
+#: cps/templates/layout.html:290
 msgid "Contribute here!"
 msgstr "Внести вклад можно здесь!"
 
-#: cps/templates/layout.html:330
+#: cps/templates/layout.html:333
 msgid "Please do not refresh the page"
 msgstr "Пожалуйста, не обновляйте страницу"
 
-#: cps/templates/layout.html:390
+#: cps/templates/layout.html:393
 msgid "Browse"
 msgstr "Просмотр"
 
-#: cps/templates/layout.html:413
+#: cps/templates/layout.html:416
 #, fuzzy
 msgid "Create Shelf"
 msgstr "Создать полку"
 
-#: cps/templates/layout.html:421
+#: cps/templates/layout.html:424
 msgid "Magic Shelves ✨"
 msgstr ""
 
-#: cps/templates/layout.html:430 cps/templates/stats.html:3
+#: cps/templates/layout.html:433 cps/templates/stats.html:3
 msgid "About"
 msgstr "О программе"
 
-#: cps/templates/layout.html:443 cps/templates/layout.html:469
+#: cps/templates/layout.html:446 cps/templates/layout.html:472
 msgid "Previous"
 msgstr "Предыдущий"
 
-#: cps/templates/layout.html:496
+#: cps/templates/layout.html:499
 msgid "Book Details"
 msgstr "Подробнее о книге"
 
-#: cps/templates/layout.html:558
+#: cps/templates/layout.html:561
 #, fuzzy
 msgid "This cannot be undone."
 msgstr "Это действие нельзя отменить!"
 
-#: cps/templates/layout.html:564
+#: cps/templates/layout.html:567
 #, fuzzy
 msgid "Will be deleted"
 msgstr "Удалить выбранные книги"
 
-#: cps/templates/layout.html:568 cps/templates/layout.html:581
+#: cps/templates/layout.html:571 cps/templates/layout.html:584
 #, fuzzy
 msgid "Formats:"
 msgstr "Конечный формат"
 
-#: cps/templates/layout.html:577
+#: cps/templates/layout.html:580
 msgid "Will be kept"
 msgstr ""
 
-#: cps/templates/layout.html:589
+#: cps/templates/layout.html:592
 msgid "Format conflicts — choose what to do:"
 msgstr ""
 
-#: cps/templates/layout.html:595
+#: cps/templates/layout.html:598
 #, fuzzy
 msgid "Result will have formats:"
 msgstr "Удалить форматы:"
 
-#: cps/templates/layout.html:604
+#: cps/templates/layout.html:607
 msgid "Merge &amp; Delete Source"
 msgstr ""
 
-#: cps/templates/layout.html:638
+#: cps/templates/layout.html:641
 #, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "Удалить книгу"
 
-#: cps/templates/layout.html:639
+#: cps/templates/layout.html:642
 msgid "You have unresolved duplicate books in your library"
 msgstr ""
 
-#: cps/templates/layout.html:644
+#: cps/templates/layout.html:647
 #, fuzzy
 msgid "Duplicate Groups Found"
 msgstr "Результатов не найдено"
 
-#: cps/templates/layout.html:652
+#: cps/templates/layout.html:655
 msgid "Remind Me Later"
 msgstr ""
 
-#: cps/templates/layout.html:655
+#: cps/templates/layout.html:658
 #, fuzzy
 msgid "View & Resolve Duplicates"
 msgstr "Выбрать дубликаты"
 
-#: cps/templates/layout.html:664
+#: cps/templates/layout.html:667
 #, fuzzy
 msgid "Scroll to top"
 msgstr "Масштаб по лучшему соответствию"
 
-#: cps/templates/layout.html:666
+#: cps/templates/layout.html:669
 #, fuzzy
 msgid "Top"
 msgstr "До:"
 
-#: cps/templates/layout.html:756
+#: cps/templates/layout.html:759
 #, fuzzy
 msgid "Confirm"
 msgstr "Настройки сервера"
 
-#: cps/templates/layout.html:762
+#: cps/templates/layout.html:765
 #, fuzzy, python-brace-format
 msgid "Added {n} books to {shelf}"
 msgstr "Добавить на полку"
 
-#: cps/templates/layout.html:763
+#: cps/templates/layout.html:766
 #, python-brace-format
 msgid "Added {ok} of {n} books to {shelf} (rest were already there)"
 msgstr ""
 
-#: cps/templates/layout.html:764
+#: cps/templates/layout.html:767
 #, python-brace-format
 msgid "All {n} book(s) were already on {shelf}."
 msgstr ""
 
-#: cps/templates/layout.html:765
+#: cps/templates/layout.html:768
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as read"
 msgstr "Пометить выбранные книги как прочитанные"
 
-#: cps/templates/layout.html:766
+#: cps/templates/layout.html:769
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as unread"
 msgstr "Пометить как непрочитанное"
 
-#: cps/templates/layout.html:767
+#: cps/templates/layout.html:770
 #, fuzzy, python-brace-format
 msgid "Deleted {n} books"
 msgstr "Удалить книгу"
 
-#: cps/templates/layout.html:768
+#: cps/templates/layout.html:771
 #, fuzzy
 msgid "Delete books?"
 msgstr "Удалить книгу"
 
-#: cps/templates/layout.html:769
+#: cps/templates/layout.html:772
 #, python-brace-format
 msgid ""
 "This will permanently delete {n} book(s) from your library. This cannot be "
 "undone."
 msgstr ""
 
-#: cps/templates/layout.html:770
+#: cps/templates/layout.html:773
 #, fuzzy
 msgid "Select at least one book first."
 msgstr "Выберите полку"
 
-#: cps/templates/layout.html:771
+#: cps/templates/layout.html:774
 #, fuzzy, python-brace-format
 msgid "Request failed: {err}"
 msgstr "Ошибка соединения: %(err)s"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-15 14:23+0000\n"
+"POT-Creation-Date: 2026-06-16 12:07+0000\n"
 "PO-Revision-Date: 2026-05-12 00:06+0200\n"
 "Last-Translator: Gabor L. <nom@il.thx>\n"
 "Language-Team: \n"
@@ -1281,7 +1281,7 @@ msgid "Cannot upload format: Book no longer exists in library"
 msgstr "Nem tölthető fel a formátum: A könyv már nem létezik a könyvtárban"
 
 #: cps/editbooks.py:160 cps/editbooks.py:187 cps/templates/book_edit.html:56
-#: cps/templates/layout.html:198
+#: cps/templates/layout.html:201
 msgid "Upload done, processing, please wait..."
 msgstr "Feltöltés kész, feldolgozás alatt, kérlek várj..."
 
@@ -2006,7 +2006,7 @@ msgstr "Fájlformátumok"
 msgid "Books ordered by file formats"
 msgstr "Könyvek sorozat szerint rendezve"
 
-#: cps/opds.py:247 cps/templates/layout.html:407
+#: cps/opds.py:247 cps/templates/layout.html:410
 #: cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "Polcok"
@@ -2034,8 +2034,8 @@ msgstr "leírás"
 msgid "{} Stars"
 msgstr "{} csillag"
 
-#: cps/remotelogin.py:76 cps/templates/layout.html:182
-#: cps/templates/layout.html:223 cps/templates/login.html:11
+#: cps/remotelogin.py:76 cps/templates/layout.html:185
+#: cps/templates/layout.html:226 cps/templates/login.html:11
 #: cps/templates/login.html:39 cps/web.py:2491
 msgid "Login"
 msgstr "Belépés"
@@ -2149,8 +2149,8 @@ msgstr "Ismétlődő könyvek mutatása"
 
 #: cps/search.py:53 cps/search.py:438 cps/templates/book_edit.html:299
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:43
-#: cps/templates/index.xml:12 cps/templates/layout.html:161
-#: cps/templates/layout.html:164 cps/templates/search_form.html:247
+#: cps/templates/index.xml:12 cps/templates/layout.html:164
+#: cps/templates/layout.html:167 cps/templates/search_form.html:247
 msgid "Search"
 msgstr "Keresés"
 
@@ -2183,7 +2183,7 @@ msgstr ""
 "Hiba az egyéni oszlopok keresése során. Kérjük, indítsa újra a Calibre-Web "
 "alkalmazást"
 
-#: cps/search.py:382 cps/search.py:414 cps/templates/layout.html:172
+#: cps/search.py:382 cps/search.py:414 cps/templates/layout.html:175
 msgid "Advanced Search"
 msgstr "Részletes keresés"
 
@@ -2334,7 +2334,7 @@ msgstr ""
 msgid "Could not save order"
 msgstr "Nem sikerült menteni a sorrendet"
 
-#: cps/shelf.py:1008 cps/templates/layout.html:416
+#: cps/shelf.py:1008 cps/templates/layout.html:419
 msgid "Reorder Shelves"
 msgstr "Polcok átrendezése"
 
@@ -2374,7 +2374,7 @@ msgstr "Módosítva (legrégebbi → legutóbbi)"
 msgid "Manual (drag below)"
 msgstr "Kézi (húzd át alább)"
 
-#: cps/tasks_status.py:37 cps/templates/layout.html:209
+#: cps/tasks_status.py:37 cps/templates/layout.html:212
 #: cps/templates/tasks.html:7
 msgid "Tasks"
 msgstr "Feladatok"
@@ -2546,7 +2546,7 @@ msgstr ""
 msgid "Error creating shelf"
 msgstr "Hiba polc létrehozásakor"
 
-#: cps/templates/layout.html:426 cps/web.py:1397
+#: cps/templates/layout.html:429 cps/web.py:1397
 msgid "Create Magic Shelf"
 msgstr "Varázspolc létrehozása"
 
@@ -2658,7 +2658,7 @@ msgstr "Siker! A könyv a megadott e-mail cím(ek)re hamarosan elküldve!"
 msgid "Please wait one minute to register next user"
 msgstr "Kérjük várjon egy percet a következő felhasználó létrehozásával"
 
-#: cps/templates/layout.html:183 cps/templates/layout.html:224
+#: cps/templates/layout.html:186 cps/templates/layout.html:227
 #: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2370
 #: cps/web.py:2374 cps/web.py:2379 cps/web.py:2383 cps/web.py:2389
 #: cps/web.py:2414 cps/web.py:2418 cps/web.py:2431 cps/web.py:2434
@@ -3002,7 +3002,7 @@ msgid "Clearing cover thumbnail cache"
 msgstr "Borító bélyegképek gyorsítótárának törlése"
 
 #: cps/tasks/upload.py:28 cps/templates/admin.html:22
-#: cps/templates/layout.html:201 cps/templates/user_table.html:146
+#: cps/templates/layout.html:204 cps/templates/user_table.html:146
 msgid "Upload"
 msgstr "Feltöltés"
 
@@ -3048,7 +3048,7 @@ msgstr "Hozzáadás polchoz"
 #: cps/templates/detail.html:724 cps/templates/detail.html:883
 #: cps/templates/detail.html:1468 cps/templates/feed.xml:109
 #: cps/templates/feed.xml:111 cps/templates/index.html:162
-#: cps/templates/layout.html:410 cps/templates/layout.html:423
+#: cps/templates/layout.html:413 cps/templates/layout.html:426
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:23 cps/templates/shelf_reorder.html:31
 msgid "(Public)"
@@ -3197,7 +3197,7 @@ msgstr "Küldés e-olvasóra e-mail"
 msgid "Send to eReader Subject"
 msgstr "Küldés e-olvasóra tárgy"
 
-#: cps/templates/admin.html:19 cps/templates/layout.html:212
+#: cps/templates/admin.html:19 cps/templates/layout.html:215
 #: cps/templates/user_table.html:144
 msgid "Admin"
 msgstr "Rendszergazda"
@@ -3498,8 +3498,8 @@ msgstr "OK"
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:1073
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
-#: cps/templates/duplicates.html:746 cps/templates/layout.html:600
-#: cps/templates/layout.html:755 cps/templates/modal_dialogs.html:64
+#: cps/templates/duplicates.html:746 cps/templates/layout.html:603
+#: cps/templates/layout.html:758 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/read.html:137
 #: cps/templates/schedule_edit.html:46 cps/templates/shelf.html:125
@@ -3566,8 +3566,8 @@ msgid "total entries seen"
 msgstr ""
 
 #: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:56
-#: cps/templates/book_edit.html:73 cps/templates/layout.html:198
-#: cps/templates/layout.html:329
+#: cps/templates/book_edit.html:73 cps/templates/layout.html:201
+#: cps/templates/layout.html:332
 msgid "Uploading..."
 msgstr "Feltöltés..."
 
@@ -3674,8 +3674,8 @@ msgstr "Könyv konvertálása"
 
 #: cps/templates/book_edit.html:56 cps/templates/book_edit.html:339
 #: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:198 cps/templates/layout.html:500
-#: cps/templates/layout.html:637 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:201 cps/templates/layout.html:503
+#: cps/templates/layout.html:640 cps/templates/modal_dialogs.html:34
 #: cps/templates/shelf.html:110 cps/templates/user_edit.html:673
 msgid "Close"
 msgstr "Bezárás"
@@ -3689,7 +3689,7 @@ msgstr "Bezárás"
 #: cps/templates/hardcover_review_matches.html:369
 #: cps/templates/hardcover_review_matches.html:400
 #: cps/templates/hardcover_review_matches.html:409
-#: cps/templates/layout.html:198
+#: cps/templates/layout.html:201
 msgid "Error"
 msgstr "Hiba"
 
@@ -6715,7 +6715,7 @@ msgstr "Kijelöltek egyesítése"
 msgid "Dismiss this duplicate group"
 msgstr "Ismétlődő könyvcsoport elutasítása"
 
-#: cps/templates/duplicates.html:618 cps/templates/layout.html:354
+#: cps/templates/duplicates.html:618 cps/templates/layout.html:357
 msgid "Dismiss"
 msgstr "Elrejtés"
 
@@ -6773,7 +6773,7 @@ msgstr "A művelet nem visszavonható!"
 msgid "The following books will be permanently deleted:"
 msgstr "A következő könyvek véglegesen törölve lesznek:"
 
-#: cps/templates/duplicates.html:730 cps/templates/layout.html:552
+#: cps/templates/duplicates.html:730 cps/templates/layout.html:555
 msgid "Merge Books"
 msgstr "Könyvek egyesítése"
 
@@ -6856,7 +6856,7 @@ msgstr "Csatolmány méretkorlát"
 msgid "Save and Send Test Email"
 msgstr "Mentés és teszt e-mail küldése"
 
-#: cps/templates/email_edit.html:76 cps/templates/layout.html:140
+#: cps/templates/email_edit.html:76 cps/templates/layout.html:143
 #: cps/templates/shelf_order.html:71 cps/templates/shelf_reorder.html:39
 #: cps/templates/user_table.html:176
 msgid "Back"
@@ -6878,8 +6878,8 @@ msgstr "Tartomány megadása"
 msgid "Denied Domains (Blacklist)"
 msgstr "Elutasított domainek (tiltólista)"
 
-#: cps/templates/feed.xml:31 cps/templates/layout.html:458
-#: cps/templates/layout.html:484
+#: cps/templates/feed.xml:31 cps/templates/layout.html:461
+#: cps/templates/layout.html:487
 msgid "Next"
 msgstr "Következő"
 
@@ -7132,180 +7132,180 @@ msgstr ""
 msgid "Download is available after enabling KOReader Sync in NextGen Settings."
 msgstr ""
 
-#: cps/templates/layout.html:140 cps/templates/login.html:51
+#: cps/templates/layout.html:143 cps/templates/login.html:51
 msgid "Home"
 msgstr "Kezdőlap"
 
-#: cps/templates/layout.html:147
+#: cps/templates/layout.html:150
 msgid "Toggle Navigation"
 msgstr "Navigáció átkapcsolása"
 
-#: cps/templates/layout.html:162
+#: cps/templates/layout.html:165
 msgid "Search Library"
 msgstr "Keresés könyvtárban"
 
-#: cps/templates/layout.html:180 cps/templates/layout.html:216
+#: cps/templates/layout.html:183 cps/templates/layout.html:219
 #: cps/templates/user_edit.html:312 cps/templates/user_edit.html:314
 msgid "Account"
 msgstr "Felhasználói fiók"
 
-#: cps/templates/layout.html:186 cps/templates/layout.html:218
+#: cps/templates/layout.html:189 cps/templates/layout.html:221
 msgid "Logout"
 msgstr "Kilépés"
 
-#: cps/templates/layout.html:212 cps/templates/read.html:78
+#: cps/templates/layout.html:215 cps/templates/read.html:78
 #: cps/templates/readcbr.html:71 cps/templates/readcbr.html:97
 msgid "Settings"
 msgstr "Beállítások"
 
-#: cps/templates/layout.html:214
+#: cps/templates/layout.html:217
 msgid "Refresh Library"
 msgstr "Könyvtár frissítése"
 
-#: cps/templates/layout.html:255
+#: cps/templates/layout.html:258
 msgid "See Changelog"
 msgstr "Változásnapló megtekintése"
 
-#: cps/templates/layout.html:265
+#: cps/templates/layout.html:268
 #, fuzzy
 msgid "Open Duplicates"
 msgstr "Ismétlődő könyvek"
 
-#: cps/templates/layout.html:287
+#: cps/templates/layout.html:290
 msgid "Contribute here!"
 msgstr "Segíts te is!"
 
-#: cps/templates/layout.html:330
+#: cps/templates/layout.html:333
 msgid "Please do not refresh the page"
 msgstr "Kérjük ne frissítse az oldalt!"
 
-#: cps/templates/layout.html:390
+#: cps/templates/layout.html:393
 msgid "Browse"
 msgstr "Böngészés"
 
-#: cps/templates/layout.html:413
+#: cps/templates/layout.html:416
 msgid "Create Shelf"
 msgstr "Polc készítése"
 
-#: cps/templates/layout.html:421
+#: cps/templates/layout.html:424
 msgid "Magic Shelves ✨"
 msgstr "Varázspolcok ✨"
 
-#: cps/templates/layout.html:430 cps/templates/stats.html:3
+#: cps/templates/layout.html:433 cps/templates/stats.html:3
 msgid "About"
 msgstr "Névjegy"
 
-#: cps/templates/layout.html:443 cps/templates/layout.html:469
+#: cps/templates/layout.html:446 cps/templates/layout.html:472
 msgid "Previous"
 msgstr "Előző"
 
-#: cps/templates/layout.html:496
+#: cps/templates/layout.html:499
 msgid "Book Details"
 msgstr "Könyv részletei"
 
-#: cps/templates/layout.html:558
+#: cps/templates/layout.html:561
 #, fuzzy
 msgid "This cannot be undone."
 msgstr "A művelet nem visszavonható!"
 
-#: cps/templates/layout.html:564
+#: cps/templates/layout.html:567
 #, fuzzy
 msgid "Will be deleted"
 msgstr "Kiválasztottak törlése"
 
-#: cps/templates/layout.html:568 cps/templates/layout.html:581
+#: cps/templates/layout.html:571 cps/templates/layout.html:584
 #, fuzzy
 msgid "Formats:"
 msgstr "Fájlformátum"
 
-#: cps/templates/layout.html:577
+#: cps/templates/layout.html:580
 msgid "Will be kept"
 msgstr ""
 
-#: cps/templates/layout.html:589
+#: cps/templates/layout.html:592
 msgid "Format conflicts — choose what to do:"
 msgstr ""
 
-#: cps/templates/layout.html:595
+#: cps/templates/layout.html:598
 #, fuzzy
 msgid "Result will have formats:"
 msgstr "Formátumok törlése:"
 
-#: cps/templates/layout.html:604
+#: cps/templates/layout.html:607
 msgid "Merge &amp; Delete Source"
 msgstr ""
 
-#: cps/templates/layout.html:638
+#: cps/templates/layout.html:641
 msgid "Duplicate Books Detected"
 msgstr "Ismétlődő könyvek találva"
 
-#: cps/templates/layout.html:639
+#: cps/templates/layout.html:642
 msgid "You have unresolved duplicate books in your library"
 msgstr "A könyvtáradban feloldatlan duplikált könyvek vannak."
 
-#: cps/templates/layout.html:644
+#: cps/templates/layout.html:647
 msgid "Duplicate Groups Found"
 msgstr "Ismétlődő csoport találva"
 
-#: cps/templates/layout.html:652
+#: cps/templates/layout.html:655
 msgid "Remind Me Later"
 msgstr "Emlékeztess később"
 
-#: cps/templates/layout.html:655
+#: cps/templates/layout.html:658
 msgid "View & Resolve Duplicates"
 msgstr "Ismétlődések megtekintése és megszüntetése"
 
-#: cps/templates/layout.html:664
+#: cps/templates/layout.html:667
 #, fuzzy
 msgid "Scroll to top"
 msgstr "Méretezés a legjobbra"
 
-#: cps/templates/layout.html:666
+#: cps/templates/layout.html:669
 #, fuzzy
 msgid "Top"
 msgstr "Tipp"
 
-#: cps/templates/layout.html:756
+#: cps/templates/layout.html:759
 #, fuzzy
 msgid "Confirm"
 msgstr "Konfiguráció"
 
-#: cps/templates/layout.html:762
+#: cps/templates/layout.html:765
 #, fuzzy, python-brace-format
 msgid "Added {n} books to {shelf}"
 msgstr "Hozzáadás polchoz"
 
-#: cps/templates/layout.html:763
+#: cps/templates/layout.html:766
 #, python-brace-format
 msgid "Added {ok} of {n} books to {shelf} (rest were already there)"
 msgstr ""
 
-#: cps/templates/layout.html:764
+#: cps/templates/layout.html:767
 #, python-brace-format
 msgid "All {n} book(s) were already on {shelf}."
 msgstr ""
 
-#: cps/templates/layout.html:765
+#: cps/templates/layout.html:768
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as read"
 msgstr "Olvasottnak jelölve"
 
-#: cps/templates/layout.html:766
+#: cps/templates/layout.html:769
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as unread"
 msgstr "Olvasatlannak jelölve"
 
-#: cps/templates/layout.html:767
+#: cps/templates/layout.html:770
 #, fuzzy, python-brace-format
 msgid "Deleted {n} books"
 msgstr "Könyv törlése"
 
-#: cps/templates/layout.html:768
+#: cps/templates/layout.html:771
 #, fuzzy
 msgid "Delete books?"
 msgstr "Könyv törlése"
 
-#: cps/templates/layout.html:769
+#: cps/templates/layout.html:772
 #, fuzzy, python-brace-format
 msgid ""
 "This will permanently delete {n} book(s) from your library. This cannot be "
@@ -7314,12 +7314,12 @@ msgstr ""
 "Ez véglegesen törli a könyveket. Az eredeti fájlokról biztonsági mentés "
 "készül ide:"
 
-#: cps/templates/layout.html:770
+#: cps/templates/layout.html:773
 #, fuzzy
 msgid "Select at least one book first."
 msgstr "Először válasszon ki könyvet"
 
-#: cps/templates/layout.html:771
+#: cps/templates/layout.html:774
 #, fuzzy, python-brace-format
 msgid "Request failed: {err}"
 msgstr "Visszaállítás sikertelen: %(err)s"

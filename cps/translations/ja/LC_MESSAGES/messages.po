@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-15 14:23+0000\n"
+"POT-Creation-Date: 2026-06-16 12:07+0000\n"
 "PO-Revision-Date: 2018-02-07 02:20-0500\n"
 "Last-Translator: subdiox <subdiox@gmail.com>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -1258,7 +1258,7 @@ msgid "Cannot upload format: Book no longer exists in library"
 msgstr "フォーマットをアップロードできません：書籍がライブラリに存在しません"
 
 #: cps/editbooks.py:160 cps/editbooks.py:187 cps/templates/book_edit.html:56
-#: cps/templates/layout.html:198
+#: cps/templates/layout.html:201
 msgid "Upload done, processing, please wait..."
 msgstr "アップロード完了。現在処理中ですのでお待ち下さい..."
 
@@ -1982,7 +1982,7 @@ msgstr "ファイル形式"
 msgid "Books ordered by file formats"
 msgstr "ファイル形式順"
 
-#: cps/opds.py:247 cps/templates/layout.html:407
+#: cps/opds.py:247 cps/templates/layout.html:410
 #: cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "本棚"
@@ -2011,8 +2011,8 @@ msgstr "詳細"
 msgid "{} Stars"
 msgstr "星{}"
 
-#: cps/remotelogin.py:76 cps/templates/layout.html:182
-#: cps/templates/layout.html:223 cps/templates/login.html:11
+#: cps/remotelogin.py:76 cps/templates/layout.html:185
+#: cps/templates/layout.html:226 cps/templates/login.html:11
 #: cps/templates/login.html:39 cps/web.py:2491
 msgid "Login"
 msgstr "ログイン"
@@ -2126,8 +2126,8 @@ msgstr "重複する書籍を表示"
 
 #: cps/search.py:53 cps/search.py:438 cps/templates/book_edit.html:299
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:43
-#: cps/templates/index.xml:12 cps/templates/layout.html:161
-#: cps/templates/layout.html:164 cps/templates/search_form.html:247
+#: cps/templates/index.xml:12 cps/templates/layout.html:164
+#: cps/templates/layout.html:167 cps/templates/search_form.html:247
 msgid "Search"
 msgstr "検索"
 
@@ -2159,7 +2159,7 @@ msgid "Error on search for custom columns, please restart Calibre-Web"
 msgstr ""
 "カスタムカラムの検索でエラーが発生しました。Calibre-Webを再起動してください"
 
-#: cps/search.py:382 cps/search.py:414 cps/templates/layout.html:172
+#: cps/search.py:382 cps/search.py:414 cps/templates/layout.html:175
 msgid "Advanced Search"
 msgstr "詳細検索"
 
@@ -2312,7 +2312,7 @@ msgstr ""
 msgid "Could not save order"
 msgstr ""
 
-#: cps/shelf.py:1008 cps/templates/layout.html:416
+#: cps/shelf.py:1008 cps/templates/layout.html:419
 #, fuzzy
 msgid "Reorder Shelves"
 msgstr "除外する本棚"
@@ -2360,7 +2360,7 @@ msgstr ""
 msgid "Manual (drag below)"
 msgstr "手動（ドラッグで並び替え）"
 
-#: cps/tasks_status.py:37 cps/templates/layout.html:209
+#: cps/tasks_status.py:37 cps/templates/layout.html:212
 #: cps/templates/tasks.html:7
 msgid "Tasks"
 msgstr "タスク"
@@ -2539,7 +2539,7 @@ msgstr ""
 msgid "Error creating shelf"
 msgstr "本棚の削除中にエラーが発生しました"
 
-#: cps/templates/layout.html:426 cps/web.py:1397
+#: cps/templates/layout.html:429 cps/web.py:1397
 #, fuzzy
 msgid "Create Magic Shelf"
 msgstr "Magic Shelfを作成"
@@ -2661,7 +2661,7 @@ msgstr "成功！選択したアドレスへの送信キューに書籍を追加
 msgid "Please wait one minute to register next user"
 msgstr "次のユーザー登録まで1分お待ちください"
 
-#: cps/templates/layout.html:183 cps/templates/layout.html:224
+#: cps/templates/layout.html:186 cps/templates/layout.html:227
 #: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2370
 #: cps/web.py:2374 cps/web.py:2379 cps/web.py:2383 cps/web.py:2389
 #: cps/web.py:2414 cps/web.py:2418 cps/web.py:2431 cps/web.py:2434
@@ -3001,7 +3001,7 @@ msgid "Clearing cover thumbnail cache"
 msgstr "表紙サムネイルのキャッシュを消去中"
 
 #: cps/tasks/upload.py:28 cps/templates/admin.html:22
-#: cps/templates/layout.html:201 cps/templates/user_table.html:146
+#: cps/templates/layout.html:204 cps/templates/user_table.html:146
 msgid "Upload"
 msgstr "アップロード"
 
@@ -3047,7 +3047,7 @@ msgstr "本棚に追加"
 #: cps/templates/detail.html:724 cps/templates/detail.html:883
 #: cps/templates/detail.html:1468 cps/templates/feed.xml:109
 #: cps/templates/feed.xml:111 cps/templates/index.html:162
-#: cps/templates/layout.html:410 cps/templates/layout.html:423
+#: cps/templates/layout.html:413 cps/templates/layout.html:426
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:23 cps/templates/shelf_reorder.html:31
 msgid "(Public)"
@@ -3197,7 +3197,7 @@ msgstr "E-Readerメールアドレス"
 msgid "Send to eReader Subject"
 msgstr "E-Readerに送信"
 
-#: cps/templates/admin.html:19 cps/templates/layout.html:212
+#: cps/templates/admin.html:19 cps/templates/layout.html:215
 #: cps/templates/user_table.html:144
 msgid "Admin"
 msgstr "管理者"
@@ -3498,8 +3498,8 @@ msgstr "OK"
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:1073
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
-#: cps/templates/duplicates.html:746 cps/templates/layout.html:600
-#: cps/templates/layout.html:755 cps/templates/modal_dialogs.html:64
+#: cps/templates/duplicates.html:746 cps/templates/layout.html:603
+#: cps/templates/layout.html:758 cps/templates/modal_dialogs.html:64
 #: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
 #: cps/templates/modal_dialogs.html:135 cps/templates/read.html:137
 #: cps/templates/schedule_edit.html:46 cps/templates/shelf.html:125
@@ -3566,8 +3566,8 @@ msgid "total entries seen"
 msgstr ""
 
 #: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:56
-#: cps/templates/book_edit.html:73 cps/templates/layout.html:198
-#: cps/templates/layout.html:329
+#: cps/templates/book_edit.html:73 cps/templates/layout.html:201
+#: cps/templates/layout.html:332
 msgid "Uploading..."
 msgstr "アップロード中..."
 
@@ -3674,8 +3674,8 @@ msgstr "本を変換"
 
 #: cps/templates/book_edit.html:56 cps/templates/book_edit.html:339
 #: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:198 cps/templates/layout.html:500
-#: cps/templates/layout.html:637 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:201 cps/templates/layout.html:503
+#: cps/templates/layout.html:640 cps/templates/modal_dialogs.html:34
 #: cps/templates/shelf.html:110 cps/templates/user_edit.html:673
 msgid "Close"
 msgstr "閉じる"
@@ -3689,7 +3689,7 @@ msgstr "閉じる"
 #: cps/templates/hardcover_review_matches.html:369
 #: cps/templates/hardcover_review_matches.html:400
 #: cps/templates/hardcover_review_matches.html:409
-#: cps/templates/layout.html:198
+#: cps/templates/layout.html:201
 msgid "Error"
 msgstr "エラー"
 
@@ -6675,7 +6675,7 @@ msgstr "選択した本を統合"
 msgid "Dismiss this duplicate group"
 msgstr "この重複グループを解除"
 
-#: cps/templates/duplicates.html:618 cps/templates/layout.html:354
+#: cps/templates/duplicates.html:618 cps/templates/layout.html:357
 msgid "Dismiss"
 msgstr "解除"
 
@@ -6732,7 +6732,7 @@ msgstr "この操作は元に戻せません！"
 msgid "The following books will be permanently deleted:"
 msgstr "以下の書籍は完全に削除されます："
 
-#: cps/templates/duplicates.html:730 cps/templates/layout.html:552
+#: cps/templates/duplicates.html:730 cps/templates/layout.html:555
 #, fuzzy
 msgid "Merge Books"
 msgstr "未読の本"
@@ -6817,7 +6817,7 @@ msgstr "添付ファイルのサイズ制限"
 msgid "Save and Send Test Email"
 msgstr "保存してテストメールを送信"
 
-#: cps/templates/email_edit.html:76 cps/templates/layout.html:140
+#: cps/templates/email_edit.html:76 cps/templates/layout.html:143
 #: cps/templates/shelf_order.html:71 cps/templates/shelf_reorder.html:39
 #: cps/templates/user_table.html:176
 msgid "Back"
@@ -6839,8 +6839,8 @@ msgstr "ドメイン名を入力"
 msgid "Denied Domains (Blacklist)"
 msgstr "拒否するドメイン名 (ブラックリスト)"
 
-#: cps/templates/feed.xml:31 cps/templates/layout.html:458
-#: cps/templates/layout.html:484
+#: cps/templates/feed.xml:31 cps/templates/layout.html:461
+#: cps/templates/layout.html:487
 msgid "Next"
 msgstr "次"
 
@@ -7105,183 +7105,183 @@ msgstr ""
 msgid "Download is available after enabling KOReader Sync in NextGen Settings."
 msgstr ""
 
-#: cps/templates/layout.html:140 cps/templates/login.html:51
+#: cps/templates/layout.html:143 cps/templates/login.html:51
 msgid "Home"
 msgstr "ホーム"
 
-#: cps/templates/layout.html:147
+#: cps/templates/layout.html:150
 msgid "Toggle Navigation"
 msgstr "ナビゲーションを実行"
 
-#: cps/templates/layout.html:162
+#: cps/templates/layout.html:165
 msgid "Search Library"
 msgstr "ライブラリ内を検索"
 
-#: cps/templates/layout.html:180 cps/templates/layout.html:216
+#: cps/templates/layout.html:183 cps/templates/layout.html:219
 #: cps/templates/user_edit.html:312 cps/templates/user_edit.html:314
 msgid "Account"
 msgstr "アカウント"
 
-#: cps/templates/layout.html:186 cps/templates/layout.html:218
+#: cps/templates/layout.html:189 cps/templates/layout.html:221
 msgid "Logout"
 msgstr "ログアウト"
 
-#: cps/templates/layout.html:212 cps/templates/read.html:78
+#: cps/templates/layout.html:215 cps/templates/read.html:78
 #: cps/templates/readcbr.html:71 cps/templates/readcbr.html:97
 msgid "Settings"
 msgstr "設定"
 
-#: cps/templates/layout.html:214
+#: cps/templates/layout.html:217
 msgid "Refresh Library"
 msgstr "ライブラリを更新"
 
-#: cps/templates/layout.html:255
+#: cps/templates/layout.html:258
 msgid "See Changelog"
 msgstr "変更履歴を見る"
 
-#: cps/templates/layout.html:265
+#: cps/templates/layout.html:268
 #, fuzzy
 msgid "Open Duplicates"
 msgstr "重複"
 
-#: cps/templates/layout.html:287
+#: cps/templates/layout.html:290
 msgid "Contribute here!"
 msgstr "ここで貢献！"
 
-#: cps/templates/layout.html:330
+#: cps/templates/layout.html:333
 msgid "Please do not refresh the page"
 msgstr "ページを更新しないでください"
 
-#: cps/templates/layout.html:390
+#: cps/templates/layout.html:393
 msgid "Browse"
 msgstr "閲覧"
 
-#: cps/templates/layout.html:413
+#: cps/templates/layout.html:416
 #, fuzzy
 msgid "Create Shelf"
 msgstr "本棚を作成する"
 
-#: cps/templates/layout.html:421
+#: cps/templates/layout.html:424
 msgid "Magic Shelves ✨"
 msgstr "Magic Shelves ✨"
 
-#: cps/templates/layout.html:430 cps/templates/stats.html:3
+#: cps/templates/layout.html:433 cps/templates/stats.html:3
 msgid "About"
 msgstr "このサイトについて"
 
-#: cps/templates/layout.html:443 cps/templates/layout.html:469
+#: cps/templates/layout.html:446 cps/templates/layout.html:472
 msgid "Previous"
 msgstr "前"
 
-#: cps/templates/layout.html:496
+#: cps/templates/layout.html:499
 msgid "Book Details"
 msgstr "本の詳細"
 
-#: cps/templates/layout.html:558
+#: cps/templates/layout.html:561
 #, fuzzy
 msgid "This cannot be undone."
 msgstr "この操作は元に戻せません！"
 
-#: cps/templates/layout.html:564
+#: cps/templates/layout.html:567
 #, fuzzy
 msgid "Will be deleted"
 msgstr "選択を削除"
 
-#: cps/templates/layout.html:568 cps/templates/layout.html:581
+#: cps/templates/layout.html:571 cps/templates/layout.html:584
 #, fuzzy
 msgid "Formats:"
 msgstr "アップロード形式"
 
-#: cps/templates/layout.html:577
+#: cps/templates/layout.html:580
 msgid "Will be kept"
 msgstr ""
 
-#: cps/templates/layout.html:589
+#: cps/templates/layout.html:592
 msgid "Format conflicts — choose what to do:"
 msgstr ""
 
-#: cps/templates/layout.html:595
+#: cps/templates/layout.html:598
 #, fuzzy
 msgid "Result will have formats:"
 msgstr "削除する形式:"
 
-#: cps/templates/layout.html:604
+#: cps/templates/layout.html:607
 msgid "Merge &amp; Delete Source"
 msgstr ""
 
-#: cps/templates/layout.html:638
+#: cps/templates/layout.html:641
 #, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "本を削除"
 
-#: cps/templates/layout.html:639
+#: cps/templates/layout.html:642
 msgid "You have unresolved duplicate books in your library"
 msgstr "ライブラリに未解決の重複書籍があります"
 
-#: cps/templates/layout.html:644
+#: cps/templates/layout.html:647
 #, fuzzy
 msgid "Duplicate Groups Found"
 msgstr "結果が見つかりません"
 
-#: cps/templates/layout.html:652
+#: cps/templates/layout.html:655
 msgid "Remind Me Later"
 msgstr "あとで通知"
 
-#: cps/templates/layout.html:655
+#: cps/templates/layout.html:658
 msgid "View & Resolve Duplicates"
 msgstr "重複を表示・解決"
 
-#: cps/templates/layout.html:664
+#: cps/templates/layout.html:667
 #, fuzzy
 msgid "Scroll to top"
 msgstr "最適なサイズにする"
 
-#: cps/templates/layout.html:666
+#: cps/templates/layout.html:669
 #, fuzzy
 msgid "Top"
 msgstr "TIP"
 
-#: cps/templates/layout.html:756
+#: cps/templates/layout.html:759
 #, fuzzy
 msgid "Confirm"
 msgstr "設定"
 
-#: cps/templates/layout.html:762
+#: cps/templates/layout.html:765
 #, fuzzy, python-brace-format
 msgid "Added {n} books to {shelf}"
 msgstr "本棚に追加"
 
-#: cps/templates/layout.html:763
+#: cps/templates/layout.html:766
 #, python-brace-format
 msgid "Added {ok} of {n} books to {shelf} (rest were already there)"
 msgstr ""
 
-#: cps/templates/layout.html:764
+#: cps/templates/layout.html:767
 #, python-brace-format
 msgid "All {n} book(s) were already on {shelf}."
 msgstr ""
 
-#: cps/templates/layout.html:765
+#: cps/templates/layout.html:768
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as read"
 msgstr "未読に設定"
 
-#: cps/templates/layout.html:766
+#: cps/templates/layout.html:769
 #, fuzzy, python-brace-format
 msgid "Marked {n} books as unread"
 msgstr "未読に設定"
 
-#: cps/templates/layout.html:767
+#: cps/templates/layout.html:770
 #, fuzzy, python-brace-format
 msgid "Deleted {n} books"
 msgstr "本を削除"
 
-#: cps/templates/layout.html:768
+#: cps/templates/layout.html:771
 #, fuzzy
 msgid "Delete books?"
 msgstr "本を削除"
 
-#: cps/templates/layout.html:769
+#: cps/templates/layout.html:772
 #, fuzzy, python-brace-format
 msgid ""
 "This will permanently delete {n} book(s) from your library. This cannot be "
@@ -7290,12 +7290,12 @@ msgstr ""
 "これにより書籍が完全に削除されます。元のファイルは次の場所にバックアップされ"
 "ます："
 
-#: cps/templates/layout.html:770
+#: cps/templates/layout.html:773
 #, fuzzy
 msgid "Select at least one book first."
 msgstr "本棚を選択"
 
-#: cps/templates/layout.html:771
+#: cps/templates/layout.html:774
 #, fuzzy, python-brace-format
 msgid "Request failed: {err}"
 msgstr "復元失敗：%(err)s"

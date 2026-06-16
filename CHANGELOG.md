@@ -34,6 +34,11 @@ is for things you can see or feel when running the app.
   the page in. iOS Safari zooms toward any field whose text is smaller than 16px;
   the inputs are now sized so that doesn't happen, while pinch-to-zoom still works
   normally.
+- The cover editor's **Back** link now returns you to wherever you opened it from —
+  the book's page when you tapped its cover, or the edit screen when you came from
+  there — instead of always jumping to the edit screen. The **Edit metadata** screen
+  also gained a clear **Back to book** link at the top, and on a phone its form is no
+  longer pushed off-screen.
 
 ## [v4.0.165] - 2026-06-16
 

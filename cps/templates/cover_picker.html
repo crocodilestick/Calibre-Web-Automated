@@ -6,8 +6,8 @@
 
   <div class="row cwa-cover-picker__header">
     <div class="col-sm-12">
-      <a href="{{ url_for('edit-book.show_edit_book', book_id=book.id) }}" class="cwa-cover-picker__back">
-        <span class="glyphicon glyphicon-chevron-left"></span> {{ _('Back to edit metadata') }}
+      <a href="{{ back_url }}" class="cwa-cover-picker__back">
+        <span class="glyphicon glyphicon-chevron-left"></span> {{ back_label }}
       </a>
       <h2 class="cwa-cover-picker__title">{{ _('Change cover') }}</h2>
       <p class="cwa-cover-picker__subtitle text-muted">

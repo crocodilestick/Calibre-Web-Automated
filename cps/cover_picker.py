@@ -99,14 +99,28 @@ def _is_provider_enabled_for_user(provider) -> bool:
 def cover_picker_page(book_id):
     """Render the picker page. Candidates are loaded asynchronously so
     the page itself returns instantly; the JS hits the candidates
-    endpoint immediately on load."""
+    endpoint immediately on load.
+
+    The back link returns the user to wherever they opened the picker from:
+    the edit-metadata page when they came from there (``?origin=edit``), and
+    the book detail page otherwise — which is both the usual entry point (the
+    cover on the detail page) and the safe default for a direct/bookmarked hit
+    (fork #26)."""
     book = _load_book(book_id)
     locked = _get_lock_state(book_id)
+    if request.args.get("origin") == "edit":
+        back_url = url_for("edit-book.show_edit_book", book_id=book_id)
+        back_label = _(u"Back to edit metadata")
+    else:
+        back_url = url_for("web.show_book", book_id=book_id)
+        back_label = _(u"Back to book")
     return render_title_template(
         "cover_picker.html",
         book=book,
         cover_locked=locked,
         config=config,
+        back_url=back_url,
+        back_label=back_label,
         title=_(u"Change cover — %(title)s", title=book.title),
         page="coverpicker",
     )

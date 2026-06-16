@@ -1,6 +1,22 @@
 {% extends "layout.html" %}
 {% block body %}
+<style>
+  /* The edit form column carries an inline `margin-left: 40rem` to clear the cover
+     column on desktop; on phones that inline offset pushed the whole form (title,
+     authors, tags, and the Back-to-book link) off-screen. Drop the offset on phones
+     so the form stacks under the cover column and is usable (fork #26 audit). */
+  @media (max-width: 767px) {
+    #book_edit_frm > .col-sm-9 {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+      padding: 1.5rem !important;
+    }
+  }
+</style>
 {% if book %}
+  <a href="{{ url_for('web.show_book', book_id=book.id) }}" class="cwa-edit-back" style="display:block; clear:both; margin:0.5rem 0 1rem; color:hsla(0,0%,100%,.82); text-decoration:none; font-weight:600;">
+    <span class="glyphicon glyphicon-chevron-left"></span> {{ _('Back to book') }}
+  </a>
   <div class="editbook-cover-section col-sm-3 col-lg-3 col-xs-12">
     {# No clickable cover overlay here (unlike the detail page): this page hosts
        the metadata edit form, and a large cover-sized navigation target would
@@ -150,7 +166,7 @@
     {# Decouple cover changes from global uploads: allow users with edit rights to change covers #}
     {% if current_user.role_edit() %}
     <div class="form-group">
-      <a class="btn btn-default cwa-cover-picker__entry" href="{{ url_for('cover_picker.cover_picker_page', book_id=book.id) }}">
+      <a class="btn btn-default cwa-cover-picker__entry" href="{{ url_for('cover_picker.cover_picker_page', book_id=book.id, origin='edit') }}">
         <span class="glyphicon glyphicon-picture"></span> {{ _('Change cover') }}
       </a>
       <p class="text-muted" style="font-size: 12px; margin: 4px 0 0 0;">

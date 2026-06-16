@@ -1,0 +1,39 @@
+/*
+ * Fork #470: the Fetch-Metadata results modal (#metaModal) on the Edit
+ * Book page can grow taller than the viewport, pushing its footer — and
+ * the only "Close" button — below the bottom of the screen. Reported on
+ * a 1917x907 desktop window; zooming the page to 80% shrinks the content
+ * enough to fit, which was the user's workaround.
+ *
+ * Root cause: the caliBlur theme already caps the scrolling results list
+ * (#meta-info to calc(100vh - 357px)) and the modal body, so the body
+ * itself is bounded. But it also pushes the whole dialog down — 60px of
+ * padding-top on #metaModal plus a translateY(10%) transform on the
+ * dialog (90px on a 907px-tall dialog). That ~150px top offset is larger
+ * than the 90px the theme reserves in its modal-content max-height, so
+ * the bounded modal still ends up extending past the bottom of the
+ * viewport and the footer scrolls off-screen.
+ *
+ * Fix: on desktop, remove that excess top offset for #metaModal so the
+ * theme's existing viewport-relative caps keep the header, scrollable
+ * results, and footer all inside the screen. The results list keeps its
+ * own internal scroll (and caliBlur scrollbar styling) untouched.
+ *
+ * Desktop only (>=768px). Mobile (<=767px) is already handled by the
+ * #288 mobile-modal-scrollable-body pass, which caps .modal-body to 50vh
+ * and keeps the footer pinned there — left untouched here. Scoped to
+ * #metaModal so no other modal is affected.
+ */
+
+@media (min-width: 768px) {
+    #metaModal {
+        padding-top: 0;
+    }
+
+    /* The theme leaves a translateY(10%) transform on the shown dialog,
+       set with higher specificity than a plain id+class selector can
+       override, so neutralize it explicitly. */
+    #metaModal > .modal-dialog {
+        transform: none !important;
+    }
+}

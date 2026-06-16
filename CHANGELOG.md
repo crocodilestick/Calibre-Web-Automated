@@ -16,6 +16,14 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Fixed
+- On a desktop browser, the **Fetch Metadata** popup on the Edit Book page no
+  longer runs off the bottom of the screen when a search returns a long list of
+  results — the "Close" button at the bottom stays on screen. Previously the
+  popup grew taller than the window and the only way to dismiss it was the small
+  "X" in the corner; zooming the page out to 80% was the usual workaround.
+  Reported by @sltvtr.
+
 ### Changed
 - The Custom CSS and server announcement banner options moved to the **UI
   Configuration** admin page. They were previously on Basic Configuration,

@@ -17,25 +17,29 @@
         .book-detail-page {
             display: flex;
             justify-content: center;
-            margin-top: 2rem;
-            margin-left: 1rem;
+            margin-top: 1.5rem;
         }
 
         .book-detail-card {
             width: min(1500px, 100%);
-            background: rgba(0, 0, 0, 0.20);
+            background-color: rgba(0, 0, 0, 0.20);
+            background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0) 140px);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 18px;
-            padding: 4rem;
+            padding: 2rem;                         /* fallback: no clamp() (old e-reader browsers) */
+            padding: clamp(1.4rem, 3.2vw, 3rem);   /* fluid: ~14px phone -> 30px desktop (was 40px flat) */
             display: flex;
             flex-direction: column;
-            gap: 4rem;
+            gap: 2.5rem;
+            gap: clamp(2rem, 3.4vw, 3rem);
             backdrop-filter: blur(6px);
+            box-shadow: 0 18px 50px -20px rgba(0, 0, 0, 0.55);
         }
 
         .book-detail-main {
             display: flex;
-            gap: 6rem;
+            gap: 3rem;
+            gap: clamp(2rem, 3vw, 3.5rem);
             align-items: flex-start;
         }
 
@@ -77,14 +81,18 @@
         }
 
         .book-detail-meta h2#title {
-            margin: 0;
-            font-size: 3rem;
-            margin-bottom: 1rem;
+            margin: 0 0 0.6rem;
+            font-size: 2.4rem;
+            font-size: clamp(2.1rem, 1.4rem + 1.8vw, 2.9rem);
+            line-height: 1.15;
+            letter-spacing: -0.015em;
+            font-weight: 700;
         }
 
         .book-detail-meta .author {
             margin: 0;
-            opacity: 0.85;
+            font-size: 1.6rem;
+            opacity: 0.78;
         }
 
         .book-metadata {
@@ -96,13 +104,14 @@
         .meta-chip {
             display: flex;
             align-items: center;
-            padding: 1rem 1.5rem;
+            padding: 0.7rem 1.1rem;
             background: rgba(0, 0, 0, 0.2);
             border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 10px;
             flex-wrap: wrap;
             width: fit-content;
             gap: 10px;
+            font-size: 1.4rem;
         }
 
         .meta-label {
@@ -246,13 +255,16 @@
         }
 
         .book-detail-description {
-            padding-top: 4rem;
+            padding-top: 2.5rem;
+            padding-top: clamp(2rem, 3.4vw, 3rem);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
         }
 
         .book-detail-description h3 {
             margin-top: 0;
-            margin-bottom: 3rem;
+            margin-bottom: 1.4rem;
+            font-size: 1.9rem;
+            letter-spacing: -0.01em;
         }
 
         .book-detail-card .hr {
@@ -272,6 +284,24 @@
 
         .rating .glyphicon-star-empty {
             color: #ffffff82;
+        }
+
+        /* Theme the raw numeric rating input so the pre-init / no-JS fallback
+           isn't a full-width white slab (the "white 0 box" on the detail page).
+           When bootstrap-rating-input initialises it hides this input and shows
+           the star glyphs; this only styles the fallback state. */
+        .rating input.rating,
+        #detail-rating {
+            width: auto;
+            max-width: 7rem;
+            height: auto;
+            padding: 0.3rem 0.7rem;
+            background: rgba(0, 0, 0, 0.25);
+            color: #fff;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            border-radius: 8px;
+            font-size: 1.6rem;
+            text-align: center;
         }
 
         .rating .rating-input {
@@ -331,9 +361,9 @@
         .book-action-bar .action-icon-btn {
             position: static;
             align-content: center;
-            height: 60px;
+            height: 46px;
+            width: 46px;
             border: none !important;
-            width: 50px;
         }
 
         .action-icon-btn {
@@ -399,7 +429,10 @@
             }
         }
 
-        @media (max-width: 1400px) {
+        /* Cover + meta stay side-by-side down to 1024px (landscape tablets and
+           desktops); below that they stack. Was 1400px — which left most desktop
+           widths showing a lone centred cover with big empty sides. */
+        @media (max-width: 1024px) {
             .book-detail-main {
                 flex-direction: column;
                 align-items: center;

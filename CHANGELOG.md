@@ -16,6 +16,15 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Changed
+- The **book details page** is easier to read, especially on phones. The big
+  empty margins that boxed in the cover and info are gone — you get noticeably
+  more width for the title, tags and description — and the page is tidier
+  overall. The star rating now shows clean stars instead of a stray white box.
+  On wider screens the cover and details sit side-by-side from 1024px up
+  (previously only above 1400px), so desktops and landscape tablets use the
+  width instead of stranding the cover alone in the middle.
+
 ## [v4.0.165] - 2026-06-16
 
 ### Fixed

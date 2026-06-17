@@ -21,6 +21,11 @@ is for things you can see or feel when running the app.
   favorite it (a gold star also appears on its cover while you browse), then use
   the new **Favorites** entry in the sidebar to see just your starred books.
   Favorites are private to your own account.
+- The **Published Date** field now accepts just a **year**. When you edit a
+  book you can type `2020` (or `2020-05`) instead of clicking through the date
+  picker for the full day — the missing month and day default to January 1st.
+  Handy for the many books that only carry a publication year. Thanks to
+  @huperaisan for the suggestion.
 
 ### Changed
 - The **book details page** is easier to read, especially on phones. The big

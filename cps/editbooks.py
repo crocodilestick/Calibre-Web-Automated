@@ -36,6 +36,7 @@ from .redirect import get_redirect_location
 from .file_helper import validate_mime_type
 from .cwa_functions import get_ingest_dir
 from .services.calibre_db_lock import metadata_db_write_lock
+from .services.pubdate_parse import parse_partial_pubdate
 from .usermanagement import user_login_required, login_required_if_no_ano
 from .string_helper import strip_whitespaces
 from werkzeug.utils import secure_filename
@@ -952,7 +953,10 @@ def do_edit_book(book_id, upload_formats=None):
 
         if to_save.get("pubdate"):
             try:
-                book.pubdate = datetime.strptime(to_save["pubdate"], "%Y-%m-%d")
+                # Accept year-only ("2020") and year-month ("2020-05") in
+                # addition to full dates; missing parts default to Jan 1st
+                # (issue #472).
+                book.pubdate = parse_partial_pubdate(to_save["pubdate"])
             except ValueError as e:
                 book.pubdate = db.Books.DEFAULT_PUBDATE
                 flash(str(e), category="error")

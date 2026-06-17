@@ -25,16 +25,30 @@ if ($(".tiny_editor").length) {
 
 $(".datepicker").datepicker({
     format: "yyyy-mm-dd",
+    // forceParse (default true) reformats or blanks a hand-typed bare year on
+    // blur, so "2020" never reaches the form. Keeping the raw value lets the
+    // backend accept year-only / year-month dates (issue #472). The click path
+    // is unaffected — picking a day still formats to YYYY-MM-DD.
+    forceParse: false,
     language: language
 }).on("change", function () {
-    // Show localized date over top of the standard YYYY-MM-DD date
-    var pubDate;
-    var results = /(\d{4})[-\/\\](\d{1,2})[-\/\\](\d{1,2})/.exec(this.value); // YYYY-MM-DD
+    // Show a localized date over top of the standard YYYY-MM-DD field. Accept
+    // year-only ("2020") and year-month ("2020-05") in addition to full dates
+    // (issue #472); missing parts default to the 1st, matching what the backend
+    // stores. Hide the mirror when the value isn't a recognizable date so the
+    // user sees their raw input instead of a stale localized overlay.
+    var results = /^\s*(\d{4})(?:[-\/\\](\d{1,2})(?:[-\/\\](\d{1,2}))?)?\s*$/.exec(this.value);
+    var $mirror = $(this).next('input');
     if (results) {
-        pubDate = new Date(results[1], parseInt(results[2], 10) - 1, results[3]) || new Date(this.value);
-        $(this).next('input')
+        var year = parseInt(results[1], 10);
+        var month = results[2] ? parseInt(results[2], 10) - 1 : 0;
+        var day = results[3] ? parseInt(results[3], 10) : 1;
+        var pubDate = new Date(year, month, day);
+        $mirror
             .val(pubDate.toLocaleDateString(language.replaceAll("_","-")))
             .removeClass("hidden");
+    } else {
+        $mirror.addClass("hidden");
     }
 }).trigger("change");
 

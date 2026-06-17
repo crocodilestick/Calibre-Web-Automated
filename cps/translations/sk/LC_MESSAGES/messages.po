@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-17 00:05+0000\n"
+"POT-Creation-Date: 2026-06-17 14:14+0000\n"
 "PO-Revision-Date: 2023-11-01 06:12+0100\n"
 "Last-Translator: Branislav Hanáček <brango@brango.sk>\n"
 "Language-Team: \n"
@@ -937,7 +937,7 @@ msgstr "Chýba právo na vykonanie"
 msgid "Back to edit metadata"
 msgstr "upraviť metadáta"
 
-#: cps/cover_picker.py:116 cps/templates/book_edit.html:18
+#: cps/cover_picker.py:116 cps/templates/book_edit.html:39
 msgid "Back to book"
 msgstr ""
 
@@ -1013,7 +1013,7 @@ msgstr ""
 msgid "Book ID"
 msgstr "Knihy"
 
-#: cps/cwa_functions.py:1120 cps/templates/book_edit.html:103
+#: cps/cwa_functions.py:1120 cps/templates/book_edit.html:125
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "Názov knihy"
@@ -1263,7 +1263,7 @@ msgstr ""
 msgid "Cannot upload format: Book no longer exists in library"
 msgstr ""
 
-#: cps/editbooks.py:161 cps/editbooks.py:188 cps/templates/book_edit.html:72
+#: cps/editbooks.py:161 cps/editbooks.py:188 cps/templates/book_edit.html:94
 #: cps/templates/layout.html:204
 msgid "Upload done, processing, please wait..."
 msgstr "Nahrávanie ukončené, spracováva sa, počkajte prosím..."
@@ -1931,7 +1931,7 @@ msgstr "Kategórie"
 msgid "Books ordered by category"
 msgstr "Knihy usporiadané podľa kategórie"
 
-#: cps/opds.py:223 cps/render_template.py:107 cps/templates/book_edit.html:121
+#: cps/opds.py:223 cps/render_template.py:107 cps/templates/book_edit.html:143
 #: cps/templates/book_table.html:111 cps/templates/cwa_settings.html:362
 #: cps/templates/cwa_settings.html:364 cps/templates/cwa_settings.html:1103
 #: cps/templates/hardcover_review_matches.html:140
@@ -2120,7 +2120,7 @@ msgstr ""
 msgid "Show Duplicate Books"
 msgstr "Zobraziť najlepšie hodnotené knihy"
 
-#: cps/search.py:53 cps/search.py:438 cps/templates/book_edit.html:315
+#: cps/search.py:53 cps/search.py:438 cps/templates/book_edit.html:338
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:43
 #: cps/templates/index.xml:12 cps/templates/layout.html:167
 #: cps/templates/layout.html:170 cps/templates/search_form.html:247
@@ -3057,7 +3057,7 @@ msgid "Mark as unread"
 msgstr "Označiť ako neprečítané"
 
 #: cps/templates/_book_organizer.html:155 cps/templates/admin.html:27
-#: cps/templates/book_edit.html:37 cps/templates/book_table.html:66
+#: cps/templates/book_edit.html:59 cps/templates/book_table.html:66
 #: cps/templates/book_table.html:145 cps/templates/book_table.html:194
 #: cps/templates/duplicates.html:718 cps/templates/modal_dialogs.html:63
 #: cps/templates/modal_dialogs.html:116 cps/templates/read.html:138
@@ -3482,7 +3482,7 @@ msgid "OK"
 msgstr "V poriadku"
 
 #: cps/templates/admin.html:302 cps/templates/admin.html:316
-#: cps/templates/book_edit.html:290 cps/templates/book_table.html:176
+#: cps/templates/book_edit.html:312 cps/templates/book_table.html:176
 #: cps/templates/book_table.html:195 cps/templates/book_table.html:215
 #: cps/templates/book_table.html:235 cps/templates/book_table.html:255
 #: cps/templates/book_table.html:275 cps/templates/book_table.html:333
@@ -3558,8 +3558,8 @@ msgstr ""
 msgid "total entries seen"
 msgstr ""
 
-#: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:72
-#: cps/templates/book_edit.html:89 cps/templates/layout.html:204
+#: cps/templates/annotations_import.html:49 cps/templates/book_edit.html:94
+#: cps/templates/book_edit.html:111 cps/templates/layout.html:204
 #: cps/templates/layout.html:335
 msgid "Uploading..."
 msgstr "Nahráva sa..."
@@ -3636,36 +3636,36 @@ msgstr "znížiť"
 msgid "More by"
 msgstr "Viac od"
 
-#: cps/templates/book_edit.html:31 cps/templates/detail.html:752
+#: cps/templates/book_edit.html:53 cps/templates/detail.html:752
 #: cps/templates/detail.html:754
 msgid "Delete Book"
 msgstr "Zmazať knihu"
 
-#: cps/templates/book_edit.html:34
+#: cps/templates/book_edit.html:56
 msgid "Delete formats:"
 msgstr "Zmazať formáty:"
 
-#: cps/templates/book_edit.html:45
+#: cps/templates/book_edit.html:67
 msgid "Convert book format:"
 msgstr "Previesť knihu s formátom:"
 
-#: cps/templates/book_edit.html:50
+#: cps/templates/book_edit.html:72
 msgid "Convert from:"
 msgstr "Previesť z:"
 
-#: cps/templates/book_edit.html:52 cps/templates/book_edit.html:59
+#: cps/templates/book_edit.html:74 cps/templates/book_edit.html:81
 msgid "select an option"
 msgstr "vybrať možnosť"
 
-#: cps/templates/book_edit.html:57
+#: cps/templates/book_edit.html:79
 msgid "Convert to:"
 msgstr "Previesť do:"
 
-#: cps/templates/book_edit.html:66
+#: cps/templates/book_edit.html:88
 msgid "Convert book"
 msgstr "Previesť knihu"
 
-#: cps/templates/book_edit.html:72 cps/templates/book_edit.html:355
+#: cps/templates/book_edit.html:94 cps/templates/book_edit.html:378
 #: cps/templates/book_table.html:346 cps/templates/duplicates.html:766
 #: cps/templates/layout.html:204 cps/templates/layout.html:506
 #: cps/templates/layout.html:643 cps/templates/modal_dialogs.html:34
@@ -3673,7 +3673,7 @@ msgstr "Previesť knihu"
 msgid "Close"
 msgstr "Zatvoriť"
 
-#: cps/templates/book_edit.html:72 cps/templates/duplicates.html:799
+#: cps/templates/book_edit.html:94 cps/templates/duplicates.html:799
 #: cps/templates/hardcover_review_matches.html:279
 #: cps/templates/hardcover_review_matches.html:288
 #: cps/templates/hardcover_review_matches.html:323
@@ -3686,33 +3686,33 @@ msgstr "Zatvoriť"
 msgid "Error"
 msgstr "Chyba"
 
-#: cps/templates/book_edit.html:77
+#: cps/templates/book_edit.html:99
 msgid "Upload Format"
 msgstr "Formát nahrávania"
 
-#: cps/templates/book_edit.html:106 cps/templates/detail.html:889
+#: cps/templates/book_edit.html:128 cps/templates/detail.html:889
 #, fuzzy
 msgid "Imported as"
 msgstr "Aktualizácia zlyhala:"
 
-#: cps/templates/book_edit.html:113 cps/templates/book_edit.html:436
+#: cps/templates/book_edit.html:135 cps/templates/book_edit.html:459
 #: cps/templates/cwa_settings.html:1091 cps/templates/search_form.html:12
 msgid "Author"
 msgstr "Autor"
 
-#: cps/templates/book_edit.html:117 cps/templates/search_form.html:52
+#: cps/templates/book_edit.html:139 cps/templates/search_form.html:52
 msgid "Tags"
 msgstr "Značka"
 
-#: cps/templates/book_edit.html:125 cps/templates/book_table.html:112
+#: cps/templates/book_edit.html:147 cps/templates/book_table.html:112
 msgid "Series ID"
 msgstr "ID série"
 
-#: cps/templates/book_edit.html:128
+#: cps/templates/book_edit.html:150
 msgid "Published Date"
 msgstr "Dátum vydania"
 
-#: cps/templates/book_edit.html:137 cps/templates/book_edit.html:437
+#: cps/templates/book_edit.html:159 cps/templates/book_edit.html:460
 #: cps/templates/cwa_settings.html:348 cps/templates/cwa_settings.html:350
 #: cps/templates/cwa_settings.html:1109 cps/templates/detail.html:995
 #: cps/templates/hardcover_review_matches.html:148
@@ -3720,97 +3720,97 @@ msgstr "Dátum vydania"
 msgid "Publisher"
 msgstr "Vydavateľ"
 
-#: cps/templates/book_edit.html:141 cps/templates/cwa_settings.html:1097
+#: cps/templates/book_edit.html:163 cps/templates/cwa_settings.html:1097
 #: cps/templates/listenmp3.html:69
 msgid "Language"
 msgstr "Jazyk"
 
-#: cps/templates/book_edit.html:145 cps/templates/cwa_settings.html:369
+#: cps/templates/book_edit.html:167 cps/templates/cwa_settings.html:369
 #: cps/templates/cwa_settings.html:371
 msgid "Rating"
 msgstr "Hodnotenie"
 
-#: cps/templates/book_edit.html:149 cps/templates/book_edit.html:438
+#: cps/templates/book_edit.html:171 cps/templates/book_edit.html:461
 #: cps/templates/cwa_settings.html:341 cps/templates/cwa_settings.html:343
 #: cps/templates/search_form.html:154
 msgid "Description"
 msgstr "Popis"
 
-#: cps/templates/book_edit.html:153
+#: cps/templates/book_edit.html:175
 msgid "Identifiers"
 msgstr "Identifikátory"
 
-#: cps/templates/book_edit.html:157 cps/templates/book_edit.html:447
+#: cps/templates/book_edit.html:179 cps/templates/book_edit.html:470
 msgid "Identifier Type"
 msgstr "Typ identifikátora"
 
-#: cps/templates/book_edit.html:158 cps/templates/book_edit.html:448
+#: cps/templates/book_edit.html:180 cps/templates/book_edit.html:471
 msgid "Identifier Value"
 msgstr "Hodnota identifikátora"
 
-#: cps/templates/book_edit.html:159 cps/templates/book_edit.html:449
+#: cps/templates/book_edit.html:181 cps/templates/book_edit.html:472
 #: cps/templates/user_table.html:24
 msgid "Remove"
 msgstr "Odstrániť"
 
-#: cps/templates/book_edit.html:164
+#: cps/templates/book_edit.html:186
 msgid "Add Identifier"
 msgstr "Pridať identifikátor"
 
-#: cps/templates/book_edit.html:170 cps/templates/cover_picker.html:12
+#: cps/templates/book_edit.html:192 cps/templates/cover_picker.html:12
 #: cps/templates/detail.html:619 cps/templates/detail.html:622
 #: cps/templates/detail.html:745
 #, fuzzy
 msgid "Change cover"
 msgstr "Zmeniť heslo"
 
-#: cps/templates/book_edit.html:173
+#: cps/templates/book_edit.html:195
 msgid ""
 "Pick a cover from any source, paste a URL, upload a file, or use the "
 "embedded cover."
 msgstr ""
 
-#: cps/templates/book_edit.html:177
+#: cps/templates/book_edit.html:199
 msgid ""
 "Fetch Cover from URL (JPEG - Image will be downloaded and stored in database)"
 msgstr "Načítať obálku z URL (JPEG-obrázok sa stiahne a uloží v databáze)"
 
-#: cps/templates/book_edit.html:186
+#: cps/templates/book_edit.html:208
 msgid "Upload Cover from Local Disk"
 msgstr "Nahrať obálku knihy z miestneho disku"
 
-#: cps/templates/book_edit.html:198 cps/templates/search_form.html:46
+#: cps/templates/book_edit.html:220 cps/templates/search_form.html:46
 #: cps/templates/search_form.html:167
 msgid "Yes"
 msgstr "Áno"
 
-#: cps/templates/book_edit.html:199 cps/templates/search_form.html:47
+#: cps/templates/book_edit.html:221 cps/templates/search_form.html:47
 #: cps/templates/search_form.html:168
 msgid "No"
 msgstr "Nie"
 
-#: cps/templates/book_edit.html:264
+#: cps/templates/book_edit.html:286
 #, fuzzy
 msgid "Hardcover Sync Blacklist"
 msgstr "Povoliť synchronizáciu Kobo"
 
-#: cps/templates/book_edit.html:268
+#: cps/templates/book_edit.html:290
 msgid "Blacklist annotations from syncing to Hardcover"
 msgstr ""
 
-#: cps/templates/book_edit.html:275
+#: cps/templates/book_edit.html:297
 msgid "Blacklist reading progress from syncing to Hardcover"
 msgstr ""
 
-#: cps/templates/book_edit.html:284
+#: cps/templates/book_edit.html:306
 msgid "View Book on Save"
 msgstr "Zobraziť knihu pri ukladaní"
 
-#: cps/templates/book_edit.html:288 cps/templates/book_edit.html:309
+#: cps/templates/book_edit.html:310 cps/templates/book_edit.html:332
 msgid "Fetch Metadata"
 msgstr "Načítať metadáta"
 
-#: cps/templates/book_edit.html:291 cps/templates/config_db.html:111
+#: cps/templates/book_edit.html:313 cps/templates/config_db.html:111
 #: cps/templates/config_edit.html:664 cps/templates/config_view_edit.html:237
 #: cps/templates/email_edit.html:71 cps/templates/read.html:136
 #: cps/templates/schedule_edit.html:47 cps/templates/shelf_edit.html:36
@@ -3818,63 +3818,63 @@ msgstr "Načítať metadáta"
 msgid "Save"
 msgstr "Uložiť"
 
-#: cps/templates/book_edit.html:312
+#: cps/templates/book_edit.html:335
 msgid "Keyword"
 msgstr "Kľúčové slovo"
 
-#: cps/templates/book_edit.html:313
+#: cps/templates/book_edit.html:336
 msgid "Search keyword"
 msgstr "Vyhľadať kľúčové slovo"
 
-#: cps/templates/book_edit.html:322
+#: cps/templates/book_edit.html:345
 msgid "Selected metadata fields were applied to the edit form."
 msgstr ""
 
-#: cps/templates/book_edit.html:329
+#: cps/templates/book_edit.html:352
 msgid "API Keys"
 msgstr ""
 
-#: cps/templates/book_edit.html:335
+#: cps/templates/book_edit.html:358
 msgid ""
 "Some metadata sources need an API key. Adding a key here improves cover "
 "quality and unblocks rate-limited services. Keys are stored once for the "
 "whole instance — admins only."
 msgstr ""
 
-#: cps/templates/book_edit.html:337 cps/templates/book_edit.html:351
-#: cps/templates/book_edit.html:433
+#: cps/templates/book_edit.html:360 cps/templates/book_edit.html:374
+#: cps/templates/book_edit.html:456
 msgid "Loading..."
 msgstr "Načítava sa..."
 
-#: cps/templates/book_edit.html:342
+#: cps/templates/book_edit.html:365
 msgid "Sort by:"
 msgstr ""
 
-#: cps/templates/book_edit.html:344
+#: cps/templates/book_edit.html:367
 msgid "Provider order (default)"
 msgstr ""
 
-#: cps/templates/book_edit.html:345
+#: cps/templates/book_edit.html:368
 msgid "Cover size — largest first"
 msgstr ""
 
-#: cps/templates/book_edit.html:346
+#: cps/templates/book_edit.html:369
 msgid "Cover size — smallest first"
 msgstr ""
 
-#: cps/templates/book_edit.html:377
+#: cps/templates/book_edit.html:400
 msgid "Apply"
 msgstr ""
 
-#: cps/templates/book_edit.html:434
+#: cps/templates/book_edit.html:457
 msgid "Search error!"
 msgstr "Chyba pri vyhľadávaní!"
 
-#: cps/templates/book_edit.html:435
+#: cps/templates/book_edit.html:458
 msgid "No Result(s) found! Please try another keyword."
 msgstr "Nič sa nenaslo! Skúste, prosím iné kľúčové slovo."
 
-#: cps/templates/book_edit.html:439
+#: cps/templates/book_edit.html:462
 msgid "Source"
 msgstr "Zdroj"
 

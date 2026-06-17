@@ -91,6 +91,22 @@ var reader;
         }
     }
 
+    // Adjustable text margin: set the epub content's side padding via the
+    // rendition theme (re-applied on every section), so the reader can cut or
+    // widen the side whitespace. 0 = full-width text. Exposed on window so the
+    // settings-modal slider in read.html can call it.
+    window.applyReaderMargin = function (px) {
+        if (!reader || !reader.rendition || !reader.rendition.themes) {
+            return;
+        }
+        var val = parseInt(px, 10);
+        if (isNaN(val)) { return; }
+        try {
+            reader.rendition.themes.override('padding-left', val + 'px', true);
+            reader.rendition.themes.override('padding-right', val + 'px', true);
+        } catch (e) { /* themes not ready yet */ }
+    };
+
     if (reader && reader.rendition) {
         reader.rendition.on('touchstart', function(event) {
             var t = event.changedTouches[0];
@@ -193,11 +209,11 @@ var reader;
             }
         }, 0);
         // Theme
-        const theme = localStorage.getItem("calibre.reader.theme") ?? "lightTheme";
+        const theme = ReaderSettings.get("theme", "lightTheme");
         if (typeof selectTheme === 'function') selectTheme(theme);
 
         // Font size
-        let savedFontSize = localStorage.getItem("calibre.reader.fontSize");
+        let savedFontSize = ReaderSettings.get("fontSize", null);
         let fontSizeFader = document.getElementById('fontSizeFader');
         if (savedFontSize && fontSizeFader && reader && reader.rendition && reader.rendition.themes) {
             fontSizeFader.value = savedFontSize;
@@ -212,7 +228,7 @@ var reader;
             'KaiTi': 'KaiTi, serif',
             'Arial': 'Arial, Helvetica, sans-serif'
         };
-        let savedFont = localStorage.getItem("calibre.reader.font");
+        let savedFont = ReaderSettings.get("font", null);
         if (savedFont && typeof selectFont === 'function') {
             selectFont(savedFont);
             let fontValue = fontMap[savedFont] || '';
@@ -222,14 +238,22 @@ var reader;
         }
 
         // Spread
-        let savedSpread = localStorage.getItem("calibre.reader.spread");
+        let savedSpread = ReaderSettings.get("spread", null);
         if (savedSpread && typeof spread === 'function') {
             spread(savedSpread);
         }
 
+        // Text margin (side whitespace) — applied as content padding via the
+        // rendition theme so it survives chapter changes and is independent of
+        // the viewer container CSS.
+        let savedMargin = ReaderSettings.get("margin", null);
+        if (savedMargin !== null && typeof window.applyReaderMargin === 'function') {
+            window.applyReaderMargin(savedMargin);
+        }
+
         // Reflow
         // Use the reflowBox declared earlier in this handler
-        var savedReflow = localStorage.getItem("calibre.reader.reflow");
+        var savedReflow = ReaderSettings.get("reflow", null);
         function applyReflow(enabled) {
             if (reader && reader.rendition && typeof reader.rendition.reflow === 'function') {
                 reader.rendition.reflow(enabled);
@@ -239,11 +263,11 @@ var reader;
         }
         if (reflowBox) {
             if (savedReflow !== null) {
-                reflowBox.checked = savedReflow === 'true';
+                reflowBox.checked = savedReflow === true || savedReflow === 'true';
                 applyReflow(reflowBox.checked);
             }
             reflowBox.addEventListener("change", function() {
-                localStorage.setItem("calibre.reader.reflow", this.checked);
+                ReaderSettings.set("reflow", this.checked);
                 applyReflow(this.checked);
             });
         }

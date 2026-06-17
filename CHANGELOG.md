@@ -23,6 +23,13 @@ is for things you can see or feel when running the app.
   annoyances are fixed along the way: a stray finger-wobble no longer flips the
   page, and selecting text to highlight no longer turns the page out from under
   you.
+- **Your reader display settings now follow you across devices.** Theme, font,
+  font size, page layout and the new text-margin setting are saved to your
+  account, so a book you open on your phone looks the way you set it on your
+  laptop — previously these lived only in one browser and didn't travel.
+- **Adjustable text margins in the reader.** A new slider in the reader's
+  Settings trims the side whitespace to fit more text per line, or widens it —
+  whatever's comfortable to read.
 - You can now **star your favorite books**. Tap the star on a book's page — or
   the star on its cover anywhere in the grid — to favorite it; favorited books
   show a gold star on the cover. Use the new **Favorites** entry in the sidebar
@@ -34,6 +41,9 @@ is for things you can see or feel when running the app.
   @huperaisan for the suggestion.
 
 ### Changed
+- The **reader's Settings panel** has a cleaner layout — clearly labelled
+  sections, live value readouts on the font-size and margin sliders, and bigger
+  touch targets that fit comfortably on a phone.
 - The **book details page** is easier to read, especially on phones. The big
   empty margins that boxed in the cover and info are gone — you get noticeably
   more width for the title, tags and description — and the page is tidier

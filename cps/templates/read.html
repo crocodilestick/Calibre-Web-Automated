@@ -73,47 +73,83 @@
 	    <div id="progress">0%</div>
 	    <div id="loader"><div class="css-spinner" role="status" aria-label="{{ _('Loading') }}"></div></div>
 	</div>
+    <style>
+        /* Reader settings modal — clearer sections, labelled sliders with live
+           value readouts, touch-friendly controls, and a layout that fits small
+           screens. Scoped to #settings-modal so the rest of the reader chrome
+           is untouched. */
+        #settings-modal .md-content { max-width: 440px; }
+        #settings-modal h3 { margin: 0 0 0.8em; }
+        #settings-modal .rs-section { padding: 0.8em 0; border-top: 1px solid rgba(127,127,127,0.22); }
+        #settings-modal .rs-section:first-of-type { border-top: 0; padding-top: 0; }
+        #settings-modal .rs-label { display: block; font-weight: 600; margin-bottom: 0.55em; font-size: 0.95em; }
+        #settings-modal .rs-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+        #settings-modal .rs-buttons button { flex: 1 1 auto; min-height: 40px; min-width: 66px; cursor: pointer; }
+        #settings-modal .rs-slider-row { display: flex; align-items: center; gap: 12px; }
+        #settings-modal .rs-slider-row input[type="range"] { flex: 1; min-height: 28px; }
+        #settings-modal .rs-value { min-width: 3.4em; text-align: right; font-variant-numeric: tabular-nums; opacity: 0.85; }
+        #settings-modal .rs-check { display: flex; align-items: flex-start; gap: 8px; cursor: pointer; margin: 0; }
+        #settings-modal .rs-check input { width: 18px; height: 18px; margin-top: 1px; flex: none; }
+        @media (max-width: 600px) {
+            #settings-modal .md-content { max-width: 92vw; max-height: 86vh; overflow-y: auto; }
+        }
+    </style>
     <div class="modal md-effect-1" id="settings-modal">
         <div class="md-content">
             <h3>{{_('Settings')}}</h3>
-            <div class="form-group themes" id="themes">
-                Choose a theme below: <br />
 
-                <!-- Hardcoded a tick in the light theme button because it is the "default" theme. Need to find a way to do this dynamically on startup-->
-                <button type="button" id="lightTheme" class="lightTheme" onclick="selectTheme(this.id)"><span
-                        id="lightSelected">✓</span>{{_('Light')}}</button>
-                <button type="button" id="darkTheme" class="darkTheme" onclick="selectTheme(this.id)"><span
-                        id="darkSelected"> </span>{{_('Dark')}}</button>
-                <button type="button" id="sepiaTheme" class="sepiaTheme" onclick="selectTheme(this.id)"><span
-                        id="sepiaSelected"> </span>{{_('Sepia')}}</button>
-                <button type="button" id="blackTheme" class="blackTheme" onclick="selectTheme(this.id)"><span
-                        id="blackSelected"> </span>{{_('Black')}}</button>
+            <div class="rs-section themes" id="themes">
+                <label class="rs-label">{{_('Theme')}}</label>
+                <div class="rs-buttons">
+                    <button type="button" id="lightTheme" class="lightTheme" onclick="selectTheme(this.id)"><span id="lightSelected">✓</span>{{_('Light')}}</button>
+                    <button type="button" id="darkTheme" class="darkTheme" onclick="selectTheme(this.id)"><span id="darkSelected"> </span>{{_('Dark')}}</button>
+                    <button type="button" id="sepiaTheme" class="sepiaTheme" onclick="selectTheme(this.id)"><span id="sepiaSelected"> </span>{{_('Sepia')}}</button>
+                    <button type="button" id="blackTheme" class="blackTheme" onclick="selectTheme(this.id)"><span id="blackSelected"> </span>{{_('Black')}}</button>
+                </div>
             </div>
-            <div class="form-group">
-                <p>
-                    <input type="checkbox" id="sidebarReflow"
-                        name="sidebarReflow">{{_('Reflow text when sidebars are open.')}}
-                </p>
-            </div>
-            <div class="form-group fontSizeWrapper">
-                <div class="slider">
-                    <label for="fader">{{ _('Font Sizes') }}</label>
+
+            <div class="rs-section">
+                <label class="rs-label" for="fontSizeFader">{{ _('Font Sizes') }}</label>
+                <div class="rs-slider-row">
                     <input type="range" min="75" max="200" value="100" id="fontSizeFader" step="25">
-                </div>            
+                    <span class="rs-value" id="fontSizeValue">100%</span>
+                </div>
             </div>
-              <div class="font" id="font">
-                <label class="item">{{_('Font')}}:</label>
-                <button type="button" id="default" onclick="selectFont(this.id)"><span>✓</span>{{_('Default')}}</button> 
-                <button type="button" id="Yahei" onclick="selectFont(this.id)"><span></span>{{_('Yahei')}}</button>
-                <button type="button" id="SimSun" onclick="selectFont(this.id)"><span></span>{{_('SimSun')}}</button>
-                <button type="button" id="KaiTi" onclick="selectFont(this.id)"><span></span>{{_('KaiTi')}}</button>
-                <button type="button" id="Arial" onclick="selectFont(this.id)"><span></span>{{_('Arial')}}</button>
-              </div>
-              <div class="layou" id="layout">
-                <label class="item">{{ _('Spread') }}:</label>
-                <button type="button" id="spread" onclick="spread(this.id)"><span>✓</span>{{_('Two columns')}}</button>
-                <button type="button" id="nonespread" onclick="spread(this.id)"><span></span>{{_('One column')}}</button>
-              </div>            
+
+            <div class="rs-section">
+                <label class="rs-label" for="marginFader">{{ _('Text margin') }}</label>
+                <div class="rs-slider-row">
+                    <input type="range" min="0" max="80" value="0" id="marginFader" step="8">
+                    <span class="rs-value" id="marginValue">0px</span>
+                </div>
+            </div>
+
+            <div class="rs-section font" id="font">
+                <label class="rs-label">{{_('Font')}}</label>
+                <div class="rs-buttons">
+                    <button type="button" id="default" onclick="selectFont(this.id)"><span>✓</span>{{_('Default')}}</button>
+                    <button type="button" id="Yahei" onclick="selectFont(this.id)"><span></span>{{_('Yahei')}}</button>
+                    <button type="button" id="SimSun" onclick="selectFont(this.id)"><span></span>{{_('SimSun')}}</button>
+                    <button type="button" id="KaiTi" onclick="selectFont(this.id)"><span></span>{{_('KaiTi')}}</button>
+                    <button type="button" id="Arial" onclick="selectFont(this.id)"><span></span>{{_('Arial')}}</button>
+                </div>
+            </div>
+
+            <div class="rs-section layou" id="layout">
+                <label class="rs-label">{{ _('Spread') }}</label>
+                <div class="rs-buttons">
+                    <button type="button" id="spread" onclick="spread(this.id)"><span>✓</span>{{_('Two columns')}}</button>
+                    <button type="button" id="nonespread" onclick="spread(this.id)"><span></span>{{_('One column')}}</button>
+                </div>
+            </div>
+
+            <div class="rs-section">
+                <label class="rs-check">
+                    <input type="checkbox" id="sidebarReflow" name="sidebarReflow">
+                    <span>{{_('Reflow text when sidebars are open.')}}</span>
+                </label>
+            </div>
+
             <div class="closer icon-cancel-circled"></div>
         </div>
     </div>
@@ -130,6 +166,7 @@
             bookUrl: "{{ url_for('web.serve_book', book_id=bookid, book_format=book_format, anyname='file.epub') }}",
             bookmark: "{{ bookmark.bookmark_key if bookmark != None }}",
             useBookmarks: "{{ current_user.is_authenticated | tojson }}",
+            readerSettings: {{ reader_settings | default('{}') | safe }},
             kosyncPercent: {{ kosync_progress | tojson if kosync_progress is not none else 'null' }},
             annotationsApiBase: "{{ url_for('annotations.annotations_view', book_id=bookid).rstrip('/') }}",
             annotationsI18n: {
@@ -181,7 +218,7 @@
             // Add tick mark to the button corresponding to the currently selected theme
             document.getElementById(id).querySelector("span").textContent = "✓";
             // Saving theme to local storage
-            localStorage.setItem("calibre.reader.theme", id);
+            ReaderSettings.set("theme", id);
             // Apply theme to epubjs iframe
             reader.rendition.themes.select(id);
             // Apply theme to rest of the page. 
@@ -202,7 +239,7 @@
             spans[i].textContent = "";
           }
           document.getElementById(id).querySelector("span").textContent = "✓";
-          localStorage.setItem("calibre.reader.font", id);
+          ReaderSettings.set("font", id);
           if (id == 'default' && defaultFont) {
             reader.rendition.themes.font(defaultFont);
             return;
@@ -216,7 +253,7 @@
             spans[i].textContent = "";
           }
           document.getElementById(id).querySelector("span").textContent = "✓";
-          localStorage.setItem("calibre.reader.spread", id);
+          ReaderSettings.set("spread", id);
           reader.rendition.spread(id==='spread'?true:'none');
         }
 
@@ -224,13 +261,13 @@
         document.addEventListener("DOMContentLoaded", function() {
           let fontSizeFader = document.getElementById('fontSizeFader');
           if (fontSizeFader) {
-            let savedFontSize = localStorage.getItem("calibre.reader.fontSize");
+            let savedFontSize = ReaderSettings.get("fontSize", null);
             if (savedFontSize) {
               fontSizeFader.value = savedFontSize;
             }
             fontSizeFader.addEventListener("change", function () {
               reader.rendition.themes.fontSize(`${this.value}%`);
-              localStorage.setItem("calibre.reader.fontSize", this.value);
+              ReaderSettings.set("fontSize", parseInt(this.value, 10));
             });
           }
         });
@@ -239,18 +276,45 @@
         document.addEventListener("DOMContentLoaded", function() {
           let reflowBox = document.getElementById('sidebarReflow');
           if (reflowBox) {
-            let savedReflow = localStorage.getItem("calibre.reader.reflow");
+            let savedReflow = ReaderSettings.get("reflow", null);
             if (savedReflow !== null) {
-              reflowBox.checked = savedReflow === 'true';
+              reflowBox.checked = savedReflow === true || savedReflow === 'true';
             }
             reflowBox.addEventListener("change", function() {
-              localStorage.setItem("calibre.reader.reflow", this.checked);
+              ReaderSettings.set("reflow", this.checked);
+            });
+          }
+        });
+
+        // Text-margin slider + live value readouts (font size + margin).
+        document.addEventListener("DOMContentLoaded", function() {
+          var fsFader = document.getElementById('fontSizeFader');
+          var fsValue = document.getElementById('fontSizeValue');
+          if (fsFader && fsValue) {
+            var fsUpdate = function () { fsValue.textContent = fsFader.value + '%'; };
+            fsUpdate();
+            fsFader.addEventListener("input", fsUpdate);
+            fsFader.addEventListener("change", fsUpdate);
+          }
+          var marginFader = document.getElementById('marginFader');
+          var marginValue = document.getElementById('marginValue');
+          if (marginFader) {
+            var savedMargin = ReaderSettings.get("margin", null);
+            if (savedMargin !== null) { marginFader.value = savedMargin; }
+            if (marginValue) { marginValue.textContent = marginFader.value + 'px'; }
+            marginFader.addEventListener("input", function () {
+              if (marginValue) { marginValue.textContent = this.value + 'px'; }
+            });
+            marginFader.addEventListener("change", function () {
+              if (window.applyReaderMargin) { window.applyReaderMargin(this.value); }
+              ReaderSettings.set("margin", parseInt(this.value, 10));
             });
           }
         });
       </script>
       <script src="{{ url_for('static', filename='js/libs/screenfull.min.js') }}"></script>
       <script src="{{ url_for('static', filename='js/libs/reader.min.js') }}"></script>
+      <script src="{{ url_for('static', filename='js/reading/reader-settings.js') }}"></script>
       <script src="{{ url_for('static', filename='js/reading/epub.js') }}"></script>
       <script src="{{ url_for('static', filename='js/reading/epub-progress.js') }}"></script>
       <script src="{{ url_for('static', filename='js/reading/annotations.js') }}"></script>

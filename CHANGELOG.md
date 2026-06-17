@@ -78,6 +78,15 @@ is for things you can see or feel when running the app.
   that row is less cluttered.
 
 ### Fixed
+- A book you're in the middle of reading no longer **disappears from the
+  "Currently Reading" shelf** just because it has no language set. If you've
+  picked a preferred language in your account, the shelf used to silently hide
+  any in-progress book missing language metadata — which often hit PDFs while
+  EPUBs (which usually carry a language) stayed visible, even though the book's
+  own page still showed your reading progress. The progress shelves now ignore
+  the language preference, so everything you're actually reading shows up. Your
+  other library filters (hidden, archived, tag restrictions) are unaffected.
+  Thanks to @chloeroform for the report.
 - On a phone, tapping the **Search** box (or other text fields) no longer zooms
   the page in. iOS Safari zooms toward any field whose text is smaller than 16px;
   the inputs are now sized so that doesn't happen, while pinch-to-zoom still works

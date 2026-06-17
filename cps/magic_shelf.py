@@ -632,6 +632,34 @@ def build_query_from_rules(rules_json, user_id=None):
     return None
 
 
+def rules_reference_read_status(rules_json):
+    """Return True if any rule in the (possibly nested) rule set filters on
+    read_status.
+
+    Progress-driven shelves — the system 'Currently Reading' / 'Yet to Read'
+    presets and any custom shelf using a read_status rule — are activity-driven,
+    not browse-driven. A book the user demonstrably has reading activity on must
+    not be hidden from such a shelf purely by the per-user *language* browse
+    filter (fork #461). The caller uses this gate to pass
+    return_all_languages=True to common_filters for these shelves, skipping ONLY
+    the language clause while archived / per-user-hidden / denied-tags /
+    restricted-column filters stay enforced. Browse-only custom shelves (no
+    read_status rule) keep language filtering.
+
+    build_filter_from_rule keys off rule['id']; the system templates also carry
+    'field'. Either spelling counts.
+    """
+    if not rules_json or not rules_json.get('rules'):
+        return False
+    for rule in rules_json.get('rules', []):
+        if 'condition' in rule:
+            if rules_reference_read_status(rule):
+                return True
+        elif rule.get('id') == 'read_status' or rule.get('field') == 'read_status':
+            return True
+    return False
+
+
 def get_book_ids_for_magic_shelf(shelf_id, sort_order=None, sort_param='stored', bypass_cache=False):
     """Return ordered book IDs for a magic shelf without loading book objects."""
     try:
@@ -708,7 +736,14 @@ def build_book_query_for_magic_shelf(shelf_id, sort_order=None, extra_filter=Non
         return None, magic_shelf
 
     cdb = db.CalibreDB(init=True)
-    query = cdb.session.query(db.Books).filter(query_filter).filter(cdb.common_filters(extra_filter=extra_filter))
+    # #461: a book the user has reading progress on must not be hidden from a
+    # progress-driven shelf purely by the per-user language browse filter.
+    # When the rule set references read_status, bypass ONLY the language clause
+    # (return_all_languages=True); archived / hidden / tags / restricted stay.
+    bypass_language = rules_reference_read_status(rules)
+    query = cdb.session.query(db.Books).filter(query_filter).filter(
+        cdb.common_filters(return_all_languages=bypass_language, extra_filter=extra_filter)
+    )
     # Fork-specific (#38, backport of CWA #1233): outerjoin Series when the
     # sort references Series-derived columns. Without this, ORDER BY
     # series.name produces empty results.

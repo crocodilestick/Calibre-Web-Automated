@@ -56,32 +56,81 @@ var reader;
         $("#bookmark, #show-Bookmarks").remove();
     }
 
-    // Enable swipe support
-    // I have no idea why swiperRight/swiperLeft from plugins is not working, events just don't get fired
-    var touchStart = 0;
-    var touchEnd = 0;
+    // Page navigation by touch: tap the left or right half of the screen to
+    // turn pages (split down the centre), or swipe left/right. A movement
+    // threshold separates a tap from a swipe, so a stray jitter no longer turns
+    // the page, and an active text selection (the highlight gesture) never
+    // turns the page. Desktop arrow buttons + keyboard nav are handled by the
+    // reader library; this layer adds the touch affordances.
+    var TAP_SLOP_PX = 10;     // movement at or under this counts as a tap
+    var SWIPE_MIN_PX = 40;    // horizontal travel over this counts as a swipe
+    var TAP_MAX_MS = 300;     // a longer press is a long-press/selection, not a tap
+    var touchStartX = 0, touchStartY = 0, touchStartT = 0;
+
+    // True when the rendered content holds a non-empty selection — used to
+    // suppress page turns while the reader is selecting text to highlight.
+    function readerHasSelection() {
+        try {
+            var contents = reader.rendition.getContents() || [];
+            for (var i = 0; i < contents.length; i++) {
+                var win = contents[i] && contents[i].window;
+                var sel = win && win.getSelection && win.getSelection();
+                if (sel && String(sel).length > 0) {
+                    return true;
+                }
+            }
+        } catch (e) { /* contents unavailable mid-transition — treat as no selection */ }
+        return false;
+    }
+
+    function readerIsRtl() {
+        try {
+            return reader.book.package.metadata.direction === "rtl";
+        } catch (e) {
+            return false;
+        }
+    }
 
     if (reader && reader.rendition) {
         reader.rendition.on('touchstart', function(event) {
-            touchStart = event.changedTouches[0].screenX;
+            var t = event.changedTouches[0];
+            touchStartX = t.screenX;
+            touchStartY = t.screenY;
+            touchStartT = Date.now();
         });
         reader.rendition.on('touchend', function(event) {
-          touchEnd = event.changedTouches[0].screenX;
-            if (touchStart < touchEnd) {
-                if(reader.book.package.metadata.direction === "rtl") {
-					reader.rendition.next();
-				} else {
-					reader.rendition.prev();
-				}
-                // Swiped Right
+            var t = event.changedTouches[0];
+            var dx = t.screenX - touchStartX;
+            var dy = t.screenY - touchStartY;
+            var adx = Math.abs(dx), ady = Math.abs(dy);
+            var dt = Date.now() - touchStartT;
+            var rtl = readerIsRtl();
+
+            // Never turn the page while text is selected (highlight gesture).
+            if (readerHasSelection()) {
+                return;
             }
-            if (touchStart > touchEnd) {
-                if(reader.book.package.metadata.direction === "rtl") {
-					reader.rendition.prev();
-				} else {
-                    reader.rendition.next();
-				}
-                // Swiped Left
+
+            // Swipe: dominant horizontal movement past the threshold.
+            if (adx > SWIPE_MIN_PX && adx > ady) {
+                if (dx > 0) {                       // swiped right
+                    rtl ? reader.rendition.next() : reader.rendition.prev();
+                } else {                            // swiped left
+                    rtl ? reader.rendition.prev() : reader.rendition.next();
+                }
+                return;
+            }
+
+            // Tap: little movement, short press → turn by which half was tapped,
+            // split down the centre of the viewport.
+            if (adx <= TAP_SLOP_PX && ady <= TAP_SLOP_PX && dt <= TAP_MAX_MS) {
+                var viewportWidth = window.innerWidth || document.documentElement.clientWidth || 1;
+                var tappedLeftHalf = t.screenX < (viewportWidth / 2);
+                if (tappedLeftHalf) {
+                    rtl ? reader.rendition.next() : reader.rendition.prev();
+                } else {
+                    rtl ? reader.rendition.prev() : reader.rendition.next();
+                }
             }
         });
     }
@@ -99,7 +148,7 @@ var reader;
                 this.removeBookmark(bookmark);
             }.bind(this));
         }
-        
+
         var csrftoken = $("input[name='csrf_token']").val();
 
         // Save to database
@@ -111,7 +160,7 @@ var reader;
             alert(error);
         });
     }
-    
+
     // Restore all settings after DOM and reader are ready
     document.addEventListener("DOMContentLoaded", function() {
         // Declare reflowBox once and reuse

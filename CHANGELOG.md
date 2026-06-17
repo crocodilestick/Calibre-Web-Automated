@@ -17,6 +17,12 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Added
+- **Tap the left or right side of the page to turn pages in the web reader.**
+  The page is split down the middle — tap (or click) the right half to go
+  forward, the left half to go back. Swiping left/right still works. Two
+  annoyances are fixed along the way: a stray finger-wobble no longer flips the
+  page, and selecting text to highlight no longer turns the page out from under
+  you.
 - You can now **star your favorite books**. Tap the star on a book's page — or
   the star on its cover anywhere in the grid — to favorite it; favorited books
   show a gold star on the cover. Use the new **Favorites** entry in the sidebar

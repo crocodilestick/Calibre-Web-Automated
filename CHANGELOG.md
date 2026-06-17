@@ -78,6 +78,15 @@ is for things you can see or feel when running the app.
   that row is less cluttered.
 
 ### Fixed
+- Books that a download client adds by **hardlink** into a subfolder of the
+  ingest directory are now picked up automatically. Apps like Readarr and
+  Bookshelf (via qBittorrent) hardlink completed downloads into per-author
+  subfolders; a hardlink fires only a "create" filesystem event, never the
+  "close-write" the ingest watcher waited for, so those books were silently
+  skipped until you moved them to the ingest root by hand. The watcher now also
+  acts on a completed hardlink (a file that already has its full contents),
+  while still leaving an in-progress download to finish writing before it is
+  ingested. Reported by @stuhby.
 - A book you're in the middle of reading no longer **disappears from the
   "Currently Reading" shelf** just because it has no language set. If you've
   picked a preferred language in your account, the shelf used to silently hide

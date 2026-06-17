@@ -100,7 +100,7 @@ wait_for_stable_file() {
         local file="$1" last_size="" same_count=0 i sz
         for (( i=0; i<STABLE_CHECKS; i++ )); do
                 [ -f "$file" ] || return 1
-                sz=$(stat -c %s "$file" 2>/dev/null || echo "") || return 1
+                sz=$(stat -c %s "$file" 2>/dev/null || stat -f %z "$file" 2>/dev/null || echo "")
                 [ -n "$sz" ] || return 1
                 if [ "$sz" = "$last_size" ]; then
                         same_count=$((same_count+1))
@@ -120,7 +120,7 @@ run_fallback() {
         echo "[cwa-ingest-service] Falling back to polling watcher" >&2
         s6-setuidgid abc python3 /app/calibre-web-automated/scripts/watch_fallback.py --path "$WATCH_FOLDER" --interval 5 |
         while read -r events filepath; do
-                handle_event "$filepath"
+                handle_event "$filepath" "$events"
         done
 }
 
@@ -409,6 +409,7 @@ process_retry_queue() {
 
 handle_event() {
         local filepath="$1"
+        local events="${2:-}"
         local filename=$(basename "$filepath")
 
         # temp suffixes
@@ -423,6 +424,37 @@ handle_event() {
         # extension filter
         if ! [[ "$filepath" =~ $SUPPORTED_EXT_REGEX ]]; then
                 return 0
+        fi
+
+        # Hardlink ingest support (fork #465 / CWA #1396): a hardlink fires
+        # only IN_CREATE -- no IN_CLOSE_WRITE, because link() never opens or
+        # writes a file descriptor. Download clients (Readarr/qBittorrent)
+        # hardlink completed files into ingest subfolders, so without acting on
+        # CREATE they are never ingested. But a normal in-progress download
+        # ALSO fires an early CREATE while its data is still being written;
+        # processing it then would ingest a partial file. We distinguish a
+        # completed hardlink -- st_nlink > 1 (its source inode already exists)
+        # with a non-zero, stable size -- from a single-link download
+        # (nlink == 1), which we leave for its eventual close_write. A bare
+        # CREATE,ISDIR for an auto-watched subfolder is ignored via the
+        # regular-file check.
+        if [[ ",$events," == *",CREATE,"* ]] \
+                && [[ ",$events," != *",CLOSE_WRITE,"* ]] \
+                && [[ ",$events," != *",MOVED_TO,"* ]]; then
+                if [ ! -f "$filepath" ]; then
+                        return 0
+                fi
+                local _nlink _size
+                _nlink=$(stat -c %h "$filepath" 2>/dev/null || stat -f %l "$filepath" 2>/dev/null || echo 1)
+                _size=$(stat -c %s "$filepath" 2>/dev/null || stat -f %z "$filepath" 2>/dev/null || echo 0)
+                if [ "${_nlink:-1}" -le 1 ] || [ "${_size:-0}" -le 0 ]; then
+                        # Ordinary new/empty file or in-progress download --
+                        # wait for close_write instead of ingesting now.
+                        return 0
+                fi
+                echo "[cwa-ingest-service] Detected completed hardlink (nlink=$_nlink): $filepath"
+                # Belt-and-suspenders: confirm the size has settled before ingest.
+                wait_for_stable_file "$filepath" || return 0
         fi
 
         if is_recent_duplicate_event "$filepath"; then
@@ -543,8 +575,8 @@ if [ -n "$(get_stale_temp_interval_from_db)" ]; then
 fi
 
 ( set -o pipefail
-        s6-setuidgid abc inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" | \
+        s6-setuidgid abc inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to -e create "$WATCH_FOLDER" | \
         while read -r events filepath; do
-                handle_event "$filepath"
+                handle_event "$filepath" "$events"
         done
 ) || run_fallback

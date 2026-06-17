@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-17 17:36+0000\n"
+"POT-Creation-Date: 2026-06-17 17:50+0000\n"
 "PO-Revision-Date: 2025-08-11 07:03+0000\n"
 "Last-Translator: Andrej Kralj\n"
 "Language-Team: Slovenian\n"
@@ -1252,39 +1252,39 @@ msgstr ""
 msgid "None"
 msgstr "Nobeno"
 
-#: cps/duplicates.py:456 cps/duplicates.py:467
+#: cps/duplicates.py:486 cps/duplicates.py:497
 #, fuzzy
 msgid "Duplicate Books"
 msgstr "Izbriši knjigo"
 
-#: cps/duplicates.py:1188
+#: cps/duplicates.py:1218
 msgid "Duplicate group already dismissed"
 msgstr "Skupina dvojnikov je že bila opuščena"
 
-#: cps/duplicates.py:1210
+#: cps/duplicates.py:1240
 #, fuzzy
 msgid "Duplicate group dismissed"
 msgstr "Izbriši knjigo"
 
-#: cps/duplicates.py:1253
+#: cps/duplicates.py:1283
 #, fuzzy
 msgid "Duplicate group restored"
 msgstr "Izbriši knjigo"
 
-#: cps/duplicates.py:1255
+#: cps/duplicates.py:1285
 msgid "Duplicate group was not dismissed"
 msgstr "Skupina dvojnikov ni bila opuščena"
 
-#: cps/duplicates.py:1327
+#: cps/duplicates.py:1357
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "Ni bilo najdenih rezultatov"
 
-#: cps/duplicates.py:1396
+#: cps/duplicates.py:1426
 msgid "Duplicate scan completed (fallback)"
 msgstr "Iskanje dvojnikov končano (rezervni način)"
 
-#: cps/duplicates.py:1471
+#: cps/duplicates.py:1501
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "Neveljavna vloga"

@@ -16,6 +16,8 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+## [v4.0.166] - 2026-06-17
+
 ### Added
 - The **KOReader sync plugin can now be kept up to date with the Updates
   Manager plugin** (updatesmanager.koplugin) instead of hand-copying files onto

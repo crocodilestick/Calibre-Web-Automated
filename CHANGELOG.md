@@ -41,6 +41,12 @@ is for things you can see or feel when running the app.
   @huperaisan for the suggestion.
 
 ### Changed
+- The **Magic Shelf editor** is easier to use on a phone. The rule builder and
+  the Kobo-sync / OPDS / public option cards were being squeezed into a narrow
+  strip with big wasted margins; they now use much more of the screen width, and
+  each rule's field/operator/value controls stack full-width instead of
+  clustering. A typo that mis-sized the rule's field dropdown is fixed too
+  (helps desktop).
 - In the **web reader**, long-pressing or right-clicking text no longer pops up
   the browser's own menu competing with the highlight popup — the in-app
   highlight menu is the one that shows. (On iOS Safari, Apple's built-in

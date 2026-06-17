@@ -277,6 +277,50 @@ div.help-panel > .panel-body {
     border: 1px solid #3e444c;
 }
 
+/* Shelf-option cards (Kobo sync / OPDS / public) — extracted from three
+   repeated inline styles so they can be made responsive. */
+.shelf-option-card {
+    background: #21252b;
+    padding: 2rem;
+    padding-inline: 4rem;
+    border-radius: 4px;
+}
+
+/* Mobile width recovery. The editor's generous desktop paddings (4rem option
+   cards, 2rem rule-group + value containers, 4rem help) starve the rule
+   builder of width on phones, pushing rule controls into a narrow, off-centre
+   strip (~226px in a 390px viewport). Tighten them on small screens so every
+   section and rule control uses the available width. Placed last + !important
+   so it wins over the desktop rules above (including the value container's own
+   !important). */
+@media (max-width: 767px) {
+    .shelf-option-card {
+        padding: 1rem !important;
+        padding-inline: 1rem !important;
+    }
+    .query-builder .rules-group-container {
+        padding: 0.6rem !important;
+    }
+    .rule-value-container {
+        padding: 0.6rem !important;
+        padding-inline: 0.6rem !important;
+        gap: 0.75rem;
+    }
+    .help-content {
+        padding: 1rem !important;
+    }
+    /* Recover more rule-builder width: tighten the panel body + the nested
+       rule/group left-indent on phones (this <style> is page-scoped to the
+       editor, so it doesn't affect panels elsewhere). */
+    .panel.panel-default > .panel-body {
+        padding: 0.6rem !important;
+    }
+    .query-builder .rule-container,
+    .query-builder .rule-group-container {
+        padding-left: 6px !important;
+    }
+}
+
 </style>
 {% endblock %}
 
@@ -383,7 +427,7 @@ div.help-panel > .panel-body {
                     </div>
 
                     <!-- Kobo Sync Checkbox -->
-                    <div class="form-group" style="background: #21252b; padding: 2rem; padding-inline: 4rem; border-radius: 4px;">
+                    <div class="form-group shelf-option-card">
                         <label>
                             <input style="margin-right: 2rem !important;" type="checkbox" id="shelf-kobo-sync" {{ 'checked' if shelf and shelf.kobo_sync else '' }} {{ 'disabled' if not kobo_magic_sync_enabled else '' }}>
                             Enable Kobo sync (shelf appears on Kobo devices)
@@ -396,7 +440,7 @@ div.help-panel > .panel-body {
                     </div>
 
                     {% if opds_expose_enabled %}
-                    <div class="form-group" style="background: #21252b; padding: 2rem; padding-inline: 4rem; border-radius: 4px;">
+                    <div class="form-group shelf-option-card">
                         <label>
                             <input style="margin-right: 2rem !important;" type="checkbox" id="shelf-opds-expose" {{ 'checked' if opds_expose_checked else '' }}>
                             Expose this magic shelf in my OPDS feed
@@ -407,7 +451,7 @@ div.help-panel > .panel-body {
 
                     <!-- Public Shelf Checkbox (only for custom shelves with permission) -->
                     {% if current_user.role_edit_shelfs() and not (shelf and shelf.is_system) %}
-                    <div class="form-group" style="background: #21252b; padding: 2rem; padding-inline: 4rem; border-radius: 4px;">
+                    <div class="form-group shelf-option-card">
                         <label>
                             <input style="margin-right: 2rem !important;" type="checkbox" id="shelf-is-public" {{ 'checked' if shelf and shelf.is_public == 1 else '' }}>
                             {{_('Share with Everyone (Public)')}}

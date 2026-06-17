@@ -17,6 +17,12 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Fixed
+- **Hardcover metadata search no longer fails when one of your saved API tokens
+  is stale.** If you have both a per-account token and a global one, search used
+  the per-account token and gave up if it was expired — even when the global
+  token was valid. It now tries each configured token until one is accepted, and
+  trims a stray `Bearer ` prefix or whitespace from a pasted token. Thanks to
+  @WasabiBurns for diagnosing the precedence.
 - On a Kobo that syncs **by shelves**, a book you're currently reading no longer
   gets **removed from the device and forced to re-download** because of a
   momentary database hiccup while the server works out which books belong on

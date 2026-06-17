@@ -154,56 +154,77 @@ class Hardcover(Metadata):
         if not self.active:
             return val
 
-        token = (
-            getattr(current_user, "hardcover_token", None)
-            or getattr(config, "config_hardcover_token", None)
-            or getenv("HARDCOVER_TOKEN")
-        )
-        if not token:
+        # Try each configured token until one is accepted. A stale token in one
+        # slot (e.g. an expired per-user token shadowing a valid global key —
+        # fork #479) must not block search. Order: per-user → global → env;
+        # de-duplicated, with any "Bearer " prefix and surrounding whitespace
+        # trimmed (a common copy-paste failure mode).
+        candidate_tokens = []
+        for raw in (
+            getattr(current_user, "hardcover_token", None),
+            getattr(config, "config_hardcover_token", None),
+            getenv("HARDCOVER_TOKEN"),
+        ):
+            if not raw:
+                continue
+            cleaned = raw.replace("Bearer ", "").strip()
+            if cleaned and cleaned not in candidate_tokens:
+                candidate_tokens.append(cleaned)
+        if not candidate_tokens:
             log.warning("Hardcover token missing; set a user token or global token to enable results.")
             return []
 
-        try:
-            edition_search = query.split(":")[0] == "hardcover-id"
-            Hardcover.HEADERS["Authorization"] = "Bearer %s" % token.replace("Bearer ", "")
-            resp = requests.post(
-                Hardcover.BASE_URL,
-                json={
-                    "query": Hardcover.EDITION_QUERY if edition_search else Hardcover.SEARCH_QUERY,
-                    "variables": {"query": int(query.split(":")[1]) if edition_search else query},
-                },
-                headers=Hardcover.HEADERS,
-                timeout=15,
-            )
-            resp.raise_for_status()
-            response_data = resp.json()
-
-            if "errors" in response_data:
-                log.error(f"GraphQL errors: {response_data['errors']}")
-                return []
-            if "data" not in response_data:
-                log.warning("Invalid response structure: missing 'data' field")
-                return []
-        except requests.exceptions.HTTPError as e:
-            status = getattr(getattr(e, "response", None), "status_code", None)
-            if status == 401:
-                log.warning(
-                    "Hardcover rejected the saved token (HTTP 401 'Unable to verify token'). "
-                    "The configured value is not a valid Hardcover API token. "
-                    "Generate a fresh one at https://hardcover.app/account/api and paste it "
-                    "into Admin > Basic Configuration > Hardcover API Key (or the per-user field)."
+        edition_search = query.split(":")[0] == "hardcover-id"
+        payload = {
+            "query": Hardcover.EDITION_QUERY if edition_search else Hardcover.SEARCH_QUERY,
+            "variables": {"query": int(query.split(":")[1]) if edition_search else query},
+        }
+        response_data = None
+        for idx, tok in enumerate(candidate_tokens):
+            Hardcover.HEADERS["Authorization"] = "Bearer %s" % tok
+            try:
+                resp = requests.post(
+                    Hardcover.BASE_URL,
+                    json=payload,
+                    headers=Hardcover.HEADERS,
+                    timeout=15,
                 )
-            else:
+                resp.raise_for_status()
+                response_data = resp.json()
+                break
+            except requests.exceptions.HTTPError as e:
+                status = getattr(getattr(e, "response", None), "status_code", None)
+                if status == 401:
+                    # This token was rejected — fall back to the next configured
+                    # one rather than giving up (fork #479).
+                    if idx + 1 < len(candidate_tokens):
+                        log.info("Hardcover token #%d rejected (401); trying the next configured token.", idx + 1)
+                        continue
+                    log.warning(
+                        "Hardcover rejected every configured token (HTTP 401 'Unable to verify token'). "
+                        "Generate a fresh one at https://hardcover.app/account/api and paste it into "
+                        "Admin > Basic Configuration > Hardcover API Key (or the per-user field)."
+                    )
+                    return []
                 log.warning(f"HTTP request failed: {e}")
+                return []
+            except requests.exceptions.RequestException as e:
+                log.warning(f"HTTP request failed: {e}")
+                return []
+            except ValueError as e:
+                log.warning(f"JSON parsing failed: {e}")
+                return []
+            except Exception as e:
+                log.warning(f"Unexpected error: {e}")
+                return []
+
+        if response_data is None:
             return []
-        except requests.exceptions.RequestException as e:
-            log.warning(f"HTTP request failed: {e}")
+        if "errors" in response_data:
+            log.error(f"GraphQL errors: {response_data['errors']}")
             return []
-        except ValueError as e:
-            log.warning(f"JSON parsing failed: {e}")
-            return []
-        except Exception as e:
-            log.warning(f"Unexpected error: {e}")
+        if "data" not in response_data:
+            log.warning("Invalid response structure: missing 'data' field")
             return []
 
         try:

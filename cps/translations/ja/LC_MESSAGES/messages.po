@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-17 15:53+0000\n"
+"POT-Creation-Date: 2026-06-17 17:36+0000\n"
 "PO-Revision-Date: 2018-02-07 02:20-0500\n"
 "Last-Translator: subdiox <subdiox@gmail.com>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -2604,7 +2604,7 @@ msgstr "シェルフを複製しました"
 msgid "Error duplicating shelf"
 msgstr "本棚の削除中にエラーが発生しました"
 
-#: cps/templates/magic_shelf_edit.html:462 cps/web.py:1747
+#: cps/templates/magic_shelf_edit.html:506 cps/web.py:1747
 msgid ""
 "System shelves cannot be deleted. You can hide them in your user profile "
 "settings."
@@ -7402,21 +7402,21 @@ msgstr "Calibre-Webのログをダウンロード"
 msgid "Download Access Log"
 msgstr "アクセスログをダウンロード"
 
-#: cps/templates/magic_shelf_edit.html:332
+#: cps/templates/magic_shelf_edit.html:376
 msgid "System Template"
 msgstr "システムテンプレート"
 
-#: cps/templates/magic_shelf_edit.html:332
+#: cps/templates/magic_shelf_edit.html:376
 msgid "This is a pre-configured template shelf. You can edit it freely."
 msgstr ""
 "これはあらかじめ設定済みのテンプレートシェルフです。自由に編集できます。"
 
-#: cps/templates/magic_shelf_edit.html:413
+#: cps/templates/magic_shelf_edit.html:457
 #, fuzzy
 msgid "Share with Everyone (Public)"
 msgstr "みんなと共有"
 
-#: cps/templates/magic_shelf_edit.html:416
+#: cps/templates/magic_shelf_edit.html:460
 msgid ""
 "Other users can view this shelf. Users with \"Edit Public Shelves\" "
 "permission can edit/delete it."

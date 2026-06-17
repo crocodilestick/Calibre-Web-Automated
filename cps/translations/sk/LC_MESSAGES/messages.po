@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-17 15:53+0000\n"
+"POT-Creation-Date: 2026-06-17 17:36+0000\n"
 "PO-Revision-Date: 2023-11-01 06:12+0100\n"
 "Last-Translator: Branislav Hanáček <brango@brango.sk>\n"
 "Language-Team: \n"
@@ -2573,7 +2573,7 @@ msgstr "Zmazaných {} používateľov"
 msgid "Error duplicating shelf"
 msgstr "Chyba pri mazaní police"
 
-#: cps/templates/magic_shelf_edit.html:462 cps/web.py:1747
+#: cps/templates/magic_shelf_edit.html:506 cps/web.py:1747
 msgid ""
 "System shelves cannot be deleted. You can hide them in your user profile "
 "settings."
@@ -7250,20 +7250,20 @@ msgstr "Stiahnuť Calibre-Web denník"
 msgid "Download Access Log"
 msgstr "Stiahnuť denník prístupu"
 
-#: cps/templates/magic_shelf_edit.html:332
+#: cps/templates/magic_shelf_edit.html:376
 msgid "System Template"
 msgstr ""
 
-#: cps/templates/magic_shelf_edit.html:332
+#: cps/templates/magic_shelf_edit.html:376
 msgid "This is a pre-configured template shelf. You can edit it freely."
 msgstr ""
 
-#: cps/templates/magic_shelf_edit.html:413
+#: cps/templates/magic_shelf_edit.html:457
 #, fuzzy
 msgid "Share with Everyone (Public)"
 msgstr "Zdieľať s kýmkoľvek"
 
-#: cps/templates/magic_shelf_edit.html:416
+#: cps/templates/magic_shelf_edit.html:460
 msgid ""
 "Other users can view this shelf. Users with \"Edit Public Shelves\" "
 "permission can edit/delete it."

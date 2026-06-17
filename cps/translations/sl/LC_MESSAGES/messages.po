@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-17 15:53+0000\n"
+"POT-Creation-Date: 2026-06-17 17:36+0000\n"
 "PO-Revision-Date: 2025-08-11 07:03+0000\n"
 "Last-Translator: Andrej Kralj\n"
 "Language-Team: Slovenian\n"
@@ -2632,7 +2632,7 @@ msgstr "{} uporabnikov uspešno izbrisanih"
 msgid "Error duplicating shelf"
 msgstr "Napaka pri brisanju police"
 
-#: cps/templates/magic_shelf_edit.html:462 cps/web.py:1747
+#: cps/templates/magic_shelf_edit.html:506 cps/web.py:1747
 msgid ""
 "System shelves cannot be deleted. You can hide them in your user profile "
 "settings."
@@ -7510,21 +7510,21 @@ msgstr "Prenos Calibre-Web Log"
 msgid "Download Access Log"
 msgstr "Prenos dnevnika dostopa"
 
-#: cps/templates/magic_shelf_edit.html:332
+#: cps/templates/magic_shelf_edit.html:376
 msgid "System Template"
 msgstr "Sistemska predloga"
 
-#: cps/templates/magic_shelf_edit.html:332
+#: cps/templates/magic_shelf_edit.html:376
 msgid "This is a pre-configured template shelf. You can edit it freely."
 msgstr ""
 "To je vnaprej konfigurirana predloga police. Lahko jo poljubno urejate."
 
-#: cps/templates/magic_shelf_edit.html:413
+#: cps/templates/magic_shelf_edit.html:457
 #, fuzzy
 msgid "Share with Everyone (Public)"
 msgstr "Deli z vsemi"
 
-#: cps/templates/magic_shelf_edit.html:416
+#: cps/templates/magic_shelf_edit.html:460
 msgid ""
 "Other users can view this shelf. Users with \"Edit Public Shelves\" "
 "permission can edit/delete it."

@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-17 15:53+0000\n"
+"POT-Creation-Date: 2026-06-17 17:36+0000\n"
 "PO-Revision-Date: 2017-04-30 00:47+0300\n"
 "Last-Translator: ABIS Team <biblio.if.abis@gmail.com>\n"
 "Language-Team: \n"
@@ -2541,7 +2541,7 @@ msgstr "{} користувачі видалені успішно"
 msgid "Error duplicating shelf"
 msgstr ""
 
-#: cps/templates/magic_shelf_edit.html:462 cps/web.py:1747
+#: cps/templates/magic_shelf_edit.html:506 cps/web.py:1747
 msgid ""
 "System shelves cannot be deleted. You can hide them in your user profile "
 "settings."
@@ -7228,20 +7228,20 @@ msgstr ""
 msgid "Download Access Log"
 msgstr "Завантаження"
 
-#: cps/templates/magic_shelf_edit.html:332
+#: cps/templates/magic_shelf_edit.html:376
 msgid "System Template"
 msgstr ""
 
-#: cps/templates/magic_shelf_edit.html:332
+#: cps/templates/magic_shelf_edit.html:376
 msgid "This is a pre-configured template shelf. You can edit it freely."
 msgstr ""
 
-#: cps/templates/magic_shelf_edit.html:413
+#: cps/templates/magic_shelf_edit.html:457
 #, fuzzy
 msgid "Share with Everyone (Public)"
 msgstr "зробити книжкову полицю доступною для всіх?"
 
-#: cps/templates/magic_shelf_edit.html:416
+#: cps/templates/magic_shelf_edit.html:460
 msgid ""
 "Other users can view this shelf. Users with \"Edit Public Shelves\" "
 "permission can edit/delete it."

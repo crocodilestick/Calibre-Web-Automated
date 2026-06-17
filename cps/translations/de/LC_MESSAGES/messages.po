@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web NextGen\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-06-17 15:53+0000\n"
+"POT-Creation-Date: 2026-06-17 17:36+0000\n"
 "PO-Revision-Date: 2026-04-06 17:03+0000\n"
 "Last-Translator: Manuel Drescher\n"
 "Language-Team: German\n"
@@ -2621,7 +2621,7 @@ msgstr "Regal erfolgreich dupliziert"
 msgid "Error duplicating shelf"
 msgstr "Fehler beim Duplizieren des Regals"
 
-#: cps/templates/magic_shelf_edit.html:462 cps/web.py:1747
+#: cps/templates/magic_shelf_edit.html:506 cps/web.py:1747
 msgid ""
 "System shelves cannot be deleted. You can hide them in your user profile "
 "settings."
@@ -7449,20 +7449,20 @@ msgstr "Calibre-Web Logdatei herunterladen"
 msgid "Download Access Log"
 msgstr "Zugriffslogbuch herunterladen"
 
-#: cps/templates/magic_shelf_edit.html:332
+#: cps/templates/magic_shelf_edit.html:376
 msgid "System Template"
 msgstr "Systemvorlage"
 
-#: cps/templates/magic_shelf_edit.html:332
+#: cps/templates/magic_shelf_edit.html:376
 msgid "This is a pre-configured template shelf. You can edit it freely."
 msgstr ""
 "Dies ist eine vorkonfigurierte Regalvorlage. Sie können sie frei bearbeiten."
 
-#: cps/templates/magic_shelf_edit.html:413
+#: cps/templates/magic_shelf_edit.html:457
 msgid "Share with Everyone (Public)"
 msgstr "Mit allen teilen (öffentlich)"
 
-#: cps/templates/magic_shelf_edit.html:416
+#: cps/templates/magic_shelf_edit.html:460
 msgid ""
 "Other users can view this shelf. Users with \"Edit Public Shelves\" "
 "permission can edit/delete it."

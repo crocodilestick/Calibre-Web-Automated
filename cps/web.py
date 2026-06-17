@@ -24,7 +24,7 @@ from .cw_login import login_user, logout_user, current_user
 from flask_limiter import RateLimitExceeded
 from flask_limiter.util import get_remote_address
 from sqlalchemy.exc import IntegrityError, InvalidRequestError, OperationalError
-from sqlalchemy.sql.expression import text, func, false, not_, and_, or_
+from sqlalchemy.sql.expression import text, func, false, not_, and_, or_, case
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.sql.functions import coalesce
 from werkzeug.datastructures import Headers
@@ -584,6 +584,27 @@ def cwa_get_num_books_in_library() -> int:
         return 0
 
 
+def _favorites_first_order():
+    """ORDER-BY term that floats the calling user's starred books to the top,
+    or None when there's nothing to float (anonymous, or no favorites). Used
+    only by the main library list below — the Favorites sidebar view shows
+    starred books alone; this surfaces them within the *full* list. It is NOT
+    applied to the author / series / category / search / shelf views, which keep
+    their own ordering. Favorites live in app.db and books in metadata.db (they
+    can't be JOINed), so we fetch the favorite ids first and feed them to a CASE
+    on the metadata.db query."""
+    if not current_user.is_authenticated:
+        return None
+    rows = ub.session.query(ub.FavoriteBook.book_id).filter(
+        ub.FavoriteBook.user_id == int(current_user.id)).all()
+    fav_ids = [row[0] for row in rows]
+    if not fav_ids:
+        return None
+    # 0 sorts before 1 -> favorites first; the user's chosen sort then orders
+    # within each group.
+    return case((db.Books.id.in_(fav_ids), 0), else_=1)
+
+
 def render_books_list(data, sort_param, book_id, page):
     order = get_sort_function(sort_param, data)
     if data == "rated":
@@ -638,7 +659,14 @@ def render_books_list(data, sort_param, book_id, page):
         return render_magic_shelf(book_id, sort_param, page)
     else:
         website = data or "newest"
-        entries, random, pagination = calibre_db.fill_indexpage(page, 0, db.Books, True, order[0],
+        # #34: float the user's starred books to the top of the main library
+        # list. Scoped to this branch only — the other views above keep their
+        # own ordering untouched.
+        book_order = list(order[0])
+        favorites_first = _favorites_first_order()
+        if favorites_first is not None:
+            book_order = [favorites_first] + book_order
+        entries, random, pagination = calibre_db.fill_indexpage(page, 0, db.Books, True, book_order,
                                                                 True, config.config_read_column,
                                                                 db.books_series_link,
                                                                 db.Books.id == db.books_series_link.c.book,

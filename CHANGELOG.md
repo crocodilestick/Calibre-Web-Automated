@@ -41,6 +41,11 @@ is for things you can see or feel when running the app.
   @huperaisan for the suggestion.
 
 ### Changed
+- On the **main books list**, your **starred books now float to the top**, so
+  your favorites are the first thing you see in the full library (the Favorites
+  sidebar entry still shows them on their own). Within the starred group your
+  chosen sort order still applies. Only the main list is affected — author,
+  series, category and search views keep their usual order.
 - **Duplicate detection catches more real duplicates.** Books that differ only
   by accents (Café vs Cafe) or punctuation (The Book! vs The Book) are now
   recognized as the same. It stays deliberately careful not to merge genuinely

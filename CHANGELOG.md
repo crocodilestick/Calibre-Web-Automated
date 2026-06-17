@@ -16,6 +16,14 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Fixed
+- On a Kobo that syncs **by shelves**, a book you're currently reading no longer
+  gets **removed from the device and forced to re-download** because of a
+  momentary database hiccup while the server works out which books belong on
+  your sync shelves. If it can't read that list reliably, the sync now leaves
+  your books in place and reconciles on the next sync, instead of treating the
+  failure as "this shelf is empty." Reported by @Glennza1962 and @bigbold1023.
+
 ## [v4.0.166] - 2026-06-17
 
 ### Added

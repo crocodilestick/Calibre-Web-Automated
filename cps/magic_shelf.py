@@ -660,8 +660,15 @@ def rules_reference_read_status(rules_json):
     return False
 
 
-def get_book_ids_for_magic_shelf(shelf_id, sort_order=None, sort_param='stored', bypass_cache=False):
-    """Return ordered book IDs for a magic shelf without loading book objects."""
+def get_book_ids_for_magic_shelf(shelf_id, sort_order=None, sort_param='stored', bypass_cache=False,
+                                 raise_on_error=False):
+    """Return ordered book IDs for a magic shelf without loading book objects.
+
+    raise_on_error=True re-raises a DB error instead of masking it as an empty
+    result. Callers that feed this into a DESTRUCTIVE decision (the Kobo
+    two-way-sync deletion path) need to tell a real "no books" from a failed
+    query — a swallowed error looking like "empty" would archive books off the
+    device (fork #468). Browse callers keep the default (mask → empty)."""
     try:
         from . import calibre_db
         if calibre_db._desktop_compat:
@@ -707,6 +714,8 @@ def get_book_ids_for_magic_shelf(shelf_id, sort_order=None, sort_param='stored',
         return all_ids, total_count
     except SQLAlchemyError as e:
         log.error(f"Database error retrieving book IDs for magic shelf {shelf_id}: {e}")
+        if raise_on_error:
+            raise
         return [], 0
 
 
@@ -762,9 +771,14 @@ def build_book_query_for_magic_shelf(shelf_id, sort_order=None, extra_filter=Non
             query = query.order_by(sort_order)
     return query, magic_shelf
 
-def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None, sort_param='stored', bypass_cache=False):
+def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None, sort_param='stored', bypass_cache=False,
+                              raise_on_error=False):
     """
     Takes a MagicShelf ID and returns a paginated list of book objects that match its rules.
+
+    raise_on_error=True propagates a DB error instead of masking it as an empty
+    result (fork #468 — the Kobo deletion path must not mistake a failed query
+    for an empty shelf). Browse callers keep the default.
     
     Args:
         shelf_id: ID of the magic shelf
@@ -783,6 +797,7 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None,
             sort_order=sort_order,
             sort_param=sort_param,
             bypass_cache=bypass_cache,
+            raise_on_error=raise_on_error,
         )
         
         # Apply pagination to the list of IDs we just fetched
@@ -805,9 +820,13 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None,
         
     except SQLAlchemyError as e:
         log.error(f"Database error retrieving books for magic shelf {shelf_id}: {e}")
+        if raise_on_error:
+            raise
         return [], 0
     except Exception as e:
         log.error(f"Unexpected error retrieving books for magic shelf {shelf_id}: {e}")
+        if raise_on_error:
+            raise
         return [], 0
 
 

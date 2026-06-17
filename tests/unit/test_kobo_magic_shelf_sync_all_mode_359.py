@@ -97,11 +97,18 @@ class TestMagicShelfStateComputedInBothModes:
         src = _function_source(KOBO_PY, "HandleSyncRequest")
         # Match the literal call in the function source. It must appear
         # NOT prefixed by `if current_user.kobo_only_shelves_sync:`.
-        assert "magic_shelf_book_ids = get_magic_shelf_book_ids_for_kobo(current_user.id)" in src, (
+        assert "get_magic_shelf_book_ids_for_kobo(current_user.id)" in src, (
             "HandleSyncRequest must call get_magic_shelf_book_ids_for_kobo "
             "unconditionally (not gated on kobo_only_shelves_sync) so the "
             "cache TTL re-evaluation runs on every sync — fork #359 "
             "v4.0.147 → v4.0.151 fix for the sync-all-mode case."
+        )
+        # #468: the call now also returns a reliability flag that gates the
+        # two-way-sync deletion path (fail-safe — never archive on a failed
+        # membership query).
+        assert "magic_shelf_membership_reliable" in src, (
+            "HandleSyncRequest must capture the membership-reliability flag "
+            "from get_magic_shelf_book_ids_for_kobo (fork #468 fail-safe)."
         )
         assert "magic_shelf_membership_added_at = get_magic_shelf_membership_added_at(current_user.id)" in src, (
             "HandleSyncRequest must call get_magic_shelf_membership_added_at "

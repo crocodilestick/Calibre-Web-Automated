@@ -136,6 +136,15 @@ def convert_to_kobo_timestamp_string(timestamp):
 
 
 def get_magic_shelf_book_ids_for_kobo(user_id):
+    """Return ``(book_ids, reliable)`` for the user's kobo_sync magic shelves.
+
+    ``reliable`` is ``False`` when any shelf's membership query FAILED. The
+    two-way-sync deletion path must not treat an unreliable (possibly
+    incomplete) set as authoritative: a transient DB error that looked like an
+    empty shelf would archive the books off the device and force a redownload
+    (fork #468). A genuinely-empty result — flag off, no kobo_sync shelves —
+    is ``reliable=True`` (nothing to deliver, nothing wrongly archived).
+    """
     if not config.config_kobo_sync_magic_shelves:
         # Per-shelf kobo_sync intent with the global flag off is the #359
         # trap — surface it in debug logs so support can spot it instantly.
@@ -150,24 +159,52 @@ def get_magic_shelf_book_ids_for_kobo(user_id):
                     "Kobo Sync: %s magic shelves are marked kobo_sync but the "
                     "global 'Sync Magic Shelves to Kobo' setting is off — not "
                     "delivering (#359)", swallowed)
-        return set()
+        return set(), True
 
     magic_shelves = ub.session.query(ub.MagicShelf).filter_by(user_id=user_id, kobo_sync=True).all()
     if not magic_shelves:
-        return set()
+        return set(), True
 
     book_ids = set()
+    reliable = True
     for shelf in magic_shelves:
-        books, _ = magic_shelf.get_books_for_magic_shelf(
-            shelf.id, page=1, page_size=None
-        )
+        try:
+            books, _ = magic_shelf.get_books_for_magic_shelf(
+                shelf.id, page=1, page_size=None, raise_on_error=True
+            )
+        except Exception as e:
+            # A failed membership query must NOT look like "this shelf is empty"
+            # to the deletion path (#468). Mark the whole result unreliable so
+            # the caller skips archiving this round; the next clean sync
+            # reconciles.
+            log.error(
+                "Kobo Sync: magic shelf %s membership query failed (%s); marking "
+                "membership UNRELIABLE so two-way-sync deletion skips archiving "
+                "this round (#468)", shelf.id, e)
+            reliable = False
+            continue
         for book in books:
             book_ids.add(book.id)
 
     if book_ids:
         log.debug("Kobo Sync: magic shelf allowed books: %s", len(book_ids))
 
-    return book_ids
+    return book_ids, reliable
+
+
+def compute_kobo_books_to_archive(synced_book_ids, allowed_book_ids, membership_reliable):
+    """Books to remove from the device = synced books that are no longer on any
+    Kobo-sync shelf.
+
+    FAIL-SAFE (fork #468): when the magic-shelf membership computation was
+    unreliable (a query failed), return an EMPTY set — a transient read-side
+    failure must never drive device-side archival/deletion. Leaving a stale
+    book on the device for one more sync is harmless; wrongly archiving the
+    book the user is reading forces a redownload and loses their place.
+    """
+    if not membership_reliable:
+        return set()
+    return set(synced_book_ids) - set(allowed_book_ids)
 
 
 def get_magic_shelf_membership_added_at(user_id):
@@ -251,7 +288,7 @@ def HandleSyncRequest():
     # old `Books.last_modified` continued to be filtered out by the
     # else-branch cursor. Computing here forces the cache TTL re-evaluation
     # on every sync, regardless of mode.
-    magic_shelf_book_ids = get_magic_shelf_book_ids_for_kobo(current_user.id)
+    magic_shelf_book_ids, magic_shelf_membership_reliable = get_magic_shelf_book_ids_for_kobo(current_user.id)
     magic_shelf_membership_added_at = get_magic_shelf_membership_added_at(current_user.id)
 
     # Two-Way-Sync Deletion Logic (kobo_only_shelves_sync=True only — outer
@@ -270,8 +307,18 @@ def HandleSyncRequest():
             if magic_shelf_book_ids:
                 allowed_book_ids |= magic_shelf_book_ids
 
-            # Spot the difference: books that need to be deleted
-            books_to_delete_ids = synced_book_ids - allowed_book_ids
+            # Spot the difference: books that need to be deleted. FAIL-SAFE
+            # (#468): if the magic-shelf membership was unreliable (a query
+            # failed), compute_kobo_books_to_archive returns empty so we skip
+            # archiving this round rather than wrongly removing books — e.g. the
+            # one the user is reading — off the device.
+            if not magic_shelf_membership_reliable:
+                log.warning(
+                    "Kobo Sync: magic-shelf membership unreliable for user %s; "
+                    "skipping two-way-sync deletion this round to avoid wrongly "
+                    "archiving books (#468)", current_user.name)
+            books_to_delete_ids = compute_kobo_books_to_archive(
+                synced_book_ids, allowed_book_ids, magic_shelf_membership_reliable)
 
             if books_to_delete_ids:
                 log.info(f"Kobo Sync: Found {len(books_to_delete_ids)} books to remove from device for user {current_user.name}")

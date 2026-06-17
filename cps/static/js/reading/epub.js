@@ -107,6 +107,34 @@ var reader;
         } catch (e) { /* themes not ready yet */ }
     };
 
+    // Suppress the native long-press / right-click context menu inside the
+    // reader so the in-app highlight popup is the affordance. Text stays
+    // selectable (highlighting needs it); we only swallow `contextmenu` and the
+    // iOS long-press callout. NOTE: iOS Safari's text-selection edit menu
+    // (Copy / Look Up / Share, shown AFTER a selection) cannot be suppressed via
+    // web APIs without disabling selection, so the custom popup coexists with it
+    // there. See notes/2026-06-17-reader-native-menu-DESIGN.md.
+    function suppressMenuOnContents(contents) {
+        var doc = contents && contents.document;
+        if (!doc || doc.__cwaMenuSuppressed) { return; }
+        doc.__cwaMenuSuppressed = true;
+        doc.addEventListener('contextmenu', function (ev) { ev.preventDefault(); }, false);
+    }
+    window.suppressReaderNativeMenu = function () {
+        if (!reader || !reader.rendition) { return; }
+        try {
+            // Kill the iOS long-press callout for links/images across all sections.
+            reader.rendition.themes.override('-webkit-touch-callout', 'none', true);
+        } catch (e) { /* themes not ready yet */ }
+        var list = [];
+        try { list = reader.rendition.getContents() || []; } catch (e) { list = []; }
+        list.forEach(suppressMenuOnContents);
+    };
+    if (reader && reader.rendition && typeof reader.rendition.on === 'function') {
+        // Re-apply on every section render (epub.js swaps the iframe document).
+        reader.rendition.on('rendered', function () { window.suppressReaderNativeMenu(); });
+    }
+
     if (reader && reader.rendition) {
         reader.rendition.on('touchstart', function(event) {
             var t = event.changedTouches[0];

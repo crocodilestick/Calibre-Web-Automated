@@ -41,6 +41,11 @@ is for things you can see or feel when running the app.
   @huperaisan for the suggestion.
 
 ### Changed
+- In the **web reader**, long-pressing or right-clicking text no longer pops up
+  the browser's own menu competing with the highlight popup — the in-app
+  highlight menu is the one that shows. (On iOS Safari, Apple's built-in
+  text-selection menu still appears alongside it; that one can't be switched off
+  from a web page.)
 - The **reader's Settings panel** has a cleaner layout — clearly labelled
   sections, live value readouts on the font-size and margin sliders, and bigger
   touch targets that fit comfortably on a phone.

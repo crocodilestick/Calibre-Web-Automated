@@ -12,11 +12,33 @@
       padding: 1.5rem !important;
     }
   }
+  /* Proper responsive two-column layout for the edit page (fork #32), replacing
+     the fragile inline `margin-left: 40rem` float offset that coupled the desktop
+     and mobile layouts. Desktop: cover column + form sit side-by-side via flexbox.
+     Phone: they stack with the metadata form FIRST, so you can edit title/author
+     straight away instead of scrolling past the cover (#26 follow-up). */
+  .cwa-editbook-layout { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 2rem; }
+  .cwa-editbook-layout > .editbook-cover-section { flex: 0 0 260px; max-width: 260px; width: auto; float: none; }
+  .cwa-editbook-layout > #book_edit_frm { flex: 1 1 320px; min-width: 0; }
+  /* Neutralize the legacy Bootstrap float + inline 40rem offset on the form's
+     inner column so it fills the flex track instead of floating with a huge gap. */
+  .cwa-editbook-layout > #book_edit_frm > .col-sm-9 {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    width: auto !important;
+    float: none !important;
+  }
+  @media (max-width: 767px) {
+    .cwa-editbook-layout { flex-direction: column; gap: 0; }
+    .cwa-editbook-layout > .editbook-cover-section { flex: none; max-width: 100%; }
+    .cwa-editbook-layout > #book_edit_frm { order: -1; flex: none; }
+  }
 </style>
 {% if book %}
   <a href="{{ url_for('web.show_book', book_id=book.id) }}" class="cwa-edit-back" style="display:block; clear:both; margin:0.5rem 0 1rem; color:hsla(0,0%,100%,.82); text-decoration:none; font-weight:600;">
     <span class="glyphicon glyphicon-chevron-left"></span> {{ _('Back to book') }}
   </a>
+  <div class="cwa-editbook-layout">
   <div class="editbook-cover-section col-sm-3 col-lg-3 col-xs-12">
     {# No clickable cover overlay here (unlike the detail page): this page hosts
        the metadata edit form, and a large cover-sized navigation target would
@@ -293,6 +315,7 @@
     </div>
   </div>
 </form>
+  </div>
 
 {% endif %}
 {% endblock %}

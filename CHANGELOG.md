@@ -50,6 +50,10 @@ is for things you can see or feel when running the app.
   there — instead of always jumping to the edit screen. The **Edit metadata** screen
   also gained a clear **Back to book** link at the top, and on a phone its form is no
   longer pushed off-screen.
+- On a phone, the **Edit Metadata** page now shows the book's details form first —
+  you can edit the title, author and tags straight away instead of scrolling past
+  the cover. On wider screens the cover and form still sit side-by-side. (Builds on
+  the earlier off-screen-form fix; replaces a brittle fixed-offset layout.)
 
 ## [v4.0.165] - 2026-06-16
 

@@ -32,7 +32,7 @@ from cwa_db import CWA_DB
 
 log = logger.create()
 
-NORMALIZATION_VERSION = "duplicate-index-v2"  # v2: NFC + whitespace-collapse normalization (D6)
+NORMALIZATION_VERSION = "duplicate-index-v3"  # v3: + accent-fold (NFKD) + punctuation-to-space, precision-preserving (D6)
 MAX_INCREMENTAL_BOOK_IDS = 1000
 DUPLICATE_INDEX_REBUILD_BATCH_SIZE = 250
 INGEST_BATCH_DIRTY_FILE = "/config/cwa_ingest_batch_dirty"

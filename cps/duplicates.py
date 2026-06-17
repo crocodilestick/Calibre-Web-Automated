@@ -131,17 +131,38 @@ def admin_or_edit_required(f):
 def normalize_text_for_duplicates(value, default=""):
     """Shared text normalization for every duplicate-keying surface (D6).
 
-    Unicode NFC first (an NFD 'Café' from macOS filenames or some metadata
-    sources hashed differently from the NFC 'Café' a user typed — real
-    duplicates were invisible), then collapse internal whitespace ('The  Book'
-    vs 'The Book'), then lowercase + strip. generate_group_hash,
-    normalize_title_for_duplicates, and duplicate_index.build_book_key_parts
-    all route through here so the three keying surfaces can never drift.
+    generate_group_hash, normalize_title_for_duplicates, and
+    duplicate_index.build_book_key_parts all route through here so the keying
+    surfaces can never drift. Steps:
+
+      1. NFC, then fold accents (NFKD + drop combining marks) so 'Café' == 'Cafe'
+         and 'naïve' == 'naive' — metadata sources disagree on accents and real
+         duplicates were invisible across that difference.
+      2. lowercase.
+      3. punctuation -> space, so 'The Book!', 'The--Book' and 'The Book' all
+         collapse to the same key.
+      4. collapse whitespace + strip.
+
+    PRECISION (data-safety): these steps only remove accents and punctuation —
+    every word and number survives. So genuinely distinct titles ('Dune' vs
+    'Dune: Messiah', 'Volume 1' vs 'Volume 2') keep their distinguishing tokens,
+    hash apart, and are never grouped or auto-deleted. Changing these steps
+    REQUIRES bumping duplicate_index.NORMALIZATION_VERSION so the on-disk index
+    rebuilds with the new keys instead of mixing old and new.
     """
     text = value if value is not None and str(value) else default
     text = unicodedata.normalize('NFC', str(text))
+    # Fold accents: decompose and drop combining marks (Café -> Cafe).
+    text = ''.join(
+        ch for ch in unicodedata.normalize('NFKD', text)
+        if not unicodedata.combining(ch)
+    )
+    text = text.lower()
+    # Punctuation -> space so punctuation-only variants collapse, while every
+    # word and number is preserved (this is what keeps distinct titles distinct).
+    text = re.sub(r'[^\w\s]', ' ', text, flags=re.UNICODE)
     text = re.sub(r'\s+', ' ', text)
-    return text.lower().strip()
+    return text.strip()
 
 
 def generate_group_hash(title, author):
@@ -167,16 +188,25 @@ def generate_group_hash(title, author):
 def normalize_title_for_duplicates(title, primary_author=None):
     """Normalize title for duplicate detection.
 
-    If the title starts with the primary author (e.g., "Homer, the Iliad"),
-    strip the leading author prefix to avoid false negatives.
+    If the title is stored as "Author, Title" (a metadata quirk), strip the
+    leading author prefix so it still matches the plain "Title". The prefix is
+    detected on a comma-preserving form BEFORE the shared normalizer folds the
+    comma to a space, and it REQUIRES the literal comma — so a title that merely
+    starts with the author's name (e.g. "Homer's World" by Homer) is left
+    intact rather than mangled.
     """
-    normalized = normalize_text_for_duplicates(title, default="untitled")
+    text = title if title is not None and str(title) else "untitled"
     if primary_author:
         author_norm = normalize_text_for_duplicates(primary_author)
+        # Comma-preserving normalization (deaccent + lowercase + whitespace),
+        # used only to detect the leading "Author, " prefix.
+        cmp = unicodedata.normalize('NFKD', unicodedata.normalize('NFC', str(text)))
+        cmp = ''.join(c for c in cmp if not unicodedata.combining(c)).lower()
+        cmp = re.sub(r'\s+', ' ', cmp).strip()
         author_prefix = f"{author_norm}, "
-        if normalized.startswith(author_prefix):
-            normalized = normalized[len(author_prefix):].strip()
-    return normalized
+        if cmp.startswith(author_prefix):
+            text = cmp[len(author_prefix):]
+    return normalize_text_for_duplicates(text, default="untitled")
 
 
 def validate_resolution_strategy(strategy):

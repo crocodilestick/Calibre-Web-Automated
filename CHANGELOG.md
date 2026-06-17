@@ -41,6 +41,11 @@ is for things you can see or feel when running the app.
   @huperaisan for the suggestion.
 
 ### Changed
+- **Duplicate detection catches more real duplicates.** Books that differ only
+  by accents (Café vs Cafe) or punctuation (The Book! vs The Book) are now
+  recognized as the same. It stays deliberately careful not to merge genuinely
+  different books — "Dune" vs "Dune: Messiah" and "Volume 1" vs "Volume 2" stay
+  separate — so nothing distinct gets wrongly flagged for removal.
 - The **Magic Shelf editor** is easier to use on a phone. The rule builder and
   the Kobo-sync / OPDS / public option cards were being squeezed into a narrow
   strip with big wasted margins; they now use much more of the screen width, and

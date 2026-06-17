@@ -17,10 +17,10 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Added
-- You can now **star your favorite books**. Tap the star on a book's page to
-  favorite it (a gold star also appears on its cover while you browse), then use
-  the new **Favorites** entry in the sidebar to see just your starred books.
-  Favorites are private to your own account.
+- You can now **star your favorite books**. Tap the star on a book's page — or
+  the star on its cover anywhere in the grid — to favorite it; favorited books
+  show a gold star on the cover. Use the new **Favorites** entry in the sidebar
+  to see just your starred books. Favorites are private to your own account.
 - The **Published Date** field now accepts just a **year**. When you edit a
   book you can type `2020` (or `2020-05`) instead of clicking through the date
   picker for the full day — the missing month and day default to January 1st.

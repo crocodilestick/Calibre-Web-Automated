@@ -831,8 +831,29 @@ $(function() {
     function initDirectReadingHandler() {
         // Remove any existing handlers first
         $('.book-cover-link').off('click.directReading mousemove.directReading mouseleave.directReading');
-        $('.read-toggle-btn, .edit-metadata-btn, .send-ereader-btn').off('click.quickActions');
+        $('.read-toggle-btn, .edit-metadata-btn, .send-ereader-btn, .favorite-toggle-btn').off('click.quickActions');
         
+        // Favorite/star toggle (fork #33) — injected on ALL devices (mobile tap +
+        // desktop hover), unlike the read/edit/send quick-actions below which are
+        // desktop-hover-only. CSS reveals it on cover hover (desktop) and keeps it
+        // visible + tappable on touch devices.
+        $('.book-cover-link').each(function() {
+            var $favLink = $(this);
+            if ($favLink.find('.favorite-toggle-btn').length === 0) {
+                var favIsOn = $favLink.find('.cover-badge-favorite').length > 0;
+                var $favToggle = $('<div class="favorite-toggle-btn"><span class="glyphicon"></span></div>')
+                    .attr('title', favIsOn ? 'Remove from favorites' : 'Add to favorites');
+                $favToggle.find('.glyphicon').addClass(favIsOn ? 'glyphicon-star' : 'glyphicon-star-empty');
+                if (favIsOn) { $favToggle.addClass('is-favorited'); }
+                $favLink.append($favToggle);
+            }
+        });
+        $('.favorite-toggle-btn').on('click.quickActions', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            handleFavoriteToggle($(this).closest('.book-cover-link'));
+        });
+
         // Check if device supports hover (not a touch device)
         var supportsHover = window.matchMedia('(hover: hover)').matches;
         var isDesktop = $(window).width() >= 768;
@@ -1158,6 +1179,33 @@ $(function() {
         });
     }
     
+    function handleFavoriteToggle($link) {
+        var bookId = $link.data('book-id');
+        if (!bookId) { console.error('Book ID not found'); return; }
+        var $btn = $link.find('.favorite-toggle-btn');
+        var wasFav = $btn.hasClass('is-favorited');
+        $btn.addClass('loading');
+        $btn.find('.glyphicon').removeClass().addClass('glyphicon glyphicon-refresh');
+        $.ajax({
+            url: window.scriptRoot + '/ajax/togglefavorite/' + bookId,
+            type: 'POST',
+            data: { csrf_token: $("input[name='csrf_token']").val() },
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function(response) {
+                var nowFav = !wasFav;
+                try { nowFav = JSON.parse(response).favorited; } catch (e) { /* keep optimistic toggle */ }
+                $btn.removeClass('loading').toggleClass('is-favorited', nowFav)
+                    .attr('title', nowFav ? 'Remove from favorites' : 'Add to favorites');
+                $btn.find('.glyphicon').removeClass().addClass('glyphicon ' + (nowFav ? 'glyphicon-star' : 'glyphicon-star-empty'));
+            },
+            error: function() {
+                $btn.removeClass('loading').toggleClass('is-favorited', wasFav)
+                    .attr('title', wasFav ? 'Remove from favorites' : 'Add to favorites');
+                $btn.find('.glyphicon').removeClass().addClass('glyphicon ' + (wasFav ? 'glyphicon-star' : 'glyphicon-star-empty'));
+            }
+        });
+    }
+
     function handleSendToEReader($link) {
         var bookId = $link.data('book-id');
         var formatsStr = $link.data('book-formats');

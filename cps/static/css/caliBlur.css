@@ -8754,6 +8754,45 @@ button.close {
     margin-bottom: -2px;
 }
 
+/* Favorite / star toggle on covers — fork #33. Top-right corner (the read/edit/
+   send quick-actions line the bottom edge). Gold when favorited. Revealed on
+   cover hover on desktop; kept visible + tappable on touch devices. */
+.favorite-toggle-btn {
+    background: rgb(19 28 36 / 71%);
+    border-radius: 50%;
+    width: 35px;
+    height: 35px;
+    line-height: 35px;
+    text-align: center;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    opacity: 0;
+    z-index: 9;
+    color: #fff;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+}
+.favorite-toggle-btn .glyphicon { font-size: 14px; color: #fff; }
+.favorite-toggle-btn.is-favorited .glyphicon { color: #f5c518; }
+.cover:hover .favorite-toggle-btn { opacity: 1; pointer-events: auto; }
+.favorite-toggle-btn:hover { background: rgba(200, 152, 94, 0.9); transform: scale(1.1); }
+.favorite-toggle-btn.loading { opacity: 1; pointer-events: auto; }
+/* The static cover_badges favorite marker is superseded by this interactive
+   toggle (same state, plus it toggles); hide it so there's no duplicate star.
+   It stays in the DOM as the initial-state source the JS reads. */
+.cover-badge-favorite { display: none !important; }
+/* No hover (touch devices) OR a narrow viewport (phones): the cover never gets a
+   hover state, so keep the star visible + tappable. Width is included so this also
+   holds on hybrid touch+mouse devices that report `hover: hover`. */
+@media (hover: none), (max-width: 767px) {
+    .favorite-toggle-btn { opacity: 0.85; pointer-events: auto; }
+}
+
 /* Show additional elements on cover hover - buttons are now inside the link */
 #books > .cover > a:hover .read-toggle-btn,
 #books > .cover > a:hover .edit-metadata-btn,

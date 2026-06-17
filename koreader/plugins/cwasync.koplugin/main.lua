@@ -27,7 +27,7 @@ end
 local CWASync = WidgetContainer:extend{
     name = "cwasync",
     title = _("Login to NextGen Server"),
-    version = "4.0.136",  -- Plugin version mirrors CWNG release tag
+    version = "4.0.166",  -- Plugin version mirrors CWNG release tag; keep in lockstep with _meta.lua
 
     push_timestamp = nil,
     pull_timestamp = nil,

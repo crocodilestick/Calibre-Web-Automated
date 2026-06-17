@@ -1,0 +1,48 @@
+name: Attach KOReader plugin zip to release
+# Publishes cwasync.koplugin.zip as a release asset on every GitHub release.
+#
+# Why: KOReader's Updates Manager plugin (advokatb/updatesmanager.koplugin)
+# installs plugin updates from GitHub release assets — it expects a zip that
+# contains the plugin folder itself (cwasync.koplugin/...). The same zip also
+# gives users a one-click download without needing a running instance (the
+# in-app /kosync/plugin page serves a zip built at Docker image build time;
+# this asset is the instance-independent twin). Fork issue #400.
+#
+# The zip layout mirrors the Dockerfile STEP 7.3 recipe: the archive root is
+# the cwasync.koplugin/ folder, so extracting into koreader/plugins/ yields
+# the correct structure.
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: plugin-asset-${{ github.event.release.tag_name }}
+  cancel-in-progress: false
+
+jobs:
+  attach-plugin-zip:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.release.tag_name }}
+
+      - name: Build cwasync.koplugin.zip
+        working-directory: koreader/plugins
+        run: |
+          test -f cwasync.koplugin/_meta.lua
+          zip -r cwasync.koplugin.zip cwasync.koplugin/
+          unzip -l cwasync.koplugin.zip
+
+      - name: Upload asset to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: |
+          gh release upload "$TAG" koreader/plugins/cwasync.koplugin.zip --clobber

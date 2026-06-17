@@ -17,6 +17,13 @@ is for things you can see or feel when running the app.
 ## [Unreleased]
 
 ### Added
+- The **KOReader sync plugin can now be kept up to date with the Updates
+  Manager plugin** (updatesmanager.koplugin) instead of hand-copying files onto
+  your device. The plugin now reports its version where Updates Manager looks
+  for it, and every release ships a ready-to-install `cwasync.koplugin.zip` on
+  the GitHub release page — extract it into KOReader's `plugins` folder, or
+  point Updates Manager at this repository to install updates from the KOReader
+  menu. Requested by @filiporlo.
 - **Tap the left or right side of the page to turn pages in the web reader.**
   The page is split down the middle — tap (or click) the right half to go
   forward, the left half to go back. Swiping left/right still works. Two

@@ -574,7 +574,7 @@ Built on:
 
 Every backported patch is credited to its original author by GitHub handle in the commit message and in [`CHANGES-vs-upstream.md`](CHANGES-vs-upstream.md).
 
-If this build is useful to you, you can support its development on [Ko-fi](https://ko-fi.com/newusemame). To support the upstream project it builds on, [@crocodilestick has a Ko-fi](https://ko-fi.com/crocodilestick) too.
+If this build is useful to you, you can support its development on [Ko-fi](https://ko-fi.com/calibrewebnextgen). To support the upstream project it builds on, [@crocodilestick has a Ko-fi](https://ko-fi.com/crocodilestick) too.
 
 ---
 

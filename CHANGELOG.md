@@ -18,7 +18,7 @@ is for things you can see or feel when running the app.
 
 ### Added
 - You can now **support Calibre-Web NextGen's development** directly — the
-  project has its own [Ko-fi](https://ko-fi.com/newusemame), linked from the
+  project has its own [Ko-fi](https://ko-fi.com/calibrewebnextgen), linked from the
   README and the GitHub "Sponsor" button. (The upstream project it builds on is
   still credited and linked too.)
 

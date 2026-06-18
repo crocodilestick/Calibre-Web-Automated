@@ -535,6 +535,40 @@
             <input type="text" class="form-control" id="config_generic_oauth_admin_group" name="config_generic_oauth_admin_group" value="{% if generic.get('oauth_admin_group') != None %}{{ generic['oauth_admin_group'] }}{% endif %}" autocomplete="off">
             <div class="help-block">{{_('Name of the OAuth group that grants admin privileges. Leave empty to disable group-based admin management, or use the global setting in Security Settings for more control.')}}</div>
           </div>
+          <h5 style="color: #ffc200; margin-top: 25px; margin-bottom: 15px;">{{_('Default Permissions for New Generic OAuth Users')}}</h5>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; background: #202c34a3; padding: 2rem; border-radius: 4px; margin-bottom: 15px;">
+            <div>
+              <input type="checkbox" name="config_generic_oauth_default_download_role" id="config_generic_oauth_default_download_role" {% if generic.get('oauth_default_role_download') %}checked{% endif %} style="accent-color: var(--color-secondary);">
+              <label for="config_generic_oauth_default_download_role">{{_('Allow Downloads')}}</label>
+            </div>
+            <div>
+              <input type="checkbox" name="config_generic_oauth_default_viewer_role" id="config_generic_oauth_default_viewer_role" {% if generic.get('oauth_default_role_viewer') %}checked{% endif %} style="accent-color: var(--color-secondary);">
+              <label for="config_generic_oauth_default_viewer_role">{{_('Allow eBook Viewer')}}</label>
+            </div>
+            {% if config.config_uploading %}
+            <div>
+              <input type="checkbox" name="config_generic_oauth_default_upload_role" id="config_generic_oauth_default_upload_role" {% if generic.get('oauth_default_role_upload') %}checked{% endif %} style="accent-color: var(--color-secondary);">
+              <label for="config_generic_oauth_default_upload_role">{{_('Allow Uploads')}}</label>
+            </div>
+            {% endif %}
+            <div>
+              <input type="checkbox" name="config_generic_oauth_default_edit_role" id="config_generic_oauth_default_edit_role" {% if generic.get('oauth_default_role_edit') %}checked{% endif %} style="accent-color: var(--color-secondary);">
+              <label for="config_generic_oauth_default_edit_role">{{_('Allow Edit')}}</label>
+            </div>
+            <div>
+              <input type="checkbox" name="config_generic_oauth_default_delete_role" id="config_generic_oauth_default_delete_role" {% if generic.get('oauth_default_role_delete') %}checked{% endif %} style="accent-color: var(--color-secondary);">
+              <label for="config_generic_oauth_default_delete_role">{{_('Allow Delete Books')}}</label>
+            </div>
+            <div>
+              <input type="checkbox" name="config_generic_oauth_default_passwd_role" id="config_generic_oauth_default_passwd_role" {% if generic.get('oauth_default_role_passwd') %}checked{% endif %} style="accent-color: var(--color-secondary);">
+              <label for="config_generic_oauth_default_passwd_role">{{_('Allow Changing Password')}}</label>
+            </div>
+            <div>
+              <input type="checkbox" name="config_generic_oauth_default_edit_shelf_role" id="config_generic_oauth_default_edit_shelf_role" {% if generic.get('oauth_default_role_edit_shelf') %}checked{% endif %} style="accent-color: var(--color-secondary);">
+              <label for="config_generic_oauth_default_edit_shelf_role">{{_('Allow Editing Public Shelves')}}</label>
+            </div>
+          </div>
+          <div class="help-block">{{_('These permissions are applied only when a new user is created via Generic OAuth. Admin group membership still grants admin privileges when OAuth group-based admin management is enabled. Existing users are not changed.')}}</div>
           <div class="form-group">
             <label for="config_generic_oauth_login_button">{{_('Login Button Text')}}</label>
             <input type="text" class="form-control" id="config_generic_oauth_login_button" name="config_generic_oauth_login_button" value="{% if generic.get('login_button') != None %}{{ generic['login_button'] }}{% endif %}" autocomplete="off" placeholder="OpenID Connect">

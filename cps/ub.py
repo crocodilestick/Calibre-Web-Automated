@@ -318,6 +318,7 @@ class OAuthProvider(Base):
     oauth_token_url = Column(String, default=None)
     oauth_userinfo_url = Column(String, default=None)
     oauth_admin_group = Column(String, default=None)
+    oauth_default_role = Column(SmallInteger, default=0)
     metadata_url = Column(String, default=None)  # For OIDC auto-discovery
     scope = Column(String, default="openid profile email")  # Customizable OAuth scopes
     username_mapper = Column(String, default="preferred_username")  # JWT field for username
@@ -1448,6 +1449,34 @@ def migrate_user_table(engine, _session):
         except Exception as e:
             print(f"[cover-preview-migration] Could not back-fill show_ereader_previews=0 for existing users: {e}", flush=True)
             _session.rollback()
+    except exc.OperationalError:  # Database is not compatible, some columns are missing
+        _safe_session_rollback(_session, "oauthProvider.base_urls")
+        _run_ddl_with_retry(
+            engine,
+            [
+                "ALTER TABLE oauthProvider ADD column 'oauth_base_url' String DEFAULT NULL",
+                "ALTER TABLE oauthProvider ADD column 'oauth_authorize_url' String DEFAULT NULL",
+                "ALTER TABLE oauthProvider ADD column 'oauth_token_url' String DEFAULT NULL",
+                "ALTER TABLE oauthProvider ADD column 'oauth_userinfo_url' String DEFAULT NULL",
+                "ALTER TABLE oauthProvider ADD column 'oauth_admin_group' String DEFAULT NULL",
+                "ALTER TABLE oauthProvider ADD column 'oauth_default_role' SmallInteger DEFAULT 0",
+            ],
+        )
+
+    # Add Generic OAuth default role field separately so instances that already
+    # have the OAuth base URL fields also receive the new column.
+    try:
+        _session.query(exists().where(OAuthProvider.oauth_default_role)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        _safe_session_rollback(_session, "oauthProvider.oauth_default_role")
+        _run_ddl_with_retry(
+            engine,
+            [
+                "ALTER TABLE oauthProvider ADD column 'oauth_default_role' SmallInteger DEFAULT 0",
+            ],
+        )
+>>>>>>> 9a2fcff0 (feat(oauth): implement granular default permissions for new OAuth users)
 
     try:
         _session.query(exists().where(User.preview_preset)).scalar()

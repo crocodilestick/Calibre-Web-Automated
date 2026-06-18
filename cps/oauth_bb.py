@@ -169,6 +169,13 @@ oauth = Blueprint('oauth', __name__)
 log = logger.create()
 
 
+def _oauth_role_enabled(role_value, role_flag):
+    try:
+        return constants.has_flag(int(role_value or 0), role_flag)
+    except (TypeError, ValueError):
+        return False
+
+
 def oauth_required(f):
     @wraps(f)
     def inner(*args, **kwargs):
@@ -361,7 +368,7 @@ def register_user_from_generic_oauth(token=None):
             log.info("New OAuth user '%s' granted admin role via group '%s' (groups: %s)", 
                     provider_username, admin_group, user_groups)
         else:
-            user.role = config.config_default_role
+            user.role = int(generic.get('oauth_default_role') or 0)
             if should_be_admin and not config.config_enable_oauth_group_admin_management:
                 log.debug("New OAuth user '%s' not granted admin role - group-based management disabled", 
                          provider_username)
@@ -719,7 +726,15 @@ def generate_oauth_blueprints():
                 username_mapper=generic.username_mapper,
                 email_mapper=generic.email_mapper,
                 login_button=generic.login_button or 'OpenID Connect',
-                oauth_admin_group=generic.oauth_admin_group or 'admin')
+                oauth_admin_group=generic.oauth_admin_group or 'admin',
+                oauth_default_role=generic.oauth_default_role or 0,
+                oauth_default_role_download=_oauth_role_enabled(generic.oauth_default_role, constants.ROLE_DOWNLOAD),
+                oauth_default_role_viewer=_oauth_role_enabled(generic.oauth_default_role, constants.ROLE_VIEWER),
+                oauth_default_role_upload=_oauth_role_enabled(generic.oauth_default_role, constants.ROLE_UPLOAD),
+                oauth_default_role_edit=_oauth_role_enabled(generic.oauth_default_role, constants.ROLE_EDIT),
+                oauth_default_role_delete=_oauth_role_enabled(generic.oauth_default_role, constants.ROLE_DELETE_BOOKS),
+                oauth_default_role_passwd=_oauth_role_enabled(generic.oauth_default_role, constants.ROLE_PASSWD),
+                oauth_default_role_edit_shelf=_oauth_role_enabled(generic.oauth_default_role, constants.ROLE_EDIT_SHELFS))
     oauthblueprints.append(ele3)
 
     for element in oauthblueprints:

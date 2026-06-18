@@ -1539,6 +1539,23 @@ def _configuration_gdrive_helper(to_save):
     return gdrive_error
 
 
+def _selected_generic_oauth_default_role(to_save):
+    role_map = {
+        "config_generic_oauth_default_download_role": constants.ROLE_DOWNLOAD,
+        "config_generic_oauth_default_viewer_role": constants.ROLE_VIEWER,
+        "config_generic_oauth_default_upload_role": constants.ROLE_UPLOAD,
+        "config_generic_oauth_default_edit_role": constants.ROLE_EDIT,
+        "config_generic_oauth_default_delete_role": constants.ROLE_DELETE_BOOKS,
+        "config_generic_oauth_default_passwd_role": constants.ROLE_PASSWD,
+        "config_generic_oauth_default_edit_shelf_role": constants.ROLE_EDIT_SHELFS,
+    }
+    role = 0
+    for form_name, role_flag in role_map.items():
+        if form_name in to_save:
+            role |= role_flag
+    return role
+
+
 def _configuration_oauth_helper(to_save):
     reboot_required = False
 
@@ -1638,6 +1655,11 @@ def _configuration_oauth_helper(to_save):
             if to_save["config_generic_oauth_admin_group"] != element["oauth_admin_group"]:
                 reboot_required = True
                 update["oauth_admin_group"] = to_save["config_generic_oauth_admin_group"]
+
+            oauth_default_role = _selected_generic_oauth_default_role(to_save)
+            if oauth_default_role != int(element.get("oauth_default_role") or 0):
+                reboot_required = True
+                update["oauth_default_role"] = oauth_default_role
         else:
             if to_save["config_" + str(element['id']) + "_oauth_client_id"] != element["oauth_client_id"]:
                 reboot_required = True

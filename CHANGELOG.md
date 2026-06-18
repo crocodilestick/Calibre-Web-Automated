@@ -16,6 +16,12 @@ is for things you can see or feel when running the app.
 
 ## [Unreleased]
 
+### Added
+- You can now **support Calibre-Web NextGen's development** directly — the
+  project has its own [Ko-fi](https://ko-fi.com/newusemame), linked from the
+  README and the GitHub "Sponsor" button. (The upstream project it builds on is
+  still credited and linked too.)
+
 ### Fixed
 - **Hardcover metadata search no longer fails when one of your saved API tokens
   is stale.** If you have both a per-account token and a global one, search used

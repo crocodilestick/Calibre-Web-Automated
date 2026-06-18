@@ -572,7 +572,9 @@ Built on:
 - **Calibre-Web** ([@janeczku](https://github.com/janeczku) and contributors) — the web UI underneath CWA.
 - **Calibre** ([@kovidgoyal](https://github.com/kovidgoyal)) — the library underneath all of it.
 
-Every backported patch is credited to its original author by GitHub handle in the commit message and in [`CHANGES-vs-upstream.md`](CHANGES-vs-upstream.md). To support upstream's continued development, [@crocodilestick has a Ko-fi](https://ko-fi.com/crocodilestick).
+Every backported patch is credited to its original author by GitHub handle in the commit message and in [`CHANGES-vs-upstream.md`](CHANGES-vs-upstream.md).
+
+If this build is useful to you, you can support its development on [Ko-fi](https://ko-fi.com/newusemame). To support the upstream project it builds on, [@crocodilestick has a Ko-fi](https://ko-fi.com/crocodilestick) too.
 
 ---
 

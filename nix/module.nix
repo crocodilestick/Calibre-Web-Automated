@@ -53,19 +53,21 @@ in
 
     libraryDir = mkOption {
       type = types.path;
-      default = "/var/lib/calibre-web-automated/library";
       description = ''
         Calibre library root directory.  Must contain (or will receive)
         a <filename>metadata.db</filename> created by Calibre.
+        The directory must exist and have appropriate permissions before
+        the service starts; it is not created automatically.
       '';
     };
 
     ingestDir = mkOption {
       type = types.path;
-      default = "/var/lib/calibre-web-automated/ingest";
       description = ''
         Drop-folder watched for new eBooks.  Files placed here are
         automatically imported and optionally converted.
+        The directory must exist and have appropriate permissions before
+        the service starts; it is not created automatically.
       '';
     };
 
@@ -98,6 +100,17 @@ in
   };
 
   config = mkIf cfg.enable {
+    systemd.tmpfiles.rules = [
+      "d '${cfg.configDir}' 0750 ${cfg.user} ${cfg.group} -"
+      "d '${cfg.configDir}/processed_books' 0750 ${cfg.user} ${cfg.group} -"
+      "d '${cfg.configDir}/processed_books/failed' 0750 ${cfg.user} ${cfg.group} -"
+      "d '${cfg.configDir}/processed_books/fixed_originals' 0750 ${cfg.user} ${cfg.group} -"
+      "d '${cfg.configDir}/log_archive' 0750 ${cfg.user} ${cfg.group} -"
+      "d '${cfg.configDir}/metadata_change_logs' 0750 ${cfg.user} ${cfg.group} -"
+      "d '${cfg.configDir}/metadata_temp' 0750 ${cfg.user} ${cfg.group} -"
+      "d '${cfg.configDir}/tmp' 0750 ${cfg.user} ${cfg.group} -"
+    ];
+
     systemd.services.calibre-web-automated = {
       description = "Calibre-Web Automated";
       documentation = [ "https://github.com/crocodilestick/Calibre-Web-Automated/wiki" ];
@@ -111,16 +124,6 @@ in
       } // cfg.environment;
 
       preStart = ''
-        # Create all runtime directories the app and background workers expect.
-        mkdir -p \
-          ${escapeShellArgs [ cfg.configDir cfg.libraryDir cfg.ingestDir ]} \
-          ${lib.escapeShellArg cfg.configDir}/processed_books/failed \
-          ${lib.escapeShellArg cfg.configDir}/processed_books/fixed_originals \
-          ${lib.escapeShellArg cfg.configDir}/log_archive \
-          ${lib.escapeShellArg cfg.configDir}/metadata_change_logs \
-          ${lib.escapeShellArg cfg.configDir}/metadata_temp \
-          ${lib.escapeShellArg cfg.configDir}/tmp
-
         # Initialise an empty Calibre library on first run so the app auto-
         # detects it via CWA_LIBRARY_DIR without requiring web-UI setup.
         if [ ! -f ${lib.escapeShellArg cfg.libraryDir}/metadata.db ]; then

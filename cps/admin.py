@@ -46,6 +46,9 @@ from .cw_babel import get_available_translations, get_available_locale, get_user
 from . import debug_info
 from .string_helper import strip_whitespaces
 
+from .cwa_paths import (GET_CONFIG_PATH, GET_APP_DB, GET_LIBRARY_PATH, GET_METADATA_DB,
+                        GET_CWA_RELEASE_FILE, GET_KEPUBIFY_RELEASE_FILE, GET_CALIBRE_DIR)
+
 log = logger.create()
 
 feature_support = {
@@ -101,7 +104,7 @@ def before_request():
     # Safety net: if not configured but metadata.db now exists at default location, auto-set without redirect loop
     if not config.db_configured:
         try:
-            default_metadata = '/calibre-library/metadata.db'
+            default_metadata = GET_METADATA_DB()
             if (not config.config_calibre_dir or not os.path.isfile(os.path.join(config.config_calibre_dir, 'metadata.db'))) \
                     and os.path.isfile(default_metadata):
                 config.config_calibre_dir = os.path.dirname(default_metadata)
@@ -225,10 +228,7 @@ def trigger_hardcover_auto_fetch():
             return json.dumps(show_text), 400
         
         # Get settings
-        import sys as _sys
-        if '/app/calibre-web-automated/scripts/' not in _sys.path:
-            _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-        from cwa_db import CWA_DB
+        from .cwa_db import CWA_DB
         from cps.tasks.auto_hardcover_id import TaskAutoHardcoverID
         from cps.services.worker import WorkerThread
         
@@ -499,13 +499,13 @@ def update_thumbnails():
 
 def cwa_get_package_versions() -> tuple[str, str, str, str]:
     try:
-        with open("/app/CWA_RELEASE", "r") as f:
+        with open(GET_CWA_RELEASE_FILE(), "r") as f:
             cwa_version = f.read()
     except Exception:
         cwa_version = "Unknown"
 
     try:
-        with open("/app/KEPUBIFY_RELEASE", "r") as f:
+        with open(GET_KEPUBIFY_RELEASE_FILE(), "r") as f:
             kepubify_version = f.read()
     except Exception:
         kepubify_version = "Unknown"
@@ -2197,8 +2197,8 @@ def _db_simulate_change():
     incoming = param.get('config_calibre_dir', config.config_calibre_dir or '')
     incoming = strip_whitespaces(re.sub(r'[\\/]metadata\.db$', '', incoming, flags=re.IGNORECASE))
     # Fallback: if nothing provided and default metadata exists, assume /calibre-library
-    if not incoming and os.path.isfile('/calibre-library/metadata.db'):
-        incoming = '/calibre-library'
+    if not incoming and os.path.isfile(GET_METADATA_DB()):
+        incoming = GET_LIBRARY_PATH()
     to_save['config_calibre_dir'] = incoming
     db_valid, db_change = calibre_db.check_valid_db(to_save["config_calibre_dir"],
                                                     ub.app_DB_path,
@@ -2217,8 +2217,8 @@ def _db_configuration_update_helper():
         log.warning("DB config update missing config_calibre_dir; using current config value")
         incoming = config.config_calibre_dir or ''
     incoming = re.sub(r'[\\/]metadata\.db$', '', incoming, flags=re.IGNORECASE)
-    if not incoming and os.path.isfile('/calibre-library/metadata.db'):
-        incoming = '/calibre-library'
+    if not incoming and os.path.isfile(GET_METADATA_DB()):
+        incoming = GET_LIBRARY_PATH()
     to_save['config_calibre_dir'] = incoming
     db_valid = False
     try:
@@ -2980,7 +2980,7 @@ def restore_calibre_db():
             flash(_("Restore failed: metadata.db not found at %(path)s", path=metadata_path), category="error")
             return redirect(url_for("admin.db_configuration"))
 
-        app_db_path = ub.app_DB_path or cli_param.settings_path or "/config/app.db"
+        app_db_path = ub.app_DB_path or cli_param.settings_path or GET_APP_DB()
         if not os.path.exists(app_db_path):
             flash(_("Restore failed: app.db not found at %(path)s", path=app_db_path), category="error")
             return redirect(url_for("admin.db_configuration"))
@@ -2990,7 +2990,7 @@ def restore_calibre_db():
             lock_file.write(str(os.getpid()))
 
         # 1. Backup both DBs
-        backup_dir = f"/config/backup/restore_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+        backup_dir = os.path.join(GET_CONFIG_PATH(), "backup", f"restore_{datetime.now().strftime('%Y%m%d_%H%M%S')}")
         os.makedirs(backup_dir, exist_ok=True)
         shutil.copy2(metadata_path, os.path.join(backup_dir, "metadata.db.bak"))
         shutil.copy2(app_db_path, os.path.join(backup_dir, "app.db.bak"))
@@ -3027,7 +3027,7 @@ def restore_calibre_db():
             log.warning("Failed to dispose sessions before restore: %s", e)
 
         # 2. Run calibredb check_library (pre)
-        calibredb_binary = get_calibre_binarypath("calibredb") or "/app/calibre/calibredb"
+        calibredb_binary = get_calibre_binarypath("calibredb") or os.path.join(GET_CALIBRE_DIR(), "calibredb")
         check_cmd = [
             calibredb_binary, "check_library",
             "--with-library", config.config_calibre_dir

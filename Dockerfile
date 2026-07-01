@@ -106,18 +106,26 @@ RUN \
   pip \
   wheel
 
-# STEP 3 - Copy requirements files and install Python packages
-# Copy only requirements files first to leverage Docker layer caching
-COPY --chown=abc:abc requirements.txt optional-requirements.txt /app/calibre-web-automated/
+# STEP 3 - Copy pyproject.toml and install Python packages
+# Copy only pyproject.toml first to leverage Docker layer caching
+COPY --chown=abc:abc pyproject.toml /app/calibre-web-automated/
 
 RUN \
-  # STEP 3.1 - Installing the required python packages listed in 'requirements.txt' and 'optional-requirements.txt'
+  # STEP 3.1 - Installing all required and optional Python packages listed in 'pyproject.toml'
   # HOWEVER, they are not pulled from PyPi directly, they are pulled from linuxserver's Ubuntu Wheel Index
   # This is essentially a repository of precompiled some of the most popular packages with C/C++ source code
   # This provides the install maximum compatibility with multiple different architectures including: x86_64, armv71 and aarch64
   # You can read more about python wheels here: https://realpython.com/python-wheels/
-  /lsiopy/bin/pip install -U --no-cache-dir --find-links https://wheel-index.linuxserver.io/ubuntu/ -r \
-  /app/calibre-web-automated/requirements.txt -r /app/calibre-web-automated/optional-requirements.txt
+  /lsiopy/bin/python3.13 -c "\
+import tomllib; \
+f = open('/app/calibre-web-automated/pyproject.toml', 'rb'); \
+d = tomllib.load(f); f.close(); \
+deps = list(d['project']['dependencies']); \
+[deps.extend(v) for k,v in d['project'].get('optional-dependencies', {}).items() if k != 'dev']; \
+print('\n'.join(deps))" > /tmp/all-deps.txt && \
+  /lsiopy/bin/pip install -U --no-cache-dir --find-links https://wheel-index.linuxserver.io/ubuntu/ \
+  -r /tmp/all-deps.txt && \
+  rm /tmp/all-deps.txt
 
 # STEP 4 - Install kepubify
 RUN \
@@ -285,13 +293,21 @@ RUN \
 # Add unrar from unrar stage
 COPY --from=unrar /usr/bin/unrar-ubuntu /usr/bin/unrar
 
-# Set calibre environment variable
-ENV CALIBRE_CONFIG_DIR=/config/.config/calibre
+# Path configuration — override these env vars to relocate CWA data directories
+ENV CWA_APP_PATH=/app/calibre-web-automated
+ENV CWA_CONFIG_PATH=/config
+ENV CWA_LIBRARY_PATH=/calibre-library
+ENV CWA_INGEST_PATH=/cwa-book-ingest
+
+ENV CALIBRE_CONFIG_DIR=${CWA_CONFIG_PATH}/.config/calibre
+ENV PYTHONPATH=${CWA_APP_PATH}/cps
 
 # Ports and volumes
-WORKDIR /config
+WORKDIR ${CWA_CONFIG_PATH}
 # The default port CWA listens on. Can be overridden with the CWA_PORT_OVERRIDE environment variable.
 EXPOSE 8083
+# VOLUME paths are baked into the image and cannot use env var substitution.
+# These defaults match CWA_CONFIG_PATH, CWA_INGEST_PATH, and CWA_LIBRARY_PATH above.
 VOLUME /config
 VOLUME /cwa-book-ingest
 VOLUME /calibre-library

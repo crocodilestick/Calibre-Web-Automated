@@ -10,16 +10,14 @@ import os
 from sqlite3 import Error as sqlError
 import re
 from datetime import datetime
-
 from tabulate import tabulate
+from .cwa_paths import GET_CONFIG_PATH, GET_LIBRARY_PATH, GET_METADATA_DB, GET_CWA_DB_DEBUG, GET_CWA_DB_PATH
 
 
 class CWA_DB:
     def __init__(self, verbose=False):
         self.verbose = verbose
 
-        self.db_file = "cwa.db"
-        self.db_path = "/config/"
         self.con, self.cur = self.connect_to_db() # type: ignore
 
         # Support both Docker and CI environments for schema path
@@ -41,7 +39,7 @@ class CWA_DB:
         con = None
         cur = None
         try:
-            con = sqlite3.connect(self.db_path + self.db_file, timeout=30)
+            con = sqlite3.connect(GET_CWA_DB_PATH(), timeout=30)
         except sqlError as e:
             print(f"[cwa-db]: The following error occurred while trying to connect to the CWA Enforcement DB: {e}")
             sys.exit(0)
@@ -51,6 +49,11 @@ class CWA_DB:
                 print("[cwa-db]: Connection with the CWA Enforcement DB Successful!")
             return con, cur
 
+
+    def _connect_metadata_db(self) -> tuple[sqlite3.Connection, sqlite3.Cursor]:
+        """Open a read connection to Calibre's metadata.db."""
+        con = sqlite3.connect(GET_METADATA_DB(), timeout=10)
+        return con, con.cursor()
 
     def make_tables(self) -> tuple[list[str], list[str]]:
         """Creates the tables for the CWA DB if they don't already exist"""
@@ -349,7 +352,7 @@ class CWA_DB:
                     if command.startswith('--') or not command:
                         continue
                     command = command.replace(',', ';')
-                    with open('/config/.cwa_db_debug', 'a') as f:
+                    with open(GET_CWA_DB_DEBUG(), 'a') as f:
                         f.write(command)
                     self.cur.execute(f"ALTER TABLE cwa_settings ADD {command}")  
                     self.con.commit()
@@ -1148,9 +1151,7 @@ class CWA_DB:
             import sqlite3
             
             # Connect to Calibre's metadata.db
-            metadata_db_path = "/calibre-library/metadata.db"
-            metadata_con = sqlite3.connect(metadata_db_path, timeout=10)
-            metadata_cur = metadata_con.cursor()
+            metadata_con, metadata_cur = self._connect_metadata_db()
             
             # Build date filter
             if start_date and end_date:
@@ -1185,9 +1186,7 @@ class CWA_DB:
             import sqlite3
             
             # Connect to Calibre's metadata.db
-            metadata_db_path = "/calibre-library/metadata.db"
-            metadata_con = sqlite3.connect(metadata_db_path, timeout=10)
-            metadata_cur = metadata_con.cursor()
+            metadata_con, metadata_cur = self._connect_metadata_db()
             
             # Build date filter for current period
             if start_date and end_date:
@@ -1268,9 +1267,7 @@ class CWA_DB:
             import sqlite3
             
             # Connect to Calibre's metadata.db
-            metadata_db_path = "/calibre-library/metadata.db"
-            metadata_con = sqlite3.connect(metadata_db_path, timeout=10)
-            metadata_cur = metadata_con.cursor()
+            metadata_con, metadata_cur = self._connect_metadata_db()
             
             # Build date filter
             if start_date and end_date:
@@ -1388,9 +1385,7 @@ class CWA_DB:
             import sqlite3
             
             # Connect to Calibre's metadata.db
-            metadata_db_path = "/calibre-library/metadata.db"
-            metadata_con = sqlite3.connect(metadata_db_path, timeout=10)
-            metadata_cur = metadata_con.cursor()
+            metadata_con, metadata_cur = self._connect_metadata_db()
             
             # Query series with book counts and highest index, ordered by count
             metadata_cur.execute(f"""
@@ -1425,9 +1420,7 @@ class CWA_DB:
             import sqlite3
             
             # Connect to Calibre's metadata.db
-            metadata_db_path = "/calibre-library/metadata.db"
-            metadata_con = sqlite3.connect(metadata_db_path, timeout=10)
-            metadata_cur = metadata_con.cursor()
+            metadata_con, metadata_cur = self._connect_metadata_db()
             
             # Extract year from pubdate and count books
             metadata_cur.execute("""
@@ -1903,9 +1896,7 @@ class CWA_DB:
         try:
             import sqlite3
             
-            metadata_db_path = "/calibre-library/metadata.db"
-            metadata_con = sqlite3.connect(metadata_db_path, timeout=10)
-            metadata_cur = metadata_con.cursor()
+            metadata_con, metadata_cur = self._connect_metadata_db()
             
             # Build date filter for books added in time period
             if start_date and end_date:
@@ -2048,9 +2039,7 @@ class CWA_DB:
                 return []
             
             # Pass 2: Enrich with book titles from metadata.db
-            metadata_db_path = "/calibre-library/metadata.db"
-            metadata_con = sqlite3.connect(metadata_db_path, timeout=10)
-            metadata_cur = metadata_con.cursor()
+            metadata_con, metadata_cur = self._connect_metadata_db()
             
             results = []
             for book_id, enforcement_count, last_enforced in enforcement_data:

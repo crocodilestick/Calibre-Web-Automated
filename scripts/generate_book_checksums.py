@@ -33,9 +33,11 @@ from datetime import datetime, timezone
 
 # Import the centralized partial MD5 calculation function
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'cps'))
+
 from cps.progress_syncing.checksums import calculate_koreader_partial_md5, CHECKSUM_VERSION
 from cps.progress_syncing.settings import is_koreader_sync_enabled
-
+from cwa_paths import GET_APP_DB, GET_LIBRARY_PATH
 
 def _flush_batch(metadata_db: str, batch_rows):
     if not batch_rows:
@@ -184,7 +186,7 @@ def get_books_path():
         otherwise None to indicate the library path should be used.
     """
     try:
-        conn = sqlite3.connect("/config/app.db", timeout=30)
+        conn = sqlite3.connect(GET_APP_DB(), timeout=30)
         cur = conn.cursor()
 
         # Check if split mode is enabled and get split path
@@ -219,8 +221,8 @@ def main():
 
     parser.add_argument(
         '--library-path',
-        default='/calibre-library',
-        help='Path to Calibre library directory (default: /calibre-library)'
+        default=GET_LIBRARY_PATH(),
+        help=f'Path to Calibre library directory (default: {GET_LIBRARY_PATH()})'
     )
 
     parser.add_argument(

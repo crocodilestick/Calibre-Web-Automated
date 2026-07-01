@@ -17,10 +17,13 @@ import fcntl
 import threading
 from pathlib import Path
 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'cps'))
+
 from cwa_db import CWA_DB
 from kindle_epub_fixer import EPUBFixer
 import audiobook
 import requests
+from cwa_paths import GET_CONFIG_PATH, GET_PROCESSED_BOOKS, GET_APP_DB, GET_INGEST_PATH, GET_LIBRARY_PATH, GET_TMP_CONVERSION_DIR
 
 # Optional: enable GDrive sync and auto-send by importing cps modules when available
 _GDRIVE_AVAILABLE = False
@@ -186,15 +189,7 @@ atexit.register(cleanup_lock)
 
 def get_app_db_path() -> str:
     """Resolve app.db path consistently with the main app config."""
-    app_db_path = os.environ.get("CWA_APP_DB_PATH")
-    if app_db_path:
-        return app_db_path
-    base_path = os.environ.get("CALIBRE_DBPATH", "/config")
-    if base_path.endswith(".db"):
-        if os.path.basename(base_path) != "app.db":
-            return os.path.join(os.path.dirname(base_path), "app.db")
-        return base_path
-    return os.path.join(base_path, "app.db")
+    return GET_APP_DB()
 
 
 def _load_cps_settings_from_app_db() -> None:
@@ -283,7 +278,7 @@ if not process_lock.acquire(timeout=10):
 
 # Ensure processed backups directory structure exists so backups never crash on missing folders
 try:
-    _processed_root = "/config/processed_books"
+    _processed_root = GET_PROCESSED_BOOKS()
     os.makedirs(_processed_root, exist_ok=True)
     for _name in ("converted", "imported", "fixed_originals", "failed"):
         os.makedirs(os.path.join(_processed_root, _name), exist_ok=True)
@@ -294,7 +289,7 @@ except Exception as e:
 try:
     backup_destinations = {
             entry.name: entry.path
-            for entry in os.scandir("/config/processed_books")
+            for entry in os.scandir(GET_PROCESSED_BOOKS())
             if entry.is_dir()
         }
 except FileNotFoundError:
@@ -390,7 +385,7 @@ class NewBookProcessor:
         self.supported_audiobook_formats = {'m4b', 'm4a', 'mp4'}
 
         # Directories
-        self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs("/app/calibre-web-automated/dirs.json")
+        self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs()
         self.ingest_folder = os.path.normpath(self.ingest_folder)
         # Ensure library_dir is consistent with the main app's config
         app_db_path = get_app_db_path()
@@ -416,7 +411,7 @@ class NewBookProcessor:
 
         # Calibre environment
         self.calibre_env = os.environ.copy()
-        self.calibre_env["HOME"] = "/config"  # Enable plugins under /config
+        self.calibre_env["HOME"] = GET_CONFIG_PATH()  # Enable plugins under /config
 
         self.metadata_db = os.path.join(self.library_dir, "metadata.db")
         # Split library support
@@ -523,16 +518,8 @@ class NewBookProcessor:
                 return None
 
 
-    def get_dirs(self, dirs_json_path: str) -> tuple[str, str, str]:
-        dirs = {}
-        with open(dirs_json_path, 'r') as f:
-            dirs: dict[str, str] = json.load(f)
-
-        ingest_folder = f"{dirs['ingest_folder']}/"
-        library_dir = f"{dirs['calibre_library_dir']}/"
-        tmp_conversion_dir = f"{dirs['tmp_conversion_dir']}/"
-
-        return ingest_folder, library_dir, tmp_conversion_dir
+    def get_dirs(self) -> tuple[str, str, str]:
+        return f"{GET_INGEST_PATH()}/", f"{GET_LIBRARY_PATH()}/", f"{GET_TMP_CONVERSION_DIR()}/"
 
 
     def can_convert_check(self) -> tuple[bool, str]:

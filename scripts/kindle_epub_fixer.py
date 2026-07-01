@@ -19,14 +19,16 @@ import tempfile
 import atexit
 import traceback
 from datetime import datetime
-import json
 import shutil
 from typing import Optional, Tuple
 
 import pwd
 import grp
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'cps'))
 
 from cwa_db import CWA_DB
+from cwa_paths import (GET_CONFIG_PATH, GET_APP_DB, GET_EPUB_FIXER_LOG, GET_PROCESSED_BOOKS,
+                       GET_METADATA_DB, GET_LIBRARY_PATH, GET_CHANGE_LOGS_DIR, GET_METADATA_TEMP_DIR)
 
 try:
     from charset_normalizer import from_bytes as _charset_from_bytes
@@ -45,11 +47,10 @@ except Exception:
 LANGUAGE_TAG_PATTERN = re.compile(r'^[a-z]{2,3}(-[a-z]{2,4})?$', re.IGNORECASE)
 
 ### Global Variables
-dirs_json = "/app/calibre-web-automated/dirs.json"
-change_logs_dir = "/app/calibre-web-automated/metadata_change_logs"
-metadata_temp_dir = "/app/calibre-web-automated/metadata_temp"
+change_logs_dir = GET_CHANGE_LOGS_DIR()
+metadata_temp_dir = GET_METADATA_TEMP_DIR()
 # Log file path
-epub_fixer_log_file = "/config/epub-fixer.log"
+epub_fixer_log_file = GET_EPUB_FIXER_LOG()
 
 ### LOGGING
 # Define the logger
@@ -352,7 +353,7 @@ class EPUBFixer:
     def _get_metadata_db_path(self) -> str:
         """Get the path to metadata.db considering split library configuration."""
         try:
-            con = sqlite3.connect("/config/app.db", timeout=30)
+            con = sqlite3.connect(GET_APP_DB(), timeout=30)
             cur = con.cursor()
             split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -366,7 +367,7 @@ class EPUBFixer:
                 return os.path.join(library_location, "metadata.db")
         except Exception:
             # Fallback to default location
-            return "/calibre-library/metadata.db"
+            return GET_METADATA_DB()
 
     def _recalculate_checksum_after_modification(self, book_id: int, file_format: str, file_path: str) -> None:
         """Calculate and store new checksum after modifying an EPUB file."""
@@ -412,7 +413,7 @@ class EPUBFixer:
         """Backup original file"""
         if self.cwa_settings['auto_backup_epub_fixes']:
             try:
-                output_path = f"/config/processed_books/fixed_originals/"
+                output_path = os.path.join(GET_PROCESSED_BOOKS(), "fixed_originals/")
                 shutil.copy2(epub_path, output_path)
             except Exception as e:
                 print_and_log(f"[cwa-kindle-epub-fixer] ERROR - Error occurred when backing up {epub_path} to {output_path}:\n{e}", log=self.manually_triggered)
@@ -1128,7 +1129,7 @@ class EPUBFixer:
 
 
 def get_library_location() -> str:
-    con = sqlite3.connect("/config/app.db", timeout=30)
+    con = sqlite3.connect(GET_APP_DB(), timeout=30)
     cur = con.cursor()
     split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -1137,11 +1138,7 @@ def get_library_location() -> str:
         con.close()
         return split_path
     else:
-        dirs = {}
-        with open('/app/calibre-web-automated/dirs.json', 'r') as f:
-            dirs: dict[str, str] = json.load(f)
-        library_dir = f"{dirs['calibre_library_dir']}/"
-        return library_dir
+        return f"{GET_LIBRARY_PATH()}/"
 
 def get_all_epubs_in_library() -> list[str]:
     """ Returns a list if the book dir given contains files of one or more of the supported formats"""

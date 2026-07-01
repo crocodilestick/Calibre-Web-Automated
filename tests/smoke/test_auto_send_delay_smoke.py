@@ -29,7 +29,7 @@ class TestAutoSendDelayValidation:
     
     def test_schema_has_default(self):
         """Verify schema defines auto_send_delay_minutes with default"""
-        schema_file = project_root / 'scripts' / 'cwa_schema.sql'
+        schema_file = project_root / 'cps' / 'cwa_schema.sql'
         
         with open(schema_file, 'r', encoding='utf-8') as f:
             content = f.read()

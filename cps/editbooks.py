@@ -34,6 +34,7 @@ from .kobo_sync_status import change_archived_books
 from .redirect import get_redirect_location
 from .file_helper import validate_mime_type
 from .cwa_functions import get_ingest_dir
+from .cwa_paths import GET_INGEST_PATH, GET_CHANGE_LOGS_DIR
 from .usermanagement import user_login_required, login_required_if_no_ano
 from .string_helper import strip_whitespaces
 from werkzeug.utils import secure_filename
@@ -348,7 +349,7 @@ def edit_selected_books():
                     }
 
                     now = datetime.now()
-                    log_path = f'/app/calibre-web-automated/metadata_change_logs/{now.strftime("%Y%m%d%H%M%S")}-{book.id}.json'
+                    log_path = os.path.join(GET_CHANGE_LOGS_DIR(), f'{now.strftime("%Y%m%d%H%M%S")}-{book.id}.json')
                     with open(log_path, 'w', encoding='utf-8') as f:
                         json.dump(log_payload, f, indent=4, ensure_ascii=False)
                     log.debug(f"Created metadata change log for book {book.id} with changes: {list(log_payload.keys())}")
@@ -388,7 +389,7 @@ def _get_ingest_path(uploaded_file, prefix_parts=None):
     # Ensure proper ownership of ingest directory (fix for issue #603)
     try:
         nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
-        if not (nsm and ingest_dir == "/cwa-book-ingest"):
+        if not (nsm and ingest_dir == GET_INGEST_PATH()):
             # Set ownership to abc:abc (uid=1000, gid=1000)
             os.chown(ingest_dir, 1000, 1000)
     except (OSError, PermissionError) as e:
@@ -618,7 +619,7 @@ def edit_book_param(param, vals):
                 }
 
                 now = datetime.now()
-                log_path = f'/app/calibre-web-automated/metadata_change_logs/{now.strftime("%Y%m%d%H%M%S")}-{book.id}.json'
+                log_path = os.path.join(GET_CHANGE_LOGS_DIR(), f'{now.strftime("%Y%m%d%H%M%S")}-{book.id}.json')
                 with open(log_path, 'w', encoding='utf-8') as f:
                     json.dump(payload, f, indent=4, ensure_ascii=False)
                 log.debug(f"Created metadata change log for book {book.id} with changes: {list(payload.keys())}")
@@ -772,8 +773,7 @@ def _queue_duplicate_scan_after_change():
     """Queue a debounced duplicate scan after manual changes."""
     try:
         import requests
-        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-        from cwa_db import CWA_DB
+        from .cwa_db import CWA_DB
 
         cwa_db = CWA_DB()
         delay_seconds = int(cwa_db.cwa_settings.get('duplicate_scan_debounce_seconds', 5))
@@ -1012,7 +1012,7 @@ def do_edit_book(book_id, upload_formats=None):
                 }
 
                 now = datetime.now()
-                log_path = f'/app/calibre-web-automated/metadata_change_logs/{now.strftime("%Y%m%d%H%M%S")}-{book.id}.json'
+                log_path = os.path.join(GET_CHANGE_LOGS_DIR(), f'{now.strftime("%Y%m%d%H%M%S")}-{book.id}.json')
                 with open(log_path, 'w', encoding='utf-8') as f:
                     json.dump(payload, f, indent=4, ensure_ascii=False)
                 log.debug(f"Created metadata change log for book {book.id} with changes: {list(meaningful_changes.keys())}")
@@ -1388,9 +1388,7 @@ def delete_book_from_table(book_id, book_format, json_response, location=""):
                 
                 # Invalidate duplicate cache after book deletion
                 try:
-                    import sys
-                    sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-                    from cwa_db import CWA_DB
+                    from .cwa_db import CWA_DB
                     cwa_db = CWA_DB()
                     cwa_db.invalidate_duplicate_cache()
                     cwa_db.close()

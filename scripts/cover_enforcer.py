@@ -17,8 +17,10 @@ import time
 from datetime import datetime
 from pathlib import Path
 import unicodedata
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'cps'))
 
 from cwa_db import CWA_DB
+from cwa_paths import GET_CONFIG_PATH, GET_APP_DB, GET_LIBRARY_PATH, GET_CHANGE_LOGS_DIR, GET_METADATA_TEMP_DIR
 try:
     from cps.utils.filename_sanitizer import get_valid_filename_shared
 except ModuleNotFoundError:
@@ -66,9 +68,8 @@ except Exception:
     unidecode = None
 
 # Global Variables
-dirs_json = "/app/calibre-web-automated/dirs.json"
-change_logs_dir = "/app/calibre-web-automated/metadata_change_logs"
-metadata_temp_dir = "/app/calibre-web-automated/metadata_temp"
+change_logs_dir = GET_CHANGE_LOGS_DIR()
+metadata_temp_dir = GET_METADATA_TEMP_DIR()
 
 
 # Creates a lock file unless one already exists meaning an instance of the script is
@@ -103,7 +104,7 @@ class Book:
 
         self.calibre_env = os.environ.copy()
         # Enables Calibre plugins to be used from /config/plugins
-        self.calibre_env["HOME"] = "/config"
+        self.calibre_env["HOME"] = GET_CONFIG_PATH()
         # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
         self.split_library = self.get_split_library()
         if self.split_library:
@@ -119,7 +120,7 @@ class Book:
 
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-        con = sqlite3.connect("/config/app.db", timeout=60)
+        con = sqlite3.connect(GET_APP_DB(), timeout=60)
         cur = con.cursor()
         split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -136,10 +137,7 @@ class Book:
             return None
 
     def get_calibre_library(self) -> str:
-        """Gets Calibre-Library location from dirs.json"""
-        with open(dirs_json, 'r') as f:
-            dirs = json.load(f)
-        return dirs['calibre_library_dir'] # Returns without / on the end
+        return GET_LIBRARY_PATH()
 
 
     def get_time(self) -> str:
@@ -229,7 +227,7 @@ class Enforcer:
 
         self.calibre_env = os.environ.copy()
         # Enables Calibre plugins to be used from /config/plugins
-        self.calibre_env["HOME"] = "/config"
+        self.calibre_env["HOME"] = GET_CONFIG_PATH()
         # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
         self.split_library = self.get_split_library()
         if self.split_library:
@@ -238,7 +236,7 @@ class Enforcer:
 
         # Read Calibre-Web setting: config_unicode_filename (True -> transliterate non-English in filenames)
         try:
-            with sqlite3.connect("/config/app.db", timeout=60) as con:
+            with sqlite3.connect(GET_APP_DB(), timeout=60) as con:
                 cur = con.cursor()
                 self.unicode_filename = bool(cur.execute('SELECT config_unicode_filename FROM settings;').fetchone()[0])
         except Exception:
@@ -257,7 +255,7 @@ class Enforcer:
 
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-        con = sqlite3.connect("/config/app.db", timeout=60)
+        con = sqlite3.connect(GET_APP_DB(), timeout=60)
         cur = con.cursor()
         split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -275,9 +273,7 @@ class Enforcer:
 
 
     def get_calibre_library(self) -> str:
-        with open(dirs_json, 'r') as f:
-            dirs = json.load(f)
-        return dirs['calibre_library_dir'] # Returns without / on the end
+        return GET_LIBRARY_PATH()
 
 
     def _recalculate_checksum_after_modification(self, book_id: str, file_format: str, file_path: str) -> None:

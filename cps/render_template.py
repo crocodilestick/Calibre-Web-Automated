@@ -20,9 +20,8 @@ from .ub import User
 from datetime import datetime
 import os.path
 
-import sys
-sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-from cwa_db import CWA_DB
+from .cwa_db import CWA_DB
+from .cwa_paths import GET_CWA_UPDATE_NOTICE, GET_THEME_MIGRATION_NOTICE, GET_APP_ROOT
 
 
 log = logger.create()
@@ -132,12 +131,12 @@ def cwa_update_available() -> tuple[bool, str, str]:
 # Gets the date the last cwa update notification was displayed
 def get_cwa_last_notification() -> str:
     current_date = datetime.now().strftime("%Y-%m-%d")
-    if not os.path.isfile('/app/cwa_update_notice'):
-        with open('/app/cwa_update_notice', 'w') as f:
+    if not os.path.isfile(GET_CWA_UPDATE_NOTICE()):
+        with open(GET_CWA_UPDATE_NOTICE(), 'w') as f:
             f.write(current_date)
         return "0001-01-01"
     else:
-        with open('/app/cwa_update_notice', 'r') as f:
+        with open(GET_CWA_UPDATE_NOTICE(), 'r') as f:
             last_notification = f.read()
     return last_notification
 
@@ -158,7 +157,7 @@ def cwa_update_notification() -> None:
             flash(_(message), category="cwa_update")
             print(f"[cwa-update-notification-service] {message}", flush=True)
 
-        with open('/app/cwa_update_notice', 'w') as f:
+        with open(GET_CWA_UPDATE_NOTICE(), 'w') as f:
             f.write(current_date)
         return
     else:
@@ -166,7 +165,7 @@ def cwa_update_notification() -> None:
 
 # Notify users once about theme migration to caliBlur
 def theme_migration_notification() -> None:
-    notice_file = '/app/theme_migration_notice'
+    notice_file = GET_THEME_MIGRATION_NOTICE()
     current_date = datetime.now().strftime("%Y-%m-%d")
     
     # Check if notification already shown today
@@ -201,7 +200,7 @@ def translations_missing_notification() -> None:
             return
         po_path = f"cps/translations/{lang}/LC_MESSAGES/messages.po"
         current_date = datetime.now().strftime("%Y-%m-%d")
-        notice_file = f"/app/cwa_translation_notice_{lang}"
+        notice_file = os.path.join(GET_APP_ROOT(), f"cwa_translation_notice_{lang}")
         missing_count = 0
         if os.path.isfile(po_path):
             try:

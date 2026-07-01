@@ -10,6 +10,7 @@ import os
 from collections import namedtuple
 
 from flask_babel import gettext as _
+from .cwa_paths import GET_CWA_RELEASE_FILE, GET_CWA_STABLE_RELEASE_FILE
 
 # APP_MODE - production, development, or test
 APP_MODE            = os.environ.get('APP_MODE', 'production')
@@ -176,8 +177,8 @@ def _read_text(path: str, default: str = "") -> str:
 
 # Versions are resolved at container startup by cwa-init and provided via env and persisted files.
 # Avoid any network or slow I/O during module import.
-INSTALLED_VERSION = os.environ.get("CWA_INSTALLED_VERSION") or _read_text("/app/CWA_RELEASE", "v0.0.0")
-STABLE_VERSION = os.environ.get("CWA_STABLE_VERSION") or _read_text("/app/CWA_STABLE_RELEASE", "v0.0.0")
+INSTALLED_VERSION = os.environ.get("CWA_INSTALLED_VERSION") or _read_text(GET_CWA_RELEASE_FILE(), "v0.0.0")
+STABLE_VERSION = os.environ.get("CWA_STABLE_VERSION") or _read_text(GET_CWA_STABLE_RELEASE_FILE(), "v0.0.0")
 
 USER_AGENT = f"Calibre-Web-Automated/{INSTALLED_VERSION}"
 

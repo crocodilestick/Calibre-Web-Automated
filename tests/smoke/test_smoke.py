@@ -16,7 +16,8 @@ Run with: pytest tests/smoke/ -v
 import pytest
 import os
 import sys
-
+from cps.cwa_db import CWA_DB
+from cps.cwa_paths import GET_CONFIG_PATH
 
 @pytest.mark.smoke
 class TestBasicFunctionality:
@@ -29,7 +30,7 @@ class TestBasicFunctionality:
     def test_required_directories_exist(self):
         """Verify critical directories exist."""
         # /config always should exist (we're running from workspace)
-        assert os.path.exists('/config'), "Missing critical directory: /config"
+        assert os.path.exists(GET_CONFIG_PATH()), f"Missing critical directory: {GET_CONFIG_PATH()}"
         
         # These are container-specific paths - skip if not in container
         container_dirs = [
@@ -54,14 +55,8 @@ class TestBasicFunctionality:
         """Verify CWA database module can be imported."""
         # Try container path first, fall back to workspace
         scripts_path = '/app/calibre-web-automated/scripts/'
-        if not os.path.exists(scripts_path):
-            # Running outside container - use workspace path
-            workspace_root = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
-            scripts_path = os.path.join(workspace_root, 'scripts')
-        
-        sys.path.insert(0, scripts_path)
         try:
-            from cwa_db import CWA_DB
+            from cps.cwa_db import CWA_DB
             assert CWA_DB is not None
         except ImportError as e:
             pytest.fail(f"Failed to import CWA_DB: {e}")
@@ -181,7 +176,6 @@ class TestLockMechanism:
     @pytest.mark.timeout(10)
     def test_lock_can_be_acquired(self, tmp_path, monkeypatch):
         """Verify lock can be acquired successfully."""
-        sys.path.insert(0, '/app/calibre-web-automated/scripts/')
         
         # Override temp directory for test isolation
         import tempfile
@@ -200,7 +194,6 @@ class TestLockMechanism:
     @pytest.mark.timeout(10)
     def test_lock_prevents_concurrent_access(self, tmp_path, monkeypatch):
         """Verify second process cannot acquire lock while held."""
-        sys.path.insert(0, '/app/calibre-web-automated/scripts/')
         
         import tempfile
         monkeypatch.setattr(tempfile, 'gettempdir', lambda: str(tmp_path))

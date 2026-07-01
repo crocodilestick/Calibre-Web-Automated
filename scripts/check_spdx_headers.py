@@ -30,6 +30,7 @@ import pathlib
 import subprocess
 import sys
 from typing import List, Sequence
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'cps'))
 
 REQUIRED_SUBSTRINGS = [
     "Calibre-Web Automated",  # attribution line

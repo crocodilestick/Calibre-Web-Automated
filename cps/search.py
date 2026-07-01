@@ -35,7 +35,7 @@ def simple_search():
         # Track search activity
         if current_user.is_authenticated:
             try:
-                from scripts.cwa_db import CWA_DB
+                from .cwa_db import CWA_DB
                 cwa_db = CWA_DB()
                 cwa_db.log_activity(
                     user_id=int(current_user.id),

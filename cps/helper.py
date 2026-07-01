@@ -53,9 +53,7 @@ from .subproc_wrapper import process_wait
 # Track books with pending thumbnail generation to prevent duplicate tasks
 _pending_thumbnail_books = set()
 
-import sys
-sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-from cwa_db import CWA_DB
+from .cwa_db import CWA_DB
 from .services.worker import WorkerThread
 from .tasks.mail import TaskEmail
 from .tasks.thumbnail import TaskClearCoverThumbnailCache, TaskGenerateCoverThumbnails

@@ -285,13 +285,21 @@ RUN \
 # Add unrar from unrar stage
 COPY --from=unrar /usr/bin/unrar-ubuntu /usr/bin/unrar
 
-# Set calibre environment variable
-ENV CALIBRE_CONFIG_DIR=/config/.config/calibre
+# Path configuration — override these env vars to relocate CWA data directories
+ENV CWA_APP_PATH=/app/calibre-web-automated
+ENV CWA_CONFIG_PATH=/config
+ENV CWA_LIBRARY_PATH=/calibre-library
+ENV CWA_INGEST_PATH=/cwa-book-ingest
+
+ENV CALIBRE_CONFIG_DIR=${CWA_CONFIG_PATH}/.config/calibre
+ENV PYTHONPATH=${CWA_APP_PATH}/cps
 
 # Ports and volumes
-WORKDIR /config
+WORKDIR ${CWA_CONFIG_PATH}
 # The default port CWA listens on. Can be overridden with the CWA_PORT_OVERRIDE environment variable.
 EXPOSE 8083
+# VOLUME paths are baked into the image and cannot use env var substitution.
+# These defaults match CWA_CONFIG_PATH, CWA_INGEST_PATH, and CWA_LIBRARY_PATH above.
 VOLUME /config
 VOLUME /cwa-book-ingest
 VOLUME /calibre-library

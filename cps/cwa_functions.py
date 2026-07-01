@@ -31,14 +31,16 @@ from werkzeug.utils import secure_filename
 
 from .web import cwa_get_num_books_in_library
 
-import sys
-sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-from cwa_db import CWA_DB
+from .cwa_db import CWA_DB
 from .services.background_scheduler import BackgroundScheduler, DateTrigger
 from .services.worker import WorkerThread
 from .tasks.database import TaskReconnectDatabase
 from .tasks.auto_send import TaskAutoSend
 from .tasks.ops import TaskConvertLibraryRun, TaskEpubFixerRun
+
+from .cwa_paths import (GET_CONFIG_PATH, GET_CONVERT_LOG, GET_EPUB_FIXER_LOG, GET_LOG_ARCHIVE, GET_USER_PROFILES,
+                         GET_INGEST_PATH, GET_TMP_CONVERSION_DIR, GET_INGEST_STATUS, GET_INGEST_RETRY_QUEUE,
+                         GET_INGEST_SCRIPT, GET_CONVERT_SCRIPT, GET_EPUB_FIXER_SCRIPT, GET_CHECK_SERVICES_SCRIPT)
 
 switch_theme = Blueprint('switch_theme', __name__)
 library_refresh = Blueprint('library_refresh', __name__)
@@ -56,8 +58,6 @@ log = logger.create()
 ##——————————————————————————————GLOBAL VARIABLES——————————————————————————————##
 
 # Folder where the log files are stored
-LOG_ARCHIVE = "/config/log_archive"
-DIRS_JSON = "/app/calibre-web-automated/dirs.json"
 
 # Debounced duplicate scan timer (web process)
 _duplicate_scan_timer = None
@@ -184,14 +184,12 @@ def cwa_switch_theme():
 ##————————————————————————————————————————————————————————————————————————————##
 
 def get_ingest_dir():
-    with open(DIRS_JSON, 'r') as f:
-        dirs = json.load(f)
-        return dirs['ingest_folder']
+    return GET_INGEST_PATH()
 
 def get_ingest_status():
     """Read the current ingest service status"""
     try:
-        with open('/config/cwa_ingest_status', 'r') as f:
+        with open(GET_INGEST_STATUS(), 'r') as f:
             status_line = f.read().strip()
             if ':' in status_line:
                 parts = status_line.split(':')
@@ -209,7 +207,7 @@ def get_ingest_status():
 def get_ingest_queue_size():
     """Get the number of files in the retry queue"""
     try:
-        with open('/config/cwa_ingest_retry_queue', 'r') as f:
+        with open(GET_INGEST_RETRY_QUEUE(), 'r') as f:
             return len([line for line in f if line.strip()])
     except (FileNotFoundError, IOError):
         return 0
@@ -217,7 +215,7 @@ def get_ingest_queue_size():
 def refresh_library(app):
     with app.app_context():  # Create app context for session
         ingest_dir = get_ingest_dir()
-        result = subprocess.run(['python3', '/app/calibre-web-automated/scripts/ingest_processor.py', ingest_dir])
+        result = subprocess.run(['python3', GET_INGEST_SCRIPT(), ingest_dir])
         return_code = result.returncode
 
         # Add empty list for messages in app context if a list doesn't already exist
@@ -307,7 +305,7 @@ def cwa_internal_schedule_auto_send():
 
         # Persist scheduled intent in cwa.db
         try:
-            from cwa_db import CWA_DB
+            from .cwa_db import CWA_DB
             db = CWA_DB()
             row_id = db.scheduled_add_autosend(book_id, user_id, run_at_utc_iso, username, title)
         except Exception as e:
@@ -321,7 +319,7 @@ def cwa_internal_schedule_auto_send():
             should_enqueue = True
             try:
                 if row_id is not None:
-                    from cwa_db import CWA_DB
+                    from .cwa_db import CWA_DB
                     changed = CWA_DB().scheduled_mark_dispatched(int(row_id))
                     # Only enqueue if state actually moved to dispatched (i.e., was not cancelled)
                     should_enqueue = bool(changed)
@@ -340,7 +338,7 @@ def cwa_internal_schedule_auto_send():
         # Persist scheduler job id for cancellation support
         try:
             if row_id is not None and job is not None:
-                from cwa_db import CWA_DB
+                from .cwa_db import CWA_DB
                 CWA_DB().scheduled_update_job_id(int(row_id), str(job.id))
         except Exception as e:
             log.error(f"Failed to store scheduler job id for auto-send: {e}")
@@ -566,7 +564,7 @@ def cwa_scheduled_cancel():
         return jsonify({"error": "Invalid id"}), 400
 
     try:
-        from cwa_db import CWA_DB
+        from .cwa_db import CWA_DB
         db = CWA_DB()
         row = db.scheduled_get_by_id(sid)
         if not row:
@@ -849,7 +847,7 @@ def set_cwa_settings():
                     flash(_("Invalid cron expression for duplicate scans. Changes were not saved."), category="error")
 
             # DEBUGGING
-            # with open("/config/post_request" ,"w") as f:
+            # with open(os.path.join(GET_CONFIG_PATH(), "post_request") ,"w") as f:
             #     for key in result.keys():
             #         if key == "auto_convert_ignored_formats" or key == "auto_ingest_ignored_formats":
             #             f.write(f"{key} - {', '.join(result[key])}\n")
@@ -1535,7 +1533,7 @@ def debug_stats_data():
 @admin_required
 def cwa_scheduled_upcoming():
     try:
-        from cwa_db import CWA_DB
+        from .cwa_db import CWA_DB
         db = CWA_DB()
         rows = db.scheduled_get_upcoming_autosend(limit=100)
         return jsonify({"items": rows}), 200
@@ -1624,7 +1622,7 @@ def show_full_epub_fixer_with_paths_fixes():
 @login_required_if_no_ano
 @admin_required
 def cwa_flash_status():
-    result = subprocess.run(['/app/calibre-web-automated/scripts/check-cwa-services.sh'])
+    result = subprocess.run([GET_CHECK_SERVICES_SCRIPT()])
     services_status = result.returncode
 
     match services_status:
@@ -1654,10 +1652,10 @@ def download_log(log_filename):
         safe_filename = secure_filename(log_filename)
         
         # Join the logs directory with the filename and get the absolute path
-        file_path = os.path.abspath(os.path.join(LOG_ARCHIVE, safe_filename))
+        file_path = os.path.abspath(os.path.join(GET_LOG_ARCHIVE(), safe_filename))
         
         # Check if the file path is within the allowed directory
-        if not file_path.startswith(os.path.abspath(LOG_ARCHIVE)):
+        if not file_path.startswith(os.path.abspath(GET_LOG_ARCHIVE())):
             abort(403)  # Forbidden if it's not within the logs directory
 
         # Check if the file exists
@@ -1665,7 +1663,7 @@ def download_log(log_filename):
             abort(404)  # Return a 404 if the file does not exist
 
         # Send the file as an attachment (to trigger a download)
-        return send_from_directory(LOG_ARCHIVE, safe_filename, as_attachment=True)
+        return send_from_directory(GET_LOG_ARCHIVE(), safe_filename, as_attachment=True)
     
     except Exception as e:
         # Handle any other errors
@@ -1678,10 +1676,10 @@ def read_log(log_filename):
         safe_filename = secure_filename(log_filename)
         
         # Join the logs directory with the filename and get the absolute path
-        file_path = os.path.abspath(os.path.join(LOG_ARCHIVE, safe_filename))
+        file_path = os.path.abspath(os.path.join(GET_LOG_ARCHIVE(), safe_filename))
         
         # Check if the file path is within the allowed directory
-        if not file_path.startswith(os.path.abspath(LOG_ARCHIVE)):
+        if not file_path.startswith(os.path.abspath(GET_LOG_ARCHIVE())):
             abort(403)  # Forbidden if it's not within the logs directory
 
         # Check if the file exists
@@ -1720,14 +1718,14 @@ def extract_progress(log_content):
 def archive_run_log(log_path):
     try:
         log_name = Path(log_path).stem + f"-{datetime.now().strftime('%Y-%m-%d-%H%M%S')}.log"
-        shutil.copy2(log_path, f"{LOG_ARCHIVE}/{log_name}")
-        print(f"[cwa-functions] Log '{log_path}' has been successfully archived as {log_name} in '{LOG_ARCHIVE}'")
+        shutil.copy2(log_path, f"{GET_LOG_ARCHIVE()}/{log_name}")
+        print(f"[cwa-functions] Log '{log_path}' has been successfully archived as {log_name} in '{GET_LOG_ARCHIVE()}'")
     except Exception as e:
         print(f"[cwa-functions] The following error occurred when trying to back up {log_path} at {datetime.now()}:\n{e}")
 
 def get_logs_from_archive(log_name) -> dict[str,str]:
     logs = {}
-    logs_in_archive = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(LOG_ARCHIVE) for f in filenames]
+    logs_in_archive = [os.path.join(dirpath,f) for (dirpath, dirnames, filenames) in os.walk(GET_LOG_ARCHIVE()) for f in filenames]
     for log in logs_in_archive:
         if log_name in log:
             logs |= {os.path.basename(log):log}
@@ -1746,16 +1744,11 @@ def get_log_dates(logs) -> dict[str,str]:
 ##———————————————————END OF SHARED VARIABLES & FUNCTIONS———————————————————————##
 
 def convert_library_start(queue):
-    cl_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert_library.py'])
+    cl_process = subprocess.Popen(['python3', GET_CONVERT_SCRIPT()])
     queue.put(cl_process)
 
 def get_tmp_conversion_dir() -> str:
-    dirs = {}
-    with open(DIRS_JSON, 'r') as f:
-        dirs: dict[str, str] = json.load(f)
-    tmp_conversion_dir = f"{dirs['tmp_conversion_dir']}/"
-
-    return tmp_conversion_dir
+    return f"{GET_TMP_CONVERSION_DIR()}/"
 
 def empty_tmp_con_dir(tmp_conversion_dir) -> None:
     try:
@@ -1768,7 +1761,7 @@ def empty_tmp_con_dir(tmp_conversion_dir) -> None:
         print(f"[cwa-functions]: An error occurred while emptying {tmp_conversion_dir}. See the following error: {e}")
 
 def is_convert_library_finished() -> bool:
-    log_path = "/config/convert-library.log"
+    log_path = GET_CONVERT_LOG()
     with open(log_path, 'r') as log:
         if "CWA Convert Library Service - Run Ended: " in log.read():
             return True
@@ -1777,7 +1770,7 @@ def is_convert_library_finished() -> bool:
 
 def kill_convert_library(queue):
     trigger_file = Path(tempfile.gettempdir() + "/.kill_convert_library_trigger")
-    log_path = "/config/convert-library.log"
+    log_path = GET_CONVERT_LOG()
     while True:
         sleep(0.05) # Required to prevent high cpu usage
         if trigger_file.exists():
@@ -1840,16 +1833,10 @@ def show_convert_library_logs():
 @convert_library.route('/cwa-convert-library/download-current-log/<log_filename>')
 def download_current_log(log_filename):
     log_filename = "convert-library.log"
-    LOG_DIR = "/config"
     try:
-        # Secure the filename to prevent directory traversal (e.g., '..')
         safe_filename = secure_filename(log_filename)
-        
-        # Join the logs directory with the filename and get the absolute path
-        file_path = os.path.abspath(os.path.join(LOG_DIR, safe_filename))
-        
-        # Check if the file path is within the allowed directory
-        if not file_path.startswith(os.path.abspath(LOG_DIR)):
+        file_path = os.path.abspath(os.path.join(GET_CONFIG_PATH(), safe_filename))
+        if not file_path.startswith(os.path.abspath(GET_CONFIG_PATH())):
             abort(403)  # Forbidden if it's not within the logs directory
 
         # Check if the file exists
@@ -1857,7 +1844,7 @@ def download_current_log(log_filename):
             abort(404)  # Return a 404 if the file does not exist
 
         # Send the file as an attachment (to trigger a download)
-        return send_from_directory(LOG_DIR, safe_filename, as_attachment=True)
+        return send_from_directory(GET_CONFIG_PATH(), safe_filename, as_attachment=True)
     
     except Exception as e:
         # Handle any other errors
@@ -1866,7 +1853,7 @@ def download_current_log(log_filename):
 @convert_library.route('/cwa-convert-library-start', methods=["GET"])
 def start_conversion():
     # Wipe conversion log from previous runs
-    open('/config/convert-library.log', 'w').close()
+    open(GET_CONVERT_LOG(), 'w').close()
     # Remove any left over kill file
     try:
         os.remove(tempfile.gettempdir() + "/.kill_convert_library_trigger")
@@ -1890,7 +1877,7 @@ def cancel_convert_library():
 
 @convert_library.route('/convert-library-status', methods=["GET"])
 def get_status():
-    with open("/config/convert-library.log", 'r') as f:
+    with open(GET_CONVERT_LOG(), 'r') as f:
         status = f.read()
     progress = extract_progress(status)
     statusList = {'status':status,
@@ -1906,13 +1893,13 @@ def get_status():
 
 def epub_fixer_start(queue, input_file: str | None = None):
     if input_file:
-        ef_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/kindle_epub_fixer.py', '--input_file', input_file])
+        ef_process = subprocess.Popen(['python3', GET_EPUB_FIXER_SCRIPT(), '--input_file', input_file])
     else:
-        ef_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/kindle_epub_fixer.py', '--all'])
+        ef_process = subprocess.Popen(['python3', GET_EPUB_FIXER_SCRIPT(), '--all'])
     queue.put(ef_process)
 
 def is_epub_fixer_finished() -> bool:
-    log_path = "/config/epub-fixer.log"
+    log_path = GET_EPUB_FIXER_LOG()
     with open(log_path, 'r') as log:
         if "CWA Kindle EPUB Fixer Service - Run Ended: " in log.read():
             return True
@@ -1921,7 +1908,7 @@ def is_epub_fixer_finished() -> bool:
 
 def kill_epub_fixer(queue):
     trigger_file = Path(tempfile.gettempdir() + "/.kill_epub_fixer_trigger")
-    log_path = "/config/epub-fixer.log"
+    log_path = GET_EPUB_FIXER_LOG()
     while True:
         sleep(0.05) # Required to prevent high cpu usage
         if trigger_file.exists():
@@ -1980,16 +1967,12 @@ def show_epub_fixer_logs():
 @epub_fixer.route('/cwa-epub-fixer/download-current-log/<log_filename>')
 def download_current_log(log_filename):
     log_filename = "epub-fixer.log"
-    LOG_DIR = "/config"
     try:
-        # Secure the filename to prevent directory traversal (e.g., '..')
         safe_filename = secure_filename(log_filename)
-        
-        # Join the logs directory with the filename and get the absolute path
-        file_path = os.path.abspath(os.path.join(LOG_DIR, safe_filename))
-        
+        file_path = os.path.abspath(os.path.join(GET_CONFIG_PATH(), safe_filename))
+
         # Check if the file path is within the allowed directory
-        if not file_path.startswith(os.path.abspath(LOG_DIR)):
+        if not file_path.startswith(os.path.abspath(GET_CONFIG_PATH())):
             abort(403)  # Forbidden if it's not within the logs directory
 
         # Check if the file exists
@@ -1997,7 +1980,7 @@ def download_current_log(log_filename):
             abort(404)  # Return a 404 if the file does not exist
 
         # Send the file as an attachment (to trigger a download)
-        return send_from_directory(LOG_DIR, safe_filename, as_attachment=True)
+        return send_from_directory(GET_CONFIG_PATH(), safe_filename, as_attachment=True)
     
     except Exception as e:
         # Handle any other errors
@@ -2006,7 +1989,7 @@ def download_current_log(log_filename):
 @epub_fixer.route('/cwa-epub-fixer-start', methods=["GET"])
 def start_epub_fixer():
     # Wipe conversion log from previous runs
-    open('/config/epub-fixer.log', 'w').close()
+    open(GET_EPUB_FIXER_LOG(), 'w').close()
     # Remove any left over kill file
     try:
         os.remove(tempfile.gettempdir() + "/.kill_epub_fixer_trigger")
@@ -2054,7 +2037,7 @@ def run_epub_fixer_for_book():
             return jsonify({"success": False, "error": _("EPUB file not found on disk.")}), 404
 
         # Wipe conversion log from previous runs
-        open('/config/epub-fixer.log', 'w').close()
+        open(GET_EPUB_FIXER_LOG(), 'w').close()
         # Remove any left over kill file
         try:
             os.remove(tempfile.gettempdir() + "/.kill_epub_fixer_trigger")
@@ -2076,18 +2059,14 @@ def cancel_epub_fixer():
     # Create kill trigger file
     open(tempfile.gettempdir() + "/.kill_epub_fixer_trigger", 'w').close()
     try:
-        subprocess.run([
-            "pkill",
-            "-f",
-            "/app/calibre-web-automated/scripts/kindle_epub_fixer.py"
-        ], check=False)
+        subprocess.run(["pkill", "-f", GET_EPUB_FIXER_SCRIPT()], check=False)
     except Exception as e:
         log.error(f"Failed to terminate epub fixer process: {e}")
     return redirect(url_for('epub_fixer.show_epub_fixer_page'))
 
 @epub_fixer.route('/epub-fixer-status', methods=["GET"])
 def get_status():
-    with open("/config/epub-fixer.log", 'r') as f:
+    with open(GET_EPUB_FIXER_LOG(), 'r') as f:
         status = f.read()
     progress = extract_progress(status)
     statusList = {'status':status,
@@ -2101,7 +2080,7 @@ def get_status():
 @user_login_required
 def user_profiles_json():
     try:
-        json_path = "/config/user_profiles.json"
+        json_path = GET_USER_PROFILES()
         with open(json_path, "r") as file:
             data = json.load(file)
         return jsonify(data)
@@ -2178,7 +2157,7 @@ def set_profile_picture():
 
         try:
             # Path to the JSON file
-            json_path = "/config/user_profiles.json"
+            json_path = GET_USER_PROFILES()
             log.debug(f"Opening JSON file at: {json_path}")
 
             # Read the existing data from the JSON file and update it

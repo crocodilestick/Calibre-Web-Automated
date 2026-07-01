@@ -20,12 +20,14 @@ import sqlite3
 
 import pwd
 import grp
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'cps'))
 
 from cwa_db import CWA_DB
 from kindle_epub_fixer import EPUBFixer
+from cwa_paths import GET_CONFIG_PATH, GET_APP_DB, GET_CONVERT_LOG, GET_PROCESSED_BOOKS, GET_INGEST_PATH, GET_LIBRARY_PATH, GET_TMP_CONVERSION_DIR
 
 ### Global Variables
-convert_library_log_file = "/config/convert-library.log"
+convert_library_log_file = GET_CONVERT_LOG()
 
 # Define the logger
 logger = logging.getLogger(__name__)
@@ -86,7 +88,7 @@ atexit.register(removeLock)
 
 backup_destinations = {
         entry.name: entry.path
-        for entry in os.scandir("/config/processed_books")
+        for entry in os.scandir(GET_PROCESSED_BOOKS())
         if entry.is_dir()
     }
 
@@ -126,11 +128,11 @@ class LibraryConverter:
         self.hierarchy_of_success = {'epub', 'lit', 'mobi', 'azw', 'azw3', 'fb2', 'fbz', 'azw4', 'prc', 'odt', 'lrf', 'pdb',  'cbz', 'pml', 'rb', 'cbr', 'cb7', 'cbc', 'chm', 'djvu', 'snb', 'tcr', 'pdf', 'docx', 'rtf', 'html', 'htmlz', 'txtz', 'txt', 'kfx', 'kfx-zip'}
 
         self.current_book = 1
-        self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs('/app/calibre-web-automated/dirs.json')
+        self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs()
 
         self.calibre_env = os.environ.copy()
         # Enables Calibre plugins to be used from /config/plugins
-        self.calibre_env["HOME"] = "/config"
+        self.calibre_env["HOME"] = GET_CONFIG_PATH()
         # Gets split library info from app.db and sets library dir to the split dir if split library is enabled
         self.split_library = self.get_split_library()
         if self.split_library:
@@ -141,7 +143,7 @@ class LibraryConverter:
 
     def get_split_library(self) -> dict[str, str] | None:
         """Checks whether or not the user has split library enabled. Returns None if they don't and the path of the Split Library location if True."""
-        con = sqlite3.connect("/config/app.db", timeout=30)
+        con = sqlite3.connect(GET_APP_DB(), timeout=30)
         cur = con.cursor()
         split_library = cur.execute('SELECT config_calibre_split FROM settings;').fetchone()[0]
 
@@ -158,16 +160,8 @@ class LibraryConverter:
             return None
 
 
-    def get_dirs(self, dirs_json_path: str) -> tuple[str, str, str]:
-        dirs = {}
-        with open(dirs_json_path, 'r') as f:
-            dirs: dict[str, str] = json.load(f)
-
-        ingest_folder = f"{dirs['ingest_folder']}/"
-        library_dir = f"{dirs['calibre_library_dir']}/"
-        tmp_conversion_dir = f"{dirs['tmp_conversion_dir']}/"
-
-        return ingest_folder, library_dir, tmp_conversion_dir
+    def get_dirs(self) -> tuple[str, str, str]:
+        return f"{GET_INGEST_PATH()}/", f"{GET_LIBRARY_PATH()}/", f"{GET_TMP_CONVERSION_DIR()}/"
 
     def get_library_book_formats(self) -> dict[int, list[str]]:
         """Returns a dictionary of formats for all books in the library.
@@ -450,7 +444,7 @@ class LibraryConverter:
             except subprocess.CalledProcessError as e:
                 print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Import of {os.path.basename(target_filepath)} was not successfully completed. Converted file moved to /config/processed_books/failed/{os.path.basename(target_filepath)}. See the following error:\n{e}")
                 try:
-                    output_path = f"/config/processed_books/failed/{os.path.basename(target_filepath)}"
+                    output_path =  os.path.join(GET_PROCESSED_BOOKS(), f"failed/{os.path.basename(target_filepath)}")
                     shutil.move(target_filepath, output_path)
                 except Exception as e:
                     print_and_log(f"[convert-library]: ERROR - The following error occurred when trying to copy {file} to {output_path}:\n{e}")

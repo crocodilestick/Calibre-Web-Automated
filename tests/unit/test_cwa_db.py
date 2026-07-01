@@ -11,14 +11,7 @@ These tests verify the CWA_DB class functions correctly in isolation.
 """
 
 import pytest
-import sys
-from pathlib import Path
-
-# Add scripts directory to path (works in both dev container and CI)
-scripts_dir = Path(__file__).parent.parent.parent / "scripts"
-sys.path.insert(0, str(scripts_dir))
-
-from cwa_db import CWA_DB
+from cps.cwa_db import CWA_DB
 
 
 @pytest.mark.unit
@@ -334,11 +327,9 @@ class TestCWADBErrorHandling:
     """Test database error handling and edge cases."""
     
     def test_handles_missing_database_gracefully(self, tmp_path, monkeypatch):
-        """Verify graceful handling when database doesn't exist."""
-        # Point to non-existent path
-        monkeypatch.setenv('CWA_DB_PATH', str(tmp_path / "nonexistent"))
-        
-        # This should create the database, not crash
+        """Verify graceful handling when database doesn't exist yet."""
+        monkeypatch.setenv('CWA_CONFIG_PATH', str(tmp_path))
+
         db = CWA_DB(verbose=False)
         assert db.con is not None
     

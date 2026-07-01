@@ -9,9 +9,7 @@ import json
 
 from cps import logger, db
 from cps.search_metadata import cl as metadata_providers
-import sys
-sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-from cwa_db import CWA_DB
+from .cwa_db import CWA_DB
 
 log = logger.create()
 

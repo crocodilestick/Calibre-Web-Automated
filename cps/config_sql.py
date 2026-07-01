@@ -9,6 +9,8 @@ import os
 import sys
 import json
 
+from .cwa_paths import GET_METADATA_DB, GET_LIBRARY_PATH
+
 from sqlalchemy import Column, String, Integer, SmallInteger, Boolean, BLOB, JSON
 from sqlalchemy.exc import OperationalError
 from sqlalchemy.sql.expression import text
@@ -202,9 +204,9 @@ class ConfigSQL(object):
 
         # Fallback auto-detect: if calibre library not configured but default metadata.db exists, set it
         if (not self.config_calibre_dir or not os.path.isfile(os.path.join(self.config_calibre_dir, 'metadata.db'))):
-            fallback_db = '/calibre-library/metadata.db'
+            fallback_db = GET_METADATA_DB()
             if os.path.isfile(fallback_db):
-                detected_dir = os.path.dirname(fallback_db)
+                detected_dir = GET_LIBRARY_PATH()
                 if not self.config_calibre_dir:
                     log.info("[autoconfig] Detected calibre library at %s (fallback)", detected_dir)
                 else:

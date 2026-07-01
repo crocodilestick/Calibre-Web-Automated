@@ -15,10 +15,7 @@ from cps.duplicates import find_duplicate_books_python, find_duplicate_candidate
 from cps.services.worker import CalibreTask, STAT_CANCELLED, STAT_ENDED
 from cps.ub import init_db_thread
 
-# Access CWA DB (scripts path)
-if '/app/calibre-web-automated/scripts/' not in sys.path:
-    sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-from cwa_db import CWA_DB
+from ..cwa_db import CWA_DB
 
 log = logger.create()
 

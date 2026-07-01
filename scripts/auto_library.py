@@ -4,13 +4,15 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
-import json
 import os
 import shutil
 import sqlite3
 import sys
 import subprocess
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'cps'))
 
+from cps.cwa_paths import (GET_CONFIG_PATH, GET_APP_DB, GET_LIBRARY_PATH,
+                           GET_EMPTY_LIBRARY_APP_DB, GET_EMPTY_LIBRARY_METADATA_DB)
 
 def main():
     auto_lib = AutoLibrary()
@@ -27,13 +29,12 @@ def main():
 
 class AutoLibrary:
     def __init__(self):
-        self.config_dir = "/config"
-        self.library_dir = "/calibre-library"
-        self.dirs_path = "/app/calibre-web-automated/dirs.json"
-        self.app_db = "/config/app.db"
+        self.config_dir = GET_CONFIG_PATH()
+        self.library_dir = GET_LIBRARY_PATH()
+        self.app_db = GET_APP_DB()
 
-        self.empty_appdb = "/app/calibre-web-automated/empty_library/app.db"
-        self.empty_metadb = "/app/calibre-web-automated/empty_library/metadata.db"
+        self.empty_appdb = GET_EMPTY_LIBRARY_APP_DB()
+        self.empty_metadb = GET_EMPTY_LIBRARY_METADATA_DB()
 
         self.metadb_path = None
         self.lib_path = None
@@ -98,10 +99,8 @@ class AutoLibrary:
         else:
             return False
 
-    # Sets the library's location in both dirs.json and the CW db
     def set_library_location(self):
         if self.metadb_path is not None and os.path.exists(self.metadb_path):
-            self.update_dirs_json()
             self.update_calibre_web_db()
             return
         else:
@@ -124,22 +123,6 @@ class AutoLibrary:
                 sys.exit(1)
         else:
             print(f"[cwa-auto-library]: ERROR: app.db in {self.app_db} not found")
-            sys.exit(1)
-
-    # Update the dirs.json file with the new library location (lib_path))
-    def update_dirs_json(self):
-        """Updates the location of the calibre library stored in dirs.json with the found library"""
-        try:
-            print("[cwa-auto-library] Updating dirs.json with new library location...")
-            with open(self.dirs_path) as f:
-                dirs = json.load(f)
-            dirs["calibre_library_dir"] = self.lib_path
-            with open(self.dirs_path, 'w') as f:
-                json.dump(dirs, f, indent=4)
-            return
-        except Exception as e:
-            print("[cwa-auto-library]: ERROR: Could not update dirs.json")
-            print(e)
             sys.exit(1)
 
     # Uses the empty metadata.db in /app/calibre-web-automated to create a new library

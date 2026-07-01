@@ -22,7 +22,6 @@ from cps.services.Metadata import Metadata
 from . import constants, logger, ub, web_server
 from .usermanagement import user_login_required
 
-
 meta = Blueprint("metadata", __name__)
 
 log = logger.create()
@@ -74,8 +73,7 @@ cl.sort(key=lambda x: x.__class__.__name__)
 def _get_global_provider_enabled_map() -> dict:
     try:
         # Import here to avoid circular import issues and keep startup fast
-        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-        from cwa_db import CWA_DB  # type: ignore
+        from .cwa_db import CWA_DB  # type: ignore
         cwa_db = CWA_DB()
         settings = cwa_db.get_cwa_settings()
         

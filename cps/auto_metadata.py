@@ -44,7 +44,7 @@ def fetch_metadata_for_book(book_title: str, book_authors: str = "", user_id: Op
     """
     try:
         # Import here to avoid circular imports
-        from scripts.cwa_db import CWA_DB
+        from .cwa_db import CWA_DB
         
         # Get CWA settings
         cwa_db = CWA_DB()

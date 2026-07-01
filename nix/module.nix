@@ -121,9 +121,18 @@ in
         CWA_PORT_OVERRIDE = toString cfg.port;
         HOME = cfg.configDir;
         CWA_LIBRARY_DIR = cfg.libraryDir;
+        # Set CALIBRE_DBPATH so constants.CONFIG_DIR resolves to configDir
+        # directly rather than configDir/.calibre-web-automated (the default
+        # when HOME_CONFIG is true and CALIBRE_DBPATH is absent).
+        CALIBRE_DBPATH = cfg.configDir;
       } // cfg.environment;
 
       preStart = ''
+        # Seed user_profiles.json with an empty object on first run.
+        if [ ! -f ${lib.escapeShellArg cfg.configDir}/user_profiles.json ]; then
+          echo '{}' > ${lib.escapeShellArg cfg.configDir}/user_profiles.json
+        fi
+
         # Initialise an empty Calibre library on first run so the app auto-
         # detects it via CWA_LIBRARY_DIR without requiring web-UI setup.
         if [ ! -f ${lib.escapeShellArg cfg.libraryDir}/metadata.db ]; then

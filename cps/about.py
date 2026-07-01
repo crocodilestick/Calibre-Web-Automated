@@ -18,6 +18,7 @@ from flask_babel import gettext as _
 from . import db, calibre_db, converter, uploader, dep_check
 from .render_template import render_title_template
 from .usermanagement import user_login_required
+from .cwa_paths import GET_CWA_RELEASE_FILE
 
 
 about = flask.Blueprint('about', __name__)
@@ -36,7 +37,7 @@ sorted_modules = OrderedDict((sorted(modules.items(), key=lambda x: x[0].casefol
 
 def collect_stats():
     try:
-        with open("/app/CWA_RELEASE", "r") as f:
+        with open(GET_CWA_RELEASE_FILE(), "r") as f:
             cwa_version = f.read()
     except Exception:
         cwa_version = "Unknown"

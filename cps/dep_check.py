@@ -37,44 +37,61 @@ def load_dependencies(optional=False):
         else:
             return deps
     if importlib or pkgresources:
+        pyproject_path = os.path.join(BASE_DIR, "pyproject.toml")
+        if not os.path.exists(pyproject_path):
+            return deps
+        try:
+            import tomllib
+        except ImportError:
+            try:
+                import tomli as tomllib
+            except ImportError:
+                return deps
+        with open(pyproject_path, 'rb') as f:
+            pyproject = tomllib.load(f)
+        project = pyproject.get('project', {})
         if optional:
-            req_path = os.path.join(BASE_DIR, "optional-requirements.txt")
+            lines = []
+            for group, group_deps in project.get('optional-dependencies', {}).items():
+                if group == 'dev':
+                    continue
+                lines.extend(group_deps)
         else:
-            req_path = os.path.join(BASE_DIR, "requirements.txt")
-        if os.path.exists(req_path):
-            with open(req_path, 'r') as f:
-                for line in f:
-                    if not line.startswith('#') and not line == '\n' and not line.startswith('git'):
-                        res = re.match(r'(.*?)([<=>\s]+)([\d\.]+),?\s?([<=>\s]+)?([\d\.]+)?(?:\s?;\s?'
-                                       r'(?:(python_version)\s?([<=>]+)\s?\'([\d\.]+)\'|'
-                                       r'(sys_platform)\s?([\!=]+)\s?\'([\w]+)\'))?', line.strip())
-                        try:
-                            if getattr(sys, 'frozen', False):
-                                dep_version = exe_deps[res.group(1).lower().replace('_', '-')]
-                            else:
-                                if res.group(7) and res.group(8):
-                                    val = res.group(8).split(".")
-                                    if not eval(str(sys.version_info[0]) + "." + "{:02d}".format(sys.version_info[1]) +
-                                                res.group(7) + val[0] + "." + "{:02d}".format(int(val[1]))):
-                                        continue
-                                elif res.group(10) and res.group(11):
-                                    # only installed if platform is eqal, don't check if platform is not equal
-                                    if res.group(10) == "==":
-                                        if sys.platform != res.group(11):
-                                            continue
-                                    # installed if platform is not eqal, don't check if platform is equal
-                                    elif res.group(10) == "!=":
-                                        if sys.platform == res.group(11):
-                                            continue
-                                if importlib:
-                                    dep_version = version(res.group(1))
-                                else:
-                                    dep_version = pkg_resources.get_distribution(res.group(1)).version
-                        except (ImportNotFound, KeyError):
-                            if optional:
+            lines = project.get('dependencies', [])
+        for line in lines:
+            line = line.strip()
+            if not line:
+                continue
+            res = re.match(r'(.*?)([<=>\s]+)([\d\.]+),?\s?([<=>\s]+)?([\d\.]+)?(?:\s?;\s?'
+                           r'(?:(python_version)\s?([<=>]+)\s?\'([\d\.]+)\'|'
+                           r'(sys_platform)\s?([\!=]+)\s?\'([\w]+)\'))?', line)
+            if not res or not res.group(1):
+                continue
+            try:
+                if getattr(sys, 'frozen', False):
+                    dep_version = exe_deps[res.group(1).lower().replace('_', '-')]
+                else:
+                    if res.group(7) and res.group(8):
+                        val = res.group(8).split(".")
+                        if not eval(str(sys.version_info[0]) + "." + "{:02d}".format(sys.version_info[1]) +
+                                    res.group(7) + val[0] + "." + "{:02d}".format(int(val[1]))):
+                            continue
+                    elif res.group(10) and res.group(11):
+                        if res.group(10) == "==":
+                            if sys.platform != res.group(11):
                                 continue
-                            dep_version = "not installed"
-                        deps.append([dep_version, res.group(1), res.group(2), res.group(3), res.group(4), res.group(5)])
+                        elif res.group(10) == "!=":
+                            if sys.platform == res.group(11):
+                                continue
+                    if importlib:
+                        dep_version = version(res.group(1))
+                    else:
+                        dep_version = pkg_resources.get_distribution(res.group(1)).version
+            except (ImportNotFound, KeyError):
+                if optional:
+                    continue
+                dep_version = "not installed"
+            deps.append([dep_version, res.group(1), res.group(2), res.group(3), res.group(4), res.group(5)])
     return deps
 
 

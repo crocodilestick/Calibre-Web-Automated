@@ -60,9 +60,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-      
+          pip install -e ".[gdrive,gmail,goodreads,ldap,oauth,metadata,comics,kobo,dev]"
+
       - name: Create test environment structure
         run: |
           sudo mkdir -p /config /books/import /books/ingest /config/processed_books
@@ -141,9 +140,8 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
-      
+          pip install -e ".[gdrive,gmail,goodreads,ldap,oauth,metadata,comics,kobo,dev]"
+
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:
@@ -237,8 +235,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r requirements.txt
-          pip install -r requirements-dev.txt
+          pip install -e ".[gdrive,gmail,goodreads,ldap,oauth,metadata,comics,kobo,dev]"
           # E2E dependencies (when implemented)
           # pip install playwright pytest-playwright
           # playwright install chromium firefox

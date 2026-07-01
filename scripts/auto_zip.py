@@ -10,12 +10,14 @@ from os.path import isfile, join
 from datetime import datetime
 import pathlib
 from zipfile import ZipFile 
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'cps'))
 
+from cwa_paths import GET_PROCESSED_BOOKS
 from cwa_db import CWA_DB
 
 class AutoZipper:
     def __init__(self):
-        self.archive_dirs_stem = "/config/processed_books/"
+        self.archive_dirs_stem = GET_PROCESSED_BOOKS() + "/"
         self.converted_dir = self.archive_dirs_stem + "converted/"
         self.failed_dir = self.archive_dirs_stem + "failed/"
         self.imported_dir = self.archive_dirs_stem + "imported/"

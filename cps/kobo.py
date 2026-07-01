@@ -433,7 +433,7 @@ def generate_sync_response(sync_token, sync_results, set_cont=False):
 
     # Track Kobo sync activity
     try:
-        from scripts.cwa_db import CWA_DB
+        from .cwa_db import CWA_DB
         import json as json_lib
         cwa_db = CWA_DB()
         cwa_db.log_activity(

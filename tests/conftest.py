@@ -26,16 +26,12 @@ import requests
 import subprocess
 from pathlib import Path
 from typing import Generator
+from cps.cwa_db import CWA_DB
 
 # Add project root to Python path so 'cps' module can be imported
 project_root = Path(__file__).parent.parent
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
-
-# Add scripts directory to Python path so 'cwa_db' module can be imported
-scripts_dir = project_root / "scripts"
-if str(scripts_dir) not in sys.path:
-    sys.path.insert(0, str(scripts_dir))
 
 
 # Check if we should use Docker volumes (for DinD environments)
@@ -332,29 +328,17 @@ def temp_cwa_db(tmp_path, monkeypatch):
     """
     Create a temporary CWA database for testing.
 
-    Uses monkeypatch to temporarily override the database path
-    so tests don't interfere with real data.
+    Uses monkeypatch.setenv so CWA_CONFIG_PATH is re-read lazily by
+    cwa_paths functions on each call, giving per-test isolation.
     """
-    import sys
-    from pathlib import Path
+    from cps.cwa_db import CWA_DB
 
-    # Add scripts directory to path (works in both dev container and CI)
-    scripts_dir = Path(__file__).parent.parent / "scripts"
-    if str(scripts_dir) not in sys.path:
-        sys.path.insert(0, str(scripts_dir))
+    monkeypatch.setenv('CWA_CONFIG_PATH', str(tmp_path))
 
-    from cwa_db import CWA_DB
-
-    # Override the database path
-    db_path = tmp_path / "cwa.db"
-    monkeypatch.setenv('CWA_DB_PATH', str(tmp_path))
-
-    # Create the database
     db = CWA_DB(verbose=False)
 
     yield db
 
-    # Cleanup
     if db.con:
         db.con.close()
 

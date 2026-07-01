@@ -51,7 +51,7 @@ check_dependencies() {
     # Check Python venv
     if [ ! -d ".venv" ]; then
         print_warning "Virtual environment not found"
-        echo "  Run: python3 -m venv .venv && source .venv/bin/activate && pip install -r requirements.txt"
+        echo "  Run: python3 -m venv .venv && source .venv/bin/activate && pip install -e '.[dev]'"
         missing_deps=1
     fi
     

@@ -368,7 +368,7 @@ class TaskAutoHardcoverID(CalibreTask):
     def _save_stats(self):
         """Save statistics to CWA database"""
         try:
-            from scripts.cwa_db import CWA_DB
+            from ..cwa_db import CWA_DB
             cwa_db = CWA_DB()
             
             avg_confidence = (self.total_confidence / self.auto_matched) if self.auto_matched > 0 else 0.0

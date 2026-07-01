@@ -73,7 +73,7 @@ def add_to_shelf(shelf_id, book_id):
         
         # Track shelf activity
         try:
-            from scripts.cwa_db import CWA_DB
+            from .cwa_db import CWA_DB
             import json
             cwa_db = CWA_DB()
             cwa_db.log_activity(
@@ -207,7 +207,7 @@ def remove_from_shelf(shelf_id, book_id):
             
             # Track shelf activity
             try:
-                from scripts.cwa_db import CWA_DB
+                from .cwa_db import CWA_DB
                 import json
                 book = calibre_db.session.query(db.Books).filter(db.Books.id == book_id).one_or_none()
                 cwa_db = CWA_DB()

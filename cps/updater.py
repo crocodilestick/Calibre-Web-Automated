@@ -15,7 +15,7 @@ import time
 import zipfile
 from io import BytesIO
 import requests
-
+from .cwa_paths import GET_CONFIG_PATH, GET_LIBRARY_PATH, GET_INGEST_PATH
 from flask_babel import format_datetime
 from flask_babel import gettext as _
 
@@ -214,9 +214,9 @@ class Updater(threading.Thread):
             if not nsm:
                 return True
             return not (
-                path == "/config" or path.startswith("/config/") or
-                path == "/calibre-library" or path.startswith("/calibre-library/") or
-                path == "/cwa-book-ingest" or path.startswith("/cwa-book-ingest/")
+                path == GET_CONFIG_PATH() or path.startswith(GET_CONFIG_PATH() + "/") or
+                path == GET_LIBRARY_PATH() or path.startswith(GET_LIBRARY_PATH() + "/") or
+                path == GET_INGEST_PATH() or path.startswith(GET_INGEST_PATH() + "/")
             )
         for src_dir, __, files in os.walk(root_src_dir):
             dst_dir = src_dir.replace(root_src_dir, root_dst_dir, 1)

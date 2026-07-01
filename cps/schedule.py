@@ -93,10 +93,7 @@ def register_startup_tasks():
 
         # Rehydrate scheduled auto-send jobs from cwa.db (if any)
         try:
-            import sys as _sys
-            if '/app/calibre-web-automated/scripts/' not in _sys.path:
-                _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-            from cwa_db import CWA_DB
+            from .cwa_db import CWA_DB
             from .tasks.auto_send import TaskAutoSend
             from .services.worker import WorkerThread
             from datetime import datetime, timezone
@@ -140,10 +137,7 @@ def register_startup_tasks():
 
         # Rehydrate other scheduled ops (convert_library, epub_fixer)
         try:
-            import sys as _sys
-            if '/app/calibre-web-automated/scripts/' not in _sys.path:
-                _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-            from cwa_db import CWA_DB
+            from .cwa_db import CWA_DB
             from datetime import datetime
             # wrappers will trigger internal routes themselves
             from .tasks.ops import TaskConvertLibraryRun, TaskEpubFixerRun
@@ -208,10 +202,7 @@ def calclulate_end_time(start, duration):
 def _schedule_duplicate_scan(scheduler, timezone_info):
     """Schedule background duplicate scan based on CWA settings."""
     try:
-        import sys as _sys
-        if '/app/calibre-web-automated/scripts/' not in _sys.path:
-            _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-        from cwa_db import CWA_DB
+        from .cwa_db import CWA_DB
         from .tasks.duplicate_scan import TaskDuplicateScan
         from apscheduler.triggers.cron import CronTrigger
 
@@ -238,10 +229,7 @@ def _schedule_duplicate_scan(scheduler, timezone_info):
 def _schedule_hardcover_auto_fetch(scheduler, timezone_info):
     """Schedule background Hardcover auto-fetch based on CWA settings."""
     try:
-        import sys as _sys
-        if '/app/calibre-web-automated/scripts/' not in _sys.path:
-            _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-        from cwa_db import CWA_DB
+        from .cwa_db import CWA_DB
         from .tasks.auto_hardcover_id import TaskAutoHardcoverID
         from os import getenv
 
@@ -320,10 +308,7 @@ def _schedule_hardcover_auto_fetch(scheduler, timezone_info):
 def _schedule_archived_book_cleanup(scheduler, timezone_info):
     """Schedule cleanup for stale archived_book entries (default 03:00 local)."""
     try:
-        import sys as _sys
-        if '/app/calibre-web-automated/scripts/' not in _sys.path:
-            _sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-        from cwa_db import CWA_DB
+        from .cwa_db import CWA_DB
 
         db = CWA_DB()
         cwa_settings = db.get_cwa_settings()

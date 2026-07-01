@@ -22,10 +22,9 @@ from .admin import admin_required
 from .usermanagement import login_required_if_no_ano
 from .render_template import render_title_template
 from .cw_login import current_user
+from .cwa_paths import GET_PROCESSED_BOOKS, GET_CONFIG_PATH
 
-import sys
-sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-from cwa_db import CWA_DB
+from .cwa_db import CWA_DB
 
 duplicates = Blueprint('duplicates', __name__)
 log = logger.create()
@@ -1488,7 +1487,7 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
         # Disk space check (strategy-dependent thresholds)
         try:
             import shutil as shutil_disk
-            stat = shutil_disk.disk_usage('/config')
+            stat = shutil_disk.disk_usage(GET_CONFIG_PATH())
             available_gb = stat.free / (1024**3)
             
             # Merge strategy needs more space (copies formats before deletion)
@@ -1612,7 +1611,7 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
                 book_to_keep = book_to_keep_ref
 
                 deleted_ids = []
-                backup_dir = f"/config/processed_books/duplicate_resolutions/{datetime.now().strftime('%Y%m%d_%H%M%S')}_group_{group['group_hash'][:8]}"
+                backup_dir = os.path.join(GET_PROCESSED_BOOKS(), f"duplicate_resolutions/{datetime.now().strftime('%Y%m%d_%H%M%S')}_group_{group['group_hash'][:8]}")
                 os.makedirs(backup_dir, exist_ok=True)
 
                 if strategy == 'merge':

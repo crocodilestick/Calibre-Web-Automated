@@ -65,3 +65,19 @@ ist, enger auf `cps/kobo.py`, `cps/magic_shelf.py`, `cps/shelf.py`,
    werden.
 3. Graphify gezielt initialisieren, sobald Alex den Scan-Umfang bestaetigt.
 
+## Mittelfristige Entschlackung
+
+Der Fork soll upstream-nah bleiben, aber Alexandria braucht nicht jede
+Upstream-Oberflaeche und jeden Workflow gleich stark. Nach den ersten
+Kobo-Sync-Schritten sollte ein eigener, lesender Entschlackungs-Audit folgen:
+
+- Welche UI-Bereiche sind fuer Alex' Kobo-zentrierten Alltag relevant?
+- Welche Funktionen bleiben technisch erhalten, koennen aber ruhiger oder
+  weniger prominent dargestellt werden?
+- Welche Docker-, Script-, Doku- oder Testpfade sind fuer den persoenlichen Fork
+  wirklich noetig?
+- Welche Aenderungen waeren zu teuer fuer Upstream-Merges und sollten deshalb
+  bewusst vermieden werden?
+
+Wichtig: Entschlackung bedeutet zunaechst Priorisierung und UI-Beruhigung, nicht
+das vorschnelle Loeschen von Upstream-Code.

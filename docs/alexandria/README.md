@@ -28,6 +28,8 @@ Stand 2026-07-02: Der GitHub-Fork wurde als `salutaris91/cwa-alexandria` angeleg
 - [Kobo-Sync Runbook](kobo-setup-runbook.md)
 - [Lokale Entwicklungsumgebung](local-development.md)
 - [Magic-Shelf Audit](magic-shelves-audit.md)
+- [Magic-Shelf Implementierungsplan](magic-shelves-plan.md)
+
 
 
 

@@ -295,7 +295,7 @@
                     </li>
                 {% endif %}
               {% endfor %}
-              {% if config.config_kobo_sync and current_user.is_authenticated %}
+              {% if kobo_sync_enabled and current_user.is_authenticated %}
                 <li id="nav_kobodashboard" {% if page == 'kobo_dashboard' %}class="active"{% endif %}>
                   <a href="{{url_for('kobo_auth.dashboard')}}">
                     <span class="glyphicon glyphicon-book"></span> {{_('Kobo-Auswahl')}}

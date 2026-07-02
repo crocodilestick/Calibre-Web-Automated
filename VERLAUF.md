@@ -29,13 +29,13 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 - **Backend-Logik & Zirkularimport-Vermeidung**:
   - `cps/kobo_dashboard.py` neu erstellt, um die Kobo-Dashboard Berechnungs- und Aggregationslogik (`get_kobo_dashboard_data`) zu kapseln.
   - Zirkularimport durch Lazy-Import von `get_kobo_allowed_book_ids` innerhalb der Aggregationsfunktion vermieden.
-  - ID-Ermittlung für Magic Shelves (`get_magic_shelf_book_ids_direct`) direkt über die Calibre-Datenbank (via `cdb.common_filters()`) implementiert, was den Cache umgeht und Zirkularbezüge sowie `current_user` Seiteneffekte vermeidet.
+  - ID-Ermittlung für Magic Shelves (`get_magic_shelf_book_ids_direct`) direkt über die Calibre-Datenbank (via `cdb.common_filters()`) implementiert, was den Cache umgeht und Zirkularbezüge sowie cache-schreibende Seiteneffekte vermeidet (greift jedoch für Rechte- und Tag-Filter über common_filters() weiterhin auf den current_user-Kontext zu).
 - **Routen & Templates**:
   - Route `/kobo_auth/dashboard` in `cps/kobo_auth.py` hinzugefügt (abgesichert über `@user_login_required`). Sie übergibt `page="kobo_dashboard"`.
   - HTML-Template `cps/templates/kobo_dashboard.html` im Bootstrap-Stil von Calibre-Web erstellt. Es visualisiert den Kobo-Verbindungsstatus, Sync-Modus, Statistiken, System-Warnungen und die Kobo-Sammlungen.
 - **Seitenleisten-Konsolidierung (Navigation)**:
   - Normale Regale und Magic Shelves in `cps/templates/layout.html` unter dem gemeinsamen Abschnitt „Sammlungen“ (nacheinander sortiert) zusammengefasst.
-  - Link zur „Kobo-Auswahl“ in der Sidebar hinzugefügt, sichtbar über die globalen Context-Variablen `config.config_kobo_sync and current_user.is_authenticated`.
+  - Link zur „Kobo-Auswahl“ in der Sidebar hinzugefügt, sichtbar über die in `render_title_template()` global an das Template übergebene Variable `kobo_sync_enabled` und `current_user.is_authenticated`.
 - **Tests**:
   - 4 Unit-Tests in `tests/unit/test_kobo_dashboard.py` geschrieben (inkl. Mocking von CalibreDB, config-Parametern und `current_user` in einer Flask-Request-Umgebung).
   - Alle 20 Kobo- und Magic-Shelf-Tests erfolgreich lokal ausgeführt.

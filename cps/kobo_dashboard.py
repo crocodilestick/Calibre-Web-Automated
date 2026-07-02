@@ -11,7 +11,8 @@ log = logger.create()
 def get_magic_shelf_book_ids_direct(shelf):
     """
     Ermittelt die IDs der Bücher eines Magic Shelves direkt über die Calibre-Datenbank.
-    Umgeht den Cache, current_user-Abfragen und die Instanziierung von Buchobjekten.
+    Umgeht den Magic-Shelf-Cache sowie die Instanziierung von Buchobjekten, nutzt jedoch 
+    über cdb.common_filters() weiterhin den current_user-Kontext für Sprach- und Tag-Rechtefilter.
     """
     if not shelf.rules:
         return set()

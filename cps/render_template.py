@@ -312,6 +312,7 @@ def render_title_template(*args, **kwargs):
                        accept=config.config_upload_formats.split(','),
                        magic_shelf_routes=magic_shelf_routes,
                        duplicate_notification=duplicate_notification,
+                       kobo_sync_enabled=config.config_kobo_sync,
                        *args, **kwargs)
     except PermissionError:
         log.error("No permission to access {} file.".format(args[0]))

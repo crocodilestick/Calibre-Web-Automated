@@ -18,6 +18,26 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-02 — Kobo-Loeschen als Ausschlussregal (Kobo: Ausgeschlossen)
+
+- **Feature/Bug:** Kobo-Loeschen als Ausschlussregal (Kobo: Ausgeschlossen) implementiert und getestet.
+- **Branch / Worktree:** `feature/kobo-exclusion-shelf`
+- **Status:** Erfolgreich abgeschlossen. Alle 12 Unit-Tests und Dashboard-Tests laufen grün.
+
+### Erledigt
+
+- **System-Exclusion-Shelf Helper:** `get_or_create_kobo_exclusion_shelf(user_id)` implementiert. Es erstellt das Regal robust und stellt sicher, dass es nicht an den Kobo als Sammlung synchronisiert wird (`kobo_sync=False`, `kobo_display=False`).
+- **Selective Deletion Path:** `HandleBookDeletionRequest` trägt Bücher bei selektivem Sync ins Ausschlussregal ein und invalidiert den Magic-Shelf Cache, anstatt das Buch aus der Calibre-Bibliothek zu entfernen.
+- **Allowed Books Abzug:** `get_kobo_allowed_book_ids(user_id)` zieht alle Bücher aus allen Regalen namens `Kobo: Ausgeschlossen` lesend und robust ab (keine Schreibeffekte).
+- **Full-Sync Unverändert:** Die Full-Sync/Archivierungslogik wurde nicht verändert.
+- **Automatisierte Tests:** 4 neue Unit- und Integrationstests verifizieren den Abzug, das selektive DELETE, die Full-Sync-Archivierungsberechtigung und den Device-Entitlement-Abzug mit `IsArchived: True`.
+
+### Belege
+
+- Alle 12 Unit-Tests in `test_kobo_decoupling.py` erfolgreich ausgeführt.
+- Alle 4 Unit-Tests in `test_kobo_dashboard.py` erfolgreich ausgeführt.
+- `git diff --check` fehlerfrei.
+
 ## 2026-07-02 — Kobo-Loeschen als Ausschlussregal
 
 - **Feature/Bug:** Kobo-Loeschen als Ausschlussregal-Entscheidung dokumentieren.

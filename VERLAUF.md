@@ -18,6 +18,38 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-02 — Integration normale Regale als Magic-Shelf-Regelquelle
+
+- **Feature/Bug:** Erste Umsetzungsphase: Integration normale Regale als Magic-Shelf-Regelquelle
+- **Branch / Worktree:** `feature/normal-shelf-magic-rule` auf `/Users/alex/Documents/Programmierungsprojekte/cwa-alexandria`
+- **Status:** Implementiert, verifiziert, Review-Findings behoben und freigegeben.
+
+### Erledigt
+
+- **Core Engine (`cps/magic_shelf.py`):**
+  - `FIELD_MAP` um `normal_shelf` erweitert.
+  - `build_query_from_rules` und `build_filter_from_rule` um `is_public` Parameter erweitert.
+  - Berechtigungsprüfung: Öffentliche Magic Shelves dürfen keine privaten normalen Regale referenzieren (werden mit `false()` blockiert).
+  - Operator-Validierung: `equal` und `not_equal` sind als einzige Operatoren zulässig, alle anderen evaluieren zu `false()`.
+  - `invalidate_magic_shelf_cache()` implementiert, wirft bei Fehlern eine Exception (Integrität der Mutationspfade).
+- **Web-Routen & UI:**
+  - `shelves_map` im Flask GET-Pfad für Erstellen/Editieren an Template übergeben.
+  * XSS-Sicherung: Sichere Serialisierung der Regalnamen über den Jinja-Filter `tojson` (kein unsicheres `json.dumps|safe`).
+  * Preview-Semantik an das `is_public` Checkbox-Element gekoppelt, um synchrone Backend-Validierung im UI widerzuspiegeln.
+  * Strikte Typen-Prüfung (`is True`) in Preview-API implementiert.
+- **Cache-Invalidierung in Mutationspfaden:**
+  - `invalidate_magic_shelf_cache()` in allen 12 Mutations-Schreib-Pfaden vor dem Commit eingebunden (Tabelle siehe Walkthrough).
+  - Kobo-Sync-Pfade nutzen `bypass_cache=True` bei `get_books_for_magic_shelf`.
+- **Tests & Verifikation:**
+  - 10 Unit-Tests in `tests/unit/test_magic_shelf_rules.py` geschrieben.
+  - Alle 10 Unit-Tests in Python 3.11-Umgebung via `uv` erfolgreich ausgeführt.
+  - 13 Kobo-Regressionstests erfolgreich ausgeführt.
+  - `git diff --check` fehlerfrei bereinigt.
+
+### Nächster Schritt
+
+- Kobo-Entkopplung (2-Säulen-Prinzip mit Sync-Flags und Kobo-Sammlungen).
+
 ## 2026-07-02 — Magic-Shelf-Regeln Audit und Spezifikation
 
 - **Feature/Bug:** Magic-Shelf-Regeln Audit und Spezifikation (Erweiterung normale Regale & Entkopplungs-Konzept)

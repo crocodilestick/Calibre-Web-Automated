@@ -335,15 +335,9 @@ def HandleSyncRequest():
 
     log.debug("Kobo Sync: rstate last modified: {}".format(sync_token.reading_state_last_modified))
     if only_kobo_shelves:
-        changed_reading_states = changed_reading_states.outerjoin(ub.BookShelf,
-                                                                  ub.KoboReadingState.book_id == ub.BookShelf.book_id)\
-            .outerjoin(ub.Shelf, ub.Shelf.id == ub.BookShelf.shelf)\
+        changed_reading_states = changed_reading_states\
             .filter(ub.KoboReadingState.last_modified > sync_token.reading_state_last_modified)\
-            .filter(or_(
-                and_(current_user.id == ub.Shelf.user_id, ub.Shelf.kobo_sync == True),
-                ub.KoboReadingState.book_id.in_(magic_shelf_book_ids) if magic_shelf_book_ids else False
-            ))\
-            .distinct()
+            .filter(ub.KoboReadingState.book_id.in_(allowed_book_ids) if allowed_book_ids else False)
     else:
         changed_reading_states = changed_reading_states.filter(
             ub.KoboReadingState.last_modified > sync_token.reading_state_last_modified)

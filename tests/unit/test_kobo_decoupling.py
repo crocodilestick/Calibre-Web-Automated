@@ -168,8 +168,7 @@ class TestKoboSyncDecoupling:
             return mock_shelf_query
 
         # Let the query return the deactivated shelf for deactivated query
-        # and active shelf for active query. To simulate SQLAlchemy filters,
-        # we configure the mock chain.
+        # and active shelf for active query.
         mock_shelf_query.filter.return_value = [fake_deactivated_shelf]
         mock_shelf_query.outerjoin.return_value.filter.return_value.distinct.return_value.order_by.return_value = [fake_active_shelf]
 
@@ -191,12 +190,6 @@ class TestKoboSyncDecoupling:
 
         sync_results = []
         sync_shelves(sync_token, sync_results, allowed_book_ids=None, only_kobo_shelves=False)
-
-        # Assertions:
-        # We expect:
-        # - DeletedTag for the ShelfArchive record (deleted-uuid)
-        # - DeletedTag for the deactivated shelf (deactivated-uuid, since last_modified 14:00 > 11:00)
-        # - NewTag/ChangedTag for the active shelf (active-uuid)
 
         deleted_uuids = [
             res["DeletedTag"]["Tag"]["Id"]
@@ -220,3 +213,122 @@ class TestKoboSyncDecoupling:
 
         # Assert ShelfArchive entry was deleted after sync
         mock_session.delete.assert_called_with(fake_archive)
+
+    @patch('cps.kobo.make_response')
+    @patch('scripts.cwa_db.CWA_DB')
+    @patch('cps.kobo.get_download_url_for_book')
+    @patch('cps.kobo.magic_shelf')
+    @patch('cps.kobo.config')
+    @patch('cps.kobo.calibre_db')
+    @patch('cps.kobo.ub.session')
+    @patch('cps.kobo.SyncToken.SyncToken')
+    def test_handle_sync_request_reading_states_no_name_error(
+        self, mock_sync_token_cls, mock_session, mock_calibre_db, mock_config, mock_magic_shelf, mock_get_download_url, mock_cwa_db, mock_make_response
+    ):
+        """Verify that HandleSyncRequest runs without NameError when only_kobo_shelves is active."""
+        import cps.kobo
+        import cps.kobo_auth
+
+        # Setup current_user
+        mock_user = MagicMock()
+        mock_user.id = 1
+        mock_user.kobo_only_shelves_sync = True
+        mock_user.role_download.return_value = True
+
+        # Back up Flask globals
+        original_request = cps.kobo.request
+        original_current_user = cps.kobo.current_user
+        original_current_app = cps.kobo.current_app
+        original_g = cps.kobo_auth.g
+
+        cps.kobo.request = MagicMock()
+        cps.kobo.current_user = mock_user
+        cps.kobo.current_app = MagicMock()
+
+        # Setup a mock for g that supports "auth_token" in g
+        mock_g = MagicMock()
+        mock_g.__contains__.return_value = True
+        cps.kobo_auth.g = mock_g
+
+        # Patch download link generator
+        mock_get_download_url.return_value = "http://dummy/download"
+
+        # Mock CWA_DB to bypass DB connection logic
+        mock_cwa_db.return_value = MagicMock()
+
+        # Mock make_response to return a Response-like mock object
+        mock_response_obj = MagicMock()
+        mock_response_obj.headers = {}
+        mock_make_response.return_value = mock_response_obj
+
+        try:
+            # Setup SyncToken
+            fake_sync_token = MagicMock()
+            fake_sync_token.books_last_modified = datetime(2026, 7, 2, 10, 0, 0, tzinfo=timezone.utc)
+            fake_sync_token.books_last_created = datetime(2026, 7, 2, 10, 0, 0, tzinfo=timezone.utc)
+            fake_sync_token.reading_state_last_modified = datetime(2026, 7, 2, 10, 0, 0, tzinfo=timezone.utc)
+            fake_sync_token.tags_last_modified = datetime(2026, 7, 2, 10, 0, 0, tzinfo=timezone.utc)
+            mock_sync_token_cls.from_headers.return_value = fake_sync_token
+
+            # Setup config
+            mock_config.config_kobo_sync_magic_shelves = False
+            mock_config.config_kobo_proxy = False
+
+            # Mock KoboSyncedBooks query count
+            mock_synced_books_query = MagicMock()
+            mock_synced_books_query.filter.return_value.count.return_value = 1
+
+            # Mock KoboReadingState query chain with Fluent Mocking
+            mock_reading_states_query = MagicMock()
+            mock_reading_states_query.filter.return_value = mock_reading_states_query
+            mock_reading_states_query.order_by.return_value = mock_reading_states_query
+            mock_reading_states_query.limit.return_value = mock_reading_states_query
+            mock_reading_states_query.count.return_value = 0
+            mock_reading_states_query.all.return_value = []
+
+            # Mock calibre_db queries for changed_entries
+            mock_changed_entries = MagicMock()
+            # Return self from query methods chain to allow calling filter, join etc.
+            mock_changed_entries.join.return_value = mock_changed_entries
+            mock_changed_entries.outerjoin.return_value = mock_changed_entries
+            mock_changed_entries.filter.return_value = mock_changed_entries
+            mock_changed_entries.order_by.return_value = mock_changed_entries
+            mock_changed_entries.distinct.return_value = mock_changed_entries
+
+            # Setup mock expectations
+            mock_changed_entries.count.return_value = 0
+            mock_changed_entries.first.return_value = None
+            mock_changed_entries.limit.return_value.all.return_value = []
+
+            def query_side_effect(model):
+                if model is ub.KoboSyncedBooks:
+                    return mock_synced_books_query
+                elif model is ub.KoboReadingState:
+                    return mock_reading_states_query
+                elif model is ub.ShelfArchive:
+                    return MagicMock()
+                elif model is ub.Shelf:
+                    return MagicMock()
+                return MagicMock()
+
+            mock_session.query.side_effect = query_side_effect
+            mock_calibre_db.session.query.return_value = mock_changed_entries
+
+            # We mock our new Helper to return some book IDs
+            with patch('cps.kobo.get_kobo_allowed_book_ids') as mock_get_allowed:
+                mock_get_allowed.return_value = {100, 200}
+
+                # Executing HandleSyncRequest bypassing decorator with __wrapped__
+                response = cps.kobo.HandleSyncRequest.__wrapped__()
+
+                # Ensure get_kobo_allowed_book_ids was called
+                mock_get_allowed.assert_called_with(1)
+                # Ensure query on KoboReadingState was filtered with the allowed book ids
+                filter_calls = mock_reading_states_query.filter.return_value.filter.call_args_list
+                assert len(filter_calls) > 0
+        finally:
+            # Restore Flask globals
+            cps.kobo.request = original_request
+            cps.kobo.current_user = original_current_user
+            cps.kobo.current_app = original_current_app
+            cps.kobo_auth.g = original_g

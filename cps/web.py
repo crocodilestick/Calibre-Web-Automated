@@ -1104,6 +1104,7 @@ def create_magic_shelf():
         rules = data.get('rules')
         icon = data.get('icon', '🪄')
         kobo_sync = data.get('kobo_sync', False)
+        kobo_display = data.get('kobo_display', False)
         is_public = data.get('is_public', False)
         
         # Only allow public if user has permission
@@ -1128,6 +1129,7 @@ def create_magic_shelf():
                 rules=rules,
                 icon=icon,
                 kobo_sync=kobo_sync,
+                kobo_display=kobo_display,
                 is_public=1 if is_public else 0
             )
             ub.session.add(new_shelf)
@@ -1206,6 +1208,7 @@ def edit_magic_shelf(shelf_id):
         rules = data.get('rules', shelf.rules)
         icon = data.get('icon', shelf.icon)
         kobo_sync = data.get('kobo_sync', shelf.kobo_sync)
+        kobo_display = data.get('kobo_display', shelf.kobo_display)
         is_public = data.get('is_public', shelf.is_public == 1)
         
         # Only allow changing public status if user has permission
@@ -1229,6 +1232,7 @@ def edit_magic_shelf(shelf_id):
             shelf.rules = rules
             shelf.icon = icon
             shelf.kobo_sync = kobo_sync
+            shelf.kobo_display = kobo_display
             shelf.is_public = 1 if is_public else 0
             flag_modified(shelf, "rules")
             
@@ -1357,6 +1361,17 @@ def delete_magic_shelf(shelf_id):
     
     try:
         shelf_name = shelf.name
+
+        # Archive deleted Magic Shelf for Kobo sync if it was active
+        if config.config_kobo_sync and (shelf.kobo_sync or shelf.kobo_display):
+            from datetime import datetime, timezone
+            archive = ub.ShelfArchive(
+                uuid=shelf.uuid,
+                user_id=shelf.user_id,
+                last_modified=datetime.now(timezone.utc)
+            )
+            ub.session.add(archive)
+
         # Delete cache entries first
         ub.session.query(ub.MagicShelfCache).filter_by(shelf_id=shelf_id).delete()
         # Delete any hide records for this shelf

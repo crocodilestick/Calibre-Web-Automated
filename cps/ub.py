@@ -413,6 +413,7 @@ class Shelf(Base):
     is_public = Column(Integer, default=0)
     user_id = Column(Integer, ForeignKey('user.id'))
     kobo_sync = Column(Boolean, default=False)
+    kobo_display = Column(Boolean, default=False)
     books = relationship("BookShelf", backref="ub_shelf", cascade="all, delete-orphan", lazy="dynamic")
     created = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     last_modified = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
@@ -434,6 +435,7 @@ class MagicShelf(Base):
     icon = Column(String, default="glyphicon-star")
     rules = Column(JSON, default={})
     kobo_sync = Column(Boolean, default=False)  # Sync to Kobo devices
+    kobo_display = Column(Boolean, default=False)  # Display as collection on Kobo
     created = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     last_modified = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
@@ -1036,6 +1038,34 @@ def migrate_magic_shelf_table(engine, _session):
         _safe_session_rollback(_session, "magic_shelf.kobo_sync")
         _run_ddl_with_retry(engine, "ALTER TABLE magic_shelf ADD column 'kobo_sync' Boolean DEFAULT 0")
 
+    # Check and add kobo_display column
+    try:
+        _session.query(exists().where(MagicShelf.kobo_display)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        _safe_session_rollback(_session, "magic_shelf.kobo_display")
+        _run_ddl_with_retry(engine, "ALTER TABLE magic_shelf ADD column 'kobo_display' Boolean DEFAULT 0")
+        try:
+            _run_ddl_with_retry(engine, "UPDATE magic_shelf SET kobo_display = kobo_sync")
+            log.info("Successfully migrated kobo_display from kobo_sync for magic_shelf table")
+        except Exception as e:
+            log.error("Failed to update kobo_display default value for magic_shelf: %s", e)
+
+
+def migrate_shelf_table(engine, _session):
+    """Migrate shelf table to add new columns."""
+    try:
+        _session.query(exists().where(Shelf.kobo_display)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        _safe_session_rollback(_session, "shelf.kobo_display")
+        _run_ddl_with_retry(engine, "ALTER TABLE shelf ADD column 'kobo_display' Boolean DEFAULT 0")
+        try:
+            _run_ddl_with_retry(engine, "UPDATE shelf SET kobo_display = kobo_sync")
+            log.info("Successfully migrated kobo_display from kobo_sync for shelf table")
+        except Exception as e:
+            log.error("Failed to update kobo_display default value for shelf: %s", e)
+
 
 # Migrate database to current version, has to be updated after every database change. Currently migration from
 # maybe 4/5 versions back to current should work.
@@ -1049,6 +1079,7 @@ def migrate_Database(_session):
     migrate_oauth_provider_table(engine, _session)
     migrate_config_table(engine, _session)
     migrate_magic_shelf_table(engine, _session)
+    migrate_shelf_table(engine, _session)
 
     # Ensure progress syncing tables in app.db (user-related tables)
     from .progress_syncing.models import ensure_app_db_tables

@@ -367,7 +367,8 @@ def create_edit_shelf(shelf, page_title, page, shelf_id=False):
         is_public = 1 if to_save.get("is_public") == "on" else 0
         if config.config_kobo_sync:
             shelf.kobo_sync = True if to_save.get("kobo_sync") else False
-            if shelf.kobo_sync:
+            shelf.kobo_display = True if to_save.get("kobo_display") else False
+            if shelf.kobo_sync or shelf.kobo_display:
                 ub.session.query(ub.ShelfArchive).filter(ub.ShelfArchive.user_id == current_user.id).filter(
                     ub.ShelfArchive.uuid == shelf.uuid).delete()
                 ub.session_commit()

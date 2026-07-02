@@ -26,7 +26,9 @@ Stand 2026-07-02: Der GitHub-Fork wurde als `salutaris91/cwa-alexandria` angeleg
 - [Fork-Audit](fork-audit.md)
 - [UI-Ideen](ui-ideen.md)
 - [Kobo-Sync Runbook](kobo-setup-runbook.md)
+- [Lokale Entwicklungsumgebung](local-development.md)
+
 
 ## Naechster Schritt
 
-Der initiale lesende Code-Audit ist abgeschlossen und die Strukturierung als Fork-root (CWA-Code direkt im Hauptverzeichnis) ist umgesetzt. Der naechste technische Schritt ist der kleine `sync_shelves()`-Bugfix mit gezieltem Test im CWA-Testbaum.
+Die lokale Docker-Entwicklungsumgebung ist eingerichtet. Der nächste technische Schritt ist die Entkopplung der Kobo-Synchronisation und die Spezifikation von Magic-Shelf-Regeln (siehe `fork-audit.md` Roadmap).

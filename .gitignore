@@ -209,3 +209,4 @@ instance/
 STAND.md
 .env.local
 .mcp.json
+/local-dev/

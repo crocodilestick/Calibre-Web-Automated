@@ -29,30 +29,30 @@ class TestMagicShelfRulesNormalShelf:
 
         mock_shelf_query = MagicMock()
         mock_shelf_query.filter.return_value.first.return_value = fake_shelf
-        
+
         fake_book_ids = [MagicMock(book_id=10), MagicMock(book_id=20)]
         mock_bookshelf_query = MagicMock()
         mock_bookshelf_query.filter.return_value.all.return_value = fake_book_ids
-        
+
         def query_side_effect(model_or_column):
             if model_or_column is ub.Shelf:
                 return mock_shelf_query
             elif model_or_column is ub.BookShelf.book_id:
                 return mock_bookshelf_query
             return MagicMock()
-            
+
         mock_session.query.side_effect = query_side_effect
-        
+
         rule = {
             'id': 'normal_shelf',
             'operator': 'equal',
             'value': '42'
         }
-        
+
         expr = build_filter_from_rule(rule, user_id=1, is_public=False)
-        
+
         assert expr is not None
-        
+
         # Compile to SQLite and assert the generated SQL
         sql_str = str(expr.compile(dialect=sqlite.dialect(), compile_kwargs={"literal_binds": True}))
         assert "books.id IN (10, 20)" in sql_str
@@ -68,23 +68,23 @@ class TestMagicShelfRulesNormalShelf:
 
         mock_shelf_query = MagicMock()
         mock_shelf_query.filter.return_value.first.return_value = fake_shelf
-        
+
         def query_side_effect(model_or_column):
             if model_or_column is ub.Shelf:
                 return mock_shelf_query
             return MagicMock()
-            
+
         mock_session.query.side_effect = query_side_effect
-        
+
         rule = {
             'id': 'normal_shelf',
             'operator': 'equal',
             'value': '42'
         }
-        
+
         # When is_public=True (public magic shelf), referencing a private shelf must return false()
         expr = build_filter_from_rule(rule, user_id=1, is_public=True)
-        
+
         assert isinstance(expr, sqlalchemy.sql.elements.False_)
 
     @patch('cps.ub.session')
@@ -98,28 +98,28 @@ class TestMagicShelfRulesNormalShelf:
 
         mock_shelf_query = MagicMock()
         mock_shelf_query.filter.return_value.first.return_value = fake_shelf
-        
+
         fake_book_ids = [MagicMock(book_id=10), MagicMock(book_id=20)]
         mock_bookshelf_query = MagicMock()
         mock_bookshelf_query.filter.return_value.all.return_value = fake_book_ids
-        
+
         def query_side_effect(model_or_column):
             if model_or_column is ub.Shelf:
                 return mock_shelf_query
             elif model_or_column is ub.BookShelf.book_id:
                 return mock_bookshelf_query
             return MagicMock()
-            
+
         mock_session.query.side_effect = query_side_effect
-        
+
         rule = {
             'id': 'normal_shelf',
             'operator': 'equal',
             'value': '42'
         }
-        
+
         expr = build_filter_from_rule(rule, user_id=1, is_public=True)
-        
+
         assert expr is not None
         sql_str = str(expr.compile(dialect=sqlite.dialect(), compile_kwargs={"literal_binds": True}))
         assert "books.id IN (10, 20)" in sql_str
@@ -135,28 +135,28 @@ class TestMagicShelfRulesNormalShelf:
 
         mock_shelf_query = MagicMock()
         mock_shelf_query.filter.return_value.first.return_value = fake_shelf
-        
+
         fake_book_ids = [MagicMock(book_id=10)]
         mock_bookshelf_query = MagicMock()
         mock_bookshelf_query.filter.return_value.all.return_value = fake_book_ids
-        
+
         def query_side_effect(model_or_column):
             if model_or_column is ub.Shelf:
                 return mock_shelf_query
             elif model_or_column is ub.BookShelf.book_id:
                 return mock_bookshelf_query
             return MagicMock()
-            
+
         mock_session.query.side_effect = query_side_effect
-        
+
         rule = {
             'id': 'normal_shelf',
             'operator': 'not_equal',
             'value': '42'
         }
-        
+
         expr = build_filter_from_rule(rule, user_id=1, is_public=False)
-        
+
         assert expr is not None
         sql_str = str(expr.compile(dialect=sqlite.dialect(), compile_kwargs={"literal_binds": True}))
         assert "books.id NOT IN (10)" in sql_str
@@ -172,27 +172,27 @@ class TestMagicShelfRulesNormalShelf:
 
         mock_shelf_query = MagicMock()
         mock_shelf_query.filter.return_value.first.return_value = fake_shelf
-        
+
         mock_bookshelf_query = MagicMock()
         mock_bookshelf_query.filter.return_value.all.return_value = []
-        
+
         def query_side_effect(model_or_column):
             if model_or_column is ub.Shelf:
                 return mock_shelf_query
             elif model_or_column is ub.BookShelf.book_id:
                 return mock_bookshelf_query
             return MagicMock()
-            
+
         mock_session.query.side_effect = query_side_effect
-        
+
         rule = {
             'id': 'normal_shelf',
             'operator': 'equal',
             'value': '42'
         }
-        
+
         expr = build_filter_from_rule(rule, user_id=1, is_public=False)
-        
+
         assert expr is not None
         sql_str = str(expr.compile(dialect=sqlite.dialect(), compile_kwargs={"literal_binds": True}))
         # In SQLAlchemy 2.0, an empty IN list compiles to "books.id IN (SELECT 1 FROM (SELECT 1) WHERE 1!=1)".
@@ -220,20 +220,20 @@ class TestMagicShelfRulesNormalShelf:
 
         mock_shelf_query = MagicMock()
         mock_shelf_query.filter.return_value.first.return_value = fake_shelf
-        
+
         def query_side_effect(model_or_column):
             if model_or_column is ub.Shelf:
                 return mock_shelf_query
             return MagicMock()
-            
+
         mock_session.query.side_effect = query_side_effect
-        
+
         rule = {
             'id': 'normal_shelf',
             'operator': 'equal',
             'value': '42'
         }
-        
+
         expr = build_filter_from_rule(rule, user_id=1, is_public=False)
         assert isinstance(expr, sqlalchemy.sql.elements.False_)
 
@@ -248,12 +248,12 @@ class TestMagicShelfRulesNormalShelf:
 
         mock_shelf_query = MagicMock()
         mock_shelf_query.filter.return_value.first.return_value = fake_shelf
-        
+
         def query_side_effect(model_or_column):
             if model_or_column is ub.Shelf:
                 return mock_shelf_query
             return MagicMock()
-            
+
         mock_session.query.side_effect = query_side_effect
 
         rule = {

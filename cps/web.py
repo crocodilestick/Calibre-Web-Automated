@@ -1033,13 +1033,14 @@ def preview_magic_shelf():
     try:
         data = request.get_json()
         rules = data.get('rules')
+        is_public = bool(data.get('is_public', False))
         
         if not rules or not rules.get('rules'):
             return jsonify({"success": False, "message": _("No rules provided")}), 400
         
         # Temporarily create a query to count matching books
         try:
-            query_filter = magic_shelf.build_query_from_rules(rules, user_id=current_user.id)
+            query_filter = magic_shelf.build_query_from_rules(rules, user_id=current_user.id, is_public=is_public)
             if query_filter is None:
                 return jsonify({"success": False, "message": _("Invalid rules format")}), 400
             
@@ -1153,15 +1154,13 @@ def create_magic_shelf():
         or_(ub.Shelf.user_id == current_user.id, ub.Shelf.is_public == 1)
     ).order_by(ub.Shelf.name).all()
     shelves_map = {s.id: s.name for s in shelves}
-    import json
-    shelves_json = json.dumps(shelves_map)
 
     return render_title_template('magic_shelf_edit.html', 
                                  title=_("Create Magic Shelf"), 
                                  page="magic_shelf_create",
                                  allowed_icons=ALLOWED_ICONS,
                                  languages=language_map,
-                                 shelves_json=shelves_json)
+                                 shelves_map=shelves_map)
 
 
 @web.route("/magicshelf/<int:shelf_id>/edit", methods=["GET", "POST"])
@@ -1267,8 +1266,6 @@ def edit_magic_shelf(shelf_id):
         or_(ub.Shelf.user_id == current_user.id, ub.Shelf.is_public == 1)
     ).order_by(ub.Shelf.name).all()
     shelves_map = {s.id: s.name for s in shelves}
-    import json
-    shelves_json = json.dumps(shelves_map)
 
     return render_title_template('magic_shelf_edit.html', 
                                  shelf=shelf, 
@@ -1276,7 +1273,7 @@ def edit_magic_shelf(shelf_id):
                                  page="magic_shelf_edit",
                                  allowed_icons=ALLOWED_ICONS,
                                  languages=language_map,
-                                 shelves_json=shelves_json)
+                                 shelves_map=shelves_map)
 
 
 @web.route("/magicshelf/<int:shelf_id>/duplicate", methods=["POST"])

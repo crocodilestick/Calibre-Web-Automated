@@ -842,3 +842,4 @@ def invalidate_magic_shelf_cache():
         log.debug("Globally invalidated MagicShelfCache")
     except Exception as e:
         log.error(f"Error invalidating MagicShelfCache: {e}")
+        raise

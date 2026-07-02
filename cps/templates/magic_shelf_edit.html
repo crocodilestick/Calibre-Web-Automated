@@ -620,7 +620,7 @@ $(function() {
             label: 'Shelf',
             type: 'integer',
             input: 'select',
-            values: {{ shelves_json|safe if shelves_json is defined else '{}' }},
+            values: {{ shelves_map|tojson if shelves_map is defined else '{}' }},
             operators: ['equal', 'not_equal'],
             description: 'Book is in a specific shelf'
         }
@@ -743,13 +743,14 @@ $(function() {
             return;
         }
         
+        var isPublic = $('#shelf-is-public').is(':checked');
         $btn.prop('disabled', true).html('<span class="glyphicon space glyphicon-refresh glyphicon-refresh-animate"></span> Loading...');
         
         $.ajax({
             url: "{{ url_for('web.preview_magic_shelf') }}",
             method: 'POST',
             contentType: 'application/json',
-            data: JSON.stringify({rules: rules}),
+            data: JSON.stringify({rules: rules, is_public: isPublic}),
             success: function(response) {
                 if (response.success) {
                     $results.removeClass('error').addClass('success').show();

@@ -170,4 +170,3 @@ def dashboard():
     from .kobo_dashboard import get_kobo_dashboard_data
     dashboard_data = get_kobo_dashboard_data(current_user)
     return render_title_template("kobo_dashboard.html", title=_("Kobo Sync Dashboard"), page="kobo_dashboard", **dashboard_data)
-

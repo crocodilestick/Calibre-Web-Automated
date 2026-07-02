@@ -13,9 +13,9 @@
         </div>
         <div class="panel-body">
           <p>
-            <strong>{{ _('Status:') }}</strong> 
+            <strong>{{ _('Status:') }}</strong>
             {% if has_kobo_token %}
-              <span class="label label-success">{{ _('Schnittstelle aktiv') }}</span>
+              <span class="label label-success">{{ _('Schnittstelle active') }}</span>
             {% else %}
               <span class="label label-warning">{{ _('Nicht eingerichtet') }}</span>
             {% endif %}
@@ -39,7 +39,7 @@
         </div>
         <div class="panel-body">
           <p>
-            <strong>{{ _('Modus:') }}</strong> 
+            <strong>{{ _('Modus:') }}</strong>
             {% if is_two_column_sync %}
               <span class="label label-primary">{{ _('Zwei-Säulen-Sync') }}</span>
             {% else %}
@@ -64,7 +64,7 @@
         </div>
         <div class="panel-body">
           <p>
-            <strong>{{ _('Berechtigte Bücher:') }}</strong> 
+            <strong>{{ _('Berechtigte Bücher:') }}</strong>
             {% if is_two_column_sync %}
               <span class="badge">{{ allowed_book_count }}</span>
             {% else %}
@@ -72,7 +72,7 @@
             {% endif %}
           </p>
           <p>
-            <strong>{{ _('Bereits synchronisiert:') }}</strong> 
+            <strong>{{ _('Bereits synchronisiert:') }}</strong>
             <span class="badge" style="background-color: #5cb85c;">{{ synced_book_count }}</span>
           </p>
           <p class="text-muted" style="font-size: 90%;">
@@ -92,10 +92,7 @@
       <div class="panel-body">
         <ul class="list-unstyled">
           {% for warning in warnings %}
-            <li style="margin-bottom: 1rem; padding: 1rem; border-left: 4px solid 
-              {% if warning.type == 'danger' %}#d9534f; background-color: #fdf7f7;
-              {% elif warning.type == 'warning' %}#f0ad4e; background-color: #fcf8e3;
-              {% else %}#5bc0de; background-color: #f4fbfc;{% endif %}; border-radius: 4px;">
+            <li style="margin-bottom: 1rem; padding: 1rem; border-left: 4px solid {% if warning.type == 'danger' %}#d9534f; background-color: #fdf7f7;{% elif warning.type == 'warning' %}#f0ad4e; background-color: #fcf8e3;{% else %}#5bc0de; background-color: #f4fbfc;{% endif %}; border-radius: 4px;">
               <strong>
                 {% if warning.type == 'danger' %}{{ _('Kritisch:') }}
                 {% elif warning.type == 'warning' %}{{ _('Warnung:') }}

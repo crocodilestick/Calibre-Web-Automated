@@ -18,6 +18,35 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-02 — Kobo-Entkopplung (2-Säulen-Prinzip)
+
+- **Feature/Bug:** Kobo-Entkopplung (2-Säulen-Prinzip)
+- **Branch / Worktree:** `feature/kobo-sync-decoupling` auf `/Users/alex/Documents/Programmierungsprojekte/cwa-alexandria`
+- **Status:** Implementiert, lokal verifiziert, Blocker behoben, Unit- & Integrationstests erfolgreich durchgeführt und als Pull Request auf GitHub eingereicht (PR #5).
+
+### Erledigt
+
+- **Datenbank & Migrationen (`cps/ub.py`)**:
+  - Spalte `kobo_display` zu `Shelf` und `MagicShelf` hinzugefügt.
+  - `migrate_shelf_table` und `migrate_magic_shelf_table` implementiert, die das neue Flag automatisch mit dem Zustand von `kobo_sync` initialisieren.
+- **UI-Ebene**:
+  - **`shelf_edit.html`**: Checkbox `kobo_display` („Als Kobo-Sammlung anzeigen“) hinzugefügt (immer sichtbar, wenn Kobo-Sync konfiguriert ist).
+  - **`magic_shelf_edit.html`**: Checkbox `shelf-kobo-display` im HTML und JavaScript hinzugefügt.
+- **Controller & Routen**:
+  - **`cps/shelf.py`**: `create_edit_shelf` verarbeitet und speichert nun `kobo_display`. Bei Aktivierung wird der Archivierungseintrag gelöscht.
+  - **`cps/web.py`**: `create_magic_shelf` und `edit_magic_shelf` verarbeiten und speichern das AJAX-Flag `kobo_display`.
+  - **`cps/web.py:delete_magic_shelf`**: Archiviert gelöschte Magic-Shelves via `ShelfArchive` unter Verwendung des exakten Erstellers (`shelf.user_id`), um gelöschte Sammlungen sofort an Kobo-Geräte zu propagieren.
+- **Sync-Engine & Blocker-Fix (`cps/kobo.py`)**:
+  - Helper `get_kobo_allowed_book_ids(user_id)` zur Ermittlung der Vereinigung (Union) aller `kobo_sync==True` Quellen implementiert.
+  - Die Lösch- und Synchronisationslogik von `HandleSyncRequest` nutzt diesen Helper zur Bestimmung der erlaubten Buchmenge.
+  - `sync_shelves` und die Magic-Shelf-Sync-Schleifen nutzen `kobo_display` statt `kobo_sync` für das Sammlungs-Rendering und filtern DeletedTags zeitlich über `last_modified > tags_last_modified`.
+  - **Sicherheits-Schranke**: In `create_kobo_tag` und `create_kobo_tag_magic` werden die Sammlungsbücher gegen `allowed_book_ids` gefiltert, sodass nur freigegebene Bücher in Kobo-Sammlungen erscheinen.
+  - **Blocker-Fix (Reading-State-Filter)**: Der Filter für `changed_reading_states` nutzt nun direkt `allowed_book_ids` anstelle der nicht mehr initialisierten `magic_shelf_book_ids` Variable (NameError behoben).
+- **Tests & Verifikation**:
+  - 6 neue Unit- und Integrationstests in `tests/unit/test_kobo_decoupling.py` geschrieben (inkl. full route sync tests).
+  - Alle 29 Kobo- und Magic-Shelf-Tests in Python 3.11 erfolgreich ausgeführt.
+  - `git diff --check` fehlerfrei bereinigt.
+
 ## 2026-07-02 — Integration normale Regale als Magic-Shelf-Regelquelle
 
 - **Feature/Bug:** Erste Umsetzungsphase: Integration normale Regale als Magic-Shelf-Regelquelle

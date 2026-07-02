@@ -151,6 +151,30 @@ def get_magic_shelf_book_ids_for_kobo(user_id):
     return book_ids
 
 
+def get_kobo_allowed_book_ids(user_id):
+    user = ub.session.query(ub.User).filter(ub.User.id == user_id).first()
+    if not user:
+        return set()
+
+    if not user.kobo_only_shelves_sync:
+        return None  # None indicates all books are allowed for sync
+
+    allowed_ids = set()
+
+    # 1. Books from normal shelves with kobo_sync == True
+    shelves_books = (ub.session.query(ub.BookShelf.book_id)
+                     .join(ub.Shelf, ub.BookShelf.shelf == ub.Shelf.id)
+                     .filter(ub.Shelf.user_id == user_id, ub.Shelf.kobo_sync == True).all())
+    for b in shelves_books:
+        allowed_ids.add(b.book_id)
+
+    # 2. Books from Magic Shelves with kobo_sync == True
+    magic_book_ids = get_magic_shelf_book_ids_for_kobo(user_id)
+    allowed_ids.update(magic_book_ids)
+
+    return allowed_ids
+
+
 @kobo.route("/v1/library/sync")
 @requires_kobo_auth
 # @download_required
@@ -183,21 +207,12 @@ def HandleSyncRequest():
 
 
     # Two-Way-Sync Deletion Logic
-    magic_shelf_book_ids = set()
-    if current_user.kobo_only_shelves_sync:
-        magic_shelf_book_ids = get_magic_shelf_book_ids_for_kobo(current_user.id)
+    allowed_book_ids = get_kobo_allowed_book_ids(current_user.id)
+    if allowed_book_ids is not None:
         try:
             # Check all books that are on Kobo according to the database
             synced_books_query = ub.session.query(ub.KoboSyncedBooks.book_id).filter(ub.KoboSyncedBooks.user_id == current_user.id)
             synced_book_ids = {item.book_id for item in synced_books_query}
-
-            # Check all books currently on a Kobo Sync shelf
-            allowed_books_query = (ub.session.query(ub.BookShelf.book_id)
-                                   .join(ub.Shelf, ub.BookShelf.shelf == ub.Shelf.id)
-                                   .filter(ub.Shelf.user_id == current_user.id, ub.Shelf.kobo_sync == True))
-            allowed_book_ids = {item.book_id for item in allowed_books_query}
-            if magic_shelf_book_ids:
-                allowed_book_ids |= magic_shelf_book_ids
 
             # Spot the difference: books that need to be deleted
             books_to_delete_ids = synced_book_ids - allowed_book_ids
@@ -242,21 +257,17 @@ def HandleSyncRequest():
                                                                           ub.ArchivedBook.user_id == current_user.id))
                            .filter(db.Books.id.notin_(calibre_db.session.query(ub.KoboSyncedBooks.book_id)
                                                       .filter(ub.KoboSyncedBooks.user_id == current_user.id)))
-                          .filter(or_(
-                              ub.BookShelf.date_added > sync_token.books_last_modified,
-                              db.Books.last_modified > sync_token.books_last_modified,
-                              db.Books.id.in_(magic_shelf_book_ids) if magic_shelf_book_ids else False
-                          ))
+                           .filter(or_(
+                               ub.BookShelf.date_added > sync_token.books_last_modified,
+                               db.Books.last_modified > sync_token.books_last_modified,
+                               db.Books.id.in_(allowed_book_ids) if allowed_book_ids else False
+                           ))
                            .filter(db.Data.format.in_(KOBO_FORMATS))
                            .filter(calibre_db.common_filters(allow_show_archived=True))
                            .order_by(db.Books.last_modified)
                            .order_by(db.Books.id)
                            .outerjoin(ub.BookShelf, db.Books.id == ub.BookShelf.book_id)
-                           .outerjoin(ub.Shelf, ub.Shelf.id == ub.BookShelf.shelf)
-                           .filter(or_(
-                               and_(ub.Shelf.user_id == current_user.id, ub.Shelf.kobo_sync == True),
-                               db.Books.id.in_(magic_shelf_book_ids) if magic_shelf_book_ids else False
-                           ))
+                           .filter(db.Books.id.in_(allowed_book_ids) if allowed_book_ids else False)
                            .distinct())
     else:
         changed_entries = calibre_db.session.query(db.Books,
@@ -353,13 +364,14 @@ def HandleSyncRequest():
             })
             new_reading_state_last_modified = max(new_reading_state_last_modified, kobo_reading_state.last_modified)
 
-    sync_shelves(sync_token, sync_results, only_kobo_shelves)
+    sync_shelves(sync_token, sync_results, allowed_book_ids, only_kobo_shelves)
 
     # Add magic shelves as collections
     if config.config_kobo_sync_magic_shelves:
 
         for shelf in ub.session.query(ub.MagicShelf)\
-            .filter_by(user_id=current_user.id, kobo_sync=False)\
+            .filter_by(user_id=current_user.id, kobo_display=False)\
+            .filter(func.datetime(ub.MagicShelf.last_modified) > sync_token.tags_last_modified)\
             .all():
 
             sync_results.append({
@@ -372,7 +384,7 @@ def HandleSyncRequest():
             })
 
         magic_shelves = ub.session.query(ub.MagicShelf)\
-            .filter_by(user_id=current_user.id, kobo_sync=True)\
+            .filter_by(user_id=current_user.id, kobo_display=True)\
             .all()
 
         new_tags_last_modified = sync_token.tags_last_modified
@@ -384,7 +396,7 @@ def HandleSyncRequest():
 
             new_tags_last_modified = max(shelf.last_modified, new_tags_last_modified)
 
-            tag = create_kobo_tag_magic(shelf, books)
+            tag = create_kobo_tag_magic(shelf, books, allowed_book_ids)
             if not tag:
                 continue
 
@@ -817,7 +829,7 @@ def HandleTagRemoveItem(tag_id):
 
 # Add new, changed, or deleted shelves to the sync_results.
 # Note: Public shelves that aren't owned by the user aren't supported.
-def sync_shelves(sync_token, sync_results, only_kobo_shelves=False):
+def sync_shelves(sync_token, sync_results, allowed_book_ids, only_kobo_shelves=False):
     new_tags_last_modified = sync_token.tags_last_modified
     # transmit all archived shelfs independent of last sync (why should this matter?)
     for shelf in ub.session.query(ub.ShelfArchive).filter(ub.ShelfArchive.user_id == current_user.id):
@@ -833,22 +845,22 @@ def sync_shelves(sync_token, sync_results, only_kobo_shelves=False):
         ub.session.delete(shelf)
         ub.session_commit()
 
-    extra_filters = []
-    if only_kobo_shelves:
-        for shelf in ub.session.query(ub.Shelf).filter(
-            func.datetime(ub.Shelf.last_modified) > sync_token.tags_last_modified,
-            ub.Shelf.user_id == current_user.id,
-            kobo_sync_disabled_filter(ub.Shelf.kobo_sync)
-        ):
-            sync_results.append({
-                "DeletedTag": {
-                    "Tag": {
-                        "Id": shelf.uuid,
-                        "LastModified": convert_to_kobo_timestamp_string(shelf.last_modified)
-                    }
+    # Delete shelves that are NOT configured for kobo_display (but only if modified since last sync)
+    for shelf in ub.session.query(ub.Shelf).filter(
+        func.datetime(ub.Shelf.last_modified) > sync_token.tags_last_modified,
+        ub.Shelf.user_id == current_user.id,
+        kobo_sync_disabled_filter(ub.Shelf.kobo_display)
+    ):
+        sync_results.append({
+            "DeletedTag": {
+                "Tag": {
+                    "Id": shelf.uuid,
+                    "LastModified": convert_to_kobo_timestamp_string(shelf.last_modified)
                 }
-            })
-        extra_filters.append(ub.Shelf.kobo_sync)
+            }
+        })
+
+    extra_filters = [ub.Shelf.kobo_display == True]
 
     shelflist = ub.session.query(ub.Shelf).outerjoin(ub.BookShelf).filter(
         or_(func.datetime(ub.Shelf.last_modified) > sync_token.tags_last_modified,
@@ -863,7 +875,7 @@ def sync_shelves(sync_token, sync_results, only_kobo_shelves=False):
 
         new_tags_last_modified = max(shelf.last_modified, new_tags_last_modified)
 
-        tag = create_kobo_tag(shelf)
+        tag = create_kobo_tag(shelf, allowed_book_ids)
         if not tag:
             continue
 
@@ -880,7 +892,7 @@ def sync_shelves(sync_token, sync_results, only_kobo_shelves=False):
 
 
 # Creates a Kobo "Tag" object from a ub.Shelf object
-def create_kobo_tag(shelf):
+def create_kobo_tag(shelf, allowed_book_ids):
     tag = {
         "Created": convert_to_kobo_timestamp_string(shelf.created),
         "Id": shelf.uuid,
@@ -890,6 +902,9 @@ def create_kobo_tag(shelf):
         "Type": "UserTag"
     }
     for book_shelf in shelf.books:
+        # Security Barrier: Only add book to collection if it is allowed to be synced
+        if allowed_book_ids is not None and book_shelf.book_id not in allowed_book_ids:
+            continue
         book = calibre_db.get_book(book_shelf.book_id)
         if not book:
             log.info("Book (id: %s) in BookShelf (id: %s) not found in book database",  book_shelf.book_id, shelf.id)
@@ -903,7 +918,7 @@ def create_kobo_tag(shelf):
     return {"Tag": tag}
 
 # Creates a Kobo "Tag" object from a ub.MagicShelf object
-def create_kobo_tag_magic(shelf, books):
+def create_kobo_tag_magic(shelf, books, allowed_book_ids):
     tag = {
         "Created": convert_to_kobo_timestamp_string(shelf.created),
         "Id": shelf.uuid,
@@ -913,6 +928,9 @@ def create_kobo_tag_magic(shelf, books):
         "Type": "UserTag"
     }
     for book in books:
+        # Security Barrier: Only add book to collection if it is allowed to be synced
+        if allowed_book_ids is not None and book.id not in allowed_book_ids:
+            continue
         tag["Items"].append(
             {
                 "RevisionId": book.uuid,

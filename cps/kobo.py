@@ -9,7 +9,7 @@
 import base64
 from datetime import datetime, timezone
 from cps import cw_babel
-from kobo_sync_utils import get_kobo_created_ts
+from kobo_sync_utils import get_kobo_created_ts, kobo_sync_disabled_filter
 import os
 import uuid
 import zipfile
@@ -836,7 +836,7 @@ def sync_shelves(sync_token, sync_results, only_kobo_shelves=False):
         for shelf in ub.session.query(ub.Shelf).filter(
             func.datetime(ub.Shelf.last_modified) > sync_token.tags_last_modified,
             ub.Shelf.user_id == current_user.id,
-            not ub.Shelf.kobo_sync
+            kobo_sync_disabled_filter(ub.Shelf.kobo_sync)
         ):
             sync_results.append({
                 "DeletedTag": {

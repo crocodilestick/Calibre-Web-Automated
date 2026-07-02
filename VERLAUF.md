@@ -20,6 +20,36 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 
 ---
 
+## 2026-07-02 — Kobo sync shelves filter bugfix
+
+- **Feature/Bug:** Kobo `sync_shelves()`-Filter-Bugfix
+- **Branch / Worktree:** `fix/kobo-sync-shelves-filter` in `/Users/alex/Documents/Programmierungsprojekte/cwa-alexandria`
+- **Status (Abschluss):** erledigt
+
+### Erledigt
+
+- In `sync_shelves()` den fehlerhaften SQLAlchemy-Filter `not ub.Shelf.kobo_sync` ersetzt.
+- In `kobo_sync_utils.py` den Helper `kobo_sync_disabled_filter()` ergänzt, der `False` und `NULL` als nicht Kobo-synchronisiert behandelt.
+- Lokales minimales `.venv` aufgesetzt, um die Kobo-Unit-Tests isoliert auf macOS ausführen zu können (ohne OpenLDAP/Wand).
+- Unit-Test `tests/unit/test_kobo_shelf_sync_filters.py` um echten SQLAlchemy-SQLite-Dialekt-Kompilierungstest erweitert.
+- Alle 13 Kobo-bezogenen Unit-Tests (`test_kobo_shelf_sync_filters.py`, `test_kobo_sync_timestamps.py`, `test_kobo_cover_image_id.py`) erfolgreich ausgeführt.
+- Lokalen Commit `76326e9` erstellt.
+- Branch `fix/kobo-sync-shelves-filter` erfolgreich nach GitHub gepusht.
+
+### Nächster Schritt (zum Zeitpunkt)
+
+- Bereit für Merge/PR-Erstellung (durch Alex).
+
+### Offene Entscheidungen (damals)
+
+- Keine. Der Branch wurde wie gewünscht abgesichert und hochgeladen.
+
+### Belege
+
+- Alle 13 Unit-Tests bestanden (siehe `walkthrough.md`); Kompilierungstest für SQLiteDialect grün; Commit `76326e9` gepusht.
+
+---
+
 ## 2026-07-02 — GitHub-ready Fork-root-Umzug
 
 - **Feature/Bug:** Fork-root-Umzug fuer CWA Alexandria

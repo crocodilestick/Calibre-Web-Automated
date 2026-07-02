@@ -18,6 +18,43 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-02 — Magic-Shelf-Regeln Audit und Spezifikation
+
+- **Feature/Bug:** Magic-Shelf-Regeln Audit und Spezifikation (Erweiterung normale Regale & Entkopplungs-Konzept)
+- **Branch / Worktree:** `research/magic-shelves-audit` in `/Users/alex/Documents/Programmierungsprojekte/cwa-alexandria`
+- **Status (Abschluss):** erledigt (online gemerged)
+
+### Erledigt
+
+- **Audit-Aktualisierung ([magic-shelves-audit.md](file:///Users/alex/Documents/Programmierungsprojekte/cwa-alexandria/docs/alexandria/magic-shelves-audit.md)):**
+  - Fachliche Einbindung der Kobo-Entkopplung (2-Säulen-Prinzip, Kobo-Übersicht/Dashboard, Serien-Ausnahme).
+  - 1000-Bücher-Deckel-Warnung aufgenommen.
+  - Spaltenname auf `ub.BookShelf.shelf` korrigiert.
+  - Backend-Berechtigungsprüfungen (Sicherheitsgrenze) konzipiert.
+  - Cache-Invalidierungsstrategie bewertet (Änderung normale Regale).
+  - Präzisierung der Cross-Model-Joins (SQL-Joins möglich, aber ID-Listen-Variante ist Upstream-näher).
+- **Versionierter Implementierungsplan ([magic-shelves-plan.md](file:///Users/alex/Documents/Programmierungsprojekte/cwa-alexandria/docs/alexandria/magic-shelves-plan.md)):**
+  - Detaillierter Plan im Projektordner versioniert, um Reviewbarkeit in Git zu gewährleisten.
+  - Feldname auf `normal_shelf` geändert.
+  - Operator-Einschränkung (`equal` und `not_equal` only) in UI und Backend verankert.
+  - **Sicherheits-Fix:** Fehler und Permission-Verstöße im Backend evaluieren zu `sqlalchemy.false()`, um unberechtigte AND-Bypasses durch `None` zu verhindern.
+  - **Typ-Sicherheit:** `int(value)` wird mit `try/except` für manipuliertes JSON abgesichert und liefert `false()`.
+  - **Globale Cache-Bereinigung:** Bei Regalmanipulationen in `cps/shelf.py` wird die gesamte Cache-Tabelle `ub.MagicShelfCache` gelöscht, um Stale-Probleme bei geteilten Regalen zu vermeiden.
+  - Testplan erweitert (Kobo-Sicherung, private Regale abweisen, leere Regale, String-Werte).
+- Lokalen Commit `efa3b48` auf dem Branch `research/magic-shelves-audit` erstellt, nach GitHub gepusht, PR #3 erstellt und online gemergt.
+
+### Nächster Schritt (zum Zeitpunkt)
+
+- Start der ersten technischen Umsetzungsphase (Integration normale Regale als Regelquelle).
+
+### Offene Entscheidungen (damals)
+
+- Keine (durch Online-Merge von PR #3 abgeschlossen).
+
+### Belege
+
+- PR #3 erfolgreich gemergt: `https://github.com/salutaris91/cwa-alexandria/pull/3`
+
 ---
 
 ## 2026-07-02 — Lokale Mac-Docker-Testumgebung

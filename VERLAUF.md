@@ -20,6 +20,36 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 
 ---
 
+## 2026-07-02 — Lokale Mac-Docker-Testumgebung
+
+- **Feature/Bug:** Lokale Mac-Docker-Testumgebung fuer CWA Alexandria
+- **Branch / Worktree:** `setup/local-docker-dev` in `/Users/alex/Documents/Programmierungsprojekte/cwa-alexandria`
+- **Status (Abschluss):** erledigt
+
+### Erledigt
+
+- `/local-dev/` in `.gitignore` eingetragen (ohne unnötige Leerzeilen am Dateiende).
+- `init_local_dev.sh` erstellt und robuster gestaltet (bricht mit `exit 1` ab, wenn Template-DBs fehlen).
+- Skript ausgeführt und die korrekte Erstellung der Pfade unter `./local-dev` verifiziert.
+- `docker-compose.local.yml` erstellt, um CWA auf Port 8085 mit relativem Mount auf `./local-dev` und vollem Root-Workspace-Bind für Live-Editing auszuführen.
+- `docs/alexandria/local-development.md` erstellt (inklusive ngrok-Sicherheitshinweisen und Root-Mount-Warnungen) und in `docs/alexandria/README.md` (Next Step & Dokumente) aktualisiert/verlinkt.
+- Lokalen Commit `5675a23` auf dem Branch `setup/local-docker-dev` erstellt.
+- Branch nach GitHub gepusht und Pull Request #2 erstellt.
+
+### Nächster Schritt (zum Zeitpunkt)
+
+- Bereit für Merge/PR-Erstellung (durch Alex).
+
+### Offene Entscheidungen (damals)
+
+- PR-Merge auf GitHub.
+
+### Belege
+
+- `./init_local_dev.sh` läuft sauber durch; `.gitignore` ist angepasst und bereinigt; lokaler Commit `5675a23` gepusht; PR #2 offen (siehe `walkthrough.md`).
+
+---
+
 ## 2026-07-02 — Kobo sync shelves filter bugfix
 
 - **Feature/Bug:** Kobo `sync_shelves()`-Filter-Bugfix

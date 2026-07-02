@@ -34,3 +34,15 @@ def get_kobo_created_ts(book):
         ts_created = datetime.min
 
     return ts_created
+
+
+def kobo_sync_disabled_filter(kobo_sync_column, combine=None, false_value=False):
+    """Return a SQLAlchemy filter for shelves that should not sync to Kobo."""
+    if combine is None:
+        from sqlalchemy import false
+        from sqlalchemy.sql.expression import or_
+
+        combine = or_
+        false_value = false()
+
+    return combine(kobo_sync_column == false_value, kobo_sync_column.is_(None))

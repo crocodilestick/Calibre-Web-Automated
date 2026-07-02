@@ -18,6 +18,28 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-02 — Kobo-Dashboard & Sammlungs-Zusammenführung
+
+- **Feature/Bug:** Kobo-Dashboard und Sammlungen-Sidebar-Zusammenführung
+- **Branch / Worktree:** `feature/kobo-dashboard` auf `/Users/alex/Documents/Programmierungsprojekte/cwa-alexandria`
+- **Status:** Erfolgreich abgeschlossen. Sämtliche Dashboard-Berechnungen (Union-Sync-Menge, eReader-Synchronisationsstatistiken, eReader-Token-Prüfungen, Magic-Shelf ID-Ermittlung ohne Cache-Seiteneffekte, Download-Berechtigungsprüfungen) wurden implementiert. Das Dashboard zeigt Kobo-Sammlungen gemischt, aber mit Typ-Kennzeichnung. Die Sidebar fasst normale und Magic-Regale unter der Überschrift "Sammlungen" zusammen. Alle 4 Unit-Tests in `tests/unit/test_kobo_dashboard.py` wurden erfolgreich ausgeführt und alle 20 Kobo- und Magic-Shelf-Tests bestehen fehlerfrei.
+
+### Erledigt
+
+- **Backend-Logik & Zirkularimport-Vermeidung**:
+  - `cps/kobo_dashboard.py` neu erstellt, um die Kobo-Dashboard Berechnungs- und Aggregationslogik (`get_kobo_dashboard_data`) zu kapseln.
+  - Zirkularimport durch Lazy-Import von `get_kobo_allowed_book_ids` innerhalb der Aggregationsfunktion vermieden.
+  - ID-Ermittlung für Magic Shelves (`get_magic_shelf_book_ids_direct`) direkt über die Calibre-Datenbank (via `cdb.common_filters()`) implementiert, was den Cache umgeht und Zirkularbezüge sowie `current_user` Seiteneffekte vermeidet.
+- **Routen & Templates**:
+  - Route `/kobo_auth/dashboard` in `cps/kobo_auth.py` hinzugefügt (abgesichert über `@user_login_required`). Sie übergibt `page="kobo_dashboard"`.
+  - HTML-Template `cps/templates/kobo_dashboard.html` im Bootstrap-Stil von Calibre-Web erstellt. Es visualisiert den Kobo-Verbindungsstatus, Sync-Modus, Statistiken, System-Warnungen und die Kobo-Sammlungen.
+- **Seitenleisten-Konsolidierung (Navigation)**:
+  - Normale Regale und Magic Shelves in `cps/templates/layout.html` unter dem gemeinsamen Abschnitt „Sammlungen“ (nacheinander sortiert) zusammengefasst.
+  - Link zur „Kobo-Auswahl“ in der Sidebar hinzugefügt, sichtbar über die globalen Context-Variablen `config.config_kobo_sync and current_user.is_authenticated`.
+- **Tests**:
+  - 4 Unit-Tests in `tests/unit/test_kobo_dashboard.py` geschrieben (inkl. Mocking von CalibreDB, config-Parametern und `current_user` in einer Flask-Request-Umgebung).
+  - Alle 20 Kobo- und Magic-Shelf-Tests erfolgreich lokal ausgeführt.
+
 ## 2026-07-02 — Smoke-Test Kobo-Entkopplung (2-Säulen-Prinzip)
 
 - **Feature/Bug:** Smoke-Test für Kobo-Entkopplung

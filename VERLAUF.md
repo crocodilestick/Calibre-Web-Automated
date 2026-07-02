@@ -18,6 +18,31 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-02 — Smoke-Test Kobo-Entkopplung (2-Säulen-Prinzip)
+
+- **Feature/Bug:** Smoke-Test für Kobo-Entkopplung
+- **Branch / Worktree:** `main` auf `/Users/alex/Documents/Programmierungsprojekte/cwa-alexandria`
+- **Status:** Erfolgreich abgeschlossen. Sämtliche API-Sync-Mechanismen, Sicherheits-Schranken (für normale Regale & Magic-Shelves), leere Kollektionen, DB-Migrationen und der inkrementelle Löschpfad wurden in der lokalen Docker-Umgebung (OrbStack) verifiziert. Ein kritischer Flask 500 BuildError bei der Token-Generierung wurde analysiert und per Container-Neustart-Workaround umgangen.
+
+### Erledigt
+
+- **Docker-Laufzeit & Umgebung**:
+  - Lokale Docker-Laufzeit **OrbStack** erfolgreich in Betrieb genommen.
+  - Analyse des SQLite Dateisystem-Lockings unter VirtioFS: Parallele Schreibzugriffe von CLI-Clients führen zu Corruption (`disk I/O error`). Der Testablauf wurde um ein sicheres Offline-DB-Setup erweitert.
+- **Datenbank-Migration**:
+  - Spalte `kobo_display` bei normalen Regalen und Magic-Shelves sowie die Wertübernahme erfolgreich verifiziert.
+- **Ablauf-Blocker dokumentiert (Workaround)**:
+  - HTTP 500 BuildError bei Token-Generierung zur Laufzeit identifiziert. Neustart-Workaround im Testplan und in der Dokumentation verankert.
+- **API-Verifikation (Sicherheits-Schranke & Leere Kollektionen)**:
+  - Zweiphasige Verifikation der Sicherheits-Schranke: Im Full-Sync ist Buch_B über die aktiven Trägerregale sync-berechtigt und wird ausgeliefert. Erst nach der Deletion der Trägerregale wird Buch_B im inkrementellen Sync mit `IsRemoved: true` entfernt und aus den verbleibenden Display-Only-Kollektionen (normale Regale und Magic-Shelves) herausgefiltert.
+  - Display-Only Magic-Shelves (`kobo_sync=0` und `kobo_display=1`) liefern nur sync-berechtigte Bücher aus.
+  - Leere Kollektionen werden als Kobo-Tags mit `"Items": []` übertragen (verifiziert für normale Regale und Magic-Shelves).
+- **Inkrementeller Sync & Löschpfade**:
+  - App-Löschpfade über die echten Endpunkte `/shelf/delete/20` und `/magicshelf/100/delete` (mit `{"success": true}` Response) verifiziert. Beide erzeugen korrekte `shelf_archive` Einträge.
+  - Inkrementeller Sync mit echtem `x-kobo-synctoken` belegt die Deletion-Übermittlung: Beide gelöschten Shelves werden als `DeletedTag` übertragen.
+  - Entkopplungs-Mechanismus: Das nicht mehr sync-berechtigte Buch wird beim inkrementellen Sync mit `"IsRemoved": true` an den Reader übertragen.
+  - Aufräum-Mechanismus: `shelf_archive`-Einträge werden nach dem Sync automatisch und rückstandslos gelöscht.
+
 ## 2026-07-02 — Kobo-Entkopplung (2-Säulen-Prinzip)
 
 - **Feature/Bug:** Kobo-Entkopplung (2-Säulen-Prinzip)

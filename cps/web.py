@@ -1033,7 +1033,7 @@ def preview_magic_shelf():
     try:
         data = request.get_json()
         rules = data.get('rules')
-        is_public = bool(data.get('is_public', False))
+        is_public = data.get('is_public') is True
         
         if not rules or not rules.get('rules'):
             return jsonify({"success": False, "message": _("No rules provided")}), 400

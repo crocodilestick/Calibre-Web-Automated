@@ -18,6 +18,26 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-02 — Ideengeber-Audit externe Forks
+
+- **Feature/Bug:** Ideengeber-Audit fuer externe CWA-/Companion-Forks.
+- **Branch / Worktree:** `docs/ideengeber-audit` in `/Users/alex/Documents/Programmierungsprojekte/cwa-alexandria`
+- **Status:** Abgeschlossen. Audit-Einordnung dokumentiert; keine Codeaenderungen.
+
+### Erledigt
+
+- **Domoel/Calibre-Web-Automated**: Als Kobo-Sync-Ideengeber bewertet. Ergebnis: Idee zur Entfernungslogik relevant, konkreter Patch zu gross und zu riskant fuer direkte Uebernahme.
+- **sempai-san/cwa-nexus**: Als Multi-Library-Architekturbeispiel bewertet. Ergebnis: spaeter interessant, aktuell zu breit fuer Alexandrias Kobo-Fokus.
+- **jmarmstrong1207/Calibre-Web-Auto**: Als Produktprinzip "manueller Ingest statt Magie" im Backlog vermerkt.
+- **doen1el/calibre-web-companion**: Als spaetere UX-/Companion-Inspiration im Backlog vermerkt.
+- **Roadmap-Check**: Keine Roadmap-Datei gefunden; Backlog-Notizen deshalb in `docs/alexandria/fork-audit.md` dokumentiert.
+
+### Belege
+
+- GitHub-Repo-Metadaten und Patch-Diffs per `curl` geprueft.
+- Lokaler Kobo-Sync-Pfad in `cps/kobo.py` mit Domoels Patch-Idee abgeglichen.
+- `git diff --check` fehlerfrei.
+
 ## 2026-07-02 — Lokale Docker-Dev Bugfixes (Regal-500, Deutsch-L10n, Dashboard-Theme-Readability)
 
 - **Feature/Bug:** Lokale Docker-Dev Bugfixes (Regal-500, Deutsch-L10n, Dashboard-Theme-Readability)

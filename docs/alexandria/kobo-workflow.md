@@ -44,3 +44,59 @@ Sammlung "Universum: Scheibenwelt":
 ```
 
 Damit waere `Fantasy` wieder als Sortiermerkmal moeglich, ohne automatisch die gesamte Fantasy-Bibliothek zu synchronisieren.
+
+## Geplantes Verhalten: Loeschen direkt auf dem Kobo
+
+Wenn ein Buch direkt auf dem Kobo geloescht wird, soll Alexandria diese Aktion
+nicht als Loeschung aus der Bibliothek verstehen. Das Buch bleibt in Calibre
+erhalten. Die Aktion bedeutet nur: Dieses Buch soll nicht mehr auf diesen
+Kobo-Sync-Weg.
+
+Die bevorzugte Modellierung ist ein explizites Ausschlussregal, zum Beispiel:
+
+```text
+Kobo: Ausgeschlossen
+```
+
+Alternativ waere ein Name wie `Kobo: Archiv` moeglich. Fachlich ist
+`Kobo: Ausgeschlossen` klarer, weil es keinen allgemeinen Bibliotheksstatus
+behauptet, sondern nur die Sync-Entscheidung beschreibt.
+
+Zielverhalten:
+
+- Ein DELETE vom Kobo fuegt das Buch in das Ausschlussregal des Benutzers ein.
+- Das Buch bleibt in der Calibre-Bibliothek und in seinen fachlichen Metadaten
+  unveraendert.
+- Die Kobo-Erlaubnislogik berechnet kuenftig:
+
+```text
+Kobo-erlaubte Buecher =
+  alle einschliessenden Kobo-Quellen
+  MINUS alle Buecher aus "Kobo: Ausgeschlossen"
+```
+
+- Das Ausschlussregal hat Vorrang vor normalen Regalen, Magic Shelves und
+  spaeteren Custom-Column-Regeln.
+- Wenn ein Buch wieder auf den Kobo soll, muss es aus `Kobo: Ausgeschlossen`
+  entfernt werden.
+
+Wichtig: Das Ausschlussregal darf nicht nur als sichtbare Kobo-Sammlung
+behandelt werden. Es ist primaer eine Steuerregel fuer die Sync-Erlaubnis.
+
+### Implementierungs-Mini-Spike
+
+Der naechste technische Schritt sollte klein bleiben:
+
+1. Hilfslogik fuer ein benutzerspezifisches System-Regal
+   `Kobo: Ausgeschlossen` definieren.
+2. Den Kobo-DELETE-Endpunkt so erweitern, dass er das Buch dort eintraegt,
+   statt nur den Sync-Tracking-Eintrag zu entfernen.
+3. `get_kobo_allowed_book_ids()` so erweitern, dass diese Buch-IDs von der
+   erlaubten Menge abgezogen werden.
+4. Tests ergaenzen:
+   - Ein Buch wird per Magic Shelf erlaubt, auf dem Kobo geloescht und kommt
+     beim naechsten Sync nicht wieder.
+   - Ein Buch wird aus `Kobo: Ausgeschlossen` entfernt und darf danach wieder
+     ueber normale Sync-Regeln erscheinen.
+   - Im Full-Sync-Modus wird die bestehende Archivierungslogik nicht
+     versehentlich veraendert.

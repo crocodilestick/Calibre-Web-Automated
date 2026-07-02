@@ -24,6 +24,10 @@ Erwartete Elemente:
 - Warnung bei sehr breiten Regeln.
 - Filter fuer Universum, Inhaltstyp, Buchart und Lesestatus.
 - Schnelle Aktion: aus Kobo-Auswahl entfernen.
+- Sichtbare Kennzeichnung fuer Buecher in `Kobo: Ausgeschlossen`, damit klar
+  ist, warum ein Buch trotz passender Regel nicht synchronisiert wird.
+- Aktion: wieder fuer Kobo erlauben, indem das Buch aus
+  `Kobo: Ausgeschlossen` entfernt wird.
 
 ### Sammlungen
 
@@ -56,3 +60,5 @@ Magic-Shelf-Regeln bleiben moeglich, aber mit klareren Namen:
 - Eine Sammlung basiert nur auf einem breiten Genre-Tag.
 - Ein Buch ist fuer Kobo ausgewaehlt, hat aber keine sinnvolle Sammlung.
 - Ein Buch ist in einer Kobo-Sammlung, aber nicht fuer den Kobo ausgewaehlt.
+- Ein Buch wird durch eine Regel eingeschlossen, aber durch
+  `Kobo: Ausgeschlossen` blockiert.

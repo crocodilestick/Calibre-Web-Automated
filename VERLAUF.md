@@ -18,6 +18,25 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-02 — Kobo-Loeschen als Ausschlussregal
+
+- **Feature/Bug:** Kobo-Loeschen als Ausschlussregal-Entscheidung dokumentieren.
+- **Branch / Worktree:** `docs/kobo-delete-exclusion-shelf` in `/Users/alex/Documents/Programmierungsprojekte/cwa-alexandria`
+- **Status:** Abgeschlossen. Entscheidung dokumentiert; noch keine Codeaenderungen.
+
+### Erledigt
+
+- **Produktentscheidung:** DELETE direkt vom Kobo bedeutet keine Bibliotheksloeschung, sondern Ausschluss aus der Kobo-Synchronisation.
+- **Ausschlussregal:** `Kobo: Ausgeschlossen` als bevorzugtes System-/Steuerregal dokumentiert; klarer als ein allgemeines `Archiv`.
+- **Sync-Regel:** Kobo-Erlaubnis wird kuenftig als einschliessende Quellen minus Ausschlussregal gedacht.
+- **UI-Idee:** Kobo-Auswahl soll blockierte Buecher sichtbar kennzeichnen und eine Aktion zum Wiederzulassen anbieten.
+- **Mini-Spike:** Naechste technische Umsetzung in kleinen Schritten dokumentiert: System-Regal-Hilfslogik, DELETE-Endpunkt, `get_kobo_allowed_book_ids()`-Abzug und fokussierte Tests.
+
+### Belege
+
+- `docs/alexandria/kobo-workflow.md` und `docs/alexandria/ui-ideen.md` lokal geprueft.
+- `git diff --check` fehlerfrei.
+
 ## 2026-07-02 — Ideengeber-Audit externe Forks
 
 - **Feature/Bug:** Ideengeber-Audit fuer externe CWA-/Companion-Forks.

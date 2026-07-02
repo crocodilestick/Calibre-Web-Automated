@@ -31,6 +31,10 @@ Führe im Root-Verzeichnis des Repositories aus:
 > - Ingest-Ordner: `/cwa-book-ingest` (gemappt auf `./local-dev/ingest`)
 > - Calibre-Bibliothek: `/calibre-library` (gemappt auf `./local-dev/calibre-library`)
 
+> [!NOTE]
+> **Sprachauswahl & Übersetzung (Deutsch)**:
+> Die Weboberfläche in der Docker-Umgebung nutzt die übersetzten Sprachdateien. Da die kompilierten `.mo`-Dateien auf dem Host nicht versioniert sind, führt der Container bei jedem Start einen Check durch: Ist die deutsche Übersetzung (`cps/translations/de/LC_MESSAGES/messages.mo`) nicht vorhanden, werden alle Übersetzungen im gemounteten Verzeichnis automatisch kompiliert. Auf dem Host-System werden dadurch die `.mo`-Dateien erzeugt, damit sie für den Container sichtbar sind. Sie sind in `.gitignore` eingetragen und werden nicht committet.
+
 ---
 
 ## 3. Container starten und stoppen

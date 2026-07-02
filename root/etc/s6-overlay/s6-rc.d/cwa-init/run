@@ -221,6 +221,20 @@ finally:
 PY
 
 
+# Compile translations if running in local dev / mount mode, or if some .mo files are missing
+missing_mo=0
+for po_file in /app/calibre-web-automated/cps/translations/*/LC_MESSAGES/messages.po; do
+  if [[ ! -f "${po_file%.po}.mo" ]]; then
+    missing_mo=1
+    break
+  fi
+done
+
+if [[ "$missing_mo" -eq 1 ]]; then
+  echo "[cwa-init] Missing translation (.mo) files detected. Running compile_translations.sh..."
+  bash /app/calibre-web-automated/scripts/compile_translations.sh || echo "[cwa-init] WARNING: Translation compilation failed!"
+fi
+
 echo "[cwa-init] CWA-init complete! Service exiting now..."
 
 #------------------------------------------------------------------------------------------------------------------------

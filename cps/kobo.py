@@ -151,6 +151,51 @@ def get_magic_shelf_book_ids_for_kobo(user_id):
     return book_ids
 
 
+def get_or_create_kobo_exclusion_shelf(user_id):
+    shelves = ub.session.query(ub.Shelf).filter(
+        ub.Shelf.user_id == user_id,
+        ub.Shelf.name == "Kobo: Ausgeschlossen"
+    ).all()
+
+    if shelves:
+        # Robustly ensure all existing shelves with this name have sync/display disabled
+        changed = False
+        for s in shelves:
+            if s.kobo_sync or s.kobo_display:
+                s.kobo_sync = False
+                s.kobo_display = False
+                changed = True
+        if changed:
+            try:
+                ub.session.commit()
+                log.info("Reset kobo_sync and kobo_display to False for existing Kobo exclusion shelves of user %d", user_id)
+            except Exception as e:
+                ub.session.rollback()
+                log.error("Failed to update existing Kobo exclusion shelves: %s", e)
+                raise e
+        return shelves[0]
+
+    # Create a new shelf since none exist
+    shelf = ub.Shelf(
+        name="Kobo: Ausgeschlossen",
+        user_id=user_id,
+        is_public=0,
+        kobo_sync=False,
+        kobo_display=False
+    )
+    ub.session.add(shelf)
+    try:
+        from .magic_shelf import invalidate_magic_shelf_cache
+        invalidate_magic_shelf_cache()
+        ub.session.commit()
+        log.info("Created Kobo exclusion shelf for user %d", user_id)
+    except Exception as e:
+        ub.session.rollback()
+        log.error("Failed to create Kobo exclusion shelf: %s", e)
+        raise e
+    return shelf
+
+
 def get_kobo_allowed_book_ids(user_id):
     user = ub.session.query(ub.User).filter(ub.User.id == user_id).first()
     if not user:
@@ -171,6 +216,22 @@ def get_kobo_allowed_book_ids(user_id):
     # 2. Books from Magic Shelves with kobo_sync == True
     magic_book_ids = get_magic_shelf_book_ids_for_kobo(user_id)
     allowed_ids.update(magic_book_ids)
+
+    # 3. Subtract books from all exclusion shelves named "Kobo: Ausgeschlossen" (read-only)
+    exclusion_shelves = ub.session.query(ub.Shelf).filter(
+        ub.Shelf.user_id == user_id,
+        ub.Shelf.name == "Kobo: Ausgeschlossen"
+    ).all()
+    excluded_ids = set()
+    for ex_shelf in exclusion_shelves:
+        ex_books = ub.session.query(ub.BookShelf.book_id).filter(
+            ub.BookShelf.shelf == ex_shelf.id
+        ).all()
+        for eb in ex_books:
+            excluded_ids.add(eb.book_id)
+
+    if excluded_ids:
+        allowed_ids = allowed_ids - excluded_ids
 
     return allowed_ids
 
@@ -1171,16 +1232,31 @@ def HandleBookDeletionRequest(book_uuid):
         return redirect_or_proxy_request()
 
     book_id = book.id
-    # If the user has shelf sync enabled, do nothing.
-    # The book will be removed from the device on the next sync.
+    # If the user has shelf sync enabled, add to exclusion shelf instead of archiving or doing nothing.
     if current_user.kobo_only_shelves_sync:
-        pass
+        try:
+            exclusion_shelf = get_or_create_kobo_exclusion_shelf(current_user.id)
+            book_in_shelf = ub.session.query(ub.BookShelf).filter(
+                ub.BookShelf.shelf == exclusion_shelf.id,
+                ub.BookShelf.book_id == book_id
+            ).first()
+            if not book_in_shelf:
+                ub.session.add(ub.BookShelf(book_id=book_id, shelf=exclusion_shelf.id))
+                from .magic_shelf import invalidate_magic_shelf_cache
+                invalidate_magic_shelf_cache()
+                ub.session.commit()
+                log.info("Book %d added to Kobo exclusion shelf for user %d", book_id, current_user.id)
+        except Exception as e:
+            ub.session.rollback()
+            log.error("Failed to add book %d to Kobo exclusion shelf: %s", book_id, e)
+            abort(500, description="Database error while adding book to exclusion shelf")
     # Otherwise, archive the book if the user has permission to see archived books.
     elif current_user.check_visibility(32768):
         kobo_sync_status.change_archived_books(book_id, True)
 
     kobo_sync_status.remove_synced_book(book_id)
     return "", 204
+
 
 
 # TODO: Implement the following routes

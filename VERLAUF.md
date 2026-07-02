@@ -18,6 +18,66 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-02 — Kobo-Loeschen als Ausschlussregal (Kobo: Ausgeschlossen)
+
+- **Feature/Bug:** Kobo-Loeschen als Ausschlussregal (Kobo: Ausgeschlossen) implementiert, gehärtet und getestet.
+- **Branch / Worktree:** `feature/kobo-exclusion-shelf`
+- **Status:** Erfolgreich abgeschlossen. Alle 14 Unit-Tests und Dashboard-Tests laufen grün.
+
+### Erledigt
+
+- **System-Exclusion-Shelf Helper:** `get_or_create_kobo_exclusion_shelf(user_id)` implementiert. Es stellt sicher, dass alle existierenden Regale mit dem Namen `Kobo: Ausgeschlossen` auf `kobo_sync=False` and `kobo_display=False` zurückgesetzt werden, um eReader-Sammlungs-Synchronisationen robust zu verhindern.
+- **Selective Deletion Path:** `HandleBookDeletionRequest` trägt Bücher bei selektivem Sync ins Ausschlussregal ein und invalidiert den Magic-Shelf Cache, anstatt das Buch aus der Calibre-Bibliothek zu entfernen.
+- **Strikte Deletion-Fehlerbehandlung:** Datenbankfehler im selektiven Deletion-Pfad führen via `abort(500)` zum Abbruch und Rollback; `remove_synced_book()` wird erst nach erfolgreichem Ausschluss ausgeführt.
+- **Allowed Books Abzug:** `get_kobo_allowed_book_ids(user_id)` zieht alle Bücher aus allen Regalen namens `Kobo: Ausgeschlossen` lesend und robust ab (keine Schreibeffekte).
+- **Full-Sync Unverändert:** Die Full-Sync/Archivierungslogik wurde nicht verändert.
+- **Automatisierte Tests:** 6 neue Unit- und Integrationstests verifizieren den Abzug, das selektive DELETE, Fehlerverhalten im DB-Pfad, Bereinigung bestehender Regale, die Full-Sync-Archivierungsberechtigung und den Device-Entitlement-Abzug mit `IsArchived: True`.
+
+### Belege
+
+- Alle 14 Unit-Tests in `test_kobo_decoupling.py` erfolgreich ausgeführt.
+- Alle 4 Unit-Tests in `test_kobo_dashboard.py` erfolgreich ausgeführt.
+- `git diff --check` fehlerfrei.
+
+## 2026-07-02 — Kobo-Loeschen als Ausschlussregal
+
+- **Feature/Bug:** Kobo-Loeschen als Ausschlussregal-Entscheidung dokumentieren.
+- **Branch / Worktree:** `docs/kobo-delete-exclusion-shelf` in `/Users/alex/Documents/Programmierungsprojekte/cwa-alexandria`
+- **Status:** Abgeschlossen. Entscheidung dokumentiert; noch keine Codeaenderungen.
+
+### Erledigt
+
+- **Produktentscheidung:** DELETE direkt vom Kobo bedeutet keine Bibliotheksloeschung, sondern Ausschluss aus der Kobo-Synchronisation.
+- **Ausschlussregal:** `Kobo: Ausgeschlossen` als bevorzugtes System-/Steuerregal dokumentiert; klarer als ein allgemeines `Archiv`.
+- **Sync-Regel:** Kobo-Erlaubnis wird kuenftig als einschliessende Quellen minus Ausschlussregal gedacht.
+- **UI-Idee:** Kobo-Auswahl soll blockierte Buecher sichtbar kennzeichnen und eine Aktion zum Wiederzulassen anbieten.
+- **Mini-Spike:** Naechste technische Umsetzung in kleinen Schritten dokumentiert: System-Regal-Hilfslogik, DELETE-Endpunkt, `get_kobo_allowed_book_ids()`-Abzug und fokussierte Tests.
+
+### Belege
+
+- `docs/alexandria/kobo-workflow.md` und `docs/alexandria/ui-ideen.md` lokal geprueft.
+- `git diff --check` fehlerfrei.
+
+## 2026-07-02 — Ideengeber-Audit externe Forks
+
+- **Feature/Bug:** Ideengeber-Audit fuer externe CWA-/Companion-Forks.
+- **Branch / Worktree:** `docs/ideengeber-audit` in `/Users/alex/Documents/Programmierungsprojekte/cwa-alexandria`
+- **Status:** Abgeschlossen. Audit-Einordnung dokumentiert; keine Codeaenderungen.
+
+### Erledigt
+
+- **Domoel/Calibre-Web-Automated**: Als Kobo-Sync-Ideengeber bewertet. Ergebnis: Idee zur Entfernungslogik relevant, konkreter Patch zu gross und zu riskant fuer direkte Uebernahme.
+- **sempai-san/cwa-nexus**: Als Multi-Library-Architekturbeispiel bewertet. Ergebnis: spaeter interessant, aktuell zu breit fuer Alexandrias Kobo-Fokus.
+- **jmarmstrong1207/Calibre-Web-Auto**: Als Produktprinzip "manueller Ingest statt Magie" im Backlog vermerkt.
+- **doen1el/calibre-web-companion**: Als spaetere UX-/Companion-Inspiration im Backlog vermerkt.
+- **Roadmap-Check**: Keine Roadmap-Datei gefunden; Backlog-Notizen deshalb in `docs/alexandria/fork-audit.md` dokumentiert.
+
+### Belege
+
+- GitHub-Repo-Metadaten und Patch-Diffs per `curl` geprueft.
+- Lokaler Kobo-Sync-Pfad in `cps/kobo.py` mit Domoels Patch-Idee abgeglichen.
+- `git diff --check` fehlerfrei.
+
 ## 2026-07-02 — Lokale Docker-Dev Bugfixes (Regal-500, Deutsch-L10n, Dashboard-Theme-Readability)
 
 - **Feature/Bug:** Lokale Docker-Dev Bugfixes (Regal-500, Deutsch-L10n, Dashboard-Theme-Readability)

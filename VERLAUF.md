@@ -27,7 +27,7 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 ### Erledigt
 
 - **Shelf HTTP 500 Fix**: TypeError in `render_title_template` behoben, indem `kobo_sync_enabled` per `kwargs.setdefault` gesetzt wird, wenn nicht bereits von Aufrufern übergeben.
-- **L10n Deutsch Fix**: Automatisches Übersetzen/Kompilieren der `.po` in `.mo` Dateien im Startup-Skript `cwa-init` ergänzt, falls `messages.mo` für Deutsch fehlt (was durch den Host-Mount in local dev der Fall ist). Dies erzeugt die `.mo` Dateien lokal auf dem Host, so dass sie in Git ignoriert bleiben aber im Container funktionieren. Lokalen Dev-Workflow in `local-development.md` dokumentiert.
+- **L10n Deutsch/Mehrsprachigkeit Fix**: Automatisches Übersetzen/Kompilieren der `.po` in `.mo` Dateien im Startup-Skript `cwa-init` ergänzt, falls mindestens eine `.mo`-Datei im Übersetzungsbaum fehlt (was durch den Host-Mount in local dev der Fall ist). Dies erzeugt alle `.mo` Dateien lokal auf dem Host, so dass sie in Git ignoriert bleiben aber im Container funktionieren. Lokalen Dev-Workflow in `local-development.md` dokumentiert.
 - **Dashboard Theme/Kontrast**: Custom Stylesheet in `kobo_dashboard.html` integriert, das Tabellen-Zeilen, Badges und System-Warnungen auch im dunklen `caliBlur` Theme mit klarem Kontrast und ansprechendem Premium-Design anzeigt.
 - **Tests**: Unit-Tests in `test_kobo_decoupling.py` um einen Testfall für das default-passing von `kobo_sync_enabled` in `render_title_template` erweitert. Alle 21 Kobo-/Magic-Shelf-Tests erfolgreich lokal ausgeführt.
 

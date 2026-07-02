@@ -18,6 +18,24 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-02 — Lokale Docker-Dev Bugfixes (Regal-500, Deutsch-L10n, Dashboard-Theme-Readability)
+
+- **Feature/Bug:** Lokale Docker-Dev Bugfixes (Regal-500, Deutsch-L10n, Dashboard-Theme-Readability)
+- **Branch / Worktree:** `fix/local-dev-bugs` in `/Users/alex/Documents/Programmierungsprojekte/cwa-alexandria`
+- **Status:** Erfolgreich abgeschlossen. Lokale Docker-Dev Bugfixes wurden implementiert, getestet und lokal committed.
+
+### Erledigt
+
+- **Shelf HTTP 500 Fix**: TypeError in `render_title_template` behoben, indem `kobo_sync_enabled` per `kwargs.setdefault` gesetzt wird, wenn nicht bereits von Aufrufern übergeben.
+- **L10n Deutsch Fix**: Automatisches Übersetzen/Kompilieren der `.po` in `.mo` Dateien im Startup-Skript `cwa-init` ergänzt, falls `messages.mo` für Deutsch fehlt (was durch den Host-Mount in local dev der Fall ist). Dies erzeugt die `.mo` Dateien lokal auf dem Host, so dass sie in Git ignoriert bleiben aber im Container funktionieren. Lokalen Dev-Workflow in `local-development.md` dokumentiert.
+- **Dashboard Theme/Kontrast**: Custom Stylesheet in `kobo_dashboard.html` integriert, das Tabellen-Zeilen, Badges und System-Warnungen auch im dunklen `caliBlur` Theme mit klarem Kontrast und ansprechendem Premium-Design anzeigt.
+- **Tests**: Unit-Tests in `test_kobo_decoupling.py` um einen Testfall für das default-passing von `kobo_sync_enabled` in `render_title_template` erweitert. Alle 21 Kobo-/Magic-Shelf-Tests erfolgreich lokal ausgeführt.
+
+### Belege
+
+- Alle 21 Unit-Tests laufen grün.
+- `git diff --check` fehlerfrei bereinigt.
+
 ## 2026-07-02 — Kobo-Dashboard & Sammlungs-Zusammenführung
 
 - **Feature/Bug:** Kobo-Dashboard und Sammlungen-Sidebar-Zusammenführung

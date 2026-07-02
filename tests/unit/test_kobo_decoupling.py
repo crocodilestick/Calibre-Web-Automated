@@ -323,12 +323,45 @@ class TestKoboSyncDecoupling:
 
                 # Ensure get_kobo_allowed_book_ids was called
                 mock_get_allowed.assert_called_with(1)
-                # Ensure query on KoboReadingState was filtered with the allowed book ids
-                filter_calls = mock_reading_states_query.filter.return_value.filter.call_args_list
-                assert len(filter_calls) > 0
+            # Ensure query on KoboReadingState was filtered with the allowed book ids
+            filter_calls = mock_reading_states_query.filter.return_value.filter.call_args_list
+            assert len(filter_calls) > 0
         finally:
             # Restore Flask globals
             cps.kobo.request = original_request
             cps.kobo.current_user = original_current_user
             cps.kobo.current_app = original_current_app
             cps.kobo_auth.g = original_g
+
+    @patch('cps.render_template.current_user')
+    @patch('cps.render_template.get_sidebar_config')
+    @patch('cps.render_template.config')
+    @patch('cps.render_template.render_template')
+    @patch('cps.render_template.cwa_update_notification')
+    @patch('cps.render_template.theme_migration_notification')
+    @patch('cps.render_template.translations_missing_notification')
+    def test_render_title_template_kobo_sync_enabled_override(self, mock_trans, mock_theme, mock_update, mock_render, mock_config, mock_get_sidebar, mock_current_user):
+        """Test that render_title_template passes through overridden kobo_sync_enabled."""
+        from cps.render_template import render_title_template
+        mock_current_user.is_authenticated = False
+        mock_current_user.role_admin.return_value = False
+        mock_current_user.role_edit.return_value = False
+        mock_get_sidebar.return_value = ([], False)
+        mock_config.config_calibre_web_title = "Calibre-Web"
+        mock_config.config_upload_formats = "epub"
+        mock_config.config_kobo_sync = True
+
+        # Call with explicit kobo_sync_enabled=False
+        render_title_template('dummy.html', kobo_sync_enabled=False)
+
+        # render_template should be called with kobo_sync_enabled=False
+        mock_render.assert_called_once()
+        kwargs = mock_render.call_args[1]
+        assert kwargs['kobo_sync_enabled'] is False
+
+        mock_render.reset_mock()
+
+        # Call without kobo_sync_enabled, it should default to config value
+        render_title_template('dummy.html')
+        kwargs = mock_render.call_args[1]
+        assert kwargs['kobo_sync_enabled'] is True

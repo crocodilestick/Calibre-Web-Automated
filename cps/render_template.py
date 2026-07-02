@@ -308,11 +308,11 @@ def render_title_template(*args, **kwargs):
     except Exception as e:
         log.debug("[cwa-duplicates] Failed to build duplicate notification context: %s", str(e))
     try:
+        kwargs.setdefault('kobo_sync_enabled', config.config_kobo_sync)
         return render_template(instance=config.config_calibre_web_title, sidebar=sidebar, simple=simple,
                        accept=config.config_upload_formats.split(','),
                        magic_shelf_routes=magic_shelf_routes,
                        duplicate_notification=duplicate_notification,
-                       kobo_sync_enabled=config.config_kobo_sync,
                        *args, **kwargs)
     except PermissionError:
         log.error("No permission to access {} file.".format(args[0]))

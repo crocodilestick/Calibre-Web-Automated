@@ -656,3 +656,79 @@ class TestKoboSyncDecoupling:
             cps.kobo.current_user = original_current_user
             cps.kobo.current_app = original_current_app
             cps.kobo_auth.g = original_g
+
+    @patch('cps.kobo.get_or_create_kobo_exclusion_shelf')
+    @patch('cps.kobo.kobo_sync_status')
+    @patch('cps.kobo.calibre_db')
+    @patch('cps.ub.session')
+    @patch('cps.kobo.current_user')
+    @patch('cps.kobo.abort')
+    def test_handle_book_deletion_request_selective_sync_database_error(
+        self, mock_abort, mock_current_user, mock_session, mock_calibre_db, mock_sync_status, mock_get_or_create
+    ):
+        """Kobo-DELETE on selective sync aborts with 500 when database insertion fails, and remove_synced_book is not called."""
+        from cps.kobo import HandleBookDeletionRequest
+
+        mock_current_user.id = 1
+        mock_current_user.kobo_only_shelves_sync = True
+
+        fake_book = MagicMock()
+        fake_book.id = 42
+        mock_calibre_db.get_book_by_uuid.return_value = fake_book
+
+        fake_ex_shelf = MagicMock()
+        fake_ex_shelf.id = 99
+        mock_get_or_create.return_value = fake_ex_shelf
+
+        # Book is not yet in the exclusion shelf
+        mock_session.query().filter().first.return_value = None
+        # Mock session.commit to throw an error on add/commit
+        mock_session.commit.side_effect = Exception("DB error")
+
+        mock_abort.side_effect = Exception("Aborted 500")
+
+        with pytest.raises(Exception, match="Aborted 500"):
+            HandleBookDeletionRequest.__wrapped__("book-uuid")
+
+        # Verify that get_or_create was called
+        mock_get_or_create.assert_called_once_with(1)
+        # Verify BookShelf record was added to session
+        mock_session.add.assert_called_once()
+        # Verify rollback was called
+        mock_session.rollback.assert_called_once()
+        # Verify remove_synced_book was NOT called
+        mock_sync_status.remove_synced_book.assert_not_called()
+        # Verify abort was called with 500
+        mock_abort.assert_called_once_with(500, description="Database error while adding book to exclusion shelf")
+
+    @patch('cps.ub.session')
+    def test_get_or_create_kobo_exclusion_shelf_cleans_existing(self, mock_session):
+        """get_or_create_kobo_exclusion_shelf must reset kobo_sync and kobo_display of existing shelf/shelves."""
+        from cps.kobo import get_or_create_kobo_exclusion_shelf
+
+        fake_shelf_1 = MagicMock()
+        fake_shelf_1.kobo_sync = True
+        fake_shelf_1.kobo_display = True
+        fake_shelf_1.name = "Kobo: Ausgeschlossen"
+
+        fake_shelf_2 = MagicMock()
+        fake_shelf_2.kobo_sync = False
+        fake_shelf_2.kobo_display = True
+        fake_shelf_2.name = "Kobo: Ausgeschlossen"
+
+        # Mock query to return both shelves
+        mock_session.query().filter().all.return_value = [fake_shelf_1, fake_shelf_2]
+
+        shelf = get_or_create_kobo_exclusion_shelf(1)
+
+        # It must return the first shelf
+        assert shelf is fake_shelf_1
+
+        # It must reset the flags to False
+        assert fake_shelf_1.kobo_sync is False
+        assert fake_shelf_1.kobo_display is False
+        assert fake_shelf_2.kobo_sync is False
+        assert fake_shelf_2.kobo_display is False
+
+        # It must commit the changes
+        mock_session.commit.assert_called_once()

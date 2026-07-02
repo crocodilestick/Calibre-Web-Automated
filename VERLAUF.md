@@ -20,21 +20,22 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 
 ## 2026-07-02 — Kobo-Loeschen als Ausschlussregal (Kobo: Ausgeschlossen)
 
-- **Feature/Bug:** Kobo-Loeschen als Ausschlussregal (Kobo: Ausgeschlossen) implementiert und getestet.
+- **Feature/Bug:** Kobo-Loeschen als Ausschlussregal (Kobo: Ausgeschlossen) implementiert, gehärtet und getestet.
 - **Branch / Worktree:** `feature/kobo-exclusion-shelf`
-- **Status:** Erfolgreich abgeschlossen. Alle 12 Unit-Tests und Dashboard-Tests laufen grün.
+- **Status:** Erfolgreich abgeschlossen. Alle 14 Unit-Tests und Dashboard-Tests laufen grün.
 
 ### Erledigt
 
-- **System-Exclusion-Shelf Helper:** `get_or_create_kobo_exclusion_shelf(user_id)` implementiert. Es erstellt das Regal robust und stellt sicher, dass es nicht an den Kobo als Sammlung synchronisiert wird (`kobo_sync=False`, `kobo_display=False`).
+- **System-Exclusion-Shelf Helper:** `get_or_create_kobo_exclusion_shelf(user_id)` implementiert. Es stellt sicher, dass alle existierenden Regale mit dem Namen `Kobo: Ausgeschlossen` auf `kobo_sync=False` and `kobo_display=False` zurückgesetzt werden, um eReader-Sammlungs-Synchronisationen robust zu verhindern.
 - **Selective Deletion Path:** `HandleBookDeletionRequest` trägt Bücher bei selektivem Sync ins Ausschlussregal ein und invalidiert den Magic-Shelf Cache, anstatt das Buch aus der Calibre-Bibliothek zu entfernen.
+- **Strikte Deletion-Fehlerbehandlung:** Datenbankfehler im selektiven Deletion-Pfad führen via `abort(500)` zum Abbruch und Rollback; `remove_synced_book()` wird erst nach erfolgreichem Ausschluss ausgeführt.
 - **Allowed Books Abzug:** `get_kobo_allowed_book_ids(user_id)` zieht alle Bücher aus allen Regalen namens `Kobo: Ausgeschlossen` lesend und robust ab (keine Schreibeffekte).
 - **Full-Sync Unverändert:** Die Full-Sync/Archivierungslogik wurde nicht verändert.
-- **Automatisierte Tests:** 4 neue Unit- und Integrationstests verifizieren den Abzug, das selektive DELETE, die Full-Sync-Archivierungsberechtigung und den Device-Entitlement-Abzug mit `IsArchived: True`.
+- **Automatisierte Tests:** 6 neue Unit- und Integrationstests verifizieren den Abzug, das selektive DELETE, Fehlerverhalten im DB-Pfad, Bereinigung bestehender Regale, die Full-Sync-Archivierungsberechtigung und den Device-Entitlement-Abzug mit `IsArchived: True`.
 
 ### Belege
 
-- Alle 12 Unit-Tests in `test_kobo_decoupling.py` erfolgreich ausgeführt.
+- Alle 14 Unit-Tests in `test_kobo_decoupling.py` erfolgreich ausgeführt.
 - Alle 4 Unit-Tests in `test_kobo_dashboard.py` erfolgreich ausgeführt.
 - `git diff --check` fehlerfrei.
 

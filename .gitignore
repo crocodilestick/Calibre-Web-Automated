@@ -22,6 +22,9 @@ replit.nix
 .history
 cwa-wiki/
 docs/
+!docs/
+!docs/alexandria/
+!docs/alexandria/**
 .venv-activate.sh
 test_venv
 cwa.code-workspace
@@ -201,3 +204,8 @@ cython_debug/
 
 # Dev instance files for testing in the same folder
 instance/
+
+# Alexandria local workspace state
+STAND.md
+.env.local
+.mcp.json

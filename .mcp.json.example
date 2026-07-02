@@ -1,0 +1,37 @@
+{
+  "_hinweis": "Vorlage. Nach .mcp.json kopieren, nicht benötigte Server löschen, Platzhalter ersetzen. .mcp.json wird von Claude Code projektweit geladen. Tokens NICHT hier hardcoden — über Env-Variablen referenzieren. Details siehe README.md.",
+
+  "mcpServers": {
+    "github": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+
+    "filesystem": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "@modelcontextprotocol/server-filesystem",
+        "${PWD}"
+      ]
+    },
+
+    "memory": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-memory"]
+    },
+
+    "git": {
+      "command": "uvx",
+      "args": ["mcp-server-git", "--repository", "${PWD}"]
+    },
+
+    "sequential-thinking": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-sequential-thinking"]
+    }
+  }
+}

@@ -295,22 +295,30 @@
                     </li>
                 {% endif %}
               {% endfor %}
+              {% if config.config_kobo_sync and current_user.is_authenticated %}
+                <li id="nav_kobodashboard" {% if page == 'kobo_dashboard' %}class="active"{% endif %}>
+                  <a href="{{url_for('kobo_auth.dashboard')}}">
+                    <span class="glyphicon glyphicon-book"></span> {{_('Kobo-Auswahl')}}
+                  </a>
+                </li>
+              {% endif %}
               {% if current_user.is_authenticated or g.allow_anonymous %}
-                <li class="nav-head hidden-xs public-shelves">{{_('Shelves')}}</li>
+                <li class="nav-head hidden-xs public-shelves">{{_('Collections')}}</li>
                 {% for shelf in g.shelves_access %}
                   {% set book_count = shelf.books.count() %}
                   <li><a href="{{url_for('shelf.show_shelf', shelf_id=shelf.id)}}" title="{{shelf.name}} ({{book_count}})"><span class="glyphicon glyphicon-list shelf"></span> {{shelf.name|shortentitle(40)}}{% if shelf.is_public == 1 %} {{_('(Public)')}}{% endif %} <span style="font-size: 80%; color: #888;">({{book_count}})</span></a></li>
                 {% endfor %}
-              {% if not current_user.is_anonymous %}
-                <li id="nav_createshelf" class="create-shelf"><a href="{{url_for('shelf.create_shelf')}}">{{_('Create Shelf')}}</a></li>
-              {% endif %}
               {% endif %}
               {% if current_user.is_authenticated and magic_shelf_routes.render %}
-                <li class="nav-head hidden-xs" style="margin-top: 1rem;">{{_('Magic Shelves ✨')}}</li>
-                  {% for shelf in g.magic_shelves_access %}
-                    <li><a href="{{url_for('web.render_magic_shelf', shelf_id=shelf.id)}}" title="{{shelf.name}} ({{shelf.book_count}})"><span style="font-size: 14px;">{{shelf.icon}}</span> {{shelf.name|shortentitle(40)}}{% if shelf.is_public == 1 %} {{_('(Public)')}}{% endif %} <span style="font-size: 80%; color: #888;">({{shelf.book_count}})</span></a></li>
-                  {% endfor %}
-                {% if magic_shelf_routes.create %}
+                {% for shelf in g.magic_shelves_access %}
+                  <li><a href="{{url_for('web.render_magic_shelf', shelf_id=shelf.id)}}" title="{{shelf.name}} ({{shelf.book_count}})"><span style="font-size: 14px;">{{shelf.icon}}</span> {{shelf.name|shortentitle(40)}}{% if shelf.is_public == 1 %} {{_('(Public)')}}{% endif %} <span style="font-size: 80%; color: #888;">({{shelf.book_count}})</span></a></li>
+                {% endfor %}
+              {% endif %}
+              {% if current_user.is_authenticated or g.allow_anonymous %}
+                {% if not current_user.is_anonymous %}
+                  <li id="nav_createshelf" class="create-shelf"><a href="{{url_for('shelf.create_shelf')}}">{{_('Create Shelf')}}</a></li>
+                {% endif %}
+                {% if current_user.is_authenticated and magic_shelf_routes.create %}
                   <li id="nav_createmagicshelf" class="create-shelf"><a href="{{url_for('web.create_magic_shelf')}}" style="display: flex; align-items: center;">{{_('Create Magic Shelf')}}</a></li>
                 {% endif %}
               {% endif %}

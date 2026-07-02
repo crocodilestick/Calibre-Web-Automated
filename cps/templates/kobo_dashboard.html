@@ -1,0 +1,188 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="discover">
+  <h1>{{ _('Kobo-Auswahl & Sync-Dashboard') }}</h1>
+  <p class="lead text-muted">{{ _('Hier siehst du, welche Bücher und Sammlungen für deine Kobo-Geräte freigegeben und synchronisiert sind.') }}</p>
+
+  <!-- Kobo-Verbindungsstatus & Konfiguration -->
+  <div class="row" style="margin-top: 2rem; margin-bottom: 2rem;">
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">{{ _('Kobo-Verbindung') }}</h3>
+        </div>
+        <div class="panel-body">
+          <p>
+            <strong>{{ _('Status:') }}</strong> 
+            {% if has_kobo_token %}
+              <span class="label label-success">{{ _('Schnittstelle aktiv') }}</span>
+            {% else %}
+              <span class="label label-warning">{{ _('Nicht eingerichtet') }}</span>
+            {% endif %}
+          </p>
+          <p class="text-muted" style="font-size: 90%;">
+            {% if has_kobo_token %}
+              {{ _('Ein Token für Kobo-Geräte ist erzeugt. Geräte können sich synchronisieren.') }}
+            {% else %}
+              {{ _('Generiere einen Kobo-Token in deinem Benutzerprofil, um Geräte anzubinden.') }}
+            {% endif %}
+          </p>
+          <a href="{{ url_for('web.profile') }}" class="btn btn-default btn-xs">{{ _('Profil bearbeiten') }}</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">{{ _('Sync-Modus') }}</h3>
+        </div>
+        <div class="panel-body">
+          <p>
+            <strong>{{ _('Modus:') }}</strong> 
+            {% if is_two_column_sync %}
+              <span class="label label-primary">{{ _('Zwei-Säulen-Sync') }}</span>
+            {% else %}
+              <span class="label label-danger">{{ _('Ganze Bibliothek') }}</span>
+            {% endif %}
+          </p>
+          <p class="text-muted" style="font-size: 90%;">
+            {% if is_two_column_sync %}
+              {{ _('Nur Bücher in Regalen mit Kobo-Sync-Häkchen werden übertragen.') }}
+            {% else %}
+              {{ _('Vorsicht: Deine gesamte Calibre-Bibliothek wird auf den Kobo geladen.') }}
+            {% endif %}
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="panel panel-default">
+        <div class="panel-heading">
+          <h3 class="panel-title">{{ _('Sync-Statistik') }}</h3>
+        </div>
+        <div class="panel-body">
+          <p>
+            <strong>{{ _('Berechtigte Bücher:') }}</strong> 
+            {% if is_two_column_sync %}
+              <span class="badge">{{ allowed_book_count }}</span>
+            {% else %}
+              <span class="label label-info">{{ _('Alle Bücher') }}</span>
+            {% endif %}
+          </p>
+          <p>
+            <strong>{{ _('Bereits synchronisiert:') }}</strong> 
+            <span class="badge" style="background-color: #5cb85c;">{{ synced_book_count }}</span>
+          </p>
+          <p class="text-muted" style="font-size: 90%;">
+            {{ _('Bücher, die mindestens einmal an deinen Kobo ausgeliefert wurden.') }}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- System-Warnungen & Risikobewertung -->
+  {% if warnings %}
+    <div class="panel panel-warning">
+      <div class="panel-heading">
+        <h3 class="panel-title"><span class="glyphicon glyphicon-exclamation-sign"></span> {{ _('System-Check & Warnungen') }}</h3>
+      </div>
+      <div class="panel-body">
+        <ul class="list-unstyled">
+          {% for warning in warnings %}
+            <li style="margin-bottom: 1rem; padding: 1rem; border-left: 4px solid 
+              {% if warning.type == 'danger' %}#d9534f; background-color: #fdf7f7;
+              {% elif warning.type == 'warning' %}#f0ad4e; background-color: #fcf8e3;
+              {% else %}#5bc0de; background-color: #f4fbfc;{% endif %}; border-radius: 4px;">
+              <strong>
+                {% if warning.type == 'danger' %}{{ _('Kritisch:') }}
+                {% elif warning.type == 'warning' %}{{ _('Warnung:') }}
+                {% else %}{{ _('Info:') }}{% endif %}
+              </strong>
+              {{ warning.message }}
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  {% else %}
+    <div class="alert alert-success">
+      <span class="glyphicon glyphicon-ok-sign"></span> {{ _('Keine Probleme gefunden. Deine Kobo-Synchronisation läuft sauber!') }}
+    </div>
+  {% endif %}
+
+  <!-- Sammlungen-Übersicht -->
+  <div class="panel panel-default" style="margin-top: 2rem;">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{ _('Kobo-Sammlungen') }}</h3>
+    </div>
+    <div class="panel-body">
+      {% if collections %}
+        <div class="table-responsive">
+          <table class="table table-striped table-hover">
+            <thead>
+              <tr>
+                <th>{{ _('Name') }}</th>
+                <th>{{ _('Typ') }}</th>
+                <th>{{ _('Kobo-Sync') }}</th>
+                <th class="text-center">{{ _('Bücher lokal') }}</th>
+                <th class="text-center">{{ _('Sync-berechtigt') }}</th>
+                <th class="text-center">{{ _('Synchronisiert') }}</th>
+                <th>{{ _('Aktionen') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for col in collections %}
+                <tr>
+                  <td>
+                    <strong>{{ col.name }}</strong>
+                  </td>
+                  <td>
+                    {% if col.type == 'magic' %}
+                      <span class="label label-info"><span class="glyphicon glyphicon-magic"></span> {{ _('Automatisch') }}</span>
+                    {% else %}
+                      <span class="label label-default"><span class="glyphicon glyphicon-list"></span> {{ _('Normal') }}</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if col.kobo_sync %}
+                      <span class="text-success"><span class="glyphicon glyphicon-ok-circle"></span> {{ _('Aktiv') }}</span>
+                    {% else %}
+                      <span class="text-muted"><span class="glyphicon glyphicon-ban-circle"></span> {{ _('Display-Only') }}</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-center">{{ col.total_books }}</td>
+                  <td class="text-center">
+                    {% if is_two_column_sync and col.allowed_books < col.total_books %}
+                      <span class="text-warning" title="{{ _('Einige Bücher dieser Sammlung werden nicht synchronisiert.') }}">
+                        {{ col.allowed_books }} / {{ col.total_books }} <span class="glyphicon glyphicon-warning-sign"></span>
+                      </span>
+                    {% else %}
+                      <span class="text-success">{{ col.allowed_books }}</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-center">
+                    <span class="badge" style="background-color: #5cb85c;">{{ col.synced_books }}</span>
+                  </td>
+                  <td>
+                    {% if col.type == 'magic' %}
+                      <a href="{{ url_for('web.edit_magic_shelf', shelf_id=col.id) }}" class="btn btn-default btn-xs">{{ _('Bearbeiten') }}</a>
+                    {% else %}
+                      <a href="{{ url_for('shelf.show_shelf', shelf_id=col.id) }}" class="btn btn-default btn-xs">{{ _('Anzeigen') }}</a>
+                      <a href="{{ url_for('shelf.edit_shelf', shelf_id=col.id) }}" class="btn btn-default btn-xs">{{ _('Bearbeiten') }}</a>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-muted">{{ _('Keine Regale oder Magic Shelves sind für das Kobo-Display konfiguriert.') }}</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

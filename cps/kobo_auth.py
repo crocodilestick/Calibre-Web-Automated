@@ -162,3 +162,12 @@ def requires_kobo_auth(f):
         log.debug("Received Kobo request without a recognizable auth token.")
         return abort(401)
     return inner
+
+
+@kobo_auth.route("/dashboard")
+@user_login_required
+def dashboard():
+    from .kobo_dashboard import get_kobo_dashboard_data
+    dashboard_data = get_kobo_dashboard_data(current_user)
+    return render_title_template("kobo_dashboard.html", title=_("Kobo Sync Dashboard"), page="kobo_dashboard", **dashboard_data)
+

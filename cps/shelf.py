@@ -68,6 +68,8 @@ def add_to_shelf(shelf_id, book_id):
     shelf.books.append(ub.BookShelf(shelf=shelf.id, book_id=book_id, order=maxOrder + 1))
     shelf.last_modified = datetime.now(timezone.utc)
     try:
+        from .magic_shelf import invalidate_magic_shelf_cache
+        invalidate_magic_shelf_cache()
         ub.session.merge(shelf)
         ub.session.commit()
         
@@ -158,6 +160,8 @@ def search_to_shelf(shelf_id):
             shelf.books.append(ub.BookShelf(shelf=shelf.id, book_id=book, order=maxOrder))
         shelf.last_modified = datetime.now(timezone.utc)
         try:
+            from .magic_shelf import invalidate_magic_shelf_cache
+            invalidate_magic_shelf_cache()
             ub.session.merge(shelf)
             ub.session.commit()
             flash(_("Books have been added to shelf: %(sname)s", sname=shelf.name), category="success")
@@ -201,6 +205,8 @@ def remove_from_shelf(shelf_id, book_id):
             return "Book already removed from shelf", 410
 
         try:
+            from .magic_shelf import invalidate_magic_shelf_cache
+            invalidate_magic_shelf_cache()
             ub.session.delete(book_shelf)
             shelf.last_modified = datetime.now(timezone.utc)
             ub.session.commit()
@@ -378,6 +384,8 @@ def create_edit_shelf(shelf, page_title, page, shelf_id=False):
                 shelf_action = "changed"
                 flash_text = _("Shelf %(title)s changed", title=shelf_title)
             try:
+                from .magic_shelf import invalidate_magic_shelf_cache
+                invalidate_magic_shelf_cache()
                 ub.session.commit()
                 log.info("Shelf {} {}".format(shelf_title, shelf_action))
                 flash(flash_text, category="success")
@@ -435,6 +443,8 @@ def delete_shelf_helper(cur_shelf):
     ub.session.delete(cur_shelf)
     ub.session.query(ub.BookShelf).filter(ub.BookShelf.shelf == shelf_id).delete()
     ub.session.add(ub.ShelfArchive(uuid=cur_shelf.uuid, user_id=cur_shelf.user_id))
+    from .magic_shelf import invalidate_magic_shelf_cache
+    invalidate_magic_shelf_cache()
     ub.session_commit("successfully deleted Shelf {}".format(cur_shelf.name))
     return True
 
@@ -570,6 +580,8 @@ def add_selected_to_shelf():
     if success_count > 0:
         shelf.last_modified = datetime.now(timezone.utc)
         try:
+            from .magic_shelf import invalidate_magic_shelf_cache
+            invalidate_magic_shelf_cache()
             ub.session.merge(shelf)
             ub.session.commit()
             log.info(f"Successfully added {success_count} books to shelf: {shelf.name}")

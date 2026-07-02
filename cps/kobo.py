@@ -140,7 +140,7 @@ def get_magic_shelf_book_ids_for_kobo(user_id):
     book_ids = set()
     for shelf in magic_shelves:
         books, _ = magic_shelf.get_books_for_magic_shelf(
-            shelf.id, page=1, page_size=None
+            shelf.id, page=1, page_size=None, bypass_cache=True
         )
         for book in books:
             book_ids.add(book.id)
@@ -379,7 +379,7 @@ def HandleSyncRequest():
             
         for shelf in magic_shelves:
             books, _ = magic_shelf.get_books_for_magic_shelf(
-                shelf.id, page=1, page_size=1000
+                shelf.id, page=1, page_size=1000, bypass_cache=True
             )
 
             new_tags_last_modified = max(shelf.last_modified, new_tags_last_modified)
@@ -763,6 +763,7 @@ def HandleTagAddItem(tag_id):
     if items_unknown_to_calibre:
         log.debug("Received request to add an unknown book to a collection. Silently ignoring item.")
 
+    magic_shelf.invalidate_magic_shelf_cache()
     ub.session.merge(shelf)
     ub.session_commit()
     return make_response('', 201)
@@ -805,6 +806,7 @@ def HandleTagRemoveItem(tag_id):
             shelf.books.filter(ub.BookShelf.book_id == book.id).delete()
         except KeyError:
             items_unknown_to_calibre.append(item)
+    magic_shelf.invalidate_magic_shelf_cache()
     ub.session_commit()
 
     if items_unknown_to_calibre:

@@ -278,6 +278,7 @@ FIELD_MAP = {
     'comments': (db.Comments, 'text'),  # Fixed: Points to actual text column, not relationship
     'read_status': ('custom_column', 'read_status'),  # Special handling - uses config.config_read_column
     'hardcover_id': ('identifier', 'hardcover-id'),  # Special handling - checks Identifiers table
+    'normal_shelf': ('ub_shelf', 'shelf'),
 }
 
 # Mapping from UI operators to SQLAlchemy functions/operators
@@ -321,7 +322,7 @@ RELATIONSHIP_MAP = {
     'comments': 'comments',  # For description field - requires join to Comments table
 }
 
-def build_filter_from_rule(rule, user_id=None):
+def build_filter_from_rule(rule, user_id=None, is_public=False):
     """Builds a SQLAlchemy filter condition from a single rule."""
     from . import config
 
@@ -337,7 +338,51 @@ def build_filter_from_rule(rule, user_id=None):
         return None
     
     model, column_name = field_info
-    
+
+    # Special handling for normal_shelf
+    if model == 'ub_shelf' and column_name == 'shelf':
+        from sqlalchemy import false
+
+        try:
+            shelf_id = int(value) if value is not None else None
+        except (ValueError, TypeError):
+            log.error(f"Invalid shelf ID value: {value}")
+            return false()
+
+        if shelf_id is None:
+            return false()
+
+        target_shelf = ub.session.query(ub.Shelf).filter(ub.Shelf.id == shelf_id).first()
+
+        # Permission-Check
+        if is_public:
+            # Wenn das Magic Shelf öffentlich ist, darf das referenzierte normale Regal NUR öffentlich sein
+            if not target_shelf or target_shelf.is_public != 1:
+                log.warning(f"Access denied: public magic shelf cannot reference private normal shelf {shelf_id}")
+                return false()
+        else:
+            # Wenn das Magic Shelf privat ist, darf das referenzierte Regal dem User gehören oder öffentlich sein
+            if not target_shelf or (target_shelf.user_id != user_id and target_shelf.is_public != 1):
+                log.warning(f"Access denied or invalid shelf ID {shelf_id} for user {user_id}")
+                return false()
+
+        # Operator-Validierung
+        if operator_name not in ['equal', 'not_equal']:
+            log.error(f"Unsupported operator '{operator_name}' for normal_shelf")
+            return false()
+
+        # Buch-IDs aus BookShelf ermitteln
+        books_in_shelf = ub.session.query(ub.BookShelf.book_id).filter(
+            ub.BookShelf.shelf == shelf_id
+        ).all()
+        book_ids = [b.book_id for b in books_in_shelf]
+
+        # Filter erzeugen
+        if operator_name == 'equal':
+            return db.Books.id.in_(book_ids)
+        elif operator_name == 'not_equal':
+            return ~db.Books.id.in_(book_ids)
+
     # Special handling for hardcover_id identifier
     if model == 'identifier' and column_name == 'hardcover-id':
         # Value is 1 (has hardcover ID) or 0 (doesn't have hardcover ID)
@@ -481,7 +526,7 @@ def build_filter_from_rule(rule, user_id=None):
         return None
 
 
-def build_query_from_rules(rules_json, user_id=None):
+def build_query_from_rules(rules_json, user_id=None, is_public=False):
     """
     Recursively builds a SQLAlchemy query filter from a JSON rule structure.
     """
@@ -495,12 +540,12 @@ def build_query_from_rules(rules_json, user_id=None):
     for rule in rules:
         # If 'condition' is present, it's a group, recurse
         if 'condition' in rule:
-            sub_filter = build_query_from_rules(rule, user_id)
+            sub_filter = build_query_from_rules(rule, user_id, is_public)
             if sub_filter is not None:
                 filters.append(sub_filter)
         # Otherwise, it's a rule
         else:
-            rule_filter = build_filter_from_rule(rule, user_id)
+            rule_filter = build_filter_from_rule(rule, user_id, is_public)
             if rule_filter is not None:
                 filters.append(rule_filter)
 
@@ -585,7 +630,7 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None,
             return [], 0
 
         cdb = db.CalibreDB(init=True)
-        query_filter = build_query_from_rules(rules, user_id=magic_shelf.user_id)
+        query_filter = build_query_from_rules(rules, user_id=magic_shelf.user_id, is_public=bool(magic_shelf.is_public))
         
         if query_filter is None:
             log.warning(f"Failed to build query filter for magic shelf {shelf_id}")
@@ -682,7 +727,7 @@ def get_book_count_for_magic_shelf(shelf_id):
             return 0
 
         cdb = db.CalibreDB(init=True)
-        query_filter = build_query_from_rules(rules, user_id=magic_shelf.user_id)
+        query_filter = build_query_from_rules(rules, user_id=magic_shelf.user_id, is_public=bool(magic_shelf.is_public))
         
         if query_filter is None:
             return 0
@@ -788,3 +833,12 @@ def list_system_shelf_templates():
         dict: All system shelf templates
     """
     return SYSTEM_SHELF_TEMPLATES
+
+
+def invalidate_magic_shelf_cache():
+    """Globally flushes the magic shelf query cache."""
+    try:
+        ub.session.query(ub.MagicShelfCache).delete()
+        log.debug("Globally invalidated MagicShelfCache")
+    except Exception as e:
+        log.error(f"Error invalidating MagicShelfCache: {e}")

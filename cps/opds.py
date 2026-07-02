@@ -631,6 +631,8 @@ def feed_shelf(book_id):
             log.info('Not existing book {} in {} deleted'.format(entry.book_id, shelf))
             try:
                 ub.session.query(ub.BookShelf).filter(ub.BookShelf.book_id == entry.book_id).delete()
+                from .magic_shelf import invalidate_magic_shelf_cache
+                invalidate_magic_shelf_cache()
                 ub.session.commit()
             except (OperationalError, InvalidRequestError) as e:
                 ub.session.rollback()

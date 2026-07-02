@@ -1291,6 +1291,8 @@ def delete_whole_book(book_id, book):
     ub.session.query(ub.ReadBook).filter(ub.ReadBook.book_id == book_id).delete()
     ub.session.query(ub.ArchivedBook).filter(ub.ArchivedBook.book_id == book_id).delete()
     ub.delete_download(book_id)
+    from .magic_shelf import invalidate_magic_shelf_cache
+    invalidate_magic_shelf_cache()
     ub.session_commit()
 
     # check if only this book links to:

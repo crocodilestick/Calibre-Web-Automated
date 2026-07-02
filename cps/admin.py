@@ -2264,6 +2264,8 @@ def _db_configuration_update_helper():
             ub.session.query(ub.KoboStatistics).delete()
             ub.session.query(ub.KoboSyncedBooks).delete()
             helper.delete_thumbnail_cache()
+            from .magic_shelf import invalidate_magic_shelf_cache
+            invalidate_magic_shelf_cache()
             ub.session_commit()
             # deleted visibilities based on custom column and tags
             config.config_restricted_column = 0
@@ -2579,6 +2581,8 @@ def _delete_user(content):
             kobo_entries = ub.session.query(ub.KoboReadingState).filter(ub.KoboReadingState.user_id == content.id).all()
             for kobo_entry in kobo_entries:
                 ub.session.delete(kobo_entry)
+            from .magic_shelf import invalidate_magic_shelf_cache
+            invalidate_magic_shelf_cache()
             ub.session_commit()
             log.info("User {} deleted".format(content.name))
             return _("User '%(nick)s' deleted", nick=content.name)

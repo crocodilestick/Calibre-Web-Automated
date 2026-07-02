@@ -614,6 +614,15 @@ $(function() {
             input: 'radio',
             values: {1: 'Yes', 0: 'No'},
             description: 'Whether book has Hardcover identifier'
+        },
+        {
+            id: 'normal_shelf',
+            label: 'Shelf',
+            type: 'integer',
+            input: 'select',
+            values: {{ shelves_json|safe if shelves_json is defined else '{}' }},
+            operators: ['equal', 'not_equal'],
+            description: 'Book is in a specific shelf'
         }
     ];
 

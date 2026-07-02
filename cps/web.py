@@ -1149,11 +1149,19 @@ def create_magic_shelf():
         except:
             language_map[lang.lang_code] = lang.lang_code
 
+    shelves = ub.session.query(ub.Shelf).filter(
+        or_(ub.Shelf.user_id == current_user.id, ub.Shelf.is_public == 1)
+    ).order_by(ub.Shelf.name).all()
+    shelves_map = {s.id: s.name for s in shelves}
+    import json
+    shelves_json = json.dumps(shelves_map)
+
     return render_title_template('magic_shelf_edit.html', 
                                  title=_("Create Magic Shelf"), 
                                  page="magic_shelf_create",
                                  allowed_icons=ALLOWED_ICONS,
-                                 languages=language_map)
+                                 languages=language_map,
+                                 shelves_json=shelves_json)
 
 
 @web.route("/magicshelf/<int:shelf_id>/edit", methods=["GET", "POST"])
@@ -1255,12 +1263,20 @@ def edit_magic_shelf(shelf_id):
         except:
             language_map[lang.lang_code] = lang.lang_code
 
+    shelves = ub.session.query(ub.Shelf).filter(
+        or_(ub.Shelf.user_id == current_user.id, ub.Shelf.is_public == 1)
+    ).order_by(ub.Shelf.name).all()
+    shelves_map = {s.id: s.name for s in shelves}
+    import json
+    shelves_json = json.dumps(shelves_map)
+
     return render_title_template('magic_shelf_edit.html', 
                                  shelf=shelf, 
                                  title=_("Edit Magic Shelf"), 
                                  page="magic_shelf_edit",
                                  allowed_icons=ALLOWED_ICONS,
-                                 languages=language_map)
+                                 languages=language_map,
+                                 shelves_json=shelves_json)
 
 
 @web.route("/magicshelf/<int:shelf_id>/duplicate", methods=["POST"])

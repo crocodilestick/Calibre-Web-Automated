@@ -1,0 +1,26 @@
+# docker-compose.local.yml
+# Lokale, gitignored Entwicklungs- und Testumgebung für CWA Alexandria auf dem Mac.
+# Diese Datei wird versioniert, nutzt jedoch ausschließlich relative Pfade auf './local-dev/'.
+
+services:
+  calibre-web-automated:
+    image: crocodilestick/calibre-web-automated:latest
+    container_name: cwa-alexandria-local
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Europe/Berlin
+      - NETWORK_SHARE_MODE=false
+    volumes:
+      # Gesamten Workspace mounten für Live-Editing.
+      # HINWEIS: '.venv/' und 'local-dev/' sind Host-Artefakte und dürfen im CWA-Interface
+      # NICHT als calibre-library oder Ingest-Pfad eingetragen werden.
+      - .:/app/calibre-web-automated
+
+      # Lokale, isolierte Datenverzeichnisse (gitignored)
+      - ./local-dev/config:/config
+      - ./local-dev/ingest:/cwa-book-ingest
+      - ./local-dev/calibre-library:/calibre-library
+    ports:
+      - 8085:8083 # CWA ist lokal auf dem Mac unter http://localhost:8085 erreichbar
+    restart: unless-stopped

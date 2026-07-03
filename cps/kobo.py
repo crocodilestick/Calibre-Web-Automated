@@ -236,6 +236,187 @@ def get_kobo_allowed_book_ids(user_id):
     return allowed_ids
 
 
+def get_kobo_book_sync_explanation(user_id, book_id):
+    user = ub.session.query(ub.User).filter(ub.User.id == user_id).first()
+    if not user:
+        return None
+
+    # Check if book exists in Calibre DB
+    cdb = db.CalibreDB(init=True)
+    book = cdb.session.query(db.Books).filter(db.Books.id == book_id).filter(cdb.common_filters(allow_show_archived=True)).first()
+    if not book:
+        return {
+            "book_id": book_id,
+            "exists": False,
+            "sync_mode": "selective" if user.kobo_only_shelves_sync else "full",
+            "is_allowed_by_selection": False,
+            "release_sources": [],
+            "is_blocked_by_exclusion": False,
+            "is_archived": False,
+            "is_allowed_on_device": False,
+            "is_visible_on_device": False,
+            "is_synced": False,
+            "kobo_display_collections": [],
+            "kobo_actual_collections": [],
+            "blocker_reasons": ["not_found"]
+        }
+
+    # Check if book is archived
+    archived_record = ub.session.query(ub.ArchivedBook).filter_by(user_id=user_id, book_id=book_id).first()
+    is_archived = archived_record.is_archived if archived_record else False
+
+    # Check exclusion shelf Kobo: Ausgeschlossen
+    exclusion_shelves = ub.session.query(ub.Shelf).filter(
+        ub.Shelf.user_id == user_id,
+        ub.Shelf.name == "Kobo: Ausgeschlossen"
+    ).all()
+    exclusion_shelf_ids = {s.id for s in exclusion_shelves}
+
+    in_exclusion_shelf = False
+    if exclusion_shelf_ids:
+        in_exclusion_shelf = ub.session.query(ub.BookShelf).filter(
+            ub.BookShelf.shelf.in_(list(exclusion_shelf_ids)),
+            ub.BookShelf.book_id == book_id
+        ).first() is not None
+
+    # Determine sync mode
+    is_selective = bool(user.kobo_only_shelves_sync)
+    sync_mode = "selective" if is_selective else "full"
+
+    release_sources = []
+
+    # 1. Selection logic
+    if not is_selective:
+        is_allowed_by_selection = True
+        release_sources.append({
+            "type": "full_sync",
+            "id": None,
+            "name": "Vollständige Synchronisation"
+        })
+    else:
+        # Check normal shelves with kobo_sync = True
+        normal_sync_shelves = (
+            ub.session.query(ub.Shelf)
+            .join(ub.BookShelf, ub.Shelf.id == ub.BookShelf.shelf)
+            .filter(ub.Shelf.user_id == user_id, ub.BookShelf.book_id == book_id, ub.Shelf.kobo_sync == True)
+            .all()
+        )
+        for shelf in normal_sync_shelves:
+            release_sources.append({
+                "type": "normal_shelf",
+                "id": shelf.id,
+                "name": shelf.name
+            })
+
+        # Check Magic Shelves with kobo_sync = True
+        if config.config_kobo_sync_magic_shelves:
+            magic_sync_shelves = ub.session.query(ub.MagicShelf).filter_by(user_id=user_id, kobo_sync=True).all()
+            for ms in magic_sync_shelves:
+                query_filter = magic_shelf.build_query_from_rules(ms.rules, user_id=user_id, is_public=bool(ms.is_public))
+                if query_filter is not None:
+                    match = (
+                        cdb.session.query(db.Books.id)
+                        .filter(db.Books.id == book_id)
+                        .filter(query_filter)
+                        .filter(cdb.common_filters())
+                        .first()
+                    )
+                    if match:
+                        release_sources.append({
+                            "type": "magic_shelf",
+                            "id": ms.id,
+                            "name": ms.name
+                        })
+
+        is_allowed_by_selection = len(release_sources) > 0
+
+    # 2. Blockers logic
+    is_blocked_by_exclusion = is_selective and in_exclusion_shelf
+
+    blocker_reasons = []
+    if is_archived:
+        blocker_reasons.append("archived")
+    if is_blocked_by_exclusion:
+        blocker_reasons.append("exclusion_shelf")
+    if is_selective and not is_allowed_by_selection:
+        blocker_reasons.append("no_source")
+
+    # 3. Device sync logic
+    is_allowed_on_device = is_allowed_by_selection and not is_blocked_by_exclusion
+    is_visible_on_device = is_allowed_on_device and not is_archived
+
+    # 4. Collection Display (Kobo Display)
+    display_collections = []
+
+    # Normal shelves with kobo_display = True
+    display_shelves = (
+        ub.session.query(ub.Shelf)
+        .join(ub.BookShelf, ub.Shelf.id == ub.BookShelf.shelf)
+        .filter(ub.Shelf.user_id == user_id, ub.BookShelf.book_id == book_id, ub.Shelf.kobo_display == True)
+        .all()
+    )
+    for shelf in display_shelves:
+        display_collections.append({
+            "type": "normal_shelf",
+            "id": shelf.id,
+            "name": shelf.name
+        })
+
+    # Magic shelves with kobo_display = True (only if magic shelves config is enabled)
+    if config.config_kobo_sync_magic_shelves:
+        magic_display_shelves = ub.session.query(ub.MagicShelf).filter_by(user_id=user_id, kobo_display=True).all()
+        for ms in magic_display_shelves:
+            query_filter = magic_shelf.build_query_from_rules(ms.rules, user_id=user_id, is_public=bool(ms.is_public))
+            if query_filter is not None:
+                match = (
+                    cdb.session.query(db.Books.id)
+                    .filter(db.Books.id == book_id)
+                    .filter(query_filter)
+                    .filter(cdb.common_filters())
+                    .first()
+                )
+                if match:
+                    # Check 1000-book limit cap for magic shelf rendering
+                    books_in_shelf, _ = magic_shelf.get_books_for_magic_shelf(
+                        ms.id, page=1, page_size=1000, bypass_cache=True
+                    )
+                    book_ids_in_limit = {b.id for b in books_in_shelf}
+                    capped = book_id not in book_ids_in_limit
+
+                    display_collections.append({
+                        "type": "magic_shelf",
+                        "id": ms.id,
+                        "name": ms.name,
+                        "capped": capped
+                    })
+
+    # Actual collections rendered on Kobo (subset of display_collections if is_allowed_on_device is True and not capped)
+    actual_collections = []
+    if is_allowed_on_device:
+        for col in display_collections:
+            if col.get("capped") != True:
+                actual_collections.append(col)
+
+    # 5. Is it currently synced on Kobo?
+    is_synced = ub.session.query(ub.KoboSyncedBooks).filter_by(user_id=user_id, book_id=book_id).first() is not None
+
+    return {
+        "book_id": book_id,
+        "exists": True,
+        "sync_mode": sync_mode,
+        "is_allowed_by_selection": is_allowed_by_selection,
+        "release_sources": release_sources,
+        "is_blocked_by_exclusion": is_blocked_by_exclusion,
+        "is_archived": is_archived,
+        "is_allowed_on_device": is_allowed_on_device,
+        "is_visible_on_device": is_visible_on_device,
+        "is_synced": is_synced,
+        "kobo_display_collections": display_collections,
+        "kobo_actual_collections": actual_collections,
+        "blocker_reasons": blocker_reasons
+    }
+
+
 @kobo.route("/v1/library/sync")
 @requires_kobo_auth
 # @download_required

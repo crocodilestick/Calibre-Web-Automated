@@ -375,7 +375,7 @@ class TestKoboDashboard:
         assert "{{ _('Info:') }}" not in template
         assert "panel panel-warning" not in template
         assert "glyphicon-warning-sign" not in template
-        assert "{{ _('Einige Bücher dieser Sammlung sind aktuell nicht für Kobo ausgewählt.') }}" in template
+        assert "{{ _('Synchronisations-Details anzeigen') }}" in template
         assert "#2f3438" in template
         assert "#5f6b73" in template
         assert "{{ _('Diese Bücher sind bewusst als Nicht auf Kobo markiert.') }}" in template
@@ -385,3 +385,204 @@ class TestKoboDashboard:
         assert "url_for('kobo_auth.allow_excluded_book', book_id=book.id)" in template
         assert "{{ _('Beim nächsten Sync auslassen') }}" in template
         assert "{{ _('Beim nächsten Sync wieder anbieten') }}" in template
+
+    @patch('cps.kobo_auth._', new=lambda x: x)
+    @patch('cps.kobo_auth.db.CalibreDB')
+    @patch('cps.kobo.get_kobo_book_sync_explanation')
+    def test_book_explanation_route_success(self, mock_get_explanation, mock_calibredb_cls):
+        """Test book explanation route returns JSON including the book title."""
+        from cps.kobo_auth import book_explanation
+        from flask import Flask
+
+        # Setup mock explanation
+        mock_get_explanation.return_value = {
+            "exists": True,
+            "is_allowed_on_device": True,
+            "is_visible_on_device": True,
+            "blocker_reasons": []
+        }
+
+        # Mock book and CalibreDB
+        fake_book = MagicMock()
+        fake_book.title = "Test Book Title"
+        mock_cdb = MagicMock()
+        mock_calibredb_cls.return_value = mock_cdb
+        mock_cdb.session.query.return_value.filter.return_value.filter.return_value.first.return_value = fake_book
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+
+        app = Flask("test_app")
+        with app.test_request_context():
+            with patch('cps.kobo_auth.current_user', fake_user):
+                res = book_explanation.__wrapped__(123)
+                data = res.get_json()
+                assert data["title"] == "Test Book Title"
+                assert data["is_allowed_on_device"] is True
+                assert data["is_visible_on_device"] is True
+
+    @patch('cps.kobo_auth._', new=lambda x: x)
+    @patch('cps.kobo.get_kobo_book_sync_explanation')
+    def test_book_explanation_route_not_found(self, mock_get_explanation):
+        """Test book explanation route returns 404 if explanation not found."""
+        from cps.kobo_auth import book_explanation
+        from werkzeug.exceptions import NotFound
+        from flask import Flask
+
+        mock_get_explanation.return_value = None
+        fake_user = MagicMock()
+        fake_user.id = 1
+
+        app = Flask("test_app")
+        with app.test_request_context():
+            with patch('cps.kobo_auth.current_user', fake_user):
+                with pytest.raises(NotFound):
+                    book_explanation.__wrapped__(123)
+
+    @patch('cps.kobo_auth._', new=lambda x: x)
+    @patch('cps.kobo_auth.db.CalibreDB')
+    @patch('cps.kobo.get_kobo_book_sync_explanation')
+    @patch('cps.kobo_auth.ub.session')
+    def test_collection_explanation_route_normal_success(self, mock_session, mock_get_explanation, mock_calibredb_cls):
+        """Test collection explanation for normal shelf."""
+        from cps.kobo_auth import collection_explanation
+        from flask import Flask
+
+        # Setup mock shelf
+        fake_shelf = MagicMock()
+        fake_shelf.name = "My Normal Shelf"
+        fake_shelf.books = [MagicMock(book_id=10), MagicMock(book_id=20)]
+        
+        shelf_query = MagicMock()
+        shelf_query.filter.return_value.first.return_value = fake_shelf
+        mock_session.query.return_value = shelf_query
+
+        # Mock Calibre DB book titles
+        fake_book_10 = MagicMock()
+        fake_book_10.id = 10
+        fake_book_10.title = "Book Ten"
+        fake_book_20 = MagicMock()
+        fake_book_20.id = 20
+        fake_book_20.title = "Book Twenty"
+
+        mock_cdb = MagicMock()
+        mock_calibredb_cls.return_value = mock_cdb
+        mock_cdb.session.query.return_value.filter.return_value.filter.return_value.all.return_value = [fake_book_10, fake_book_20]
+
+        # Mock explanation
+        mock_get_explanation.side_effect = lambda uid, bid: {
+            "book_id": bid,
+            "is_allowed_on_device": bid == 10,
+            "blocker_reasons": [] if bid == 10 else ["no_source"]
+        }
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+
+        app = Flask("test_app")
+        with app.test_request_context('/?type=normal'):
+            with patch('cps.kobo_auth.current_user', fake_user):
+                res = collection_explanation.__wrapped__(42)
+                data = res.get_json()
+                assert data["collection_name"] == "My Normal Shelf"
+                assert data["collection_type"] == "normal"
+                assert len(data["books"]) == 2
+                
+                assert data["books"][0]["book_id"] == 10
+                assert data["books"][0]["title"] == "Book Ten"
+                assert data["books"][0]["explanation"]["is_allowed_on_device"] is True
+                
+                assert data["books"][1]["book_id"] == 20
+                assert data["books"][1]["title"] == "Book Twenty"
+                assert data["books"][1]["explanation"]["is_allowed_on_device"] is False
+
+    @patch('cps.kobo_dashboard.get_magic_shelf_book_ids_direct')
+    @patch('cps.kobo_auth.db.CalibreDB')
+    @patch('cps.kobo.get_kobo_book_sync_explanation')
+    @patch('cps.kobo_auth.ub.session')
+    def test_collection_explanation_route_magic_success(self, mock_session, mock_get_explanation, mock_calibredb_cls, mock_get_magic_ids):
+        """Test collection explanation for magic shelf."""
+        from cps.kobo_auth import collection_explanation
+        from flask import Flask
+
+        # Setup mock magic shelf
+        fake_shelf = MagicMock()
+        fake_shelf.name = "My Magic Shelf"
+        
+        shelf_query = MagicMock()
+        shelf_query.filter.return_value.first.return_value = fake_shelf
+        mock_session.query.return_value = shelf_query
+
+        # Mock direct magic shelf IDs
+        mock_get_magic_ids.return_value = {10}
+
+        # Mock Calibre DB book title
+        fake_book_10 = MagicMock()
+        fake_book_10.id = 10
+        fake_book_10.title = "Book Ten"
+
+        mock_cdb = MagicMock()
+        mock_calibredb_cls.return_value = mock_cdb
+        mock_cdb.session.query.return_value.filter.return_value.filter.return_value.all.return_value = [fake_book_10]
+
+        # Mock explanation
+        mock_get_explanation.return_value = {"book_id": 10, "is_allowed_on_device": True}
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+
+        app = Flask("test_app")
+        with app.test_request_context('/?type=magic'):
+            with patch('cps.kobo_auth.current_user', fake_user):
+                res = collection_explanation.__wrapped__(42)
+                data = res.get_json()
+                assert data["collection_name"] == "My Magic Shelf"
+                assert data["collection_type"] == "magic"
+                assert len(data["books"]) == 1
+                assert data["books"][0]["title"] == "Book Ten"
+                mock_get_magic_ids.assert_called_once_with(fake_shelf)
+
+    @patch('cps.kobo_auth.ub.session')
+    def test_collection_explanation_route_ownership_security(self, mock_session):
+        """Test collection explanation aborts with 404 if shelf is not found/belongs to another user."""
+        from cps.kobo_auth import collection_explanation
+        from werkzeug.exceptions import NotFound
+        from flask import Flask
+
+        # Mock query returning None
+        shelf_query = MagicMock()
+        shelf_query.filter.return_value.first.return_value = None
+        mock_session.query.return_value = shelf_query
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+
+        app = Flask("test_app")
+        
+        # Test normal shelf
+        with app.test_request_context('/?type=normal'):
+            with patch('cps.kobo_auth.current_user', fake_user):
+                with pytest.raises(NotFound):
+                    collection_explanation.__wrapped__(42)
+                    
+        # Test magic shelf
+        with app.test_request_context('/?type=magic'):
+            with patch('cps.kobo_auth.current_user', fake_user):
+                with pytest.raises(NotFound):
+                    collection_explanation.__wrapped__(42)
+
+    def test_collection_explanation_route_invalid_type(self):
+        """Test collection explanation aborts with 404 if type parameter is invalid."""
+        from cps.kobo_auth import collection_explanation
+        from werkzeug.exceptions import NotFound
+        from flask import Flask
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+
+        app = Flask("test_app")
+        
+        with app.test_request_context('/?type=invalid'):
+            with patch('cps.kobo_auth.current_user', fake_user):
+                with pytest.raises(NotFound):
+                    collection_explanation.__wrapped__(42)

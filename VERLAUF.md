@@ -18,6 +18,24 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-03 — Kobo-Dashboard: Sync-Transparenz (UI-Teil)
+
+- **Feature/Bug:** Frontend-UI für Kobo-Synchronisations-Transparenz (Roadmap-Punkt 1, UI-Teil).
+- **Branch / Worktree:** `feature/kobo-sync-explanation-ui`
+- **Status:** Implementiert und erfolgreich getestet.
+
+### Erledigt
+
+- Backend-Routen `/kobo_auth/book/<id>/explanation` und `/kobo_auth/collection/<id>/explanation` in `cps/kobo_auth.py` mit User-Ownership-Schranke und Buchtitel-Anreicherung implementiert.
+- Bootstrap Modal in `cps/templates/kobo_dashboard.html` mit AJAX-Logik zur Visualisierung der Synchronisations-Transparenz pro Buch und Sammlungs-Status eingebunden.
+- Neue Testabdeckung in `tests/unit/test_kobo_dashboard.py` (Vollsync, Security-Checks, alle Blocker-Gründe) erfolgreich integriert.
+- Übersetzungskatalog für Deutsch neu kompiliert.
+
+### Belege
+
+- All unit tests passed: `.venv/bin/pytest tests/unit/test_kobo_dashboard.py`
+- Compiled catalog: `.venv/bin/python -m babel.messages.frontend compile -d cps/translations -l de`
+
 ## 2026-07-03 — Kobo-Sync Erklärungslogik (Backend-Basis)
 
 - **Feature/Bug:** Backend-Erklärlogik + Tests für Kobo-Synchronisations-Transparenz (Roadmap-Punkt 1, erster Schritt).

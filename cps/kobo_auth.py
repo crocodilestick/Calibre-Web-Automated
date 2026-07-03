@@ -52,7 +52,7 @@ from datetime import datetime, timezone
 from os import urandom
 from functools import wraps
 
-from flask import g, Blueprint, abort, request, flash, redirect, url_for
+from flask import g, Blueprint, abort, request, flash, redirect, url_for, jsonify
 from .cw_login import login_user, current_user
 from flask_babel import gettext as _
 from flask_limiter import RateLimitExceeded
@@ -242,3 +242,79 @@ def dashboard():
     from .kobo_dashboard import get_kobo_dashboard_data
     dashboard_data = get_kobo_dashboard_data(current_user)
     return render_title_template("kobo_dashboard.html", title=_("Kobo Sync Dashboard"), page="kobo_dashboard", **dashboard_data)
+
+
+@kobo_auth.route("/book/<int:book_id>/explanation")
+@user_login_required
+def book_explanation(book_id):
+    from .kobo import get_kobo_book_sync_explanation
+    explanation = get_kobo_book_sync_explanation(current_user.id, book_id)
+    if not explanation:
+        return abort(404)
+
+    title = _("Unbekanntes Buch")
+    if explanation.get("exists"):
+        try:
+            cdb = db.CalibreDB(init=True)
+            book = cdb.session.query(db.Books).filter(db.Books.id == book_id).filter(cdb.common_filters(allow_show_archived=True)).first()
+            if book:
+                title = book.title
+        except Exception as e:
+            log.error(f"Failed to fetch book title for explanation: {str(e)}")
+
+    explanation["title"] = title
+    return jsonify(explanation)
+
+
+@kobo_auth.route("/collection/<int:collection_id>/explanation")
+@user_login_required
+def collection_explanation(collection_id):
+    col_type = request.args.get("type")
+    if col_type not in ("normal", "magic"):
+        return abort(404)
+
+    if col_type == "normal":
+        shelf = ub.session.query(ub.Shelf).filter(ub.Shelf.id == collection_id, ub.Shelf.user_id == current_user.id).first()
+        if not shelf:
+            return abort(404)
+        collection_name = shelf.name
+        book_ids = [b.book_id for b in shelf.books]
+    else:
+        shelf = ub.session.query(ub.MagicShelf).filter(ub.MagicShelf.id == collection_id, ub.MagicShelf.user_id == current_user.id).first()
+        if not shelf:
+            return abort(404)
+        collection_name = shelf.name
+        from .kobo_dashboard import get_magic_shelf_book_ids_direct
+        book_ids = sorted(list(get_magic_shelf_book_ids_direct(shelf)))
+
+    books_data = []
+    from .kobo import get_kobo_book_sync_explanation
+
+    titles_by_id = {}
+    if book_ids:
+        try:
+            cdb = db.CalibreDB(init=True)
+            books = (
+                cdb.session.query(db.Books)
+                .filter(db.Books.id.in_(book_ids))
+                .filter(cdb.common_filters(allow_show_archived=True))
+                .all()
+            )
+            titles_by_id = {book.id: book.title for book in books}
+        except Exception as e:
+            log.error(f"Failed to fetch book titles for collection explanation: {str(e)}")
+
+    for book_id in book_ids:
+        title = titles_by_id.get(book_id, f"Book #{book_id}")
+        explanation = get_kobo_book_sync_explanation(current_user.id, book_id)
+        books_data.append({
+            "book_id": book_id,
+            "title": title,
+            "explanation": explanation
+        })
+
+    return jsonify({
+        "collection_name": collection_name,
+        "collection_type": col_type,
+        "books": books_data
+    })

@@ -232,7 +232,12 @@
             <tbody>
               {% for book in allowed_books %}
                 <tr>
-                  <td><strong>{{ book.title }}</strong></td>
+                  <td>
+                    <strong>{{ book.title }}</strong>
+                    <a href="#" class="kobo-book-details text-muted" data-book-id="{{ book.id }}" style="margin-left: 5px;" title="{{ _('Details anzeigen') }}">
+                      <span class="glyphicon glyphicon-info-sign"></span>
+                    </a>
+                  </td>
                   <td>
                     <span class="label label-primary">{{ _('Für Kobo ausgewählt') }}</span>
                   </td>
@@ -279,7 +284,12 @@
             <tbody>
               {% for book in excluded_books %}
                 <tr>
-                  <td><strong>{{ book.title }}</strong></td>
+                  <td>
+                    <strong>{{ book.title }}</strong>
+                    <a href="#" class="kobo-book-details text-muted" data-book-id="{{ book.id }}" style="margin-left: 5px;" title="{{ _('Details anzeigen') }}">
+                      <span class="glyphicon glyphicon-info-sign"></span>
+                    </a>
+                  </td>
                   <td>
                     <span class="label label-warning">{{ _('Kobo: Ausgeschlossen') }}</span>
                   </td>
@@ -355,9 +365,9 @@
                   </td>
                   <td class="text-center">
                     {% if is_two_column_sync and col.allowed_books + col.blocked_books < col.total_books %}
-                      <span class="text-info" title="{{ _('Einige Bücher dieser Sammlung sind aktuell nicht für Kobo ausgewählt.') }}">
+                      <a href="#" class="kobo-collection-details label label-info" data-collection-id="{{ col.id }}" data-collection-type="{{ col.type }}" style="display: inline-block; cursor: pointer; text-decoration: none;" title="{{ _('Synchronisations-Details anzeigen') }}">
                         {{ col.allowed_books }} / {{ col.total_books }} <span class="glyphicon glyphicon-info-sign"></span>
-                      </span>
+                      </a>
                     {% else %}
                       <span class="text-success">{{ col.allowed_books }}</span>
                     {% endif %}
@@ -384,4 +394,243 @@
     </div>
   </div>
 </div>
+
+<!-- Kobo Explanation Modal -->
+<div class="modal fade" id="koboExplanationModal" tabindex="-1" role="dialog" aria-labelledby="koboExplanationModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title" id="koboExplanationModalLabel"></h4>
+      </div>
+      <div class="modal-body" id="koboExplanationModalBody">
+        <!-- Content will be injected dynamically -->
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Schließen') }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+$(document).ready(function() {
+  // Book details click handler
+  $('.kobo-book-details').on('click', function(e) {
+    e.preventDefault();
+    var bookId = $(this).data('book-id');
+    showBookExplanation(bookId);
+  });
+
+  // Collection details click handler
+  $('.kobo-collection-details').on('click', function(e) {
+    e.preventDefault();
+    var collectionId = $(this).data('collection-id');
+    var type = $(this).data('collection-type');
+    showCollectionExplanation(collectionId, type);
+  });
+
+  function showBookExplanation(bookId) {
+    $('#koboExplanationModalLabel').text("{{ _('Lade Buch-Details...') }}");
+    $('#koboExplanationModalBody').html('<div class="text-center" style="padding: 2rem;"><span class="glyphicon glyphicon-refresh glyphicon-spin" style="font-size: 24px;"></span></div>');
+    $('#koboExplanationModal').modal('show');
+
+    $.getJSON('/kobo_auth/book/' + bookId + '/explanation', function(data) {
+      $('#koboExplanationModalLabel').text(data.title);
+      
+      var html = '';
+      
+      // Section 1: Kobo-Auswahl (Device Sync)
+      html += '<div style="margin-bottom: 2rem;">';
+      html += '  <h4 style="border-bottom: 1px solid #d7dde1; padding-bottom: 0.5rem; color: #2f3438;">{{ _('Kobo-Auswahl (Geräte-Synchronisation)') }}</h4>';
+      
+      var isAllowed = data.is_allowed_on_device;
+      var isVisible = data.is_visible_on_device;
+      
+      if (isVisible) {
+        html += '  <p style="font-size: 110%;"><span class="text-success glyphicon glyphicon-ok-sign" style="font-size: 120%; vertical-align: middle; margin-right: 5px;"></span> <strong>{{ _('Auf Kobo-Gerät verfügbar') }}</strong></p>';
+      } else if (isAllowed && data.is_archived) {
+        html += '  <p style="font-size: 110%;"><span class="text-warning glyphicon glyphicon-exclamation-sign" style="font-size: 120%; vertical-align: middle; margin-right: 5px;"></span> <strong>{{ _('Freigegeben, aber in Calibre archiviert') }}</strong></p>';
+      } else {
+        html += '  <p style="font-size: 110%;"><span class="text-danger glyphicon glyphicon-remove-sign" style="font-size: 120%; vertical-align: middle; margin-right: 5px;"></span> <strong>{{ _('Nicht auf Kobo-Gerät übertragen') }}</strong></p>';
+      }
+      
+      // Release Sources
+      if (data.release_sources && data.release_sources.length > 0) {
+        html += '  <p style="margin-top: 1rem;"><strong>{{ _('Freigegeben über:') }}</strong></p>';
+        html += '  <ul style="padding-left: 20px;">';
+        data.release_sources.forEach(function(src) {
+          var srcName = src.name;
+          if (src.type === 'normal_shelf') {
+            html += '    <li>{{ _('Regal') }} <code>' + escapeHtml(srcName) + '</code></li>';
+          } else if (src.type === 'magic_shelf') {
+            html += '    <li>{{ _('Automatische Sammlung') }} <code>' + escapeHtml(srcName) + '</code></li>';
+          } else {
+            html += '    <li>' + escapeHtml(srcName) + '</li>';
+          }
+        });
+        html += '  </ul>';
+      } else {
+        html += '  <p style="margin-top: 1rem; color: #5f6b73;">{{ _('Keine Kobo-Freigabe (nicht in Kobo-Regalen enthalten)') }}</p>';
+      }
+
+      // Blockers
+      if (data.blocker_reasons && data.blocker_reasons.length > 0) {
+        html += '  <p style="margin-top: 1rem;"><strong>{{ _('Nicht übertragen, weil:') }}</strong></p>';
+        html += '  <ul style="padding-left: 20px; color: #a94442;">';
+        data.blocker_reasons.forEach(function(reason) {
+          if (reason === 'archived') {
+            html += '    <li>{{ _('Dieses Buch ist in Calibre archiviert.') }}</li>';
+          } else if (reason === 'exclusion_shelf') {
+            html += '    <li>{{ _('Manuell auf dem Kobo gelöscht (befindet sich im Ausschlussregal „Kobo: Ausgeschlossen“).') }}</li>';
+          } else if (reason === 'no_source') {
+            html += '    <li>{{ _('Dieses Buch ist in keinem aktiven Kobo-Auswahlregal enthalten.') }}</li>';
+          } else {
+            html += '    <li>' + escapeHtml(reason) + '</li>';
+          }
+        });
+        html += '  </ul>';
+      }
+      
+      html += '</div>';
+      
+      // Section 2: Kobo-Sammlungen
+      html += '<div>';
+      html += '  <h4 style="border-bottom: 1px solid #d7dde1; padding-bottom: 0.5rem; color: #2f3438;">{{ _('Kobo-Sammlungen') }}</h4>';
+      
+      if (data.kobo_display_collections && data.kobo_display_collections.length > 0) {
+        html += '  <p>{{ _('Dieses Buch soll in folgenden Kobo-Sammlungen angezeigt werden:') }}</p>';
+        html += '  <ul style="padding-left: 20px;">';
+        data.kobo_display_collections.forEach(function(col) {
+          var colName = col.name;
+          var inActual = false;
+          
+          if (data.kobo_actual_collections) {
+            inActual = data.kobo_actual_collections.some(function(ac) {
+              return ac.id === col.id && ac.type === col.type;
+            });
+          }
+          
+          var colTypeStr = col.type === 'magic' ? '{{ _('automatisch') }}' : '{{ _('normal') }}';
+          
+          html += '    <li style="margin-bottom: 5px;">';
+          html += '      <strong>' + escapeHtml(colName) + '</strong> <span class="text-muted" style="font-size: 90%;">(' + colTypeStr + ')</span>';
+          
+          if (inActual) {
+            html += '      <br><span class="text-success" style="font-size: 90%;"><span class="glyphicon glyphicon-ok"></span> {{ _('erscheint in Kobo-Sammlung') }}</span>';
+          } else {
+            html += '      <br><span class="text-warning" style="font-size: 90%;"><span class="glyphicon glyphicon-exclamation-sign"></span> ';
+            if (col.capped) {
+              html += '{{ _('Limit von 1000 Büchern der automatischen Sammlung überschritten') }}';
+            } else {
+              html += '{{ _('Nicht im Kobo-Sync erlaubt (keine Kobo-Auswahltabelle hat dieses Buch freigegeben)') }}';
+            }
+            html += '</span>';
+          }
+          
+          html += '    </li>';
+        });
+        html += '  </ul>';
+      } else {
+        html += '  <p class="text-muted">{{ _('Dieses Buch ist keiner als Kobo-Sammlung konfigurierten Kategorie zugeordnet.') }}</p>';
+      }
+      
+      html += '</div>';
+
+      $('#koboExplanationModalBody').html(html);
+    }).fail(function() {
+      $('#koboExplanationModalLabel').text("{{ _('Fehler') }}");
+      $('#koboExplanationModalBody').html('<div class="alert alert-danger">{{ _('Details konnten nicht geladen werden.') }}</div>');
+    });
+  }
+
+  function showCollectionExplanation(collectionId, type) {
+    $('#koboExplanationModalLabel').text("{{ _('Lade Sammlungs-Bücher...') }}");
+    $('#koboExplanationModalBody').html('<div class="text-center" style="padding: 2rem;"><span class="glyphicon glyphicon-refresh glyphicon-spin" style="font-size: 24px;"></span></div>');
+    $('#koboExplanationModal').modal('show');
+
+    $.getJSON('/kobo_auth/collection/' + collectionId + '/explanation?type=' + type, function(data) {
+      $('#koboExplanationModalLabel').text(data.collection_name);
+      
+      var html = '';
+      html += '<p class="text-muted" style="margin-bottom: 1.5rem;">';
+      html += '  {{ _('Hier siehst du den Synchronisations-Status aller Bücher in dieser Sammlung.') }}';
+      html += '</p>';
+      
+      if (data.books && data.books.length > 0) {
+        html += '<div class="table-responsive">';
+        html += '  <table class="table table-hover">';
+        html += '    <thead>';
+        html += '      <tr>';
+        html += '        <th>{{ _('Titel') }}</th>';
+        html += '        <th>{{ _('Status') }}</th>';
+        html += '        <th class="text-center" style="width: 60px;">{{ _('Details') }}</th>';
+        html += '      </tr>';
+        html += '    </thead>';
+        html += '    <tbody>';
+        
+        data.books.forEach(function(item) {
+          html += '      <tr>';
+          html += '        <td><strong>' + escapeHtml(item.title) + '</strong></td>';
+          
+          var exp = item.explanation;
+          var statusHtml = '';
+          
+          if (exp.is_visible_on_device) {
+            statusHtml = '<span class="text-success"><span class="glyphicon glyphicon-ok-sign"></span> {{ _('Auf Kobo verfügbar') }}</span>';
+          } else if (exp.is_allowed_on_device && exp.is_archived) {
+            statusHtml = '<span class="text-warning"><span class="glyphicon glyphicon-exclamation-sign"></span> {{ _('Freigegeben, aber archiviert') }}</span>';
+          } else {
+            var reasonStr = '{{ _('Nicht für Kobo ausgewählt') }}';
+            if (exp.blocker_reasons && exp.blocker_reasons.length > 0) {
+              if (exp.blocker_reasons.indexOf('exclusion_shelf') !== -1) {
+                reasonStr = '{{ _('Nicht auf Kobo (Ausschlussregal)') }}';
+              } else if (exp.blocker_reasons.indexOf('archived') !== -1) {
+                reasonStr = '{{ _('In Calibre archiviert') }}';
+              }
+            }
+            statusHtml = '<span class="text-danger"><span class="glyphicon glyphicon-remove-sign"></span> ' + escapeHtml(reasonStr) + '</span>';
+          }
+          
+          html += '        <td>' + statusHtml + '</td>';
+          html += '        <td class="text-center">';
+          html += '          <a href="#" class="kobo-book-nested-details text-muted" data-book-id="' + item.book_id + '" title="{{ _('Details anzeigen') }}">';
+          html += '            <span class="glyphicon glyphicon-info-sign"></span>';
+          html += '          </a>';
+          html += '        </td>';
+          html += '      </tr>';
+        });
+        
+        html += '    </tbody>';
+        html += '  </table>';
+        html += '</div>';
+      } else {
+        html += '<p class="text-muted">{{ _('Keine Bücher in dieser Sammlung.') }}</p>';
+      }
+
+      $('#koboExplanationModalBody').html(html);
+
+      // Handle click on nested details link
+      $('.kobo-book-nested-details').off('click').on('click', function(nestedEvent) {
+        nestedEvent.preventDefault();
+        var nestedBookId = $(this).data('book-id');
+        showBookExplanation(nestedBookId);
+      });
+    }).fail(function() {
+      $('#koboExplanationModalLabel').text("{{ _('Fehler') }}");
+      $('#koboExplanationModalBody').html('<div class="alert alert-danger">{{ _('Details konnten nicht geladen werden.') }}</div>');
+    });
+  }
+
+  function escapeHtml(text) {
+    if (!text) return '';
+    return text
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+});
+</script>
 {% endblock %}

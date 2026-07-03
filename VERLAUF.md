@@ -18,6 +18,36 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-03 — Kobo-Dashboard: Nicht-auf-Kobo-Hinweise
+
+- **Feature/Bug:** Sammlungen zeigen ruhigere Hinweise, wenn enthaltene Buecher durch `Nicht auf Kobo` blockiert oder nicht fuer Kobo ausgewaehlt sind.
+- **Branch / Worktree:** `feature/kobo-dashboard-blocked-collection-warnings`
+- **Status:** Implementiert und gezielt getestet.
+
+### Erledigt
+
+- Dashboard-Sammlungen berechnen `blocked_books` separat von `allowed_books`.
+- Collection-Tabelle zeigt eine eigene Spalte `Nicht auf Kobo`.
+- Hinweis `BLOCKED_BOOKS_IN_COLLECTION` zeigt, wenn eine Sammlung blockierte Buecher enthaelt.
+- Generische `nicht fuer Kobo ausgewaehlt`-Hinweise zaehlen blockierte Buecher nicht doppelt.
+- System-Sektion spricht von `Hinweisen` statt `Warnungen`; nur echte Fehler bleiben als `Kritisch` sichtbar.
+- Deutsche Singular-/Pluralform fuer Buch-Zaehler korrigiert (`1 Buch`, nicht `1 Buecher`).
+- Kontrast der hellen Dashboard-Panels, Tabellen und Hinweisboxen verbessert.
+- Gelbe Warnungsoptik im System-Hinweisbereich und Warn-Dreieck in der Sammlungstabelle durch neutrale Hinweisoptik ersetzt.
+- Leerzustand im Bereich `Nicht auf Kobo` auf die neue Begrifflichkeit umgestellt.
+- Babel-Vorlage und deutscher Katalog fuer die neuen Dashboard-Texte aktualisiert.
+- Doku in `docs/alexandria/kobo-workflow.md` und `docs/alexandria/ui-ideen.md` aktualisiert.
+- Unit-Tests fuer blocked-count, Hinweis-Typ, Singularform und Template-Smoke angepasst.
+
+### Belege
+
+- `.venv/bin/pytest tests/unit/test_kobo_dashboard.py` erfolgreich.
+- `.venv/bin/pytest tests/unit/test_kobo_decoupling.py` erfolgreich.
+- `PYTHONPYCACHEPREFIX=/tmp/cwa-alexandria-pycache .venv/bin/python -m py_compile cps/kobo_dashboard.py` erfolgreich.
+- `.venv/bin/python -m babel.messages.frontend compile -d cps/translations -l de` erfolgreich.
+- Relevanter Katalogvergleich: keine fehlenden Kobo-Dashboard-Strings im deutschen Katalog.
+- `git diff --check` fehlerfrei.
+
 ## 2026-07-03 — Kobo-Dashboard: Manuell Nicht auf Kobo
 
 - **Feature/Bug:** Gegenaktion zum Wiederzulassen: Buecher im Dashboard manuell aus der Kobo-Auswahl ausschliessen.

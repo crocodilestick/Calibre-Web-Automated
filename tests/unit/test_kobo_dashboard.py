@@ -10,6 +10,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from cps import ub, db
 from cps.kobo_dashboard import (
+    format_book_count,
     get_kobo_allowed_books_for_dashboard,
     get_kobo_dashboard_data,
     get_kobo_excluded_books,
@@ -19,6 +20,10 @@ from cps.kobo_dashboard import (
 
 @pytest.mark.unit
 class TestKoboDashboard:
+
+    def test_format_book_count_uses_german_singular(self):
+        assert format_book_count(1) == "1 Buch"
+        assert format_book_count(2) == "2 Bücher"
 
     @patch('cps.kobo_dashboard.build_query_from_rules')
     @patch('cps.db.CalibreDB')
@@ -113,7 +118,7 @@ class TestKoboDashboard:
         """Test basic dashboard aggregation and counts in two-column mode."""
         # Setup config
         mock_config.config_kobo_sync_magic_shelves = True
-        mock_excluded.return_value = [{"id": 99, "title": "Blocked Book"}]
+        mock_excluded.return_value = [{"id": 40, "title": "Blocked Book"}]
         mock_allowed_dashboard_books.return_value = [{"id": 10, "title": "Allowed Book"}]
 
         # Mock user
@@ -165,7 +170,7 @@ class TestKoboDashboard:
         assert dashboard_data["allowed_book_count"] == 3
         assert dashboard_data["allowed_books"] == [{"id": 10, "title": "Allowed Book"}]
         assert dashboard_data["excluded_book_count"] == 1
-        assert dashboard_data["excluded_books"] == [{"id": 99, "title": "Blocked Book"}]
+        assert dashboard_data["excluded_books"] == [{"id": 40, "title": "Blocked Book"}]
         assert dashboard_data["synced_book_count"] == 2
 
         # Check Collections structure
@@ -177,6 +182,7 @@ class TestKoboDashboard:
         assert col_normal["type"] == "normal"
         assert col_normal["total_books"] == 2
         assert col_normal["allowed_books"] == 1
+        assert col_normal["blocked_books"] == 1
         assert col_normal["synced_books"] == 1
 
         col_magic = cols[1]
@@ -184,11 +190,14 @@ class TestKoboDashboard:
         assert col_magic["type"] == "magic"
         assert col_magic["total_books"] == 2
         assert col_magic["allowed_books"] == 2
+        assert col_magic["blocked_books"] == 0
         assert col_magic["synced_books"] == 1
 
         warns = dashboard_data["warnings"]
         assert len(warns) == 1
-        assert warns[0]["code"] == "SOME_BOOKS_NOT_ALLOWED"
+        assert warns[0]["type"] == "info"
+        assert warns[0]["code"] == "BLOCKED_BOOKS_IN_COLLECTION"
+        assert "ist 1 Buch als Nicht auf Kobo markiert" in warns[0]["message"]
 
     @patch('cps.kobo_dashboard.get_kobo_excluded_books')
     @patch('cps.kobo_dashboard.config')
@@ -238,6 +247,8 @@ class TestKoboDashboard:
         assert "FULL_SYNC_MODE" in warn_codes
         assert "MAGIC_SHELVES_DISABLED" in warn_codes
         assert "EMPTY_COLLECTION" in warn_codes
+        assert next(w for w in warns if w["code"] == "FULL_SYNC_MODE")["type"] == "info"
+        assert next(w for w in warns if w["code"] == "MAGIC_SHELVES_DISABLED")["type"] == "info"
 
     @patch('cps.magic_shelf.invalidate_magic_shelf_cache')
     @patch('cps.kobo_auth.url_for')
@@ -358,8 +369,18 @@ class TestKoboDashboard:
 
         assert "{{ _('Für Kobo ausgewählt') }}" in template
         assert "{{ _('Nicht auf Kobo') }}" in template
+        assert "{{ _('System-Check & Hinweise') }}" in template
+        assert "{{ _('Hinweis:') }}" in template
+        assert "{{ _('Warnung:') }}" not in template
+        assert "{{ _('Info:') }}" not in template
+        assert "panel panel-warning" not in template
+        assert "glyphicon-warning-sign" not in template
+        assert "{{ _('Einige Bücher dieser Sammlung sind aktuell nicht für Kobo ausgewählt.') }}" in template
+        assert "#2f3438" in template
+        assert "#5f6b73" in template
+        assert "{{ _('Diese Bücher sind bewusst als Nicht auf Kobo markiert.') }}" in template
         assert "{{ _('Keine Bücher für Kobo ausgewählt.') }}" in template
-        assert "{{ _('Keine blockierten Bücher.') }}" in template
+        assert "{{ _('Keine Bücher sind als Nicht auf Kobo markiert.') }}" in template
         assert "url_for('kobo_auth.block_kobo_book', book_id=book.id)" in template
         assert "url_for('kobo_auth.allow_excluded_book', book_id=book.id)" in template
         assert "{{ _('Beim nächsten Sync auslassen') }}" in template

@@ -7451,21 +7451,17 @@ msgstr "Blockiert:"
 msgid "Bücher, die mindestens einmal an deinen Kobo ausgeliefert wurden."
 msgstr "Bücher, die mindestens einmal an deinen Kobo ausgeliefert wurden."
 
-#: cps/templates/kobo_dashboard.html:155
-msgid "System-Check & Warnungen"
-msgstr "System-Check & Warnungen"
+#: cps/templates/kobo_dashboard.html:180
+msgid "System-Check & Hinweise"
+msgstr "System-Check & Hinweise"
 
-#: cps/templates/kobo_dashboard.html:162
+#: cps/templates/kobo_dashboard.html:187
 msgid "Kritisch:"
 msgstr "Kritisch:"
 
-#: cps/templates/kobo_dashboard.html:163
-msgid "Warnung:"
-msgstr "Warnung:"
-
-#: cps/templates/kobo_dashboard.html:164
-msgid "Info:"
-msgstr "Info:"
+#: cps/templates/kobo_dashboard.html:188
+msgid "Hinweis:"
+msgstr "Hinweis:"
 
 #: cps/templates/kobo_dashboard.html:174
 msgid "Keine Probleme gefunden. Deine Kobo-Synchronisation läuft sauber!"
@@ -7535,9 +7531,9 @@ msgstr "Aktiv"
 msgid "Display-Only"
 msgstr "Nur Anzeige"
 
-#: cps/templates/kobo_dashboard.html:260
-msgid "Einige Bücher dieser Sammlung werden nicht synchronisiert."
-msgstr "Einige Bücher dieser Sammlung werden nicht synchronisiert."
+#: cps/templates/kobo_dashboard.html:356
+msgid "Einige Bücher dieser Sammlung sind aktuell nicht für Kobo ausgewählt."
+msgstr "Einige Bücher dieser Sammlung sind aktuell nicht für Kobo ausgewählt."
 
 #: cps/templates/kobo_dashboard.html:272 cps/templates/kobo_dashboard.html:275
 msgid "Bearbeiten"
@@ -7571,9 +7567,9 @@ msgstr "Diese Bücher bleiben in Alexandria und werden beim Kobo-Sync ausgelasse
 msgid "Beim nächsten Sync wieder anbieten"
 msgstr "Beim nächsten Sync wieder anbieten"
 
-#: cps/templates/kobo_dashboard.html:225
-msgid "Keine blockierten Bücher."
-msgstr "Keine blockierten Bücher."
+#: cps/templates/kobo_dashboard.html:290
+msgid "Keine Bücher sind als Nicht auf Kobo markiert."
+msgstr "Keine Bücher sind als Nicht auf Kobo markiert."
 
 #: cps/kobo_auth.py:168
 msgid "Manuelles Blockieren ist nur im Zwei-Säulen-Sync verfügbar."
@@ -7630,6 +7626,10 @@ msgstr "Diese Bücher bleiben in Alexandria, werden aber beim Kobo-Sync ausgelas
 #: cps/templates/kobo_dashboard.html:268
 msgid "Wieder für Kobo erlauben"
 msgstr "Wieder für Kobo erlauben"
+
+#: cps/templates/kobo_dashboard.html:327
+msgid "Diese Bücher sind bewusst als Nicht auf Kobo markiert."
+msgstr "Diese Bücher sind bewusst als Nicht auf Kobo markiert."
 
 #~ msgid "Standard Theme"
 #~ msgstr "Standarddesign"

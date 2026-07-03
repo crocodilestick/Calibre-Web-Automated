@@ -11,6 +11,12 @@ log = logger.create()
 KOBO_EXCLUSION_SHELF_NAME = "Kobo: Ausgeschlossen"
 
 
+def format_book_count(count):
+    if count == 1:
+        return "1 Buch"
+    return f"{count} Bücher"
+
+
 def get_magic_shelf_book_ids_direct(shelf):
     """
     Ermittelt die IDs der Bücher eines Magic Shelves direkt über die Calibre-Datenbank.
@@ -105,7 +111,7 @@ def get_kobo_allowed_books_for_dashboard(allowed_book_ids):
 
 def get_kobo_dashboard_data(user):
     """
-    Aggregiert alle relevanten Kobo-Konfigurationsdaten, Sammlungen und Warnungen für das Dashboard.
+    Aggregiert alle relevanten Kobo-Konfigurationsdaten, Sammlungen und Hinweise für das Dashboard.
     """
     # 1. Berechtigungen und globale Flags prüfen
     has_download_role = user.role_download()
@@ -120,6 +126,7 @@ def get_kobo_dashboard_data(user):
     # Tatsächlich synchronisierte Buch-IDs
     synced_book_ids = {b.book_id for b in ub.session.query(ub.KoboSyncedBooks.book_id).filter_by(user_id=user.id).all()}
     excluded_books = get_kobo_excluded_books(user.id)
+    excluded_book_ids = {book["id"] for book in excluded_books}
     allowed_books = [] if allowed_book_ids is None else get_kobo_allowed_books_for_dashboard(allowed_book_ids)
 
     # 3. Sammlungen aggregieren (kobo_display == True)
@@ -131,6 +138,7 @@ def get_kobo_dashboard_data(user):
         book_ids = {b.book_id for b in shelf.books}
         allowed_in_shelf = book_ids if allowed_book_ids is None else book_ids.intersection(allowed_book_ids)
         synced_in_shelf = book_ids.intersection(synced_book_ids)
+        blocked_in_shelf = book_ids.intersection(excluded_book_ids) if is_two_column_sync else set()
 
         collections.append({
             "id": shelf.id,
@@ -140,6 +148,7 @@ def get_kobo_dashboard_data(user):
             "kobo_sync": shelf.kobo_sync,
             "total_books": len(book_ids),
             "allowed_books": len(allowed_in_shelf),
+            "blocked_books": len(blocked_in_shelf),
             "synced_books": len(synced_in_shelf)
         })
 
@@ -151,6 +160,7 @@ def get_kobo_dashboard_data(user):
 
         allowed_in_shelf = book_ids if allowed_book_ids is None else book_ids.intersection(allowed_book_ids)
         synced_in_shelf = book_ids.intersection(synced_book_ids)
+        blocked_in_shelf = book_ids.intersection(excluded_book_ids) if is_two_column_sync else set()
 
         collections.append({
             "id": shelf.id,
@@ -160,10 +170,11 @@ def get_kobo_dashboard_data(user):
             "kobo_sync": shelf.kobo_sync,
             "total_books": len(book_ids),
             "allowed_books": len(allowed_in_shelf),
+            "blocked_books": len(blocked_in_shelf),
             "synced_books": len(synced_in_shelf)
         })
 
-    # 4. Warnungen berechnen
+    # 4. Hinweise berechnen
     warnings = []
 
     if not has_download_role:
@@ -175,7 +186,7 @@ def get_kobo_dashboard_data(user):
 
     if not is_two_column_sync:
         warnings.append({
-            "type": "warning",
+            "type": "info",
             "code": "FULL_SYNC_MODE",
             "message": "Vollständige Synchronisation ist aktiv. Alle Bücher der Bibliothek werden auf den Kobo übertragen."
         })
@@ -184,7 +195,7 @@ def get_kobo_dashboard_data(user):
         # Prüfen auf Magic-Shelf Deaktivierung
         if col["type"] == "magic" and not magic_shelves_enabled:
             warnings.append({
-                "type": "warning",
+                "type": "info",
                 "code": "MAGIC_SHELVES_DISABLED",
                 "message": f"Automatische Sammlung '{col['name']}' wird nicht synchronisiert, da Kobo-Magic-Shelves global deaktiviert sind."
             })
@@ -205,20 +216,30 @@ def get_kobo_dashboard_data(user):
                 "message": f"Sammlung '{col['name']}' ist leer (keine Bücher zugeordnet)."
             })
 
-        # Lokale Bücher vorhanden, aber keins davon sync-berechtigt (nur im Zwei-Säulen-Modus relevant)
-        elif is_two_column_sync and col["allowed_books"] == 0:
+        elif is_two_column_sync and col["blocked_books"] > 0:
+            blocked_books_verb = "ist" if col["blocked_books"] == 1 else "sind"
             warnings.append({
-                "type": "danger",
+                "type": "info",
+                "code": "BLOCKED_BOOKS_IN_COLLECTION",
+                "message": f"In Sammlung '{col['name']}' {blocked_books_verb} {format_book_count(col['blocked_books'])} als Nicht auf Kobo markiert."
+            })
+
+        # Lokale Bücher vorhanden, aber keins davon sync-berechtigt (nur im Zwei-Säulen-Modus relevant)
+        unselected_books = col["total_books"] - col["allowed_books"] - col["blocked_books"]
+        if is_two_column_sync and col["total_books"] > 0 and col["allowed_books"] == 0 and unselected_books > 0:
+            warnings.append({
+                "type": "info",
                 "code": "NO_ALLOWED_BOOKS",
-                "message": f"Sammlung '{col['name']}' enthält {col['total_books']} Bücher, aber keines davon darf auf den Kobo."
+                "message": f"Sammlung '{col['name']}' enthält {format_book_count(col['total_books'])}, aber keines davon ist für Kobo ausgewählt."
             })
 
         # Einige Bücher der Kollektion sind nicht sync-berechtigt (nur im Zwei-Säulen-Modus relevant)
-        elif is_two_column_sync and col["allowed_books"] < col["total_books"]:
+        elif is_two_column_sync and unselected_books > 0:
+            unselected_books_verb = "ist" if unselected_books == 1 else "sind"
             warnings.append({
-                "type": "warning",
+                "type": "info",
                 "code": "SOME_BOOKS_NOT_ALLOWED",
-                "message": f"In Sammlung '{col['name']}' sind {col['total_books'] - col['allowed_books']} Bücher nicht für den Kobo freigegeben."
+                "message": f"In Sammlung '{col['name']}' {unselected_books_verb} {format_book_count(unselected_books)} nicht für Kobo ausgewählt."
             })
 
     return {

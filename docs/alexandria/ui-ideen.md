@@ -21,7 +21,7 @@ Erwartete Elemente:
 
 - Liste ausgewaehlter Buecher.
 - Sammlungen pro Buch.
-- Warnung bei sehr breiten Regeln.
+- Hinweis bei sehr breiten Regeln.
 - Filter fuer Universum, Inhaltstyp, Buchart und Lesestatus.
 - Schnelle Aktion: `Nicht auf Kobo`, um ein Buch bewusst aus der
   Kobo-Auswahl auszuschliessen.
@@ -63,11 +63,12 @@ Magic-Shelf-Regeln bleiben moeglich, aber mit klareren Namen:
 - Allow/Include: einschliessen.
 - Exclude: ausschliessen.
 
-## Warnungen, die Alexandria geben sollte
+## Hinweise, die Alexandria geben sollte
 
 - Eine Regel wuerde sehr viele Buecher synchronisieren.
 - Eine Sammlung basiert nur auf einem breiten Genre-Tag.
 - Ein Buch ist fuer Kobo ausgewaehlt, hat aber keine sinnvolle Sammlung.
 - Ein Buch ist in einer Kobo-Sammlung, aber nicht fuer den Kobo ausgewaehlt.
 - Ein Buch wird durch eine Regel eingeschlossen, aber durch
-  `Kobo: Ausgeschlossen` blockiert.
+  `Kobo: Ausgeschlossen` blockiert. Im Dashboard wird dies fuer Sammlungen
+  inzwischen als `Nicht auf Kobo`-Zaehler und Hinweis sichtbar.

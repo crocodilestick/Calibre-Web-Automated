@@ -10,6 +10,7 @@ import pytest
 from unittest.mock import patch, MagicMock
 from cps import ub, db
 from cps.kobo_dashboard import (
+    format_book_count,
     get_kobo_allowed_books_for_dashboard,
     get_kobo_dashboard_data,
     get_kobo_excluded_books,
@@ -19,6 +20,10 @@ from cps.kobo_dashboard import (
 
 @pytest.mark.unit
 class TestKoboDashboard:
+
+    def test_format_book_count_uses_german_singular(self):
+        assert format_book_count(1) == "1 Buch"
+        assert format_book_count(2) == "2 Bücher"
 
     @patch('cps.kobo_dashboard.build_query_from_rules')
     @patch('cps.db.CalibreDB')
@@ -190,7 +195,9 @@ class TestKoboDashboard:
 
         warns = dashboard_data["warnings"]
         assert len(warns) == 1
+        assert warns[0]["type"] == "info"
         assert warns[0]["code"] == "BLOCKED_BOOKS_IN_COLLECTION"
+        assert "ist 1 Buch als Nicht auf Kobo markiert" in warns[0]["message"]
 
     @patch('cps.kobo_dashboard.get_kobo_excluded_books')
     @patch('cps.kobo_dashboard.config')
@@ -240,6 +247,8 @@ class TestKoboDashboard:
         assert "FULL_SYNC_MODE" in warn_codes
         assert "MAGIC_SHELVES_DISABLED" in warn_codes
         assert "EMPTY_COLLECTION" in warn_codes
+        assert next(w for w in warns if w["code"] == "FULL_SYNC_MODE")["type"] == "info"
+        assert next(w for w in warns if w["code"] == "MAGIC_SHELVES_DISABLED")["type"] == "info"
 
     @patch('cps.magic_shelf.invalidate_magic_shelf_cache')
     @patch('cps.kobo_auth.url_for')
@@ -360,6 +369,12 @@ class TestKoboDashboard:
 
         assert "{{ _('Für Kobo ausgewählt') }}" in template
         assert "{{ _('Nicht auf Kobo') }}" in template
+        assert "{{ _('System-Check & Hinweise') }}" in template
+        assert "{{ _('Hinweis:') }}" in template
+        assert "{{ _('Warnung:') }}" not in template
+        assert "{{ _('Info:') }}" not in template
+        assert "#2f3438" in template
+        assert "#5f6b73" in template
         assert "{{ _('Diese Bücher sind bewusst als Nicht auf Kobo markiert.') }}" in template
         assert "{{ _('Keine Bücher für Kobo ausgewählt.') }}" in template
         assert "{{ _('Keine blockierten Bücher.') }}" in template

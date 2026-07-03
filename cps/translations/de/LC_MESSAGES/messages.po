@@ -7451,21 +7451,17 @@ msgstr "Blockiert:"
 msgid "Bücher, die mindestens einmal an deinen Kobo ausgeliefert wurden."
 msgstr "Bücher, die mindestens einmal an deinen Kobo ausgeliefert wurden."
 
-#: cps/templates/kobo_dashboard.html:155
-msgid "System-Check & Warnungen"
-msgstr "System-Check & Warnungen"
+#: cps/templates/kobo_dashboard.html:180
+msgid "System-Check & Hinweise"
+msgstr "System-Check & Hinweise"
 
-#: cps/templates/kobo_dashboard.html:162
+#: cps/templates/kobo_dashboard.html:187
 msgid "Kritisch:"
 msgstr "Kritisch:"
 
-#: cps/templates/kobo_dashboard.html:163
-msgid "Warnung:"
-msgstr "Warnung:"
-
-#: cps/templates/kobo_dashboard.html:164
-msgid "Info:"
-msgstr "Info:"
+#: cps/templates/kobo_dashboard.html:188
+msgid "Hinweis:"
+msgstr "Hinweis:"
 
 #: cps/templates/kobo_dashboard.html:174
 msgid "Keine Probleme gefunden. Deine Kobo-Synchronisation läuft sauber!"

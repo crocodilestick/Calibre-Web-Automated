@@ -12,19 +12,38 @@
     background-color: rgba(217, 83, 79, 0.15) !important;
     border-color: rgba(217, 83, 79, 0.3) !important;
     border-left-color: #d9534f !important;
-    color: #ff8b8b !important;
+    color: #7f2524 !important;
   }
   .kobo-dashboard-alert-warning {
     background-color: rgba(240, 173, 78, 0.15) !important;
     border-color: rgba(240, 173, 78, 0.3) !important;
     border-left-color: #f0ad4e !important;
-    color: #fcd583 !important;
+    color: #6f4b00 !important;
   }
   .kobo-dashboard-alert-info {
     background-color: rgba(91, 192, 222, 0.15) !important;
     border-color: rgba(91, 192, 222, 0.3) !important;
     border-left-color: #5bc0de !important;
-    color: #a6e1ec !important;
+    color: #1f6375 !important;
+  }
+
+  /* Bootstrap panels sit on a light surface even when the surrounding theme is dark. */
+  .discover .panel {
+    color: #2f3438;
+  }
+  .discover .panel .panel-title,
+  .discover .panel .panel-body,
+  .discover .panel .panel-body strong {
+    color: #2f3438;
+  }
+  .discover .panel .text-muted {
+    color: #5f6b73 !important;
+  }
+  .discover .panel .text-success {
+    color: #2f7d32 !important;
+  }
+  .discover .panel .text-warning {
+    color: #8a5a00 !important;
   }
 
   /* Tables styling */
@@ -32,15 +51,16 @@
     margin-top: 1rem;
   }
   .discover table.table-kobo tr {
-    background-color: transparent !important;
-    border-bottom: 1px solid rgba(150, 162, 169, 0.2) !important;
+    background-color: #f4f5f6 !important;
+    border-bottom: 1px solid #d7dde1 !important;
   }
   .discover table.table-kobo th {
-    border-bottom: 2px solid rgba(150, 162, 169, 0.4) !important;
-    color: #96a2a9;
+    border-bottom: 2px solid #c7d0d6 !important;
+    color: #5f6b73 !important;
     font-weight: 600;
   }
   .discover table.table-kobo td {
+    color: #2f3438 !important;
     padding: 1.2rem 0.75rem !important;
     vertical-align: middle !important;
   }
@@ -59,7 +79,7 @@
     padding: 4px 8px;
   }
   .kobo-empty-state {
-    color: #96a2a9;
+    color: #5f6b73;
     margin: 0;
     padding: 0.5rem 0;
   }
@@ -153,11 +173,11 @@
     </div>
   </div>
 
-  <!-- System-Warnungen & Risikobewertung -->
+  <!-- System-Hinweise & Risikobewertung -->
   {% if warnings %}
     <div class="panel panel-warning">
       <div class="panel-heading">
-        <h3 class="panel-title"><span class="glyphicon glyphicon-exclamation-sign"></span> {{ _('System-Check & Warnungen') }}</h3>
+        <h3 class="panel-title"><span class="glyphicon glyphicon-info-sign"></span> {{ _('System-Check & Hinweise') }}</h3>
       </div>
       <div class="panel-body">
         <ul class="list-unstyled">
@@ -165,8 +185,7 @@
             <li class="kobo-dashboard-alert kobo-dashboard-alert-{{ warning.type }}">
               <strong>
                 {% if warning.type == 'danger' %}{{ _('Kritisch:') }}
-                {% elif warning.type == 'warning' %}{{ _('Warnung:') }}
-                {% else %}{{ _('Info:') }}{% endif %}
+                {% else %}{{ _('Hinweis:') }}{% endif %}
               </strong>
               {{ warning.message }}
             </li>

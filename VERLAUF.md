@@ -18,6 +18,22 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-03 — Kobo-Sync Erklärungslogik (Backend-Basis)
+
+- **Feature/Bug:** Backend-Erklärlogik + Tests für Kobo-Synchronisations-Transparenz (Roadmap-Punkt 1, erster Schritt).
+- **Branch / Worktree:** `feature/kobo-sync-explanation-backend`
+- **Status:** Backend-Logik und Tests erfolgreich implementiert und verifiziert.
+
+### Erledigt
+
+- Backend-Funktion `get_kobo_book_sync_explanation(user_id, book_id)` in `cps/kobo.py` implementiert, die den genauen Status eines Buchs bzgl. Auswahl, Ausschlussregal, Archivierung, Kobo-Sichtbarkeit und Sammlungen aufschlüsselt.
+- Umfassende Unit-Tests in `tests/unit/test_kobo_explanation.py` erstellt, die alle 10 Basisfälle und Kantenfälle (z.B. Magic-Shelf-Deaktivierung, 1000er-Cap, Archivierungs-Semantik) prüfen und erfolgreich durchlaufen.
+- Bestehende Kobo-Decoupling-Tests erfolgreich verifiziert (keine Regressionen).
+
+### Nächster Schritt
+
+- Frontend-UI für die Anzeige dieser Erklärlogik aufbauen (z. B. Detail-Overlay/Modal oder Anzeigebereich im Dashboard).
+
 ## 2026-07-03 — Kobo-Dashboard: Nicht-auf-Kobo-Hinweise
 
 - **Feature/Bug:** Sammlungen zeigen ruhigere Hinweise, wenn enthaltene Buecher durch `Nicht auf Kobo` blockiert oder nicht fuer Kobo ausgewaehlt sind.

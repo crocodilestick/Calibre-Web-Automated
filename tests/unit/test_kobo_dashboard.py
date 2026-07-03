@@ -386,6 +386,14 @@ class TestKoboDashboard:
         assert "{{ _('Beim nächsten Sync auslassen') }}" in template
         assert "{{ _('Beim nächsten Sync wieder anbieten') }}" in template
 
+    def test_kobo_dashboard_script_runs_after_global_jquery(self):
+        """Dashboard click handlers must be in the js block after layout loads jQuery."""
+        template = Path("cps/templates/kobo_dashboard.html").read_text(encoding="utf-8")
+
+        assert "{% block js %}" in template
+        assert template.index("{% block js %}") < template.index("$('.kobo-book-details')")
+        assert template.index("{% block js %}") < template.index("$('.kobo-collection-details')")
+
     @patch('cps.kobo_auth._', new=lambda x: x)
     @patch('cps.kobo_auth.db.CalibreDB')
     @patch('cps.kobo.get_kobo_book_sync_explanation')

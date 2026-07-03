@@ -18,6 +18,26 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-03 — Kobo-Dashboard: Live-Smoke-Test und JS-Ladefix
+
+- **Feature/Bug:** Live-Smoke-Test und Fix der Kobo-Dashboard-Modal-Initialisierung.
+- **Branch / Worktree:** `fix/kobo-dashboard-js-load-order`
+- **Status:** Live-Bug gefunden, behoben und lokal verifiziert.
+
+### Erledigt
+
+- Live-Test auf `http://localhost:8085/kobo_auth/dashboard` durchgeführt.
+- Bug gefunden: Dashboard-Click-Handler liefen vor global geladenem jQuery; dadurch öffneten die Info-Icons kein Modal (`ReferenceError: $ is not defined`).
+- Template-Fix: Dashboard-JavaScript aus `block body` in den dafür vorgesehenen `block js` verschoben.
+- Regressionstest ergänzt, der die Script-Block-Reihenfolge absichert.
+- Live-Smoke-Test grün: Buch-Info, Sammlungsdetails und verschachtelter Buchdetails-Link öffnen die erwarteten Modals.
+
+### Belege
+
+- Unit tests passed: `.venv/bin/pytest tests/unit/test_kobo_dashboard.py tests/unit/test_kobo_explanation.py`
+- git check passed: `git diff --check`
+- Browser smoke passed: `Buch_A` Detailmodal, `Leere-Normale-Kollektion` Sammlungsmodal, `Buch_B` Nested-Detailmodal.
+
 ## 2026-07-03 — Kobo-Dashboard: Sync-Transparenz (UI-Teil)
 
 - **Feature/Bug:** Frontend-UI für Kobo-Synchronisations-Transparenz (Roadmap-Punkt 1, UI-Teil).

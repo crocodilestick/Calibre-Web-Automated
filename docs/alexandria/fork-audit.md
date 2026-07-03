@@ -134,13 +134,12 @@ und einfache Bibliotheksaktionen.
 Die Nutzung von Alexandria als Fork-root (d.h. CWA-Code direkt im Hauptverzeichnis des Repositories) bleibt die klare Empfehlung.
 Vor dem eigentlichen Fork müssen jedoch alle Alexandria-spezifischen Meta-Inhalte in einem eigenen Unterordner (`docs/alexandria/`) abgelegt werden. Dadurch bleibt die Root-`README.md` weitgehend unberührt bzw. kann beim Import des Upstreams problemlos durch dessen Original-`README.md` ersetzt werden, ohne Alexandria-spezifische Doku zu verlieren.
 
-## Erste geplante Code-Spikes (Reihenfolge)
+## Erste geplante Code-Spikes (Reihenfolge — Erfolgreich umgesetzt)
 
-1. **Sync-Mini-Bugfix mit Test**:
-   Korrektur des `sync_shelves()`-Bugs bezüglich `not ub.Shelf.kobo_sync` (Umstellung auf `== False` oder saubere SQL-Bedingung) und Absicherung über einen gezielten automatisierten Test im CWA-Testbaum.
-2. **Magic-Shelf-Regel „Buch ist in Regal X“**:
-   Ergänzung des Magic-Shelf-Felds `shelf` (Regel „Buch ist in Regal X“), um dynamische, regalkombinierte Sammlungen zu ermöglichen.
-3. **Kombinierte Custom-Column-Felder**:
-   Custom-Column-Felder für Magic Shelves sichtbar und filterbar machen.
-4. **Kobo-Auswahl vs. Kobo-Sammlung**:
-   Kobo-Sync-Auswahllogik (darf das Buch auf den Kobo?) sauber trennen von der Sortierung in Kobo-Sammlungen.
+Die ersten Spikes wurden erfolgreich abgearbeitet:
+1. **Sync-Mini-Bugfix mit Test** (Erledigt: `sync_shelves()`-Filter korrigiert und getestet)
+2. **Magic-Shelf-Regel „Buch ist in Regal X“** (Erledigt: Regeltyp `normal_shelf` implementiert)
+3. **Kombinierte Custom-Column-Felder** (Verschoben / künftig optional, da Kobo-Entkopplung Priorität hatte)
+4. **Kobo-Auswahl vs. Kobo-Sammlung** (Erledigt: Kobo-Entkopplung mit 2-Säulen-Prinzip, Ausschlussregal und Dashboard vollendet)
+
+Für die weitere mittel- und langfristige Planung siehe die neue [Release-Roadmap](release-roadmap.md).

@@ -1,16 +1,12 @@
 # Implementierungsplan: Normale Regale als Magic-Shelf-Regelquelle (Überarbeitet)
 
+> [!NOTE]
+> **Status: Erfolgreich umgesetzt.** Dieses Feature sowie die nachgelagerte Kobo-Entkopplung (2-Säulen-Prinzip) und das Kobo-Dashboard sind fertiggestellt. Für den aktuellen Entwicklungsstand und künftige Pläne siehe die [Release-Roadmap](release-roadmap.md).
+
 Dieses Dokument beschreibt die technische Umsetzung zur Einbindung von normalen Regalen (`ub.Shelf`) als Regelquelle in Magic-Shelves (`normal_shelf`).
 
 ---
 
-## Scope & Kobo-Entkopplung
-
-> [!IMPORTANT]
-> **Eingrenzung:**
-> Dieser Task ist ein **vorbereitender Baustein** und implementiert noch nicht die endgültige Kobo-Entkopplung (2-Säulen-Prinzip). Er stellt lediglich die technische Infrastruktur bereit, um normale Regale als logische Filterbedingung in den Regeln nutzen zu können. Die Trennung von Sync-Erlaubnis und Sammlungs-Rendering auf dem Kobo erfolgt in einem separaten, nachgelagerten Schritt.
-
----
 
 ## Technische Spezifikation
 

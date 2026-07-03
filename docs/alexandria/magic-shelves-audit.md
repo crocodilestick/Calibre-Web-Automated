@@ -100,8 +100,6 @@ Da Ergebnisse von Magic Shelves gecached werden (`ub.MagicShelfCache`), veraltet
 
 ---
 
-## Scope & Fahrplan
+## Scope & Fahrplan (Erfolgreich umgesetzt)
 
-Die Einführung von **`normal_shelf` als Regelquelle** ist ein rein vorbereitender Baustein. Er schafft die technische Möglichkeit, Regale logisch zu verknüpfen.
-
-Die eigentliche **Kobo-Entkopplung** und das **Dashboard** folgen in separaten Schritten auf Basis dieses Bausteins.
+Die Einführung von **`normal_shelf` als Regelquelle** wurde als vorbereitender Baustein umgesetzt. Mittlerweile wurden auch die **Kobo-Entkopplung** (2-Säulen-Prinzip) und das **Kobo-Dashboard** erfolgreich implementiert. Für die nächsten Aufgaben siehe die [Release-Roadmap](release-roadmap.md).

@@ -30,10 +30,8 @@ Stand 2026-07-02: Der GitHub-Fork wurde als `salutaris91/cwa-alexandria` angeleg
 - [Capability-Check](capability-check.md)
 - [Magic-Shelf Audit](magic-shelves-audit.md)
 - [Magic-Shelf Implementierungsplan](magic-shelves-plan.md)
+- [Release-Roadmap](release-roadmap.md)
 
+## Nächste Schritte
 
-
-
-## Naechster Schritt
-
-Die lokale Docker-Entwicklungsumgebung ist eingerichtet. Der nächste technische Schritt ist die Entkopplung der Kobo-Synchronisation und die Spezifikation von Magic-Shelf-Regeln (siehe `fork-audit.md` Roadmap).
+Die Kobo-Synchronisation wurde entkoppelt, Magic-Shelf-Regeln wurden erweitert und das Kobo-Dashboard ist erfolgreich implementiert. Die weiteren Schritte zur UI-Beruhigung, Übersetzungsverbesserung und Transparenz sind in der [Release-Roadmap](release-roadmap.md) dokumentiert.

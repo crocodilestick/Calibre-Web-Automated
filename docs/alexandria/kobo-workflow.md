@@ -92,20 +92,6 @@ Kobo-erlaubte Buecher =
 Wichtig: Das Ausschlussregal darf nicht nur als sichtbare Kobo-Sammlung
 behandelt werden. Es ist primaer eine Steuerregel fuer die Sync-Erlaubnis.
 
-### Implementierungs-Mini-Spike
+### Implementierungs-Mini-Spike (Erfolgreich umgesetzt)
 
-Der naechste technische Schritt sollte klein bleiben:
-
-1. Hilfslogik fuer ein benutzerspezifisches System-Regal
-   `Kobo: Ausgeschlossen` definieren.
-2. Den Kobo-DELETE-Endpunkt so erweitern, dass er das Buch dort eintraegt,
-   statt nur den Sync-Tracking-Eintrag zu entfernen.
-3. `get_kobo_allowed_book_ids()` so erweitern, dass diese Buch-IDs von der
-   erlaubten Menge abgezogen werden.
-4. Tests ergaenzen:
-   - Ein Buch wird per Magic Shelf erlaubt, auf dem Kobo geloescht und kommt
-     beim naechsten Sync nicht wieder.
-   - Ein Buch wird aus `Kobo: Ausgeschlossen` entfernt und darf danach wieder
-     ueber normale Sync-Regeln erscheinen.
-   - Im Full-Sync-Modus wird die bestehende Archivierungslogik nicht
-     versehentlich veraendert.
+Dieser Schritt wurde vollständig implementiert und getestet (Ausschlussregal `Kobo: Ausgeschlossen`, Kobo-DELETE-Erweiterung, Abzug in `get_kobo_allowed_book_ids()` sowie entsprechende Unit- und Integrationstests). Die weiteren geplanten Ausbaustufen befinden sich auf der [Release-Roadmap](release-roadmap.md).

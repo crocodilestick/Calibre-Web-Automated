@@ -295,6 +295,7 @@
                 <th>{{ _('Typ') }}</th>
                 <th>{{ _('Kobo-Sync') }}</th>
                 <th class="text-center">{{ _('Bücher lokal') }}</th>
+                <th class="text-center">{{ _('Nicht auf Kobo') }}</th>
                 <th class="text-center">{{ _('Sync-berechtigt') }}</th>
                 <th class="text-center">{{ _('Synchronisiert') }}</th>
                 <th>{{ _('Aktionen') }}</th>
@@ -322,7 +323,16 @@
                   </td>
                   <td class="text-center">{{ col.total_books }}</td>
                   <td class="text-center">
-                    {% if is_two_column_sync and col.allowed_books < col.total_books %}
+                    {% if col.blocked_books %}
+                      <span class="text-warning" title="{{ _('Diese Bücher sind bewusst als Nicht auf Kobo markiert.') }}">
+                        {{ col.blocked_books }} <span class="glyphicon glyphicon-ban-circle"></span>
+                      </span>
+                    {% else %}
+                      <span class="text-muted">0</span>
+                    {% endif %}
+                  </td>
+                  <td class="text-center">
+                    {% if is_two_column_sync and col.allowed_books + col.blocked_books < col.total_books %}
                       <span class="text-warning" title="{{ _('Einige Bücher dieser Sammlung werden nicht synchronisiert.') }}">
                         {{ col.allowed_books }} / {{ col.total_books }} <span class="glyphicon glyphicon-warning-sign"></span>
                       </span>

@@ -18,6 +18,28 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-03 — Kobo-Dashboard: Nicht-auf-Kobo-Warnungen
+
+- **Feature/Bug:** Sammlungen zeigen und warnen, wenn enthaltene Buecher durch `Nicht auf Kobo` blockiert sind.
+- **Branch / Worktree:** `feature/kobo-dashboard-blocked-collection-warnings`
+- **Status:** Implementiert und gezielt getestet.
+
+### Erledigt
+
+- Dashboard-Sammlungen berechnen `blocked_books` separat von `allowed_books`.
+- Collection-Tabelle zeigt eine eigene Spalte `Nicht auf Kobo`.
+- Warnung `BLOCKED_BOOKS_IN_COLLECTION` zeigt, wenn eine Sammlung blockierte Buecher enthaelt.
+- Generische `nicht fuer Kobo ausgewaehlt`-Warnungen zaehlen blockierte Buecher nicht doppelt.
+- Babel-Vorlage und deutscher Katalog fuer den neuen Tooltip aktualisiert.
+- Doku in `docs/alexandria/kobo-workflow.md` und `docs/alexandria/ui-ideen.md` aktualisiert.
+- Unit-Tests fuer blocked-count und Template-Smoke angepasst.
+
+### Belege
+
+- `.venv/bin/pytest tests/unit/test_kobo_dashboard.py` erfolgreich.
+- `.venv/bin/python -m babel.messages.frontend compile -d cps/translations -l de` erfolgreich.
+- Relevanter Katalogvergleich: keine fehlenden Kobo-Dashboard-Strings im deutschen Katalog.
+
 ## 2026-07-03 — Kobo-Dashboard: Manuell Nicht auf Kobo
 
 - **Feature/Bug:** Gegenaktion zum Wiederzulassen: Buecher im Dashboard manuell aus der Kobo-Auswahl ausschliessen.

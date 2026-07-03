@@ -7631,6 +7631,10 @@ msgstr "Diese Bücher bleiben in Alexandria, werden aber beim Kobo-Sync ausgelas
 msgid "Wieder für Kobo erlauben"
 msgstr "Wieder für Kobo erlauben"
 
+#: cps/templates/kobo_dashboard.html:327
+msgid "Diese Bücher sind bewusst als Nicht auf Kobo markiert."
+msgstr "Diese Bücher sind bewusst als Nicht auf Kobo markiert."
+
 #~ msgid "Standard Theme"
 #~ msgstr "Standarddesign"
 

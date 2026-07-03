@@ -120,6 +120,7 @@ def get_kobo_dashboard_data(user):
     # Tatsächlich synchronisierte Buch-IDs
     synced_book_ids = {b.book_id for b in ub.session.query(ub.KoboSyncedBooks.book_id).filter_by(user_id=user.id).all()}
     excluded_books = get_kobo_excluded_books(user.id)
+    excluded_book_ids = {book["id"] for book in excluded_books}
     allowed_books = [] if allowed_book_ids is None else get_kobo_allowed_books_for_dashboard(allowed_book_ids)
 
     # 3. Sammlungen aggregieren (kobo_display == True)
@@ -131,6 +132,7 @@ def get_kobo_dashboard_data(user):
         book_ids = {b.book_id for b in shelf.books}
         allowed_in_shelf = book_ids if allowed_book_ids is None else book_ids.intersection(allowed_book_ids)
         synced_in_shelf = book_ids.intersection(synced_book_ids)
+        blocked_in_shelf = book_ids.intersection(excluded_book_ids) if is_two_column_sync else set()
 
         collections.append({
             "id": shelf.id,
@@ -140,6 +142,7 @@ def get_kobo_dashboard_data(user):
             "kobo_sync": shelf.kobo_sync,
             "total_books": len(book_ids),
             "allowed_books": len(allowed_in_shelf),
+            "blocked_books": len(blocked_in_shelf),
             "synced_books": len(synced_in_shelf)
         })
 
@@ -151,6 +154,7 @@ def get_kobo_dashboard_data(user):
 
         allowed_in_shelf = book_ids if allowed_book_ids is None else book_ids.intersection(allowed_book_ids)
         synced_in_shelf = book_ids.intersection(synced_book_ids)
+        blocked_in_shelf = book_ids.intersection(excluded_book_ids) if is_two_column_sync else set()
 
         collections.append({
             "id": shelf.id,
@@ -160,6 +164,7 @@ def get_kobo_dashboard_data(user):
             "kobo_sync": shelf.kobo_sync,
             "total_books": len(book_ids),
             "allowed_books": len(allowed_in_shelf),
+            "blocked_books": len(blocked_in_shelf),
             "synced_books": len(synced_in_shelf)
         })
 
@@ -205,20 +210,28 @@ def get_kobo_dashboard_data(user):
                 "message": f"Sammlung '{col['name']}' ist leer (keine Bücher zugeordnet)."
             })
 
+        elif is_two_column_sync and col["blocked_books"] > 0:
+            warnings.append({
+                "type": "warning",
+                "code": "BLOCKED_BOOKS_IN_COLLECTION",
+                "message": f"In Sammlung '{col['name']}' sind {col['blocked_books']} Bücher als Nicht auf Kobo markiert."
+            })
+
         # Lokale Bücher vorhanden, aber keins davon sync-berechtigt (nur im Zwei-Säulen-Modus relevant)
-        elif is_two_column_sync and col["allowed_books"] == 0:
+        unselected_books = col["total_books"] - col["allowed_books"] - col["blocked_books"]
+        if is_two_column_sync and col["total_books"] > 0 and col["allowed_books"] == 0 and unselected_books > 0:
             warnings.append({
                 "type": "danger",
                 "code": "NO_ALLOWED_BOOKS",
-                "message": f"Sammlung '{col['name']}' enthält {col['total_books']} Bücher, aber keines davon darf auf den Kobo."
+                "message": f"Sammlung '{col['name']}' enthält {col['total_books']} Bücher, aber keines davon ist für Kobo ausgewählt."
             })
 
         # Einige Bücher der Kollektion sind nicht sync-berechtigt (nur im Zwei-Säulen-Modus relevant)
-        elif is_two_column_sync and col["allowed_books"] < col["total_books"]:
+        elif is_two_column_sync and unselected_books > 0:
             warnings.append({
                 "type": "warning",
                 "code": "SOME_BOOKS_NOT_ALLOWED",
-                "message": f"In Sammlung '{col['name']}' sind {col['total_books'] - col['allowed_books']} Bücher nicht für den Kobo freigegeben."
+                "message": f"In Sammlung '{col['name']}' sind {unselected_books} Bücher nicht für Kobo ausgewählt."
             })
 
     return {

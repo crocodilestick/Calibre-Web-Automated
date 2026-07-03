@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated v4.0.6\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-07-03 08:46+0200\n"
+"POT-Creation-Date: 2026-07-03 09:01+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -5855,7 +5855,7 @@ msgid "Status"
 msgstr ""
 
 #: cps/templates/kobo_dashboard.html:207 cps/templates/kobo_dashboard.html:254
-#: cps/templates/kobo_dashboard.html:300
+#: cps/templates/kobo_dashboard.html:301
 msgid "Aktionen"
 msgstr ""
 
@@ -5864,6 +5864,7 @@ msgid "Beim nächsten Sync auslassen"
 msgstr ""
 
 #: cps/templates/kobo_dashboard.html:221 cps/templates/kobo_dashboard.html:239
+#: cps/templates/kobo_dashboard.html:298
 msgid "Nicht auf Kobo"
 msgstr ""
 
@@ -5913,43 +5914,47 @@ msgstr ""
 msgid "Bücher lokal"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:298
+#: cps/templates/kobo_dashboard.html:299
 msgid "Sync-berechtigt"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:299
+#: cps/templates/kobo_dashboard.html:300
 msgid "Synchronisiert"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:311
+#: cps/templates/kobo_dashboard.html:312
 msgid "Automatisch"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:313
+#: cps/templates/kobo_dashboard.html:314
 msgid "Normal"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:318
+#: cps/templates/kobo_dashboard.html:319
 msgid "Aktiv"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:320
+#: cps/templates/kobo_dashboard.html:321
 msgid "Display-Only"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:326
+#: cps/templates/kobo_dashboard.html:327
+msgid "Diese Bücher sind bewusst als Nicht auf Kobo markiert."
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:336
 msgid "Einige Bücher dieser Sammlung werden nicht synchronisiert."
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:338 cps/templates/kobo_dashboard.html:341
+#: cps/templates/kobo_dashboard.html:348 cps/templates/kobo_dashboard.html:351
 msgid "Bearbeiten"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:340
+#: cps/templates/kobo_dashboard.html:350
 msgid "Anzeigen"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:350
+#: cps/templates/kobo_dashboard.html:360
 msgid "Keine Regale oder Magic Shelves sind für das Kobo-Display konfiguriert."
 msgstr ""
 

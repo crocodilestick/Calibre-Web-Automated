@@ -70,4 +70,5 @@ Magic-Shelf-Regeln bleiben moeglich, aber mit klareren Namen:
 - Ein Buch ist fuer Kobo ausgewaehlt, hat aber keine sinnvolle Sammlung.
 - Ein Buch ist in einer Kobo-Sammlung, aber nicht fuer den Kobo ausgewaehlt.
 - Ein Buch wird durch eine Regel eingeschlossen, aber durch
-  `Kobo: Ausgeschlossen` blockiert.
+  `Kobo: Ausgeschlossen` blockiert. Im Dashboard wird dies fuer Sammlungen
+  inzwischen als `Nicht auf Kobo`-Zaehler und Warnung sichtbar.

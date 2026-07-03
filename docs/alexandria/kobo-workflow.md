@@ -83,6 +83,9 @@ Kobo-erlaubte Buecher =
 - Wenn ein Buch zwar durch eine Kobo-Regel ausgewaehlt ist, aber bewusst nicht
   auf den Kobo soll, kann es im Dashboard ueber `Nicht auf Kobo` manuell in
   `Kobo: Ausgeschlossen` verschoben werden.
+- Sammlungen zeigen im Dashboard, wie viele ihrer Buecher durch `Nicht auf Kobo`
+  blockiert sind. Dadurch ist sichtbar, warum eine Sammlung auf dem Kobo
+  weniger Buecher enthaelt als lokal.
 
 Wichtig: Das Ausschlussregal darf nicht nur als sichtbare Kobo-Sammlung
 behandelt werden. Es ist primaer eine Steuerregel fuer die Sync-Erlaubnis.

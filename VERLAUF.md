@@ -18,6 +18,32 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-03 — Smoke-Test Kobo-Ausgeschlossen und Runtime-Fix
+
+- **Feature/Bug:** Echter lokaler Smoke-Test fuer `Kobo: Ausgeschlossen` nach PR #9.
+- **Branch / Worktree:** `test/kobo-exclusion-smoke`
+- **Status:** Smoke-Test erfolgreich abgeschlossen; dabei gefundenen Runtime-Fehler eng behoben.
+
+### Erledigt
+
+- Lokale Docker-Testumgebung auf `http://localhost:8085` genutzt.
+- Bestehende lokale Testdaten verwendet: `Buch_A` war ueber `Kobo-Freigabe` erlaubt und in `kobo_synced_books` als synchronisiert getrackt.
+- Erster echter Kobo-DELETE reproduzierte HTTP 500: Der neue `BookShelf`-Eintrag wurde nur ueber die Fremdschluessel-ID erzeugt, wodurch der bestehende `before_flush`-Hook keine `ub_shelf`-Relationship sah.
+- Fix in `cps/kobo.py`: Der selektive DELETE-Pfad haengt neue Ausschluss-Eintraege ueber `exclusion_shelf.books.append(ub.BookShelf(book_id=...))` an.
+- Unit-Test angepasst, damit die Relationship-Nutzung im selektiven DELETE abgesichert ist.
+- Zweiter echter Kobo-DELETE fuer `Buch_A` lieferte `204 NO CONTENT`.
+- Echte Sync-Antwort lieferte keine New-/Changed-Entitlements fuer `Buch_A`.
+- DB-Pruefung: `Kobo: Ausgeschlossen` wurde mit `kobo_sync=0`, `kobo_display=0` angelegt und enthaelt Buch 2.
+
+### Belege
+
+- `curl -X DELETE .../v1/library/51a96fae-5e78-474f-b0bc-4c83dc12fec0` zuerst `500`, nach Fix `204`.
+- `curl .../v1/library/sync` nach Fix `200`; Payload enthaelt keine `Buch_A`-/UUID-/Entitlement-Treffer.
+- `sqlite3 local-dev/config/app.db`: `31|Kobo: Ausgeschlossen|1|0|0` und `2|31`.
+- `.venv/bin/pytest tests/unit/test_kobo_decoupling.py` erfolgreich.
+- `.venv/bin/pytest tests/unit/test_kobo_dashboard.py` erfolgreich.
+- `git diff --check` fehlerfrei.
+
 ## 2026-07-02 — Kobo-Loeschen als Ausschlussregal (Kobo: Ausgeschlossen)
 
 - **Feature/Bug:** Kobo-Loeschen als Ausschlussregal (Kobo: Ausgeschlossen) implementiert, gehärtet und getestet.

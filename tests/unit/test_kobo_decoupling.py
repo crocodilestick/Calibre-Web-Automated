@@ -441,6 +441,7 @@ class TestKoboSyncDecoupling:
 
         fake_ex_shelf = MagicMock()
         fake_ex_shelf.id = 99
+        fake_ex_shelf.books = MagicMock()
         mock_get_or_create.return_value = fake_ex_shelf
 
         # Book is not yet in the exclusion shelf. Code calls .query(ub.BookShelf).filter(...).first()
@@ -453,11 +454,10 @@ class TestKoboSyncDecoupling:
 
         # Verify that get_or_create was called
         mock_get_or_create.assert_called_once_with(1)
-        # Verify BookShelf record was added to session
-        mock_session.add.assert_called_once()
-        added_bookshelf = mock_session.add.call_args[0][0]
+        # Verify BookShelf record was added via shelf relationship so ub_shelf is available during flush.
+        fake_ex_shelf.books.append.assert_called_once()
+        added_bookshelf = fake_ex_shelf.books.append.call_args[0][0]
         assert added_bookshelf.book_id == 42
-        assert added_bookshelf.shelf == 99
 
         # Verify cache invalidation
         mock_invalidate.assert_called_once()
@@ -678,6 +678,7 @@ class TestKoboSyncDecoupling:
 
         fake_ex_shelf = MagicMock()
         fake_ex_shelf.id = 99
+        fake_ex_shelf.books = MagicMock()
         mock_get_or_create.return_value = fake_ex_shelf
 
         # Book is not yet in the exclusion shelf
@@ -692,8 +693,8 @@ class TestKoboSyncDecoupling:
 
         # Verify that get_or_create was called
         mock_get_or_create.assert_called_once_with(1)
-        # Verify BookShelf record was added to session
-        mock_session.add.assert_called_once()
+        # Verify BookShelf record was added through the shelf relationship before the failing commit
+        fake_ex_shelf.books.append.assert_called_once()
         # Verify rollback was called
         mock_session.rollback.assert_called_once()
         # Verify remove_synced_book was NOT called

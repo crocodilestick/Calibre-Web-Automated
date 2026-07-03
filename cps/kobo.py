@@ -1241,7 +1241,7 @@ def HandleBookDeletionRequest(book_uuid):
                 ub.BookShelf.book_id == book_id
             ).first()
             if not book_in_shelf:
-                ub.session.add(ub.BookShelf(book_id=book_id, shelf=exclusion_shelf.id))
+                exclusion_shelf.books.append(ub.BookShelf(book_id=book_id))
                 from .magic_shelf import invalidate_magic_shelf_cache
                 invalidate_magic_shelf_cache()
                 ub.session.commit()

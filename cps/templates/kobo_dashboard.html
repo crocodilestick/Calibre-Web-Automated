@@ -45,6 +45,9 @@
   .discover .panel .text-warning {
     color: #8a5a00 !important;
   }
+  .discover .panel .text-info {
+    color: #1f6375 !important;
+  }
 
   /* Tables styling */
   .discover table.table-kobo {
@@ -175,7 +178,7 @@
 
   <!-- System-Hinweise & Risikobewertung -->
   {% if warnings %}
-    <div class="panel panel-warning">
+    <div class="panel panel-default">
       <div class="panel-heading">
         <h3 class="panel-title"><span class="glyphicon glyphicon-info-sign"></span> {{ _('System-Check & Hinweise') }}</h3>
       </div>
@@ -294,7 +297,7 @@
           </table>
         </div>
       {% else %}
-        <p class="kobo-empty-state">{{ _('Keine blockierten Bücher.') }}</p>
+        <p class="kobo-empty-state">{{ _('Keine Bücher sind als Nicht auf Kobo markiert.') }}</p>
       {% endif %}
     </div>
   </div>
@@ -352,8 +355,8 @@
                   </td>
                   <td class="text-center">
                     {% if is_two_column_sync and col.allowed_books + col.blocked_books < col.total_books %}
-                      <span class="text-warning" title="{{ _('Einige Bücher dieser Sammlung werden nicht synchronisiert.') }}">
-                        {{ col.allowed_books }} / {{ col.total_books }} <span class="glyphicon glyphicon-warning-sign"></span>
+                      <span class="text-info" title="{{ _('Einige Bücher dieser Sammlung sind aktuell nicht für Kobo ausgewählt.') }}">
+                        {{ col.allowed_books }} / {{ col.total_books }} <span class="glyphicon glyphicon-info-sign"></span>
                       </span>
                     {% else %}
                       <span class="text-success">{{ col.allowed_books }}</span>

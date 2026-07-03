@@ -373,11 +373,14 @@ class TestKoboDashboard:
         assert "{{ _('Hinweis:') }}" in template
         assert "{{ _('Warnung:') }}" not in template
         assert "{{ _('Info:') }}" not in template
+        assert "panel panel-warning" not in template
+        assert "glyphicon-warning-sign" not in template
+        assert "{{ _('Einige Bücher dieser Sammlung sind aktuell nicht für Kobo ausgewählt.') }}" in template
         assert "#2f3438" in template
         assert "#5f6b73" in template
         assert "{{ _('Diese Bücher sind bewusst als Nicht auf Kobo markiert.') }}" in template
         assert "{{ _('Keine Bücher für Kobo ausgewählt.') }}" in template
-        assert "{{ _('Keine blockierten Bücher.') }}" in template
+        assert "{{ _('Keine Bücher sind als Nicht auf Kobo markiert.') }}" in template
         assert "url_for('kobo_auth.block_kobo_book', book_id=book.id)" in template
         assert "url_for('kobo_auth.allow_excluded_book', book_id=book.id)" in template
         assert "{{ _('Beim nächsten Sync auslassen') }}" in template

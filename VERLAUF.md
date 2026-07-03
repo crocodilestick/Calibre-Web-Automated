@@ -33,6 +33,8 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 - System-Sektion spricht von `Hinweisen` statt `Warnungen`; nur echte Fehler bleiben als `Kritisch` sichtbar.
 - Deutsche Singular-/Pluralform fuer Buch-Zaehler korrigiert (`1 Buch`, nicht `1 Buecher`).
 - Kontrast der hellen Dashboard-Panels, Tabellen und Hinweisboxen verbessert.
+- Gelbe Warnungsoptik im System-Hinweisbereich und Warn-Dreieck in der Sammlungstabelle durch neutrale Hinweisoptik ersetzt.
+- Leerzustand im Bereich `Nicht auf Kobo` auf die neue Begrifflichkeit umgestellt.
 - Babel-Vorlage und deutscher Katalog fuer die neuen Dashboard-Texte aktualisiert.
 - Doku in `docs/alexandria/kobo-workflow.md` und `docs/alexandria/ui-ideen.md` aktualisiert.
 - Unit-Tests fuer blocked-count, Hinweis-Typ, Singularform und Template-Smoke angepasst.

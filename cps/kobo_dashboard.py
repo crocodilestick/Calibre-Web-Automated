@@ -8,6 +8,9 @@ from .magic_shelf import build_query_from_rules
 
 log = logger.create()
 
+KOBO_EXCLUSION_SHELF_NAME = "Kobo: Ausgeschlossen"
+
+
 def get_magic_shelf_book_ids_direct(shelf):
     """
     Ermittelt die IDs der Bücher eines Magic Shelves direkt über die Calibre-Datenbank.
@@ -34,6 +37,40 @@ def get_magic_shelf_book_ids_direct(shelf):
         return set()
 
 
+def get_kobo_excluded_books(user_id):
+    excluded_rows = (
+        ub.session.query(ub.BookShelf.book_id)
+        .join(ub.Shelf, ub.BookShelf.shelf == ub.Shelf.id)
+        .filter(ub.Shelf.user_id == user_id, ub.Shelf.name == KOBO_EXCLUSION_SHELF_NAME)
+        .all()
+    )
+    excluded_ids = sorted({row.book_id for row in excluded_rows})
+    if not excluded_ids:
+        return []
+
+    try:
+        cdb = db.CalibreDB(init=True)
+        books = (
+            cdb.session.query(db.Books)
+            .filter(db.Books.id.in_(excluded_ids))
+            .filter(cdb.common_filters(allow_show_archived=True))
+            .order_by(db.Books.sort)
+            .all()
+        )
+        titles_by_id = {book.id: book.title for book in books}
+    except Exception as e:
+        log.error(f"Failed to fetch excluded Kobo book metadata: {str(e)}")
+        titles_by_id = {}
+
+    return [
+        {
+            "id": book_id,
+            "title": titles_by_id.get(book_id, f"Book #{book_id}")
+        }
+        for book_id in excluded_ids
+    ]
+
+
 def get_kobo_dashboard_data(user):
     """
     Aggregiert alle relevanten Kobo-Konfigurationsdaten, Sammlungen und Warnungen für das Dashboard.
@@ -50,6 +87,7 @@ def get_kobo_dashboard_data(user):
 
     # Tatsächlich synchronisierte Buch-IDs
     synced_book_ids = {b.book_id for b in ub.session.query(ub.KoboSyncedBooks.book_id).filter_by(user_id=user.id).all()}
+    excluded_books = get_kobo_excluded_books(user.id)
 
     # 3. Sammlungen aggregieren (kobo_display == True)
     collections = []
@@ -155,6 +193,8 @@ def get_kobo_dashboard_data(user):
         "has_kobo_token": has_kobo_token,
         "collections": collections,
         "warnings": warnings,
+        "excluded_books": excluded_books,
         "allowed_book_count": 0 if allowed_book_ids is None else len(allowed_book_ids),
+        "excluded_book_count": len(excluded_books),
         "synced_book_count": len(synced_book_ids)
     }

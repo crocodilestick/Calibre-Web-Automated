@@ -18,6 +18,28 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-03 — Wiederzulassen aus Kobo-Ausgeschlossen
+
+- **Feature/Bug:** Wiederzulassen-Aktion fuer Buecher in `Kobo: Ausgeschlossen`.
+- **Branch / Worktree:** `feature/kobo-reallow-excluded-book`
+- **Status:** Implementiert und gezielt getestet.
+
+### Erledigt
+
+- Kobo-Dashboard zeigt Buecher aus `Kobo: Ausgeschlossen` als blockierte Buecher an.
+- Sync-Statistik zeigt die Anzahl blockierter Buecher.
+- POST-Aktion `Wieder erlauben` entfernt passende `BookShelf`-Eintraege aus allen gleichnamigen Ausschlussregalen des aktuellen Benutzers.
+- Route setzt die `ub_shelf`-Relationship explizit vor dem Delete, damit der bestehende `before_flush`-Hook sicher funktioniert.
+- Unit-Tests fuer Dashboard-Daten und Wiederzulassen-Route ergaenzt.
+- Doku in `docs/alexandria/kobo-workflow.md` und `docs/alexandria/ui-ideen.md` aktualisiert.
+
+### Belege
+
+- `.venv/bin/pytest tests/unit/test_kobo_dashboard.py` erfolgreich.
+- `.venv/bin/pytest tests/unit/test_kobo_decoupling.py` erfolgreich.
+- `PYTHONPYCACHEPREFIX=/tmp/cwa-alexandria-pycache .venv/bin/python -m py_compile cps/kobo_auth.py cps/kobo_dashboard.py` erfolgreich.
+- `git diff --check` fehlerfrei.
+
 ## 2026-07-03 — Smoke-Test Kobo-Ausgeschlossen und Runtime-Fix
 
 - **Feature/Bug:** Echter lokaler Smoke-Test fuer `Kobo: Ausgeschlossen` nach PR #9.

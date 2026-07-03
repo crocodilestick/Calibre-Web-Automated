@@ -27,7 +27,9 @@ Erwartete Elemente:
 - Sichtbare Kennzeichnung fuer Buecher in `Kobo: Ausgeschlossen`, damit klar
   ist, warum ein Buch trotz passender Regel nicht synchronisiert wird.
 - Aktion: wieder fuer Kobo erlauben, indem das Buch aus
-  `Kobo: Ausgeschlossen` entfernt wird.
+  `Kobo: Ausgeschlossen` entfernt wird. Eine erste Dashboard-Aktion dafuer ist
+  implementiert; spaeter kann die Darstellung noch dichter in die eigentliche
+  Kobo-Auswahl integriert werden.
 
 ### Sammlungen
 

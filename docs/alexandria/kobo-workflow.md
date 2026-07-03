@@ -78,7 +78,8 @@ Kobo-erlaubte Buecher =
 - Das Ausschlussregal hat Vorrang vor normalen Regalen, Magic Shelves und
   spaeteren Custom-Column-Regeln.
 - Wenn ein Buch wieder auf den Kobo soll, muss es aus `Kobo: Ausgeschlossen`
-  entfernt werden.
+  entfernt werden. Alexandria bietet dafuer im Kobo-Dashboard die Aktion
+  `Wieder erlauben` an.
 
 Wichtig: Das Ausschlussregal darf nicht nur als sichtbare Kobo-Sammlung
 behandelt werden. Es ist primaer eine Steuerregel fuer die Sync-Erlaubnis.

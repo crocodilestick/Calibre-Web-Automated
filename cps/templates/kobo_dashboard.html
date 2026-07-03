@@ -136,6 +136,10 @@
             <strong>{{ _('Bereits synchronisiert:') }}</strong>
             <span class="badge badge-kobo-synced">{{ synced_book_count }}</span>
           </p>
+          <p>
+            <strong>{{ _('Blockiert:') }}</strong>
+            <span class="badge">{{ excluded_book_count }}</span>
+          </p>
           <p class="text-muted" style="font-size: 90%;">
             {{ _('Bücher, die mindestens einmal an deinen Kobo ausgeliefert wurden.') }}
           </p>
@@ -168,6 +172,45 @@
   {% else %}
     <div class="alert alert-success">
       <span class="glyphicon glyphicon-ok-sign"></span> {{ _('Keine Probleme gefunden. Deine Kobo-Synchronisation läuft sauber!') }}
+    </div>
+  {% endif %}
+
+  {% if excluded_books %}
+    <div class="panel panel-default" style="margin-top: 2rem;">
+      <div class="panel-heading">
+        <h3 class="panel-title">{{ _('Nicht auf Kobo') }}</h3>
+      </div>
+      <div class="panel-body">
+        <div class="table-responsive">
+          <table class="table table-hover table-kobo">
+            <thead>
+              <tr>
+                <th>{{ _('Titel') }}</th>
+                <th>{{ _('Status') }}</th>
+                <th>{{ _('Aktionen') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for book in excluded_books %}
+                <tr>
+                  <td><strong>{{ book.title }}</strong></td>
+                  <td>
+                    <span class="label label-warning">{{ _('Kobo: Ausgeschlossen') }}</span>
+                  </td>
+                  <td>
+                    <form method="POST" action="{{ url_for('kobo_auth.allow_excluded_book', book_id=book.id) }}" style="display: inline;">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit" class="btn btn-success btn-xs">
+                        <span class="glyphicon glyphicon-ok-circle"></span> {{ _('Wieder erlauben') }}
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   {% endif %}
 

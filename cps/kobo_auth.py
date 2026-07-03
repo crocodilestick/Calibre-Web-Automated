@@ -48,11 +48,11 @@ particular calls to non-Kobo specific endpoints such as the CalibreWeb book down
 """
 
 from binascii import hexlify
-from datetime import datetime
+from datetime import datetime, timezone
 from os import urandom
 from functools import wraps
 
-from flask import g, Blueprint, abort, request
+from flask import g, Blueprint, abort, request, flash, redirect, url_for
 from .cw_login import login_user, current_user
 from flask_babel import gettext as _
 from flask_limiter import RateLimitExceeded
@@ -117,6 +117,48 @@ def delete_auth_token(user_id):
         .filter(ub.RemoteAuthToken.token_type==1).delete()
 
     return ub.session_commit()
+
+
+@kobo_auth.route("/allow_excluded_book/<int:book_id>", methods=["POST"])
+@user_login_required
+def allow_excluded_book(book_id):
+    from .kobo_dashboard import KOBO_EXCLUSION_SHELF_NAME
+
+    shelves = ub.session.query(ub.Shelf).filter(
+        ub.Shelf.user_id == current_user.id,
+        ub.Shelf.name == KOBO_EXCLUSION_SHELF_NAME
+    ).all()
+    if not shelves:
+        flash(_("Das Ausschlussregal wurde nicht gefunden."), category="warning")
+        return redirect(url_for("kobo_auth.dashboard"))
+
+    shelves_by_id = {shelf.id: shelf for shelf in shelves}
+    book_shelves = ub.session.query(ub.BookShelf).filter(
+        ub.BookShelf.shelf.in_(list(shelves_by_id)),
+        ub.BookShelf.book_id == book_id
+    ).all()
+    if not book_shelves:
+        flash(_("Dieses Buch ist bereits wieder für Kobo erlaubt."), category="info")
+        return redirect(url_for("kobo_auth.dashboard"))
+
+    try:
+        from .magic_shelf import invalidate_magic_shelf_cache
+        invalidate_magic_shelf_cache()
+        now = datetime.now(timezone.utc)
+        for book_shelf in book_shelves:
+            shelf = shelves_by_id.get(book_shelf.shelf)
+            if shelf:
+                book_shelf.ub_shelf = shelf
+                shelf.last_modified = now
+            ub.session.delete(book_shelf)
+        ub.session.commit()
+        flash(_("Buch ist wieder für Kobo erlaubt."), category="success")
+    except Exception as e:
+        ub.session.rollback()
+        log.error("Failed to allow excluded Kobo book %d: %s", book_id, e)
+        flash(_("Das Buch konnte nicht wieder für Kobo erlaubt werden."), category="error")
+
+    return redirect(url_for("kobo_auth.dashboard"))
 
 
 def disable_failed_auth_redirect_for_blueprint(bp):

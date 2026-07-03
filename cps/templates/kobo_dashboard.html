@@ -130,7 +130,7 @@
         </div>
         <div class="panel-body">
           <p>
-            <strong>{{ _('Berechtigte Bücher:') }}</strong>
+            <strong>{{ _('Für Kobo ausgewählt:') }}</strong>
             {% if is_two_column_sync %}
               <span class="badge badge-kobo-allowed">{{ allowed_book_count }}</span>
             {% else %}
@@ -142,11 +142,11 @@
             <span class="badge badge-kobo-synced">{{ synced_book_count }}</span>
           </p>
           <p>
-            <strong>{{ _('Blockiert:') }}</strong>
+            <strong>{{ _('Nicht auf Kobo:') }}</strong>
             <span class="badge">{{ excluded_book_count }}</span>
           </p>
           <p class="text-muted" style="font-size: 90%;">
-            {{ _('Bücher, die mindestens einmal an deinen Kobo ausgeliefert wurden.') }}
+            {{ _('Synchronisiert zählt Bücher, die bereits mindestens einmal an deinen Kobo ausgeliefert wurden.') }}
           </p>
         </div>
       </div>
@@ -183,13 +183,66 @@
   <div class="panel panel-default" style="margin-top: 2rem;">
     <div class="panel-heading">
       <h3 class="panel-title">
+        {{ _('Für Kobo ausgewählt') }}
+        {% if is_two_column_sync %}
+          <span class="badge pull-right">{{ allowed_book_count }}</span>
+        {% endif %}
+      </h3>
+    </div>
+    <div class="panel-body">
+      <p class="text-muted" style="font-size: 90%;">
+        {% if is_two_column_sync %}
+          {{ _('Diese Bücher werden beim nächsten Sync angeboten, solange sie nicht ausgeschlossen werden.') }}
+        {% else %}
+          {{ _('Im Modus Ganze Bibliothek wird keine manuelle Kobo-Auswahl angezeigt.') }}
+        {% endif %}
+      </p>
+      {% if is_two_column_sync and allowed_books %}
+        <div class="table-responsive">
+          <table class="table table-hover table-kobo">
+            <thead>
+              <tr>
+                <th>{{ _('Titel') }}</th>
+                <th>{{ _('Status') }}</th>
+                <th>{{ _('Aktionen') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for book in allowed_books %}
+                <tr>
+                  <td><strong>{{ book.title }}</strong></td>
+                  <td>
+                    <span class="label label-primary">{{ _('Für Kobo ausgewählt') }}</span>
+                  </td>
+                  <td>
+                    <form method="POST" action="{{ url_for('kobo_auth.block_kobo_book', book_id=book.id) }}" style="display: inline;">
+                      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                      <button type="submit" class="btn btn-warning btn-xs" title="{{ _('Beim nächsten Sync auslassen') }}">
+                        <span class="glyphicon glyphicon-ban-circle"></span> {{ _('Nicht auf Kobo') }}
+                      </button>
+                    </form>
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% elif is_two_column_sync %}
+        <p class="kobo-empty-state">{{ _('Keine Bücher für Kobo ausgewählt.') }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <div class="panel panel-default" style="margin-top: 2rem;">
+    <div class="panel-heading">
+      <h3 class="panel-title">
         {{ _('Nicht auf Kobo') }}
         <span class="badge pull-right">{{ excluded_book_count }}</span>
       </h3>
     </div>
     <div class="panel-body">
       <p class="text-muted" style="font-size: 90%;">
-        {{ _('Diese Bücher bleiben in Alexandria und werden beim Kobo-Sync ausgelassen.') }}
+        {{ _('Diese Bücher bleiben in Alexandria, werden aber beim Kobo-Sync ausgelassen.') }}
       </p>
       {% if excluded_books %}
         <div class="table-responsive">
@@ -212,7 +265,7 @@
                     <form method="POST" action="{{ url_for('kobo_auth.allow_excluded_book', book_id=book.id) }}" style="display: inline;">
                       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                       <button type="submit" class="btn btn-success btn-xs" title="{{ _('Beim nächsten Sync wieder anbieten') }}">
-                        <span class="glyphicon glyphicon-ok-circle"></span> {{ _('Wieder erlauben') }}
+                        <span class="glyphicon glyphicon-ok-circle"></span> {{ _('Wieder für Kobo erlauben') }}
                       </button>
                     </form>
                   </td>

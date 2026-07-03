@@ -7575,6 +7575,62 @@ msgstr "Beim nächsten Sync wieder anbieten"
 msgid "Keine blockierten Bücher."
 msgstr "Keine blockierten Bücher."
 
+#: cps/kobo_auth.py:168
+msgid "Manuelles Blockieren ist nur im Zwei-Säulen-Sync verfügbar."
+msgstr "Manuelles Blockieren ist nur im Zwei-Säulen-Sync verfügbar."
+
+#: cps/kobo_auth.py:175
+msgid "Dieses Buch ist bereits nicht in der Kobo-Auswahl."
+msgstr "Dieses Buch ist bereits nicht in der Kobo-Auswahl."
+
+#: cps/kobo_auth.py:185
+msgid "Buch wird beim nächsten Kobo-Sync ausgelassen."
+msgstr "Buch wird beim nächsten Kobo-Sync ausgelassen."
+
+#: cps/kobo_auth.py:189
+msgid "Das Buch konnte nicht aus der Kobo-Auswahl entfernt werden."
+msgstr "Das Buch konnte nicht aus der Kobo-Auswahl entfernt werden."
+
+#: cps/templates/kobo_dashboard.html:133
+msgid "Für Kobo ausgewählt:"
+msgstr "Für Kobo ausgewählt:"
+
+#: cps/templates/kobo_dashboard.html:145
+msgid "Nicht auf Kobo:"
+msgstr "Nicht auf Kobo:"
+
+#: cps/templates/kobo_dashboard.html:149
+msgid "Synchronisiert zählt Bücher, die bereits mindestens einmal an deinen Kobo ausgeliefert wurden."
+msgstr "Synchronisiert zählt Bücher, die bereits mindestens einmal an deinen Kobo ausgeliefert wurden."
+
+#: cps/templates/kobo_dashboard.html:186 cps/templates/kobo_dashboard.html:215
+msgid "Für Kobo ausgewählt"
+msgstr "Für Kobo ausgewählt"
+
+#: cps/templates/kobo_dashboard.html:195
+msgid "Diese Bücher werden beim nächsten Sync angeboten, solange sie nicht ausgeschlossen werden."
+msgstr "Diese Bücher werden beim nächsten Sync angeboten, solange sie nicht ausgeschlossen werden."
+
+#: cps/templates/kobo_dashboard.html:197
+msgid "Im Modus Ganze Bibliothek wird keine manuelle Kobo-Auswahl angezeigt."
+msgstr "Im Modus Ganze Bibliothek wird keine manuelle Kobo-Auswahl angezeigt."
+
+#: cps/templates/kobo_dashboard.html:220
+msgid "Beim nächsten Sync auslassen"
+msgstr "Beim nächsten Sync auslassen"
+
+#: cps/templates/kobo_dashboard.html:231
+msgid "Keine Bücher für Kobo ausgewählt."
+msgstr "Keine Bücher für Kobo ausgewählt."
+
+#: cps/templates/kobo_dashboard.html:245
+msgid "Diese Bücher bleiben in Alexandria, werden aber beim Kobo-Sync ausgelassen."
+msgstr "Diese Bücher bleiben in Alexandria, werden aber beim Kobo-Sync ausgelassen."
+
+#: cps/templates/kobo_dashboard.html:268
+msgid "Wieder für Kobo erlauben"
+msgstr "Wieder für Kobo erlauben"
+
 #~ msgid "Standard Theme"
 #~ msgstr "Standarddesign"
 

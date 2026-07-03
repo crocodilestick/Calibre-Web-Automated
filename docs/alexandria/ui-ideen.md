@@ -23,15 +23,20 @@ Erwartete Elemente:
 - Sammlungen pro Buch.
 - Warnung bei sehr breiten Regeln.
 - Filter fuer Universum, Inhaltstyp, Buchart und Lesestatus.
-- Schnelle Aktion: aus Kobo-Auswahl entfernen.
+- Schnelle Aktion: `Nicht auf Kobo`, um ein Buch bewusst aus der
+  Kobo-Auswahl auszuschliessen.
 - Sichtbare Kennzeichnung fuer Buecher in `Kobo: Ausgeschlossen`, damit klar
   ist, warum ein Buch trotz passender Regel nicht synchronisiert wird.
-- Aktion: wieder fuer Kobo erlauben, indem das Buch aus
+- Aktion: `Wieder fuer Kobo erlauben`, indem das Buch aus
   `Kobo: Ausgeschlossen` entfernt wird. Eine erste Dashboard-Aktion dafuer ist
   implementiert; spaeter kann die Darstellung noch dichter in die eigentliche
   Kobo-Auswahl integriert werden.
 - Dashboard-Politur: Die Sektion `Nicht auf Kobo` bleibt sichtbar, zeigt die
-  Anzahl blockierter Buecher, einen Leerzustand und die Aktion `Wieder erlauben`.
+  Anzahl blockierter Buecher, einen Leerzustand und die Aktion
+  `Wieder fuer Kobo erlauben`.
+- Dashboard-Gegenaktion: Die Sektion `Fuer Kobo ausgewaehlt` zeigt im
+  Zwei-Saeulen-Sync erlaubte Buecher und bietet `Nicht auf Kobo` als direkte
+  Blockieraktion an.
 
 ### Sammlungen
 

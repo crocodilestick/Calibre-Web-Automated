@@ -9,7 +9,12 @@ from pathlib import Path
 import pytest
 from unittest.mock import patch, MagicMock
 from cps import ub, db
-from cps.kobo_dashboard import get_magic_shelf_book_ids_direct, get_kobo_dashboard_data, get_kobo_excluded_books
+from cps.kobo_dashboard import (
+    get_kobo_allowed_books_for_dashboard,
+    get_kobo_dashboard_data,
+    get_kobo_excluded_books,
+    get_magic_shelf_book_ids_direct
+)
 
 
 @pytest.mark.unit
@@ -75,16 +80,41 @@ class TestKoboDashboard:
 
         assert excluded_books == [{"id": 20, "title": "Blocked Book"}]
 
+    @patch('cps.kobo_dashboard.db.CalibreDB')
+    def test_get_kobo_allowed_books_for_dashboard(self, mock_calibredb_cls):
+        """Allowed Kobo book IDs should be returned with Calibre titles for the dashboard block action."""
+        fake_book = MagicMock()
+        fake_book.id = 10
+        fake_book.title = "Allowed Book"
+
+        mock_cdb = MagicMock()
+        mock_calibredb_cls.return_value = mock_cdb
+        mock_cdb.session.query.return_value.filter.return_value.filter.return_value.order_by.return_value.all.return_value = [fake_book]
+
+        allowed_books = get_kobo_allowed_books_for_dashboard({10})
+
+        assert allowed_books == [{"id": 10, "title": "Allowed Book"}]
+
+    @patch('cps.kobo_dashboard.get_kobo_allowed_books_for_dashboard')
     @patch('cps.kobo_dashboard.get_kobo_excluded_books')
     @patch('cps.kobo_dashboard.config')
     @patch('cps.kobo_dashboard.get_magic_shelf_book_ids_direct')
     @patch('cps.kobo.get_kobo_allowed_book_ids')
     @patch('cps.ub.session')
-    def test_get_kobo_dashboard_data_basic(self, mock_session, mock_allowed_books, mock_magic_ids, mock_config, mock_excluded):
+    def test_get_kobo_dashboard_data_basic(
+        self,
+        mock_session,
+        mock_allowed_books,
+        mock_magic_ids,
+        mock_config,
+        mock_excluded,
+        mock_allowed_dashboard_books
+    ):
         """Test basic dashboard aggregation and counts in two-column mode."""
         # Setup config
         mock_config.config_kobo_sync_magic_shelves = True
         mock_excluded.return_value = [{"id": 99, "title": "Blocked Book"}]
+        mock_allowed_dashboard_books.return_value = [{"id": 10, "title": "Allowed Book"}]
 
         # Mock user
         fake_user = MagicMock()
@@ -133,6 +163,7 @@ class TestKoboDashboard:
         assert dashboard_data["is_two_column_sync"] is True
         assert dashboard_data["has_kobo_token"] is True
         assert dashboard_data["allowed_book_count"] == 3
+        assert dashboard_data["allowed_books"] == [{"id": 10, "title": "Allowed Book"}]
         assert dashboard_data["excluded_book_count"] == 1
         assert dashboard_data["excluded_books"] == [{"id": 99, "title": "Blocked Book"}]
         assert dashboard_data["synced_book_count"] == 2
@@ -247,6 +278,49 @@ class TestKoboDashboard:
         mock_session.commit.assert_called_once()
         mock_flash.assert_called_once()
 
+    @patch('cps.magic_shelf.invalidate_magic_shelf_cache')
+    @patch('cps.kobo.get_or_create_kobo_exclusion_shelf')
+    @patch('cps.kobo.get_kobo_allowed_book_ids')
+    @patch('cps.kobo_auth.url_for')
+    @patch('cps.kobo_auth.redirect')
+    @patch('cps.kobo_auth.flash')
+    @patch('cps.kobo_auth.current_user')
+    @patch('cps.kobo_auth.ub.session')
+    def test_block_kobo_book_adds_entry(
+        self,
+        mock_session,
+        mock_current_user,
+        mock_flash,
+        mock_redirect,
+        mock_url_for,
+        mock_allowed_ids,
+        mock_get_exclusion_shelf,
+        mock_invalidate
+    ):
+        """The block action adds an allowed book to Kobo: Ausgeschlossen through the shelf relationship."""
+        from cps.kobo_auth import block_kobo_book
+
+        mock_current_user.id = 1
+        mock_current_user.kobo_only_shelves_sync = 1
+        mock_allowed_ids.return_value = {20}
+        mock_url_for.return_value = "/kobo_auth/dashboard"
+        mock_redirect.side_effect = lambda target: target
+
+        fake_shelf = MagicMock()
+        fake_shelf.books = MagicMock()
+        mock_get_exclusion_shelf.return_value = fake_shelf
+
+        response = block_kobo_book.__wrapped__(20)
+
+        assert response == "/kobo_auth/dashboard"
+        fake_shelf.books.append.assert_called_once()
+        appended_book_shelf = fake_shelf.books.append.call_args.args[0]
+        assert isinstance(appended_book_shelf, ub.BookShelf)
+        assert appended_book_shelf.book_id == 20
+        mock_invalidate.assert_called_once()
+        mock_session.commit.assert_called_once()
+        mock_flash.assert_called_once()
+
     @patch('cps.kobo_dashboard.get_kobo_dashboard_data')
     @patch('cps.kobo_auth.render_title_template')
     def test_dashboard_route_passes_excluded_books_to_template(self, mock_render, mock_dashboard_data):
@@ -279,10 +353,14 @@ class TestKoboDashboard:
         assert render_kwargs["page"] == "kobo_dashboard"
 
     def test_kobo_dashboard_template_contains_reallow_smoke_flow(self):
-        """Template smoke test: the blocked-books panel keeps the re-allow action visible."""
+        """Template smoke test: Kobo selection and blocked-books actions stay visible."""
         template = Path("cps/templates/kobo_dashboard.html").read_text(encoding="utf-8")
 
+        assert "{{ _('Für Kobo ausgewählt') }}" in template
         assert "{{ _('Nicht auf Kobo') }}" in template
+        assert "{{ _('Keine Bücher für Kobo ausgewählt.') }}" in template
         assert "{{ _('Keine blockierten Bücher.') }}" in template
+        assert "url_for('kobo_auth.block_kobo_book', book_id=book.id)" in template
         assert "url_for('kobo_auth.allow_excluded_book', book_id=book.id)" in template
+        assert "{{ _('Beim nächsten Sync auslassen') }}" in template
         assert "{{ _('Beim nächsten Sync wieder anbieten') }}" in template

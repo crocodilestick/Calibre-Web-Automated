@@ -161,6 +161,36 @@ def allow_excluded_book(book_id):
     return redirect(url_for("kobo_auth.dashboard"))
 
 
+@kobo_auth.route("/block_kobo_book/<int:book_id>", methods=["POST"])
+@user_login_required
+def block_kobo_book(book_id):
+    if not current_user.kobo_only_shelves_sync:
+        flash(_("Manuelles Blockieren ist nur im Zwei-Säulen-Sync verfügbar."), category="warning")
+        return redirect(url_for("kobo_auth.dashboard"))
+
+    try:
+        from .kobo import get_kobo_allowed_book_ids, get_or_create_kobo_exclusion_shelf
+        allowed_book_ids = get_kobo_allowed_book_ids(current_user.id)
+        if allowed_book_ids is None or book_id not in allowed_book_ids:
+            flash(_("Dieses Buch ist bereits nicht in der Kobo-Auswahl."), category="info")
+            return redirect(url_for("kobo_auth.dashboard"))
+
+        exclusion_shelf = get_or_create_kobo_exclusion_shelf(current_user.id)
+        exclusion_shelf.books.append(ub.BookShelf(book_id=book_id))
+        exclusion_shelf.last_modified = datetime.now(timezone.utc)
+
+        from .magic_shelf import invalidate_magic_shelf_cache
+        invalidate_magic_shelf_cache()
+        ub.session.commit()
+        flash(_("Buch wird beim nächsten Kobo-Sync ausgelassen."), category="success")
+    except Exception as e:
+        ub.session.rollback()
+        log.error("Failed to block Kobo book %d: %s", book_id, e)
+        flash(_("Das Buch konnte nicht aus der Kobo-Auswahl entfernt werden."), category="error")
+
+    return redirect(url_for("kobo_auth.dashboard"))
+
+
 def disable_failed_auth_redirect_for_blueprint(bp):
     lm.blueprint_login_views[bp.name] = None
 

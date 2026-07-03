@@ -79,7 +79,10 @@ Kobo-erlaubte Buecher =
   spaeteren Custom-Column-Regeln.
 - Wenn ein Buch wieder auf den Kobo soll, muss es aus `Kobo: Ausgeschlossen`
   entfernt werden. Alexandria bietet dafuer im Kobo-Dashboard die Aktion
-  `Wieder erlauben` an.
+  `Wieder fuer Kobo erlauben` an.
+- Wenn ein Buch zwar durch eine Kobo-Regel ausgewaehlt ist, aber bewusst nicht
+  auf den Kobo soll, kann es im Dashboard ueber `Nicht auf Kobo` manuell in
+  `Kobo: Ausgeschlossen` verschoben werden.
 
 Wichtig: Das Ausschlussregal darf nicht nur als sichtbare Kobo-Sammlung
 behandelt werden. Es ist primaer eine Steuerregel fuer die Sync-Erlaubnis.

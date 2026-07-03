@@ -18,6 +18,31 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-03 — Kobo-Dashboard: Manuell Nicht auf Kobo
+
+- **Feature/Bug:** Gegenaktion zum Wiederzulassen: Buecher im Dashboard manuell aus der Kobo-Auswahl ausschliessen.
+- **Branch / Worktree:** `feature/kobo-dashboard-block-action`
+- **Status:** Implementiert und gezielt getestet.
+
+### Erledigt
+
+- Dashboard liefert im Zwei-Saeulen-Sync eine Liste `Fuer Kobo ausgewaehlt`.
+- Neue POST-Aktion `Nicht auf Kobo` verschiebt ein erlaubtes Buch in `Kobo: Ausgeschlossen`.
+- Route ist auf Zwei-Saeulen-Sync begrenzt und vermeidet doppelte/unsinnige Ausschluesse.
+- UX-Texte im Dashboard vereinheitlicht: `Fuer Kobo ausgewaehlt`, `Nicht auf Kobo`, `Wieder fuer Kobo erlauben`.
+- Babel-Vorlage und deutscher Katalog fuer die neuen Texte aktualisiert.
+- Doku in `docs/alexandria/kobo-workflow.md` und `docs/alexandria/ui-ideen.md` aktualisiert.
+- Unit-Tests fuer erlaubte Dashboard-Buecher, Blockier-Route und Template-Smoke ergaenzt.
+
+### Belege
+
+- `.venv/bin/pytest tests/unit/test_kobo_dashboard.py` erfolgreich.
+- `.venv/bin/pytest tests/unit/test_kobo_decoupling.py` erfolgreich.
+- `PYTHONPYCACHEPREFIX=/tmp/cwa-alexandria-pycache .venv/bin/python -m py_compile cps/kobo_auth.py cps/kobo_dashboard.py` erfolgreich.
+- `.venv/bin/python -m babel.messages.frontend compile -d cps/translations -l de` erfolgreich.
+- Relevanter Katalogvergleich: keine fehlenden Kobo-Auth-/Dashboard-Strings im deutschen Katalog.
+- `git diff --check` fehlerfrei.
+
 ## 2026-07-03 — Kobo-Dashboard Smoke-Test und Politur
 
 - **Feature/Bug:** Smoke-Test und kleine UI-Politur fuer die Wiederzulassen-Sektion.

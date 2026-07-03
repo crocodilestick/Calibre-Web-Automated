@@ -7343,6 +7343,226 @@ msgstr "Ausgewählte Regale mit Kobo synchronisieren"
 msgid "Show Read/Unread Section"
 msgstr "Zeige Gelesen/Ungelesen-Abschnitt"
 
+#: cps/kobo_auth.py:132
+msgid "Das Ausschlussregal wurde nicht gefunden."
+msgstr "Das Ausschlussregal wurde nicht gefunden."
+
+#: cps/kobo_auth.py:141
+msgid "Dieses Buch ist bereits wieder für Kobo erlaubt."
+msgstr "Dieses Buch ist bereits wieder für Kobo erlaubt."
+
+#: cps/kobo_auth.py:155
+msgid "Buch ist wieder für Kobo erlaubt."
+msgstr "Buch ist wieder für Kobo erlaubt."
+
+#: cps/kobo_auth.py:159
+msgid "Das Buch konnte nicht wieder für Kobo erlaubt werden."
+msgstr "Das Buch konnte nicht wieder für Kobo erlaubt werden."
+
+#: cps/kobo_auth.py:214
+msgid "Kobo Sync Dashboard"
+msgstr "Kobo-Sync-Dashboard"
+
+#: cps/templates/kobo_dashboard.html:65
+msgid "Kobo-Auswahl & Sync-Dashboard"
+msgstr "Kobo-Auswahl & Sync-Dashboard"
+
+#: cps/templates/kobo_dashboard.html:66
+msgid ""
+"Hier siehst du, welche Bücher und Sammlungen für deine Kobo-Geräte "
+"freigegeben und synchronisiert sind."
+msgstr ""
+"Hier siehst du, welche Bücher und Sammlungen für deine Kobo-Geräte "
+"freigegeben und synchronisiert sind."
+
+#: cps/templates/kobo_dashboard.html:73
+msgid "Kobo-Verbindung"
+msgstr "Kobo-Verbindung"
+
+#: cps/templates/kobo_dashboard.html:77
+msgid "Status:"
+msgstr "Status:"
+
+#: cps/templates/kobo_dashboard.html:79
+msgid "Schnittstelle aktiv"
+msgstr "Schnittstelle aktiv"
+
+#: cps/templates/kobo_dashboard.html:81
+msgid "Nicht eingerichtet"
+msgstr "Nicht eingerichtet"
+
+#: cps/templates/kobo_dashboard.html:86
+msgid "Ein Token für Kobo-Geräte ist erzeugt. Geräte können sich synchronisieren."
+msgstr "Ein Token für Kobo-Geräte ist erzeugt. Geräte können sich synchronisieren."
+
+#: cps/templates/kobo_dashboard.html:88
+msgid "Generiere einen Kobo-Token in deinem Benutzerprofil, um Geräte anzubinden."
+msgstr "Generiere einen Kobo-Token in deinem Benutzerprofil, um Geräte anzubinden."
+
+#: cps/templates/kobo_dashboard.html:91
+msgid "Profil bearbeiten"
+msgstr "Profil bearbeiten"
+
+#: cps/templates/kobo_dashboard.html:99
+msgid "Sync-Modus"
+msgstr "Sync-Modus"
+
+#: cps/templates/kobo_dashboard.html:103
+msgid "Modus:"
+msgstr "Modus:"
+
+#: cps/templates/kobo_dashboard.html:105
+msgid "Zwei-Säulen-Sync"
+msgstr "Zwei-Säulen-Sync"
+
+#: cps/templates/kobo_dashboard.html:107
+msgid "Ganze Bibliothek"
+msgstr "Ganze Bibliothek"
+
+#: cps/templates/kobo_dashboard.html:112
+msgid "Nur Bücher in Regalen mit Kobo-Sync-Häkchen werden übertragen."
+msgstr "Nur Bücher in Regalen mit Kobo-Sync-Häkchen werden übertragen."
+
+#: cps/templates/kobo_dashboard.html:114
+msgid "Vorsicht: Deine gesamte Calibre-Bibliothek wird auf den Kobo geladen."
+msgstr "Vorsicht: Deine gesamte Calibre-Bibliothek wird auf den Kobo geladen."
+
+#: cps/templates/kobo_dashboard.html:124
+msgid "Sync-Statistik"
+msgstr "Sync-Statistik"
+
+#: cps/templates/kobo_dashboard.html:128
+msgid "Berechtigte Bücher:"
+msgstr "Berechtigte Bücher:"
+
+#: cps/templates/kobo_dashboard.html:132
+msgid "Alle Bücher"
+msgstr "Alle Bücher"
+
+#: cps/templates/kobo_dashboard.html:136
+msgid "Bereits synchronisiert:"
+msgstr "Bereits synchronisiert:"
+
+#: cps/templates/kobo_dashboard.html:140
+msgid "Blockiert:"
+msgstr "Blockiert:"
+
+#: cps/templates/kobo_dashboard.html:144
+msgid "Bücher, die mindestens einmal an deinen Kobo ausgeliefert wurden."
+msgstr "Bücher, die mindestens einmal an deinen Kobo ausgeliefert wurden."
+
+#: cps/templates/kobo_dashboard.html:155
+msgid "System-Check & Warnungen"
+msgstr "System-Check & Warnungen"
+
+#: cps/templates/kobo_dashboard.html:162
+msgid "Kritisch:"
+msgstr "Kritisch:"
+
+#: cps/templates/kobo_dashboard.html:163
+msgid "Warnung:"
+msgstr "Warnung:"
+
+#: cps/templates/kobo_dashboard.html:164
+msgid "Info:"
+msgstr "Info:"
+
+#: cps/templates/kobo_dashboard.html:174
+msgid "Keine Probleme gefunden. Deine Kobo-Synchronisation läuft sauber!"
+msgstr "Keine Probleme gefunden. Deine Kobo-Synchronisation läuft sauber!"
+
+#: cps/templates/kobo_dashboard.html:181
+msgid "Nicht auf Kobo"
+msgstr "Nicht auf Kobo"
+
+#: cps/templates/kobo_dashboard.html:188
+msgid "Titel"
+msgstr "Titel"
+
+#: cps/templates/kobo_dashboard.html:190 cps/templates/kobo_dashboard.html:234
+msgid "Aktionen"
+msgstr "Aktionen"
+
+#: cps/templates/kobo_dashboard.html:198
+msgid "Kobo: Ausgeschlossen"
+msgstr "Kobo: Ausgeschlossen"
+
+#: cps/templates/kobo_dashboard.html:204
+msgid "Wieder erlauben"
+msgstr "Wieder erlauben"
+
+#: cps/templates/kobo_dashboard.html:220
+msgid "Kobo-Sammlungen"
+msgstr "Kobo-Sammlungen"
+
+#: cps/templates/kobo_dashboard.html:228
+msgid "Name"
+msgstr "Name"
+
+#: cps/templates/kobo_dashboard.html:229
+msgid "Typ"
+msgstr "Typ"
+
+#: cps/templates/kobo_dashboard.html:230
+msgid "Kobo-Sync"
+msgstr "Kobo-Sync"
+
+#: cps/templates/kobo_dashboard.html:231
+msgid "Bücher lokal"
+msgstr "Bücher lokal"
+
+#: cps/templates/kobo_dashboard.html:232
+msgid "Sync-berechtigt"
+msgstr "Sync-berechtigt"
+
+#: cps/templates/kobo_dashboard.html:233
+msgid "Synchronisiert"
+msgstr "Synchronisiert"
+
+#: cps/templates/kobo_dashboard.html:245
+msgid "Automatisch"
+msgstr "Automatisch"
+
+#: cps/templates/kobo_dashboard.html:247
+msgid "Normal"
+msgstr "Normal"
+
+#: cps/templates/kobo_dashboard.html:252
+msgid "Aktiv"
+msgstr "Aktiv"
+
+#: cps/templates/kobo_dashboard.html:254
+msgid "Display-Only"
+msgstr "Nur Anzeige"
+
+#: cps/templates/kobo_dashboard.html:260
+msgid "Einige Bücher dieser Sammlung werden nicht synchronisiert."
+msgstr "Einige Bücher dieser Sammlung werden nicht synchronisiert."
+
+#: cps/templates/kobo_dashboard.html:272 cps/templates/kobo_dashboard.html:275
+msgid "Bearbeiten"
+msgstr "Bearbeiten"
+
+#: cps/templates/kobo_dashboard.html:274
+msgid "Anzeigen"
+msgstr "Anzeigen"
+
+#: cps/templates/kobo_dashboard.html:284
+msgid "Keine Regale oder Magic Shelves sind für das Kobo-Display konfiguriert."
+msgstr "Keine Regale oder Magic Shelves sind für das Kobo-Display konfiguriert."
+
+#: cps/templates/layout.html:301
+msgid "Kobo-Auswahl"
+msgstr "Kobo-Auswahl"
+
+#: cps/templates/layout.html:306
+msgid "Collections"
+msgstr "Sammlungen"
+
+#: cps/templates/shelf_edit.html:28
+msgid "Display this shelf as a Kobo collection"
+msgstr "Dieses Regal als Kobo-Sammlung anzeigen"
+
 #~ msgid "Standard Theme"
 #~ msgstr "Standarddesign"
 

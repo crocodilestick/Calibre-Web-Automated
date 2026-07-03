@@ -32,12 +32,16 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 - Route setzt die `ub_shelf`-Relationship explizit vor dem Delete, damit der bestehende `before_flush`-Hook sicher funktioniert.
 - Unit-Tests fuer Dashboard-Daten und Wiederzulassen-Route ergaenzt.
 - Doku in `docs/alexandria/kobo-workflow.md` und `docs/alexandria/ui-ideen.md` aktualisiert.
+- Babel-Vorlage `messages.pot` aktualisiert und deutsche Kobo-Dashboard-/Wiederzulassen-Strings in `cps/translations/de/LC_MESSAGES/messages.po` ergaenzt.
+- UI-Tippfehler `Schnittstelle active` zu `Schnittstelle aktiv` korrigiert.
 
 ### Belege
 
 - `.venv/bin/pytest tests/unit/test_kobo_dashboard.py` erfolgreich.
 - `.venv/bin/pytest tests/unit/test_kobo_decoupling.py` erfolgreich.
 - `PYTHONPYCACHEPREFIX=/tmp/cwa-alexandria-pycache .venv/bin/python -m py_compile cps/kobo_auth.py cps/kobo_dashboard.py` erfolgreich.
+- `.venv/bin/python -m babel.messages.frontend compile -d cps/translations -l de` erfolgreich.
+- Relevanter Katalogvergleich: keine fehlenden Kobo-/Dashboard-Strings im deutschen Katalog.
 - `git diff --check` fehlerfrei.
 
 ## 2026-07-03 — Smoke-Test Kobo-Ausgeschlossen und Runtime-Fix

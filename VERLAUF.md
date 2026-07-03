@@ -41,7 +41,7 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 - `.venv/bin/python -m babel.messages.frontend compile -d cps/translations -l de` erfolgreich.
 - Relevanter Katalogvergleich: keine fehlenden Kobo-Dashboard-Strings im deutschen Katalog.
 - `git diff --check` fehlerfrei.
-- Lokale Testinstanz auf `http://localhost:8085/` war nicht erreichbar; kein echter Browser-/HTTP-Smoke gegen laufende App ausgefuehrt.
+- Lokaler Browser-Smoke-Test auf `http://localhost:8085` erfolgreich: DELETE simuliert, Buch erscheint in der Sektion "Nicht auf Kobo", Badge-Zähler erhöhen sich, Klick auf "Wieder erlauben" löscht den DB-Eintrag fehlerfrei und setzt `last_modified` korrekt, Counter sinken wieder auf 0.
 
 ## 2026-07-03 — Wiederzulassen aus Kobo-Ausgeschlossen
 

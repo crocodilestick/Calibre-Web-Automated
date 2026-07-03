@@ -452,7 +452,7 @@ class TestKoboDashboard:
         fake_shelf = MagicMock()
         fake_shelf.name = "My Normal Shelf"
         fake_shelf.books = [MagicMock(book_id=10), MagicMock(book_id=20)]
-        
+
         shelf_query = MagicMock()
         shelf_query.filter.return_value.first.return_value = fake_shelf
         mock_session.query.return_value = shelf_query
@@ -487,11 +487,11 @@ class TestKoboDashboard:
                 assert data["collection_name"] == "My Normal Shelf"
                 assert data["collection_type"] == "normal"
                 assert len(data["books"]) == 2
-                
+
                 assert data["books"][0]["book_id"] == 10
                 assert data["books"][0]["title"] == "Book Ten"
                 assert data["books"][0]["explanation"]["is_allowed_on_device"] is True
-                
+
                 assert data["books"][1]["book_id"] == 20
                 assert data["books"][1]["title"] == "Book Twenty"
                 assert data["books"][1]["explanation"]["is_allowed_on_device"] is False
@@ -508,7 +508,7 @@ class TestKoboDashboard:
         # Setup mock magic shelf
         fake_shelf = MagicMock()
         fake_shelf.name = "My Magic Shelf"
-        
+
         shelf_query = MagicMock()
         shelf_query.filter.return_value.first.return_value = fake_shelf
         mock_session.query.return_value = shelf_query
@@ -558,13 +558,13 @@ class TestKoboDashboard:
         fake_user.id = 1
 
         app = Flask("test_app")
-        
+
         # Test normal shelf
         with app.test_request_context('/?type=normal'):
             with patch('cps.kobo_auth.current_user', fake_user):
                 with pytest.raises(NotFound):
                     collection_explanation.__wrapped__(42)
-                    
+
         # Test magic shelf
         with app.test_request_context('/?type=magic'):
             with patch('cps.kobo_auth.current_user', fake_user):
@@ -581,7 +581,7 @@ class TestKoboDashboard:
         fake_user.id = 1
 
         app = Flask("test_app")
-        
+
         with app.test_request_context('/?type=invalid'):
             with patch('cps.kobo_auth.current_user', fake_user):
                 with pytest.raises(NotFound):

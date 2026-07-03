@@ -22,18 +22,23 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 
 - **Feature/Bug:** Frontend-UI für Kobo-Synchronisations-Transparenz (Roadmap-Punkt 1, UI-Teil).
 - **Branch / Worktree:** `feature/kobo-sync-explanation-ui`
-- **Status:** Implementiert und erfolgreich getestet.
+- **Status:** Implementiert, Review-Findings behoben und erfolgreich getestet.
 
 ### Erledigt
 
 - Backend-Routen `/kobo_auth/book/<id>/explanation` und `/kobo_auth/collection/<id>/explanation` in `cps/kobo_auth.py` mit User-Ownership-Schranke und Buchtitel-Anreicherung implementiert.
 - Bootstrap Modal in `cps/templates/kobo_dashboard.html` mit AJAX-Logik zur Visualisierung der Synchronisations-Transparenz pro Buch und Sammlungs-Status eingebunden.
+- **Review-Fix (Blocker):** Der Detail-Link für Kobo-Sammlungen wird jetzt angezeigt, wenn mindestens ein Buch nicht freigegeben ist (`col.allowed_books < col.total_books`), unabhängig von der Anzahl der Bücher im Ausschlussregal.
+- **Review-Fix (Reverse-Proxy):** AJAX-Pfade im JavaScript-Teil werden dynamisch mittels `url_for(...)` generiert, um Inkompatibilitäten bei Reverse-Proxy-Präfixen zu verhindern.
+- **Review-Fix (Magic-Shelf-Label):** Magic-Shelf-Kategorien im Buchmodal werden anhand von `magic_shelf` korrekt als „automatisch“ (statt fälschlicherweise als „normal“) gelabelt.
+- **Review-Fix (Trailing Whitespace):** Sämtliche Trailing Whitespaces wurden aus den Test- und HTML-Dateien entfernt (`git diff --check main` läuft fehlerfrei durch).
 - Neue Testabdeckung in `tests/unit/test_kobo_dashboard.py` (Vollsync, Security-Checks, alle Blocker-Gründe) erfolgreich integriert.
 - Übersetzungskatalog für Deutsch neu kompiliert.
 
 ### Belege
 
-- All unit tests passed: `.venv/bin/pytest tests/unit/test_kobo_dashboard.py`
+- All unit tests passed: `.venv/bin/pytest tests/unit/test_kobo_dashboard.py tests/unit/test_kobo_explanation.py`
+- git check passed: `git diff --check main`
 - Compiled catalog: `.venv/bin/python -m babel.messages.frontend compile -d cps/translations -l de`
 
 ## 2026-07-03 — Kobo-Sync Erklärungslogik (Backend-Basis)

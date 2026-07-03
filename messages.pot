@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated v4.0.6\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-07-03 07:50+0200\n"
+"POT-Creation-Date: 2026-07-03 08:11+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -5707,193 +5707,205 @@ msgstr ""
 msgid "Sort descending according to series index"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:65
+#: cps/templates/kobo_dashboard.html:70
 msgid "Kobo-Auswahl & Sync-Dashboard"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:66
+#: cps/templates/kobo_dashboard.html:71
 msgid ""
 "Hier siehst du, welche Bücher und Sammlungen für deine Kobo-Geräte "
 "freigegeben und synchronisiert sind."
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:73
+#: cps/templates/kobo_dashboard.html:78
 msgid "Kobo-Verbindung"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:77
+#: cps/templates/kobo_dashboard.html:82
 msgid "Status:"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:79
+#: cps/templates/kobo_dashboard.html:84
 msgid "Schnittstelle aktiv"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:81
+#: cps/templates/kobo_dashboard.html:86
 msgid "Nicht eingerichtet"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:86
+#: cps/templates/kobo_dashboard.html:91
 msgid "Ein Token für Kobo-Geräte ist erzeugt. Geräte können sich synchronisieren."
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:88
+#: cps/templates/kobo_dashboard.html:93
 msgid "Generiere einen Kobo-Token in deinem Benutzerprofil, um Geräte anzubinden."
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:91
+#: cps/templates/kobo_dashboard.html:96
 msgid "Profil bearbeiten"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:99
+#: cps/templates/kobo_dashboard.html:104
 msgid "Sync-Modus"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:103
+#: cps/templates/kobo_dashboard.html:108
 msgid "Modus:"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:105
+#: cps/templates/kobo_dashboard.html:110
 msgid "Zwei-Säulen-Sync"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:107
+#: cps/templates/kobo_dashboard.html:112
 msgid "Ganze Bibliothek"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:112
+#: cps/templates/kobo_dashboard.html:117
 msgid "Nur Bücher in Regalen mit Kobo-Sync-Häkchen werden übertragen."
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:114
+#: cps/templates/kobo_dashboard.html:119
 msgid "Vorsicht: Deine gesamte Calibre-Bibliothek wird auf den Kobo geladen."
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:124
+#: cps/templates/kobo_dashboard.html:129
 msgid "Sync-Statistik"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:128
+#: cps/templates/kobo_dashboard.html:133
 msgid "Berechtigte Bücher:"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:132
+#: cps/templates/kobo_dashboard.html:137
 msgid "Alle Bücher"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:136
+#: cps/templates/kobo_dashboard.html:141
 msgid "Bereits synchronisiert:"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:140
+#: cps/templates/kobo_dashboard.html:145
 msgid "Blockiert:"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:144
+#: cps/templates/kobo_dashboard.html:149
 msgid "Bücher, die mindestens einmal an deinen Kobo ausgeliefert wurden."
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:155
+#: cps/templates/kobo_dashboard.html:160
 msgid "System-Check & Warnungen"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:162
+#: cps/templates/kobo_dashboard.html:167
 msgid "Kritisch:"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:163
+#: cps/templates/kobo_dashboard.html:168
 msgid "Warnung:"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:164
+#: cps/templates/kobo_dashboard.html:169
 msgid "Info:"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:174
+#: cps/templates/kobo_dashboard.html:179
 msgid "Keine Probleme gefunden. Deine Kobo-Synchronisation läuft sauber!"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:181
+#: cps/templates/kobo_dashboard.html:186
 msgid "Nicht auf Kobo"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:188
+#: cps/templates/kobo_dashboard.html:192
+msgid "Diese Bücher bleiben in Alexandria und werden beim Kobo-Sync ausgelassen."
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:199
 msgid "Titel"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:189 cps/templates/tasks.html:16
+#: cps/templates/kobo_dashboard.html:200 cps/templates/tasks.html:16
 msgid "Status"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:190 cps/templates/kobo_dashboard.html:234
+#: cps/templates/kobo_dashboard.html:201 cps/templates/kobo_dashboard.html:247
 msgid "Aktionen"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:198
+#: cps/templates/kobo_dashboard.html:209
 msgid "Kobo: Ausgeschlossen"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:204
+#: cps/templates/kobo_dashboard.html:214
+msgid "Beim nächsten Sync wieder anbieten"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:215
 msgid "Wieder erlauben"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:220
-msgid "Kobo-Sammlungen"
-msgstr ""
-
-#: cps/templates/kobo_dashboard.html:228
-msgid "Name"
-msgstr ""
-
-#: cps/templates/kobo_dashboard.html:229
-msgid "Typ"
-msgstr ""
-
-#: cps/templates/kobo_dashboard.html:230
-msgid "Kobo-Sync"
-msgstr ""
-
-#: cps/templates/kobo_dashboard.html:231
-msgid "Bücher lokal"
-msgstr ""
-
-#: cps/templates/kobo_dashboard.html:232
-msgid "Sync-berechtigt"
+#: cps/templates/kobo_dashboard.html:225
+msgid "Keine blockierten Bücher."
 msgstr ""
 
 #: cps/templates/kobo_dashboard.html:233
-msgid "Synchronisiert"
+msgid "Kobo-Sammlungen"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:241
+msgid "Name"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:242
+msgid "Typ"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:243
+msgid "Kobo-Sync"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:244
+msgid "Bücher lokal"
 msgstr ""
 
 #: cps/templates/kobo_dashboard.html:245
+msgid "Sync-berechtigt"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:246
+msgid "Synchronisiert"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:258
 msgid "Automatisch"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:247
+#: cps/templates/kobo_dashboard.html:260
 msgid "Normal"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:252
+#: cps/templates/kobo_dashboard.html:265
 msgid "Aktiv"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:254
+#: cps/templates/kobo_dashboard.html:267
 msgid "Display-Only"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:260
+#: cps/templates/kobo_dashboard.html:273
 msgid "Einige Bücher dieser Sammlung werden nicht synchronisiert."
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:272 cps/templates/kobo_dashboard.html:275
+#: cps/templates/kobo_dashboard.html:285 cps/templates/kobo_dashboard.html:288
 msgid "Bearbeiten"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:274
+#: cps/templates/kobo_dashboard.html:287
 msgid "Anzeigen"
 msgstr ""
 
-#: cps/templates/kobo_dashboard.html:284
+#: cps/templates/kobo_dashboard.html:297
 msgid "Keine Regale oder Magic Shelves sind für das Kobo-Display konfiguriert."
 msgstr ""
 

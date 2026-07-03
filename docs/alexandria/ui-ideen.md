@@ -30,6 +30,8 @@ Erwartete Elemente:
   `Kobo: Ausgeschlossen` entfernt wird. Eine erste Dashboard-Aktion dafuer ist
   implementiert; spaeter kann die Darstellung noch dichter in die eigentliche
   Kobo-Auswahl integriert werden.
+- Dashboard-Politur: Die Sektion `Nicht auf Kobo` bleibt sichtbar, zeigt die
+  Anzahl blockierter Buecher, einen Leerzustand und die Aktion `Wieder erlauben`.
 
 ### Sammlungen
 

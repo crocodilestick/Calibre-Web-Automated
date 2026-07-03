@@ -5,6 +5,7 @@
 
 """Unit tests for Kobo Dashboard data aggregation and warning logic."""
 
+from pathlib import Path
 import pytest
 from unittest.mock import patch, MagicMock
 from cps import ub, db
@@ -245,3 +246,43 @@ class TestKoboDashboard:
         assert mock_session.delete.call_count == 2
         mock_session.commit.assert_called_once()
         mock_flash.assert_called_once()
+
+    @patch('cps.kobo_dashboard.get_kobo_dashboard_data')
+    @patch('cps.kobo_auth.render_title_template')
+    def test_dashboard_route_passes_excluded_books_to_template(self, mock_render, mock_dashboard_data):
+        """Dashboard smoke test: blocked Kobo books are passed to the UI render context."""
+        from cps.kobo_auth import dashboard
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+        mock_dashboard_data.return_value = {
+            "is_two_column_sync": True,
+            "has_kobo_token": True,
+            "collections": [],
+            "warnings": [],
+            "excluded_books": [{"id": 20, "title": "Blocked Book"}],
+            "allowed_book_count": 3,
+            "excluded_book_count": 1,
+            "synced_book_count": 2
+        }
+        mock_render.return_value = "rendered-dashboard"
+
+        with patch('cps.kobo_auth.current_user', fake_user):
+            response = dashboard.__wrapped__()
+
+        assert response == "rendered-dashboard"
+        mock_dashboard_data.assert_called_once_with(fake_user)
+        mock_render.assert_called_once()
+        _, render_kwargs = mock_render.call_args
+        assert render_kwargs["excluded_books"] == [{"id": 20, "title": "Blocked Book"}]
+        assert render_kwargs["excluded_book_count"] == 1
+        assert render_kwargs["page"] == "kobo_dashboard"
+
+    def test_kobo_dashboard_template_contains_reallow_smoke_flow(self):
+        """Template smoke test: the blocked-books panel keeps the re-allow action visible."""
+        template = Path("cps/templates/kobo_dashboard.html").read_text(encoding="utf-8")
+
+        assert "{{ _('Nicht auf Kobo') }}" in template
+        assert "{{ _('Keine blockierten Bücher.') }}" in template
+        assert "url_for('kobo_auth.allow_excluded_book', book_id=book.id)" in template
+        assert "{{ _('Beim nächsten Sync wieder anbieten') }}" in template

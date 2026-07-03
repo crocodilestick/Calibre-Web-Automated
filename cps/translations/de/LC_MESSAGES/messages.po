@@ -7563,6 +7563,18 @@ msgstr "Sammlungen"
 msgid "Display this shelf as a Kobo collection"
 msgstr "Dieses Regal als Kobo-Sammlung anzeigen"
 
+#: cps/templates/kobo_dashboard.html:192
+msgid "Diese Bücher bleiben in Alexandria und werden beim Kobo-Sync ausgelassen."
+msgstr "Diese Bücher bleiben in Alexandria und werden beim Kobo-Sync ausgelassen."
+
+#: cps/templates/kobo_dashboard.html:214
+msgid "Beim nächsten Sync wieder anbieten"
+msgstr "Beim nächsten Sync wieder anbieten"
+
+#: cps/templates/kobo_dashboard.html:225
+msgid "Keine blockierten Bücher."
+msgstr "Keine blockierten Bücher."
+
 #~ msgid "Standard Theme"
 #~ msgstr "Standarddesign"
 

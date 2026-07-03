@@ -18,6 +18,31 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-03 — Kobo-Dashboard Smoke-Test und Politur
+
+- **Feature/Bug:** Smoke-Test und kleine UI-Politur fuer die Wiederzulassen-Sektion.
+- **Branch / Worktree:** `feature/kobo-dashboard-smoke-polish`
+- **Status:** Implementiert und gezielt getestet.
+
+### Erledigt
+
+- Dashboard-Sektion `Nicht auf Kobo` bleibt auch ohne blockierte Buecher sichtbar.
+- Sektion zeigt die Anzahl blockierter Buecher, eine kurze Statusbeschreibung und einen Leerzustand.
+- Button `Wieder erlauben` hat einen klaren Tooltip fuer den naechsten Sync.
+- Smoke-Tests fuer Dashboard-Render-Kontext und Template-Wiederzulassen-Flow ergaenzt.
+- Babel-Vorlage und deutscher Katalog fuer die neuen Dashboard-Texte aktualisiert.
+- `docs/alexandria/ui-ideen.md` nachgefuehrt.
+
+### Belege
+
+- `.venv/bin/pytest tests/unit/test_kobo_dashboard.py` erfolgreich.
+- `.venv/bin/pytest tests/unit/test_kobo_decoupling.py` erfolgreich.
+- `PYTHONPYCACHEPREFIX=/tmp/cwa-alexandria-pycache .venv/bin/python -m py_compile cps/kobo_auth.py cps/kobo_dashboard.py` erfolgreich.
+- `.venv/bin/python -m babel.messages.frontend compile -d cps/translations -l de` erfolgreich.
+- Relevanter Katalogvergleich: keine fehlenden Kobo-Dashboard-Strings im deutschen Katalog.
+- `git diff --check` fehlerfrei.
+- Lokale Testinstanz auf `http://localhost:8085/` war nicht erreichbar; kein echter Browser-/HTTP-Smoke gegen laufende App ausgefuehrt.
+
 ## 2026-07-03 — Wiederzulassen aus Kobo-Ausgeschlossen
 
 - **Feature/Bug:** Wiederzulassen-Aktion fuer Buecher in `Kobo: Ausgeschlossen`.

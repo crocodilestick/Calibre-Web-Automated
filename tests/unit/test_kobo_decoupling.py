@@ -408,15 +408,14 @@ class TestKoboSyncDecoupling:
         assert not mock_session.add.called
 
     @patch('cps.magic_shelf.invalidate_magic_shelf_cache')
-    @patch('cps.kobo.get_or_create_kobo_exclusion_shelf')
     @patch('cps.kobo.kobo_sync_status')
     @patch('cps.kobo.calibre_db')
     @patch('cps.ub.session')
     @patch('cps.kobo.current_user')
     def test_handle_book_deletion_request_selective_sync(
-        self, mock_current_user, mock_session, mock_calibre_db, mock_sync_status, mock_get_or_create, mock_invalidate
+        self, mock_current_user, mock_session, mock_calibre_db, mock_sync_status, mock_invalidate
     ):
-        """Kobo-DELETE on selective sync adds the book to the Kobo: Ausgeschlossen shelf."""
+        """Kobo-DELETE on selective sync marks the book as reader_override = 'never'."""
         from cps.kobo import HandleBookDeletionRequest
 
         mock_current_user.id = 1
@@ -426,30 +425,23 @@ class TestKoboSyncDecoupling:
         fake_book.id = 42
         mock_calibre_db.get_book_by_uuid.return_value = fake_book
 
-        fake_ex_shelf = MagicMock()
-        fake_ex_shelf.id = 99
-        fake_ex_shelf.books = MagicMock()
-        mock_get_or_create.return_value = fake_ex_shelf
-
-        # Book is not yet in the exclusion shelf. Code calls .query(ub.BookShelf).filter(...).first()
-        mock_session.query().filter().first.return_value = None
+        # No override exists yet
+        mock_session.query().filter_by().first.return_value = None
 
         response, code = HandleBookDeletionRequest.__wrapped__("book-uuid")
 
         assert code == 204
         assert response == ""
 
-        # Verify that get_or_create was called
-        mock_get_or_create.assert_called_once_with(1)
-        # Verify BookShelf record was added via shelf relationship so ub_shelf is available during flush.
-        fake_ex_shelf.books.append.assert_called_once()
-        added_bookshelf = fake_ex_shelf.books.append.call_args[0][0]
-        assert added_bookshelf.book_id == 42
+        # Verify new override was added
+        mock_session.add.assert_called_once()
+        added_override = mock_session.add.call_args[0][0]
+        assert added_override.book_id == 42
+        assert added_override.reader_override == "never"
+        assert added_override.user_id == 1
 
-        # Verify cache invalidation
         mock_invalidate.assert_called_once()
-
-        # Verify book tracking remove
+        mock_session.commit.assert_called_once()
         mock_sync_status.remove_synced_book.assert_called_once_with(42)
 
 
@@ -592,14 +584,14 @@ class TestKoboSyncDecoupling:
             cps.kobo.current_app = original_current_app
             cps.kobo_auth.g = original_g
 
-    @patch('cps.kobo.get_or_create_kobo_exclusion_shelf')
+    @patch('cps.magic_shelf.invalidate_magic_shelf_cache')
     @patch('cps.kobo.kobo_sync_status')
     @patch('cps.kobo.calibre_db')
     @patch('cps.ub.session')
     @patch('cps.kobo.current_user')
     @patch('cps.kobo.abort')
     def test_handle_book_deletion_request_selective_sync_database_error(
-        self, mock_abort, mock_current_user, mock_session, mock_calibre_db, mock_sync_status, mock_get_or_create
+        self, mock_abort, mock_current_user, mock_session, mock_calibre_db, mock_sync_status, mock_invalidate
     ):
         """Kobo-DELETE on selective sync aborts with 500 when database insertion fails, and remove_synced_book is not called."""
         from cps.kobo import HandleBookDeletionRequest
@@ -611,13 +603,8 @@ class TestKoboSyncDecoupling:
         fake_book.id = 42
         mock_calibre_db.get_book_by_uuid.return_value = fake_book
 
-        fake_ex_shelf = MagicMock()
-        fake_ex_shelf.id = 99
-        fake_ex_shelf.books = MagicMock()
-        mock_get_or_create.return_value = fake_ex_shelf
-
-        # Book is not yet in the exclusion shelf
-        mock_session.query().filter().first.return_value = None
+        # Book is not yet overridden
+        mock_session.query().filter_by().first.return_value = None
         # Mock session.commit to throw an error on add/commit
         mock_session.commit.side_effect = Exception("DB error")
 
@@ -626,16 +613,12 @@ class TestKoboSyncDecoupling:
         with pytest.raises(Exception, match="Aborted 500"):
             HandleBookDeletionRequest.__wrapped__("book-uuid")
 
-        # Verify that get_or_create was called
-        mock_get_or_create.assert_called_once_with(1)
-        # Verify BookShelf record was added through the shelf relationship before the failing commit
-        fake_ex_shelf.books.append.assert_called_once()
         # Verify rollback was called
         mock_session.rollback.assert_called_once()
         # Verify remove_synced_book was NOT called
         mock_sync_status.remove_synced_book.assert_not_called()
         # Verify abort was called with 500
-        mock_abort.assert_called_once_with(500, description="Database error while adding book to exclusion shelf")
+        mock_abort.assert_called_once_with(500, description="Database error while marking override")
 
     @patch('cps.ub.session')
     def test_get_or_create_kobo_exclusion_shelf_cleans_existing(self, mock_session):
@@ -784,3 +767,26 @@ class TestKoboSyncDecoupling:
         mock_invalidate.assert_called_once()
         mock_session.commit.assert_called_once()
         mock_sync_status.remove_synced_book.assert_called_once_with(42)
+
+    def test_add_missing_tables_creates_kobo_book_override(self):
+        """Verify that add_missing_tables creates the kobo_book_override table with correct schema."""
+        from sqlalchemy import create_engine
+        from sqlalchemy.orm import sessionmaker
+        from cps.ub import add_missing_tables
+
+        # Create an in-memory database and session
+        engine = create_engine("sqlite:///:memory:")
+        Session = sessionmaker(bind=engine)
+        session = Session()
+
+        # Verify table does not exist initially
+        assert not engine.dialect.has_table(engine.connect(), "kobo_book_override")
+
+        # Run migration
+        add_missing_tables(engine, session)
+
+        # Verify table now exists
+        assert engine.dialect.has_table(engine.connect(), "kobo_book_override")
+
+        # Cleanup
+        session.close()

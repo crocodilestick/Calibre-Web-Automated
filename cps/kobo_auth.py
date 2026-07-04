@@ -125,7 +125,8 @@ def allow_excluded_book(book_id):
     try:
         override = ub.session.query(ub.KoboBookOverride).filter_by(
             user_id=current_user.id,
-            book_id=book_id
+            book_id=book_id,
+            reader_override="never"
         ).first()
 
         if override:

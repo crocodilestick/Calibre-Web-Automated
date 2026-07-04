@@ -1430,48 +1430,28 @@ def HandleBookDeletionRequest(book_uuid):
         return redirect_or_proxy_request()
 
     book_id = book.id
-    # If the user has shelf sync enabled, add to exclusion shelf instead of archiving or doing nothing.
-    if current_user.kobo_only_shelves_sync:
-        try:
-            exclusion_shelf = get_or_create_kobo_exclusion_shelf(current_user.id)
-            book_in_shelf = ub.session.query(ub.BookShelf).filter(
-                ub.BookShelf.shelf == exclusion_shelf.id,
-                ub.BookShelf.book_id == book_id
-            ).first()
-            if not book_in_shelf:
-                exclusion_shelf.books.append(ub.BookShelf(book_id=book_id))
-                from .magic_shelf import invalidate_magic_shelf_cache
-                invalidate_magic_shelf_cache()
-                ub.session.commit()
-                log.info("Book %d added to Kobo exclusion shelf for user %d", book_id, current_user.id)
-        except Exception as e:
-            ub.session.rollback()
-            log.error("Failed to add book %d to Kobo exclusion shelf: %s", book_id, e)
-            abort(500, description="Database error while adding book to exclusion shelf")
-    # Otherwise (Full Sync), set reader_override = "never"
-    else:
-        try:
-            override = ub.session.query(ub.KoboBookOverride).filter_by(
+    try:
+        override = ub.session.query(ub.KoboBookOverride).filter_by(
+            user_id=current_user.id,
+            book_id=book_id
+        ).first()
+        if not override:
+            override = ub.KoboBookOverride(
                 user_id=current_user.id,
-                book_id=book_id
-            ).first()
-            if not override:
-                override = ub.KoboBookOverride(
-                    user_id=current_user.id,
-                    book_id=book_id,
-                    reader_override="never"
-                )
-                ub.session.add(override)
-            else:
-                override.reader_override = "never"
-            from .magic_shelf import invalidate_magic_shelf_cache
-            invalidate_magic_shelf_cache()
-            ub.session.commit()
-            log.info("Book %d marked as reader_override='never' (Kobo DELETE in Full Sync) for user %d", book_id, current_user.id)
-        except Exception as e:
-            ub.session.rollback()
-            log.error("Failed to set reader_override='never' on Kobo DELETE: %s", e)
-            abort(500, description="Database error while marking override")
+                book_id=book_id,
+                reader_override="never"
+            )
+            ub.session.add(override)
+        else:
+            override.reader_override = "never"
+        from .magic_shelf import invalidate_magic_shelf_cache
+        invalidate_magic_shelf_cache()
+        ub.session.commit()
+        log.info("Book %d marked as reader_override='never' (Kobo DELETE) for user %d", book_id, current_user.id)
+    except Exception as e:
+        ub.session.rollback()
+        log.error("Failed to set reader_override='never' on Kobo DELETE: %s", e)
+        abort(500, description="Database error while marking override")
 
     kobo_sync_status.remove_synced_book(book_id)
     return "", 204

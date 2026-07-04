@@ -286,6 +286,31 @@ class TestKoboDashboard:
     @patch('cps.kobo_auth.flash')
     @patch('cps.kobo_auth.current_user')
     @patch('cps.kobo_auth.ub.session')
+    def test_allow_excluded_book_ignores_always_override(self, mock_session, mock_current_user, mock_flash, mock_redirect, mock_url_for, mock_invalidate):
+        """The re-allow action does not touch 'always' overrides."""
+        from cps.kobo_auth import allow_excluded_book
+
+        mock_current_user.id = 1
+        mock_url_for.return_value = "/kobo_auth/dashboard"
+        mock_redirect.side_effect = lambda target: target
+
+        # No 'never' override found (since we query for reader_override='never')
+        mock_session.query.return_value.filter_by.return_value.first.return_value = None
+
+        response = allow_excluded_book.__wrapped__(20)
+
+        assert response == "/kobo_auth/dashboard"
+        assert not mock_session.delete.called
+        mock_invalidate.assert_called_once()
+        mock_session.commit.assert_called_once()
+        mock_flash.assert_called_once()
+
+    @patch('cps.magic_shelf.invalidate_magic_shelf_cache')
+    @patch('cps.kobo_auth.url_for')
+    @patch('cps.kobo_auth.redirect')
+    @patch('cps.kobo_auth.flash')
+    @patch('cps.kobo_auth.current_user')
+    @patch('cps.kobo_auth.ub.session')
     def test_block_kobo_book_adds_entry(
         self,
         mock_session,
@@ -353,6 +378,8 @@ class TestKoboDashboard:
 
         assert "{{ _('Für Kobo ausgewählt') }}" in template
         assert "{{ _('Nicht auf Kobo') }}" in template
+        assert "{{ _('Manuell für den Kobo blockiert („Nicht auf Kobo“).') }}" in template
+        assert "Kobo: Ausgeschlossen" not in template
         assert "{{ _('System-Check & Hinweise') }}" in template
         assert "{{ _('Hinweis:') }}" in template
         assert "{{ _('Warnung:') }}" not in template

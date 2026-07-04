@@ -291,7 +291,7 @@
                     </a>
                   </td>
                   <td>
-                    <span class="label label-warning">{{ _('Kobo: Ausgeschlossen') }}</span>
+                    <span class="label label-warning">{{ _('Nicht auf Kobo') }}</span>
                   </td>
                   <td>
                     <form method="POST" action="{{ url_for('kobo_auth.allow_excluded_book', book_id=book.id) }}" style="display: inline;">
@@ -485,8 +485,8 @@ $(document).ready(function() {
         data.blocker_reasons.forEach(function(reason) {
           if (reason === 'archived') {
             html += '    <li>{{ _('Dieses Buch ist in Calibre archiviert.') }}</li>';
-          } else if (reason === 'exclusion_shelf') {
-            html += '    <li>{{ _('Manuell auf dem Kobo gelöscht (befindet sich im Ausschlussregal „Kobo: Ausgeschlossen“).') }}</li>';
+          } else if (reason === 'never_override') {
+            html += '    <li>{{ _('Manuell für den Kobo blockiert („Nicht auf Kobo“).') }}</li>';
           } else if (reason === 'no_source') {
             html += '    <li>{{ _('Dieses Buch ist in keinem aktiven Kobo-Auswahlregal enthalten.') }}</li>';
           } else {

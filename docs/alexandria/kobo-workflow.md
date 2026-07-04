@@ -47,51 +47,30 @@ Damit waere `Fantasy` wieder als Sortiermerkmal moeglich, ohne automatisch die g
 
 ## Geplantes Verhalten: Loeschen direkt auf dem Kobo
 
-Wenn ein Buch direkt auf dem Kobo geloescht wird, soll Alexandria diese Aktion
-nicht als Loeschung aus der Bibliothek verstehen. Das Buch bleibt in Calibre
-erhalten. Die Aktion bedeutet nur: Dieses Buch soll nicht mehr auf diesen
-Kobo-Sync-Weg.
+Wenn ein Buch direkt auf dem Kobo geloescht wird, soll Alexandria diese Aktion nicht als Loeschung aus der Bibliothek verstehen. Das Buch bleibt in Calibre erhalten. Die Aktion bedeutet nur: Dieses Buch soll nicht mehr auf diesen Kobo-Sync-Weg.
 
-Die bevorzugte Modellierung ist ein explizites Ausschlussregal, zum Beispiel:
+Historisch wurde dies ueber ein Ausschlussregal namens `Kobo: Ausgeschlossen` geloest. Ab Phase 1 wird diese aktive Steuerlogik jedoch durch ein dediziertes Datenmodell (`KoboBookOverride` in `cps/ub.py`) in der Datenbank abgeloest. Das alte Regal dient nur noch zur Visualisierung oder Migration.
 
-```text
-Kobo: Ausgeschlossen
-```
+Zielverhalten ab Phase 1:
 
-Alternativ waere ein Name wie `Kobo: Archiv` moeglich. Fachlich ist
-`Kobo: Ausgeschlossen` klarer, weil es keinen allgemeinen Bibliotheksstatus
-behauptet, sondern nur die Sync-Entscheidung beschreibt.
-
-Zielverhalten:
-
-- Ein DELETE vom Kobo fuegt das Buch in das Ausschlussregal des Benutzers ein.
-- Das Buch bleibt in der Calibre-Bibliothek und in seinen fachlichen Metadaten
-  unveraendert.
+- Ein DELETE vom Kobo erzeugt fuer dieses Buch einen Datenbank-Override-Eintrag (`reader_override = "never"`).
+- Das Buch bleibt in der Calibre-Bibliothek und in seinen fachlichen Metadaten unveraendert.
 - Die Kobo-Erlaubnislogik berechnet kuenftig:
 
 ```text
 Kobo-erlaubte Buecher =
-  alle einschliessenden Kobo-Quellen
-  MINUS alle Buecher aus "Kobo: Ausgeschlossen"
+  alle einschliessenden Kobo-Quellen (normale Regale, Magic Shelves, etc.)
+  MINUS alle Buecher mit reader_override == "never"
 ```
 
-- Das Ausschlussregal hat Vorrang vor normalen Regalen, Magic Shelves und
-  spaeteren Custom-Column-Regeln.
-- Wenn ein Buch wieder auf den Kobo soll, muss es aus `Kobo: Ausgeschlossen`
-  entfernt werden. Alexandria bietet dafuer im Kobo-Dashboard die Aktion
-  `Wieder fuer Kobo erlauben` an.
-- Wenn ein Buch zwar durch eine Kobo-Regel ausgewaehlt ist, aber bewusst nicht
-  auf den Kobo soll, kann es im Dashboard ueber `Nicht auf Kobo` manuell in
-  `Kobo: Ausgeschlossen` verschoben werden.
-- Sammlungen zeigen im Dashboard, wie viele ihrer Buecher durch `Nicht auf Kobo`
-  blockiert sind. Dadurch ist sichtbar, warum eine Sammlung auf dem Kobo
-  weniger Buecher enthaelt als lokal.
-- Wenn eine Sammlung lokal Buecher enthaelt, die aktuell nicht auf den Kobo
-  gehen, zeigt das Dashboard dies als `Hinweis`, nicht als kritische Warnung.
+- Der `never`-Override hat absoluten Vorrang vor normalen Regalen, Magic Shelves und spaeteren Custom-Column-Regeln.
+- Wenn ein Buch wieder auf den Kobo soll, muss der Override geloescht werden (Zustand `auto`). Alexandria bietet dafuer im Kobo-Dashboard die Aktion `Wieder fuer Kobo erlauben` an.
+- Wenn ein Buch zwar durch eine Kobo-Regel ausgewaehlt ist, aber bewusst nicht auf den Kobo soll, kann es im Dashboard ueber `Nicht auf Kobo` manuell mit dem Override `never` versehen werden.
+- Sammlungen zeigen im Dashboard, wie viele ihrer Buecher durch `Nicht auf Kobo` blockiert sind. Dadurch ist sichtbar, warum eine Sammlung auf dem Kobo weniger Buecher enthaelt als lokal.
+- Wenn eine Sammlung lokale Buecher enthaelt, die aktuell nicht auf den Kobo gehen, zeigt das Dashboard dies als `Hinweis` (Info), nicht als kritische Warnung.
 
-Wichtig: Das Ausschlussregal darf nicht nur als sichtbare Kobo-Sammlung
-behandelt werden. Es ist primaer eine Steuerregel fuer die Sync-Erlaubnis.
+Wichtig: Der Blockier-Status wird direkt in der Tabelle `kobo_book_override` gespeichert. Es ist primaer eine Steuerregel fuer die Sync-Erlaubnis.
 
-### Implementierungs-Mini-Spike (Erfolgreich umgesetzt)
+### Implementierungs-Stand
 
-Dieser Schritt wurde vollständig implementiert und getestet (Ausschlussregal `Kobo: Ausgeschlossen`, Kobo-DELETE-Erweiterung, Abzug in `get_kobo_allowed_book_ids()` sowie entsprechende Unit- und Integrationstests). Die weiteren geplanten Ausbaustufen befinden sich auf der [Release-Roadmap](release-roadmap.md).
+Phase 1 (Overrides-Datenmodell, universaler Sync-Ausschluss für reader_override='never', Kobo-DELETE Umstellung, Dashboard-Anpassungen, Migrationstest und Regressionsabdeckungen) ist vollständig implementiert und getestet. Die weiteren geplanten Ausbaustufen befinden sich auf der [Release-Roadmap](release-roadmap.md).

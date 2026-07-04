@@ -806,6 +806,7 @@ def add_missing_tables(engine, _session):
     if not engine.dialect.has_table(engine.connect(), "thumbnail"):
         Thumbnail.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "kosync_progress"):
+        from .progress_syncing import KOSyncProgress
         KOSyncProgress.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "magic_shelf"):
         MagicShelf.__table__.create(bind=engine, checkfirst=True)

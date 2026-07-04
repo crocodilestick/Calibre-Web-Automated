@@ -245,7 +245,13 @@ def get_kobo_dashboard_data(user):
     if allowed_book_ids is None:
         try:
             cdb = db.CalibreDB(init=True)
-            total_visible_count = cdb.session.query(db.Books.id).filter(cdb.common_filters(allow_show_archived=True)).distinct().count()
+            from .kobo import KOBO_FORMATS
+            total_visible_count = (cdb.session.query(db.Books.id)
+                                   .join(db.Data)
+                                   .filter(cdb.common_filters(allow_show_archived=True))
+                                   .filter(db.Data.format.in_(KOBO_FORMATS))
+                                   .distinct()
+                                   .count())
         except Exception as e:
             log.error(f"Failed to fetch total visible calibre books count: {e}")
             total_visible_count = 0

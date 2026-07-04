@@ -766,6 +766,13 @@ $(document).ready(function() {
 
   function applyWorkspaceFilter(filter) {
     $('.kobo-workspace-row').each(function() {
+      // Wenn in dieser Zeile gerade ein aktiver Undo-Button angezeigt wird,
+      // behalten wir sie immer sichtbar, damit der User das Undo anklicken kann.
+      if ($(this).find('.kobo-undo-btn').length > 0) {
+        $(this).show();
+        return;
+      }
+
       var isSynced = $(this).data('synced') === true;
       var isAllowed = $(this).data('allowed') === true;
       var isOrphan = $(this).data('orphan') === true;

@@ -772,7 +772,9 @@ class TestKoboSyncDecoupling:
         """Verify that add_missing_tables creates the kobo_book_override table with correct schema."""
         from sqlalchemy import create_engine
         from sqlalchemy.orm import sessionmaker
-        from cps.ub import add_missing_tables
+        from cps.ub import add_missing_tables, KoboBookOverride
+        from sqlalchemy.exc import IntegrityError
+        import pytest
 
         # Create an in-memory database and session
         engine = create_engine("sqlite:///:memory:")
@@ -788,5 +790,24 @@ class TestKoboSyncDecoupling:
         # Verify table now exists
         assert engine.dialect.has_table(engine.connect(), "kobo_book_override")
 
+        # Verify columns and unique constraint by inserting mock data
+        override1 = KoboBookOverride(user_id=1, book_id=10, reader_override="never")
+        session.add(override1)
+        session.commit()
+
+        # Check querying
+        queried = session.query(KoboBookOverride).filter_by(user_id=1, book_id=10).first()
+        assert queried is not None
+        assert queried.user_id == 1
+        assert queried.book_id == 10
+        assert queried.reader_override == "never"
+
+        # Check unique constraint (user_id + book_id)
+        override2 = KoboBookOverride(user_id=1, book_id=10, reader_override="always")
+        session.add(override2)
+        with pytest.raises(IntegrityError):
+            session.commit()
+
         # Cleanup
+        session.rollback()
         session.close()

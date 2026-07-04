@@ -250,12 +250,13 @@ def get_kobo_dashboard_data(user):
                                    .join(db.Data)
                                    .filter(cdb.common_filters(allow_show_archived=True))
                                    .filter(db.Data.format.in_(KOBO_FORMATS))
+                                   .filter(db.Books.id.notin_(blocked_book_ids) if blocked_book_ids else True)
                                    .distinct()
                                    .count())
         except Exception as e:
             log.error(f"Failed to fetch total visible calibre books count: {e}")
             total_visible_count = 0
-        allowed_book_count = max(0, total_visible_count - len(blocked_book_ids))
+        allowed_book_count = total_visible_count
     else:
         allowed_book_count = len(allowed_book_ids)
 

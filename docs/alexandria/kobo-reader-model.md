@@ -1,13 +1,13 @@
 # Konzept: Kobo-Reader-Modell (Synchronisations-Hierarchie)
 
-Dieses Konzeptdokument beschreibt die geplante Neuausrichtung und Vereinfachung des Kobo-Synchronisationsmodells in Alexandria (Roadmap-Punkt 2). Ziel ist es, dem Anwender ein klares, nachvollziehbares Modell ohne technisches Rauschen (wie UUIDs, Datenbank-Trigger oder Sync-Token) zur Verfügung zu stellen.
+Dieses Konzeptdokument beschreibt die geplante Neuausrichtung und Vereinfachung des Kobo-Synchronisationsmodells in Alexandria. Es dient als fachliche und konzeptionelle Grundlage für künftige Entwicklungen im Bereich Kobo-Dashboard, Einstellungen und Sammlungs-Synchronisation. Ziel ist es, dem Anwender ein klares, nachvollziehbbares Modell ohne technisches Rauschen (wie UUIDs, Datenbank-Trigger oder Sync-Token) zur Verfügung zu stellen.
 
 ---
 
 ## 1. Das mentale Modell
 
 Das neue Modell beruht auf einem einfachen Grundsatz:
-> **„Sammlungen schlagen vor, Bücher entscheiden.“**
+> **„Regale geben Vorgaben. Bücher entscheiden. Regale können auf dem Reader als Sammlungen angezeigt werden.“**
 
 Dazu trennen wir konsequent zwei Fragen, die bisher oft vermischt wurden:
 1. **Was kommt auf den Reader?** (Auswahl / Transfer)
@@ -16,19 +16,19 @@ Dazu trennen wir konsequent zwei Fragen, die bisher oft vermischt wurden:
 ```mermaid
 graph TD
     A[Bücher in Calibre-Bibliothek] --> B{Auf Reader?}
-    
-    subgraph Sammlungs-Vorschlag
-        C[Regal / Auto-Sammlung] -->|Bücher übertragen: Ja| B
+
+    subgraph Regal-Vorschlag
+        C[Regal / Automatische Sammlung] -->|Bücher übertragen: Ja| B
     end
-    
+
     subgraph Buch-Entscheidung
         D[Einstellung am Buch] -->|Ja / Nein / Auto| B
     end
-    
+
     B -->|Ergebnis: Ja| E[Auf eReader geladen]
     B -->|Ergebnis: Nein| F[Bleibt in der Cloud]
-    
-    E --> G{Sammlung auf Kobo erstellen?}
+
+    E --> G{Sammlung auf Reader anzeigen?}
     G -->|Ja| H[In eReader-Sammlung einsortiert]
     G -->|Nein| I[Nur unter 'Alle Bücher' sichtbar]
 ```
@@ -37,10 +37,11 @@ graph TD
 
 ## 2. Begriffe und deutsche UX-Texte
 
-Zur Beruhigung der Oberfläche ersetzen wir technische oder englische Begriffe durch verständliche deutsche Formulierungen:
+Zur Beruhigung der Oberfläche ersetzen wir technische oder englische Begriffe durch verständliche deutsche Formulierungen und trennen Quelle (Calibre-Web) und Ziel (eReader) sauber:
 
-*   **Sammlung** (statt *Shelf* / *Kobo-Sammlung*): Jedes Regal oder jede automatische Sammlung, die für den eReader freigegeben ist.
-*   **Automatische Sammlung** (statt *Magic Shelf*): Eine regelbasierte, dynamische Buchgruppe.
+*   **Regal** (statt *Shelf* / *Sammlung* im Quellsystem): Das vom Benutzer manuell gepflegte Buchregal in Calibre-Web.
+*   **Automatische Sammlung** (statt *Magic Shelf*): Ein regelbasiertes, dynamisches Buchregal in Calibre-Web.
+*   **Sammlung** (statt *Kobo-Sammlung* / *Tag*): Die Gruppierung von Büchern auf dem eReader selbst.
 *   **Kobo-Übertragung** (statt *Kobo-Sync*): Der Vorgang des Ladens von Büchern auf das Gerät.
 *   **Auf dem Reader** (Zustand: *Ja/Nein*): Der effektive Status des Buchs auf dem Kobo.
 *   **Immer auf dem Reader** (statt *Forced Sync*): Die manuelle Übertragungs-Ausnahme auf Buchebene.
@@ -48,17 +49,17 @@ Zur Beruhigung der Oberfläche ersetzen wir technische oder englische Begriffe d
 
 ---
 
-## 3. Zustandsmodell für Sammlungen (Regale)
+## 3. Zustandsmodell für Regale und automatische Sammlungen
 
-Jede Sammlung (sowohl normale Regale als auch automatische Sammlungen) besitzt künftig zwei unabhängige, binäre Einstellungen:
+Jedes Regal und jede automatische Sammlung besitzt künftig zwei unabhängige, binäre Einstellungen:
 
-| UI-Option | Backend-Flag | Wirkung |
-|---|---|---|
-| **Bücher übertragen** | `kobo_sync = True/False` | Legt fest, ob die Bücher dieser Sammlung standardmäßig auf den Reader geladen werden sollen. |
-| **Sammlung auf dem Reader anzeigen** | `kobo_display = True/False` | Legt fest, ob für diese Sammlung ein Ordner auf dem Kobo erstellt wird. |
+| UI-Option | Wirkung |
+|---|---|
+| **Bücher übertragen** | Legt fest, ob die Bücher dieses Regals standardmäßig auf den Reader geladen werden sollen. |
+| **Sammlung auf dem Reader anzeigen** | Legt fest, ob für dieses Regal eine Sammlung auf dem eReader erstellt und synchronisiert wird. |
 
 ### Der Spezialfall „Gelesene Bücher“ (Passive Sammlungen)
-Durch diese Entkopplung lässt sich eine Sammlung wie *„Gelesene Bücher“* auf dem eReader anzeigen (`kobo_display = True`), ohne dass all ihre 1.000 Bücher übertragen werden (`kobo_sync = False`). Auf dem Reader erscheinen in dieser Sammlung dann nur jene gelesenen Bücher, die durch *andere* Sammlungen oder manuelle Freigaben bereits auf dem Reader vorhanden sind.
+Durch diese Entkopplung lässt sich ein Regal wie *„Gelesene Bücher“* auf dem eReader anzeigen (Option *Sammlung anzeigen* aktiv), ohne dass all seine 1.000 Bücher auf das Gerät geladen werden (Option *Bücher übertragen* inaktiv). Auf dem Reader erscheinen in dieser Sammlung dann nur jene gelesenen Bücher, die durch *andere* Regale oder manuelle Freigaben bereits auf dem Reader vorhanden sind.
 
 ---
 
@@ -66,9 +67,9 @@ Durch diese Entkopplung lässt sich eine Sammlung wie *„Gelesene Bücher“* a
 
 Für jedes Buch kann der Benutzer eine explizite Entscheidung treffen:
 
-*   **Automatisch** (Standard): Das Buch folgt den Sammlungsregeln. Es wird übertragen, wenn es in mindestens einer Sammlung mit der Option *„Bücher übertragen = Ja“* liegt.
+*   **Automatisch** (Standard): Das Buch folgt den Vorgaben der Regale. Es wird übertragen, wenn es in mindestens einem Regal mit der Option *„Bücher übertragen = Ja“* liegt.
 *   **Immer auf Reader** (Forced Sync): Das Buch wird auf das Gerät geladen, selbst wenn es in keinem synchronisierten Regal enthalten ist.
-*   **Nie auf Reader** (Forced Block): Das Buch wird niemals übertragen, selbst wenn es in einer synchronisierten Sammlung liegt.
+*   **Nie auf Reader** (Forced Block): Das Buch wird niemals übertragen, selbst wenn es in einem synchronisierten Regal liegt.
 
 ---
 
@@ -79,16 +80,16 @@ Zur Berechnung des effektiven Status eines Buches gilt eine strikte Priorisierun
 1.  **Nie auf Reader** gewinnt immer (Sicherheitsschranke).
 2.  **Immer auf Reader** gewinnt danach.
 3.  **Automatisch**:
-    *   Wird übertragen, wenn das Buch in mindestens einer Sammlung mit der Option *„Bücher übertragen = Ja“* liegt.
+    *   Wird übertragen, wenn das Buch in mindestens einem Regal mit der Option *„Bücher übertragen = Ja“* liegt.
     *   Bleibt sonst in der Cloud.
 
 ### Beispiele und UI-Erklärung
 
-| Buch | Sammlungen des Buches | Bucheinstellung | Effektiver Status | UI-Erklärung (Grund) |
+| Buch | Regale des Buches | Bucheinstellung | Effektiver Status | UI-Erklärung (Grund) |
 |---|---|---|---|---|
-| **Buch A** | „Krimi“ (Sync: Ja) | Automatisch | **Wird übertragen** | Übertragen durch Sammlung „Krimi“ |
+| **Buch A** | „Krimi“ (Sync: Ja) | Automatisch | **Wird übertragen** | Übertragen durch Regal „Krimi“ |
 | **Buch B** | „Krimi“ (Sync: Ja) | Nie auf Reader | **Wird nicht übertragen** | Manuell ausgeschlossen |
-| **Buch C** | „Gelesen“ (Sync: Nein) | Automatisch | **Wird nicht übertragen** | In keiner aktiven Sync-Sammlung |
+| **Buch C** | „Gelesen“ (Sync: Nein) | Automatisch | **Wird nicht übertragen** | In keinem aktiven Sync-Regal |
 | **Buch D** | „Gelesen“ (Sync: Nein) | Immer auf Reader | **Wird übertragen** | Manuell immer auf dem Reader |
 
 ---
@@ -104,9 +105,9 @@ Das Dashboard wird beruhigt. Technische Details wandern in ein Einstellungs-Subm
 │ [ Kobo-Verbindung einrichten ] [ Kobo-Sync-Einstellungen ]                 │
 └────────────────────────────────────────────────────────────────────────────┘
 
-Deine Sammlungen (Regale)
+Deine Buchquellen (Regale)
 ┌──────────────────────┬─────────────┬───────────────────┬───────────────────┐
-│ Sammlung             │ Bücher      │ Bücher übertragen │ Sammlung anzeigen │
+│ Regal                │ Bücher      │ Bücher übertragen │ Sammlung anzeigen │
 ├──────────────────────┼─────────────┼───────────────────┼───────────────────┤
 │ 📂 Urlaub 2026       │ 12 Bücher   │ [x] Ja  [ ] Nein  │ [x] Ja  [ ] Nein  │ [Bearbeiten]
 │ 📂 Sci-Fi Klassiker  │ 45 Bücher   │ [x] Ja  [ ] Nein  │ [x] Ja  [ ] Nein  │ [Bearbeiten]
@@ -114,20 +115,20 @@ Deine Sammlungen (Regale)
 └──────────────────────┴─────────────┴───────────────────┴───────────────────┘
 ```
 
-### Batch-Bearbeitung (Klick auf „Bearbeiten“ bei einer Sammlung)
-Öffnet eine tabellarische Listenansicht aller Bücher dieser Sammlung:
+### Batch-Bearbeitung (Klick auf „Bearbeiten“ bei einem Regal)
+Öffnet eine tabellarische Listenansicht aller Bücher dieses Regals:
 ```text
-Bücher in Sammlung „Sci-Fi Klassiker“
+Bücher im Regal „Sci-Fi Klassiker“
 ┌──────────────────────────────────┬──────────────────────┬───────────────────────────────┐
 │ Buchtitel                        │ Einstellung          │ Effektiver Status (Ergebnis)  │
 ├──────────────────────────────────┼──────────────────────┼───────────────────────────────┤
 │ Dune                             │ [ Automatisch    v ] │ green[ Wird übertragen ]      │
-│                                  │                      │ (Durch diese Sammlung)        │
+│                                  │                      │ (Durch dieses Regal)          │
 ├──────────────────────────────────┼──────────────────────┼───────────────────────────────┤
 │ Foundation                       │ [ Nie auf Reader v ] │ red[ Bleibt in der Cloud ]    │
 │                                  │                      │ (Manuell ausgeschlossen)      │
 ├──────────────────────────────────┼──────────────────────┼───────────────────────────────┤
-│ Neuromancer                      │ [ Immer auf Read v ] │ green[ Wird übertragen ]      │
+│ Neuromancer                      │ [ Immer auf Reader v]│ green[ Wird übertragen ]      │
 │                                  │                      │ (Manuell erzwungen)           │
 └──────────────────────────────────┴──────────────────────┴───────────────────────────────┘
                                    [ Änderungen verwerfen ] [ Änderungen speichern ]
@@ -143,12 +144,12 @@ Direkt auf der Detailseite eines Buches kann die Übertragungsentscheidung im eR
 Kobo-Reader-Übertragung
 ┌──────────────────────────────────────────────────────────────┐
 │ Einstellung für dieses Buch:                                 │
-│ (o) Automatisch (folgt den Sammlungen)                       │
+│ (o) Automatisch (folgt den Regalen)                          │
 │ ( ) Immer auf den Reader übertragen                          │
 │ ( ) Nie auf den Reader übertragen                            │
 │                                                              │
 │ Status: Wird auf den Reader übertragen                       │
-│ Grund: Das Buch befindet sich in der Sammlung „Urlaub 2026“. │
+│ Grund: Das Buch befindet sich im Regal „Urlaub 2026“.        │
 └──────────────────────────────────────────────────────────────┘
 ```
 
@@ -157,9 +158,13 @@ Kobo-Reader-Übertragung
 ## 8. Kontrollansicht: „Auf Reader, aber in keiner Sammlung“
 
 Eine wichtige Qualitätskontrolle verhindert verwaiste Bücher:
-*   Wenn Bücher auf *„Immer auf Reader“* gesetzt sind, aber in keiner auf dem Reader angezeigten Sammlung (`kobo_display = True`) liegen.
-*   Diese Bücher landen auf dem eReader lose im Hauptverzeichnis („Meine Bücher“).
-*   **Lösung:** Eine eigene Kontrollliste im Dashboard listet diese Bücher auf, damit der Benutzer sie entweder einer Sammlung zuweisen oder die Ausnahmeregel entfernen kann.
+*   Es werden alle Bücher erfasst, die auf dem Reader vorhanden sind, dort aber in keiner einzigen angezeigten Sammlung (`kobo_display = True`) eingeordnet sind.
+*   Dies betrifft:
+    *   Bücher, die über die Buch-Einstellung *„Immer auf Reader“* übertragen werden.
+    *   Bücher, die über ein Regal übertragen werden, bei dem die Option *„Sammlung auf dem Reader anzeigen“* inaktiv ist.
+    *   Bücher, die bei aktiver vollständiger Synchronisation (Vollsync) übertragen wurden, aber in keinem synchronisierten Regal einsortiert sind.
+*   Diese Bücher landen auf dem eReader lose im Hauptverzeichnis („Meine Bücher“) ohne Ordnung.
+*   **Lösung:** Eine eigene Kontrollliste im Dashboard listet diese Bücher auf, damit der Benutzer sie entweder gezielt einem angezeigten Regal zuweisen oder die Übertragung beenden kann.
 
 ---
 
@@ -175,4 +180,7 @@ Eine wichtige Qualitätskontrolle verhindert verwaiste Bücher:
 
 1.  **Erkennung des tatsächlichen Reader-Bestands:** Wie können wir verlässlich im Dashboard anzeigen, ob ein Buch *wirklich* auf dem Gerät angekommen ist? (Überprüfung von `ub.KoboSyncedBooks` liefert einen Indikator, aber keine Garantie bei Verbindungsabbrüchen).
 2.  **Auslagerung der technischen Einstellungen:** Wann und wie lagern wir Verbindungstoken, Kobo-Sync-Modi (Vollsync vs. Selektiv) und Sync-Statistiken in ein eigenes kompaktes Menü aus?
-3.  **Backend-Refactoring:** Eine künftige Vereinfachung der Backend-Datenstruktur (z. B. Umwandlung von `KoboExcludedBooks` und des erzwungenen Systemregals in eine einheitliche Tabelle `KoboBookOverrides`) sollte erst nach Freigabe und Erprobung dieses Konzepts erfolgen.
+3.  **Optionen für die Backend-Datenstruktur:**
+    *   *Option A (Hidden-Regal):* Die Erzwungen-Option (Immer auf Reader) könnte über ein für den Anwender unsichtbares Systemregal (z. B. `_alexandria_forced_sync_kobo`) abgebildet werden, um die bestehende CWA-Shelf-Struktur weiter zu nutzen.
+    *   *Option B (Datenbank-Erweiterung):* Zukünftige Vereinfachung durch Zusammenführung von Overrides in eine neue, einheitliche Tabelle (z. B. `KoboBookOverrides`), um Ausnahmen strukturell sauber zu kapseln.
+    *   Beide Optionen müssen in einer späteren Implementierungsphase auf Performance und Upstream-Kompatibilität geprüft werden.

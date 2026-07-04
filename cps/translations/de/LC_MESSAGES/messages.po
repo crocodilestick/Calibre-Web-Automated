@@ -1,21 +1,19 @@
+
 msgid ""
 msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-03-11 17:35+0000\n"
+"POT-Creation-Date: 2026-07-04 22:09+0200\n"
 "PO-Revision-Date: 2025-09-09 20:18+0200\n"
 "Last-Translator: Manuel Drescher\n"
-"Language-Team: German\n"
 "Language: de\n"
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
+"Language-Team: German\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Loco-Source-Locale: de_DE\n"
-"Generated-By: Babel 2.15.0\n"
-"X-Loco-Parser: loco_parse_po\n"
-"X-Generator: Poedit 3.6\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
 
 #: cps/about.py:65
 msgid "Statistics"
@@ -42,8 +40,7 @@ msgid "Unknown command"
 msgstr "Unbekannter Befehl"
 
 #: cps/admin.py:204
-msgid ""
-"Success! Books queued for Metadata Backup, please check Tasks for result"
+msgid "Success! Books queued for Metadata Backup, please check Tasks for result"
 msgstr ""
 "Erfolg! Bücher wurden für Metadaten-Backup eingereiht, für das Ergebnis "
 "bitte Aufgaben überprüfen"
@@ -53,14 +50,16 @@ msgid ""
 "Error: No Hardcover token available. Set HARDCOVER_TOKEN environment "
 "variable or configure in Basic Configuration."
 msgstr ""
-"Fehler: Kein Hardcover-Token verfügbar. Umgebungsvariable HARDCOVER_TOKEN "
-"setzen oder in Basiskonfiguration konfigurieren."
+"Fehler: Kein Hardcover-Token verfügbar. Umgebungsvariable HARDCOVER_TOKEN"
+" setzen oder in Basiskonfiguration konfigurieren."
 
 #: cps/admin.py:252
 msgid ""
-"Success! Hardcover auto-fetch task started. Check Tasks panel for progress."
+"Success! Hardcover auto-fetch task started. Check Tasks panel for "
+"progress."
 msgstr ""
-"Erfolg! Hardcover-Auto-Fetch gestartet. Fortschritt im Aufgaben-Panel prüfen."
+"Erfolg! Hardcover-Auto-Fetch gestartet. Fortschritt im Aufgaben-Panel "
+"prüfen."
 
 #: cps/admin.py:257
 #, python-format
@@ -97,10 +96,11 @@ msgstr "%(count)s Treffer abgelehnt"
 #: cps/admin.py:482
 #, python-brace-format
 msgid ""
-"Thumbnail cache refresh started for {} book(s). This may take a few minutes."
+"Thumbnail cache refresh started for {} book(s). This may take a few "
+"minutes."
 msgstr ""
-"Vorschaubild-Cache-Aktualisierung für {} Buch/Bücher gestartet. Dies kann "
-"einige Minuten dauern."
+"Vorschaubild-Cache-Aktualisierung für {} Buch/Bücher gestartet. Dies kann"
+" einige Minuten dauern."
 
 #: cps/admin.py:484
 msgid "No books with covers found to process."
@@ -135,7 +135,7 @@ msgstr ""
 msgid "Edit Users"
 msgstr "Benutzer bearbeiten"
 
-#: cps/admin.py:682 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:682 cps/opds.py:800 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Alle"
@@ -159,7 +159,7 @@ msgstr "Zeige alle"
 msgid "Malformed request"
 msgstr "Fehlerhafte Anfrage"
 
-#: cps/admin.py:785 cps/admin.py:2786
+#: cps/admin.py:785 cps/admin.py:2790
 msgid "Guest Name can't be changed"
 msgstr "Name 'Guest' kann nicht geändert werden"
 
@@ -167,10 +167,9 @@ msgstr "Name 'Guest' kann nicht geändert werden"
 msgid "Guest can't have this role"
 msgstr "Benutzer 'Guest' darf diese Rolle nicht besitzen"
 
-#: cps/admin.py:811 cps/admin.py:2611
+#: cps/admin.py:811 cps/admin.py:2615
 msgid "No admin user remaining, can't remove admin role"
-msgstr ""
-"Kein verbleibender Admin-Benutzer, Admin-Rolle kann nicht entfernt werden"
+msgstr "Kein verbleibender Admin-Benutzer, Admin-Rolle kann nicht entfernt werden"
 
 #: cps/admin.py:815 cps/admin.py:829
 msgid "Value has to be true or false"
@@ -214,7 +213,7 @@ msgstr "Ungültige Gelesen Spalte"
 msgid "Invalid Restricted Column"
 msgstr "Ungültiger Spaltenname für Einschränkung"
 
-#: cps/admin.py:914 cps/admin.py:2459
+#: cps/admin.py:914 cps/admin.py:2461
 msgid "Calibre-Web Automated configuration updated"
 msgstr "Konfiguration von Calibre-Web Automated wurde aktualisiert"
 
@@ -236,44 +235,47 @@ msgstr "Möchten Sie dieses Regal wirklich löschen?"
 
 #: cps/admin.py:934
 msgid "Are you sure you want to change locales of selected user(s)?"
-msgstr ""
-"Möchten Sie die Anzeigesprache der ausgewählten Benutzer wirklich ändern?"
+msgstr "Möchten Sie die Anzeigesprache der ausgewählten Benutzer wirklich ändern?"
 
 #: cps/admin.py:936
 msgid ""
-"Are you sure you want to change visible book languages for selected user(s)?"
+"Are you sure you want to change visible book languages for selected "
+"user(s)?"
 msgstr ""
-"Möchten Sie die Büchersprachen für die ausgewählten Benutzer wirklich ändern?"
+"Möchten Sie die Büchersprachen für die ausgewählten Benutzer wirklich "
+"ändern?"
 
 #: cps/admin.py:938
 msgid ""
-"Are you sure you want to change the selected role for the selected user(s)?"
+"Are you sure you want to change the selected role for the selected "
+"user(s)?"
 msgstr ""
 "Möchten Sie die ausgewählte Rolle für die ausgewählten Benutzer wirklich "
 "verändern?"
 
 #: cps/admin.py:940
 msgid ""
-"Are you sure you want to change the selected restrictions for the selected "
-"user(s)?"
+"Are you sure you want to change the selected restrictions for the "
+"selected user(s)?"
 msgstr ""
-"Möchten Sie die ausgewählten Sichtbarkeitsbeschränkungen der ausgewählten "
-"Benutzer wirklich ändern?"
+"Möchten Sie die ausgewählten Sichtbarkeitsbeschränkungen der ausgewählten"
+" Benutzer wirklich ändern?"
 
 #: cps/admin.py:942
 msgid ""
-"Are you sure you want to change the selected visibility restrictions for the "
-"selected user(s)?"
+"Are you sure you want to change the selected visibility restrictions for "
+"the selected user(s)?"
 msgstr ""
 "Möchten Sie die Sichtbarkeiten für die ausgewählten Benutzer wirklich "
 "verändern?"
 
 #: cps/admin.py:945
 msgid ""
-"Are you sure you want to change shelf sync behavior for the selected user(s)?"
+"Are you sure you want to change shelf sync behavior for the selected "
+"user(s)?"
 msgstr ""
-"Möchten Sie die Synchronisation von Regalen für die ausgewählten Benutzer "
-"wirklich verändern?"
+"Möchten Sie die Synchronisation von Regalen für die ausgewählten Benutzer"
+" wirklich verändern?"
 
 #: cps/admin.py:947
 msgid "Are you sure you want to change Calibre library location?"
@@ -289,11 +291,11 @@ msgstr ""
 
 #: cps/admin.py:952
 msgid ""
-"Are you sure you want delete Calibre-Web Automated's sync database to force "
-"a full sync with your Kobo Reader?"
+"Are you sure you want delete Calibre-Web Automated's sync database to "
+"force a full sync with your Kobo Reader?"
 msgstr ""
-"Möchten Sie die Synchronisationsdatenbank von Calibre-Web Automated wirklich "
-"löschen, um eine komplette Synchronisation zu erzwingen?"
+"Möchten Sie die Synchronisationsdatenbank von Calibre-Web Automated "
+"wirklich löschen, um eine komplette Synchronisation zu erzwingen?"
 
 #: cps/admin.py:1191 cps/admin.py:1197 cps/admin.py:1207 cps/admin.py:1217
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
@@ -335,7 +337,8 @@ msgstr "Zugriffs-Logdatei Pfad ist ungültig, bitte einen gültigen Pfad angeben
 #: cps/admin.py:1618
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
 msgstr ""
-"Bitte einen LDAP-Server, -Port, -DN und -Benutzerobjektidentifikator eingeben"
+"Bitte einen LDAP-Server, -Port, -DN und -Benutzerobjektidentifikator "
+"eingeben"
 
 #: cps/admin.py:1624
 msgid "Please Enter a LDAP Service Account and Password"
@@ -374,10 +377,11 @@ msgstr "LDAP-Mitgliederfilter hat eine ungleiche Anzahl von Klammern"
 
 #: cps/admin.py:1656
 msgid ""
-"LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter "
-"Correct Path"
+"LDAP CACertificate, Certificate or Key Location is not Valid, Please "
+"Enter Correct Path"
 msgstr ""
-"LDAP-CA-Zertifikat, -Zertifikat oder -Schlüsseldatei ist kein gültiger Pfad"
+"LDAP-CA-Zertifikat, -Zertifikat oder -Schlüsseldatei ist kein gültiger "
+"Pfad"
 
 #: cps/admin.py:1689 cps/templates/admin.html:57
 msgid "Add New User"
@@ -391,22 +395,21 @@ msgstr "Einstellungen für den E-Mail-Server"
 msgid "Success! Gmail Account Verified."
 msgstr "Erfolg! G-Mail-Konto verifiziert."
 
-#: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
-#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1042
-#: cps/editbooks.py:1808 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
-#: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
-#: cps/tasks/convert.py:145 cps/web.py:2678
+#: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2445
+#: cps/admin.py:2560 cps/admin.py:2833 cps/editbooks.py:1042
+#: cps/editbooks.py:1810 cps/shelf.py:95 cps/shelf.py:171 cps/shelf.py:234
+#: cps/shelf.py:284 cps/shelf.py:321 cps/shelf.py:398 cps/shelf.py:522
+#: cps/tasks/convert.py:145 cps/web.py:2706
 #, python-format
 msgid "Oops! Database Error: %(error)s."
 msgstr "Ups! Datenbankfehler: %(error)s."
 
 #: cps/admin.py:1753
 #, python-format
-msgid ""
-"Test e-mail queued for sending to %(email)s, please check Tasks for result"
+msgid "Test e-mail queued for sending to %(email)s, please check Tasks for result"
 msgstr ""
-"Test-E-Mail an %(email)s wurde zum Senden in die Warteschlange eingereiht, "
-"für das Ergebnis bitte Aufgaben überprüfen"
+"Test-E-Mail an %(email)s wurde zum Senden in die Warteschlange "
+"eingereiht, für das Ergebnis bitte Aufgaben überprüfen"
 
 #: cps/admin.py:1756
 #, python-format
@@ -437,7 +440,7 @@ msgstr "Ungültige Laufzeit für Aufgaben spezifiziert"
 msgid "Scheduled tasks settings updated"
 msgstr "Einstellungen für geplante Aufgaben aktualisiert"
 
-#: cps/admin.py:1820 cps/admin.py:1964 cps/admin.py:2825 cps/web.py:2109
+#: cps/admin.py:1820 cps/admin.py:1964 cps/admin.py:2829 cps/web.py:2137
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr ""
 "Ups! Es ist ein unbekannter Fehler aufgetreten. Bitte später erneut "
@@ -447,11 +450,11 @@ msgstr ""
 msgid "Settings DB is not Writeable"
 msgstr "Einstellungsdatenbank ist nicht schreibbar"
 
-#: cps/admin.py:1843 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
+#: cps/admin.py:1843 cps/opds.py:199 cps/web.py:2632 cps/web.py:2757
 msgid "title"
 msgstr "Titel"
 
-#: cps/admin.py:1949 cps/admin.py:2817
+#: cps/admin.py:1949 cps/admin.py:2821
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "Benutzer %(nick)s bearbeiten"
@@ -495,8 +498,7 @@ msgstr "Stoppe den Server"
 
 #: cps/admin.py:2050
 msgid "Update finished, please press okay and reload page"
-msgstr ""
-"Aktualisierung abgeschlossen, bitte okay drücken und die Seite neu laden"
+msgstr "Aktualisierung abgeschlossen, bitte okay drücken und die Seite neu laden"
 
 #: cps/admin.py:2051 cps/admin.py:2052 cps/admin.py:2053 cps/admin.py:2054
 #: cps/admin.py:2055 cps/admin.py:2056
@@ -521,8 +523,7 @@ msgstr "Allgemeiner Fehler"
 
 #: cps/admin.py:2055
 msgid "Update file could not be saved in temp dir"
-msgstr ""
-"Aktualisierungsdatei konnte nicht in temporärem Ordner gespeichert werden"
+msgstr "Aktualisierungsdatei konnte nicht in temporärem Ordner gespeichert werden"
 
 #: cps/admin.py:2056
 msgid "Files could not be replaced during update"
@@ -562,19 +563,19 @@ msgstr "Bücherpfad ungültig"
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr "DB Pfad ist nicht gültig, bitte einen gültigen Pfad angeben"
 
-#: cps/admin.py:2279
+#: cps/admin.py:2281
 msgid "DB is not Writeable"
 msgstr "Datenbank ist nicht beschreibbar"
 
-#: cps/admin.py:2292
+#: cps/admin.py:2294
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "Schlüsseldatei ist ungültig, bitte einen gültigen Pfad angeben"
 
-#: cps/admin.py:2296
+#: cps/admin.py:2298
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr "Zertifikatsdatei ist ungültig, bitte einen gültigen Pfad angeben"
 
-#: cps/admin.py:2365
+#: cps/admin.py:2367
 msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
@@ -582,92 +583,93 @@ msgstr ""
 "Benutzer-Auto-Erstellung erfordert eine aktivierte Reverse-Proxy-"
 "Authentifizierung"
 
-#: cps/admin.py:2368
+#: cps/admin.py:2370
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
-"Benutzer-Auto-Erstellung erfordert einen gültigen Reverse-Proxy-Header-Namen"
+"Benutzer-Auto-Erstellung erfordert einen gültigen Reverse-Proxy-Header-"
+"Namen"
 
-#: cps/admin.py:2387 cps/admin.py:2394
+#: cps/admin.py:2389 cps/admin.py:2396
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
 msgstr ""
-"Ungültiges Format für OAuth-Redirect-Host. Bitte die vollständige URL mit "
-"Protokoll angeben (z. B. https://deine-domain.de)"
+"Ungültiges Format für OAuth-Redirect-Host. Bitte die vollständige URL mit"
+" Protokoll angeben (z. B. https://deine-domain.de)"
 
-#: cps/admin.py:2391
+#: cps/admin.py:2393
 msgid ""
-"OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
-"https://your-domain.com)"
+"OAuth Redirect Host should not include a path. Use only the base URL "
+"(e.g., https://your-domain.com)"
 msgstr ""
 "OAuth-Redirect-Host sollte keinen Pfad enthalten. Nur die Basis-URL "
 "verwenden (z. B. https://deine-domain.de)"
 
-#: cps/admin.py:2426
+#: cps/admin.py:2428
 msgid "Password length has to be between 1 and 40"
 msgstr "Passwortlänge muss zwischen 1 und 40 Zeichen liegen"
 
-#: cps/admin.py:2486
+#: cps/admin.py:2488
 msgid "Database Settings updated"
 msgstr "Datenbankeinstellung aktualisiert"
 
-#: cps/admin.py:2494
+#: cps/admin.py:2496
 msgid "Database Configuration"
 msgstr "Datenbank-Konfiguration"
 
-#: cps/admin.py:2514 cps/web.py:2078
+#: cps/admin.py:2516 cps/web.py:2106
 msgid "Oops! Please complete all fields."
 msgstr "Ups! Bitte alle Felder ausfüllen."
 
-#: cps/admin.py:2523
+#: cps/admin.py:2525
 msgid "E-mail is not from valid domain"
 msgstr "E-Mail bezieht sich nicht auf eine gültige Domain"
 
-#: cps/admin.py:2531
+#: cps/admin.py:2533
 msgid "Add new user"
 msgstr "Neuen Benutzer hinzufügen"
 
-#: cps/admin.py:2548
+#: cps/admin.py:2550
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "Benutzer '%(user)s' angelegt"
 
-#: cps/admin.py:2554
+#: cps/admin.py:2556
 msgid "Oops! An account already exists for this Email. or name."
 msgstr ""
-"Ups! Es existiert bereits ein Account für diese E-Mail-Adresse oder diesen "
-"Benutzernamen."
+"Ups! Es existiert bereits ein Account für diese E-Mail-Adresse oder "
+"diesen Benutzernamen."
 
-#: cps/admin.py:2584
+#: cps/admin.py:2588
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "Benutzer '%(nick)s' gelöscht"
 
-#: cps/admin.py:2587
+#: cps/admin.py:2591
 msgid "Can't delete Guest User"
 msgstr "Benutzer 'Guest' kann nicht gelöscht werden"
 
-#: cps/admin.py:2590
+#: cps/admin.py:2594
 msgid "No admin user remaining, can't delete user"
 msgstr "Kein verbleibender Admin-Benutzer, Benutzer kann nicht gelöscht werden"
 
-#: cps/admin.py:2780 cps/web.py:2413
+#: cps/admin.py:2784 cps/web.py:2441
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "E-Mail kann nicht leer sein und muss gültig sein"
 
-#: cps/admin.py:2821
+#: cps/admin.py:2825
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "Benutzer '%(nick)s' aktualisiert"
 
-#: cps/admin.py:2886
+#: cps/admin.py:2890
 #, python-format
-msgid ""
-"Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
+msgid "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr ""
-"Verbindung erfolgreich! OIDC-Discovery-Endpunkt ist erreichbar.%(endpoints)s"
+"Verbindung erfolgreich! OIDC-Discovery-Endpunkt ist "
+"erreichbar.%(endpoints)s"
 
-#: cps/admin.py:2891
+#: cps/admin.py:2895
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
@@ -675,27 +677,28 @@ msgstr ""
 "Verbindung fehlgeschlagen: OIDC-Discovery-Endpunkt nicht gefunden (404). "
 "Prüfen Sie, ob die Basis-URL korrekt ist."
 
-#: cps/admin.py:2893 cps/admin.py:2950
+#: cps/admin.py:2897 cps/admin.py:2954
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "Verbindung fehlgeschlagen: Server lieferte den Status-Code %(code)s"
 
-#: cps/admin.py:2895
-msgid ""
-"Connection failed: Could not connect to server. Check the URL and network "
-"connectivity."
-msgstr ""
-"Verbindung fehlgeschlagen: Verbindung zum Server nicht möglich. Überprüfen "
-"Sie die URL und die Netzwerkverbindung."
-
-#: cps/admin.py:2897
-msgid ""
-"Connection failed: Request timed out. The server may be slow or unreachable."
-msgstr ""
-"Verbindung Fehlgeschlagen: Zeitüberschreitung der Anfrage. Der Server könnte "
-"langsam oder unerreichbar sein."
-
 #: cps/admin.py:2899
+msgid ""
+"Connection failed: Could not connect to server. Check the URL and network"
+" connectivity."
+msgstr ""
+"Verbindung fehlgeschlagen: Verbindung zum Server nicht möglich. "
+"Überprüfen Sie die URL und die Netzwerkverbindung."
+
+#: cps/admin.py:2901
+msgid ""
+"Connection failed: Request timed out. The server may be slow or "
+"unreachable."
+msgstr ""
+"Verbindung Fehlgeschlagen: Zeitüberschreitung der Anfrage. Der Server "
+"könnte langsam oder unerreichbar sein."
+
+#: cps/admin.py:2903
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
@@ -703,12 +706,12 @@ msgstr ""
 "Verbindung fehlgeschlagen: Ungültiges JSON in der Antwort. Dies ist "
 "möglicherweise kein OIDC"
 
-#: cps/admin.py:2902
+#: cps/admin.py:2906
 #, python-format
 msgid "Connection failed: %(error)s"
 msgstr "Verbindungsfehler: %(error)s"
 
-#: cps/admin.py:2928
+#: cps/admin.py:2932
 #, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
@@ -717,27 +720,28 @@ msgstr ""
 "Den Metadaten fehlen erforderliche OIDC-Felder: %(fields)s. Dies ist "
 "möglicherweise kein gültiger OIDC-Metadaten-Endpunkt."
 
-#: cps/admin.py:2939
+#: cps/admin.py:2943
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr "Metadaten-URL ist gültig! %(count)s OAuth-Endpunkte gefunden."
 
-#: cps/admin.py:2941
+#: cps/admin.py:2945
 msgid " User info endpoint is available."
 msgstr " User-Info-Endpunkt ist verfügbar."
 
-#: cps/admin.py:2943
+#: cps/admin.py:2947
 msgid ""
-" Note: User info endpoint not found - this may cause authentication issues."
+" Note: User info endpoint not found - this may cause authentication "
+"issues."
 msgstr ""
 " Hinweis: User-Info-Endpunkt nicht gefunden – dies kann zu "
 "Authentifizierungsproblemen führen."
 
-#: cps/admin.py:2948
+#: cps/admin.py:2952
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr "Metadaten-URL nicht gefunden (404). Bitte URL auf Korrektheit prüfen."
 
-#: cps/admin.py:2952
+#: cps/admin.py:2956
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
@@ -745,57 +749,59 @@ msgstr ""
 "Verbindung fehlgeschlagen: Verbindung zur Metadaten-URL nicht möglich. "
 "Überprüfen Sie die URL und die Netzwerkverbindung."
 
-#: cps/admin.py:2954
+#: cps/admin.py:2958
 msgid "Connection failed: Request timed out."
 msgstr "Verbindung Fehlgeschlagen: Zeitüberschreitung der Anfrage."
 
-#: cps/admin.py:2956
+#: cps/admin.py:2960
 msgid "Connection failed: Invalid JSON in response."
 msgstr "Verbindung fehlgeschlagen: Ungültiges JSON in der Antwort."
 
-#: cps/admin.py:2959
+#: cps/admin.py:2963
 msgid "An unknown error occurred."
 msgstr "Ein unbekannter Fehler ist aufgetreten."
 
-#: cps/admin.py:2971
+#: cps/admin.py:2975
 msgid "Restore already in progress."
 msgstr "Wiederherstellung wird bereits ausgeführt."
 
-#: cps/admin.py:2975
+#: cps/admin.py:2979
 msgid "Restore failed: Calibre library path is not configured."
 msgstr ""
-"Wiederherstellung fehlgeschlagen: Calibre-Bibliothekspfad nicht konfiguriert."
+"Wiederherstellung fehlgeschlagen: Calibre-Bibliothekspfad nicht "
+"konfiguriert."
 
-#: cps/admin.py:2980
+#: cps/admin.py:2984
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr ""
-"Wiederherstellung fehlgeschlagen: metadata.db unter %(path)s nicht gefunden"
+"Wiederherstellung fehlgeschlagen: metadata.db unter %(path)s nicht "
+"gefunden"
 
-#: cps/admin.py:2985
+#: cps/admin.py:2989
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr "Wiederherstellung fehlgeschlagen: app.db unter %(path)s nicht gefunden"
 
-#: cps/admin.py:3057 cps/admin.py:3097
+#: cps/admin.py:3061 cps/admin.py:3101
 #, python-format
 msgid "Restore failed: %(err)s"
 msgstr "Wiederherstellung fehlgeschlagen: %(err)s"
 
-#: cps/admin.py:3074
+#: cps/admin.py:3078
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
 "Wiederherstellung abgeschlossen, aber app.db-Bereinigung fehlgeschlagen. "
 "Details siehe Protokoll."
 
-#: cps/admin.py:3093
+#: cps/admin.py:3097
 #, python-format
 msgid ""
-"Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
-"data was reset."
+"Restore complete. Backups and restore log saved to %(dir)s. All book-"
+"linked data was reset."
 msgstr ""
-"Wiederherstellung abgeschlossen. Backups und Log unter %(dir)s gespeichert. "
-"Alle buchverknüpften Daten wurden zurückgesetzt."
+"Wiederherstellung abgeschlossen. Backups und Log unter %(dir)s "
+"gespeichert. Alle buchverknüpften Daten wurden zurückgesetzt."
 
 #: cps/constants.py:207
 msgid "Czech"
@@ -919,8 +925,8 @@ msgstr "Der Themenwechsel ist bis v5.0.0 vorübergehend deaktiviert"
 
 #: cps/cwa_functions.py:252
 msgid ""
-"Library Refresh 🔄 Checking for any books that may have been missed, please "
-"wait..."
+"Library Refresh 🔄 Checking for any books that may have been missed, "
+"please wait..."
 msgstr ""
 "Bibliothek aktualisieren 🔄 Prüfe auf Bücher, die vielleicht vergessen "
 "wurden, bitte warten..."
@@ -1005,8 +1011,7 @@ msgstr "Calibre-Web Automated - Vollständige Durchsetzungsgeschichte"
 
 #: cps/cwa_functions.py:1578
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
-msgstr ""
-"Calibre-Web Automated - Vollständige Durchsetzungsgeschichte (mit Pfaden)"
+msgstr "Calibre-Web Automated - Vollständige Durchsetzungsgeschichte (mit Pfaden)"
 
 #: cps/cwa_functions.py:1587
 msgid "Calibre-Web Automated - Full Import History"
@@ -1033,20 +1038,17 @@ msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr "✅ Alle Überwachungsdienste laufen wie vorgesehen! 👍"
 
 #: cps/cwa_functions.py:1634
-msgid ""
-"🔴 The Ingest Service is running but the Metadata Change Detector is not"
+msgid "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr "🔴 Der Ingest-Dienst läuft, aber der Metadaten-Änderungsdetektor nicht"
 
 #: cps/cwa_functions.py:1636
-msgid ""
-"🔴 The Metadata Change Detector is running but the Ingest Service is not"
+msgid "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr ""
-"🔴 Der Metadaten-Änderungsdetektor wird ausgeführt, der Ingest-Dienst jedoch "
-"nicht"
+"🔴 Der Metadaten-Änderungsdetektor wird ausgeführt, der Ingest-Dienst "
+"jedoch nicht"
 
 #: cps/cwa_functions.py:1638
-msgid ""
-"⛔ Neither the Ingest Service or the Metadata Change Detector are running"
+msgid "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr ""
 "⛔ Weder der Ingest-Dienst noch der Metadaten-Änderungsdetektor werden "
 "ausgeführt"
@@ -1135,8 +1137,8 @@ msgstr "CWA-Profilbildverwaltung (Laufende Arbeiten)"
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
-#: cps/web.py:1599 cps/web.py:1636 cps/web.py:1687 cps/web.py:1719
-#: cps/web.py:1758
+#: cps/web.py:1627 cps/web.py:1664 cps/web.py:1715 cps/web.py:1747
+#: cps/web.py:1786
 msgid "None"
 msgstr "Keine"
 
@@ -1205,35 +1207,37 @@ msgstr "Quell- oder Zielformat für Konvertierung fehlt"
 #, python-format
 msgid "Book successfully queued for converting to %(book_format)s"
 msgstr ""
-"Buch wurde erfolgreich für die Konvertierung nach %(book_format)s eingereiht"
+"Buch wurde erfolgreich für die Konvertierung nach %(book_format)s "
+"eingereiht"
 
 #: cps/editbooks.py:211
 #, python-format
 msgid "There was an error converting this book: %(res)s"
 msgstr "Es trat ein Fehler beim Konvertieren des Buches auf: %(res)s"
 
-#: cps/editbooks.py:367 cps/editbooks.py:1245 cps/editbooks.py:1754
+#: cps/editbooks.py:367 cps/editbooks.py:1245 cps/editbooks.py:1756
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Dateityp kann nicht auf diesen Server hochgeladen werden"
 
-#: cps/editbooks.py:372 cps/editbooks.py:1251 cps/editbooks.py:1765
+#: cps/editbooks.py:372 cps/editbooks.py:1251 cps/editbooks.py:1767
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "Dateiendung '%(ext)s' kann nicht auf diesen Server hochgeladen werden"
 
-#: cps/editbooks.py:376 cps/editbooks.py:1255 cps/editbooks.py:1770
+#: cps/editbooks.py:376 cps/editbooks.py:1255 cps/editbooks.py:1772
 msgid "File to be uploaded must have an extension"
 msgstr "Dateien müssen eine Erweiterung haben, um hochgeladen zu werden"
 
-#: cps/editbooks.py:849 cps/editbooks.py:1431 cps/web.py:612 cps/web.py:2790
-#: cps/web.py:2881 cps/web.py:2966
+#: cps/editbooks.py:849 cps/editbooks.py:1433 cps/web.py:612 cps/web.py:2818
+#: cps/web.py:2909 cps/web.py:3003
 msgid ""
-"Oops! Selected book is unavailable. File does not exist or is not accessible"
+"Oops! Selected book is unavailable. File does not exist or is not "
+"accessible"
 msgstr ""
 "Ups! Gewähltes Buch ist nicht verfügbar. Datei existiert nicht oder ist "
 "nicht zugänglich"
 
-#: cps/editbooks.py:881 cps/editbooks.py:1838
+#: cps/editbooks.py:881 cps/editbooks.py:1840
 msgid "User has no rights to upload cover"
 msgstr "Benutzer hat keine Berechtigung Cover hochzuladen"
 
@@ -1243,7 +1247,7 @@ msgstr ""
 "IDs unterscheiden nicht zwischen Groß- und Kleinschreibung, alte ID wird "
 "überschrieben"
 
-#: cps/editbooks.py:916 cps/editbooks.py:1207 cps/editbooks.py:1565
+#: cps/editbooks.py:916 cps/editbooks.py:1207 cps/editbooks.py:1567
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s' ist keine gültige Sprache"
@@ -1257,7 +1261,7 @@ msgstr "Metadaten wurden erfolgreich aktualisiert"
 msgid "Error editing book: {}"
 msgstr "Fehler beim Editieren des Buches: {}"
 
-#: cps/editbooks.py:1102 cps/editbooks.py:1147 cps/editbooks.py:1856
+#: cps/editbooks.py:1102 cps/editbooks.py:1147 cps/editbooks.py:1858
 #: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Unbekannt"
@@ -1274,49 +1278,50 @@ msgstr ""
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr ""
-"Die Datei %(filename)s konnte nicht im temporären Ordner gespeichert werden"
+"Die Datei %(filename)s konnte nicht im temporären Ordner gespeichert "
+"werden"
 
 #: cps/editbooks.py:1283
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Fehler beim Verschieben der Cover Datei %(file)s: %(error)s"
 
-#: cps/editbooks.py:1341 cps/editbooks.py:1343
+#: cps/editbooks.py:1343 cps/editbooks.py:1345
 msgid "Book Format Successfully Deleted"
 msgstr "Buch Format erfolgreich gelöscht"
 
-#: cps/editbooks.py:1350 cps/editbooks.py:1352
+#: cps/editbooks.py:1352 cps/editbooks.py:1354
 msgid "Book Successfully Deleted"
 msgstr "Buch erfolgreich gelöscht"
 
-#: cps/editbooks.py:1416
+#: cps/editbooks.py:1418
 msgid "You are missing permissions to delete books"
 msgstr "Keine Erlaubnis zum Löschen von Büchern"
 
-#: cps/editbooks.py:1470
+#: cps/editbooks.py:1472
 msgid "edit metadata"
 msgstr "Metadaten editieren"
 
-#: cps/editbooks.py:1524
+#: cps/editbooks.py:1526
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "Serienindex: %(seriesindex)s ist keine gültige Zahl, wird übersprungen"
 
-#: cps/editbooks.py:1759
+#: cps/editbooks.py:1761
 msgid "User has no rights to upload additional file formats"
 msgstr "Benutzer hat kein Recht zusätzliche Dateiformate hochzuladen"
 
-#: cps/editbooks.py:1783
+#: cps/editbooks.py:1785
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Fehler beim Erzeugen des Pfads %(path)s (Zugriff verweigert)"
 
-#: cps/editbooks.py:1790
+#: cps/editbooks.py:1792
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Fehler beim Speichern der Datei %(file)s."
 
-#: cps/editbooks.py:1815
+#: cps/editbooks.py:1817
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Dateiformat %(ext)s zu %(book)s hinzugefügt"
@@ -1334,8 +1339,8 @@ msgid ""
 "Callback domain is not verified, please follow steps to verify domain in "
 "google developer console"
 msgstr ""
-"Callback Domain ist nicht verifiziert, bitte Domain in der Google Developer "
-"Console verifizieren"
+"Callback Domain ist nicht verifiziert, bitte Domain in der Google "
+"Developer Console verifizieren"
 
 #: cps/helper.py:84
 #, python-format
@@ -1406,8 +1411,7 @@ msgstr "Gelesen-Status konnte nicht aktualisiert werden: {}"
 
 #: cps/helper.py:408
 #, python-format
-msgid ""
-"Deleting bookfolder for book %(id)s failed, path has subfolders: %(path)s"
+msgid "Deleting bookfolder for book %(id)s failed, path has subfolders: %(path)s"
 msgstr ""
 "Löschen des Ordners für Buch %(id)s ist fehlgeschlagen, der Pfad hat "
 "Unterordner: %(path)s"
@@ -1420,19 +1424,18 @@ msgstr "Löschen von Buch %(id)s fehlgeschlagen: %(message)s"
 #: cps/helper.py:425
 #, python-format
 msgid ""
-"Deleting book %(id)s from database only, book path in database not valid: "
-"%(path)s"
+"Deleting book %(id)s from database only, book path in database not valid:"
+" %(path)s"
 msgstr ""
-"Lösche Buch %(id)s nur aus Datenbank, Pfad zum Buch in Datenbank ist nicht "
-"gültig: %(path)s"
+"Lösche Buch %(id)s nur aus Datenbank, Pfad zum Buch in Datenbank ist "
+"nicht gültig: %(path)s"
 
 #: cps/helper.py:514
 #, python-format
-msgid ""
-"Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
+msgid "Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr ""
-"Umbenennen des Autors '%(src)s' zu '%(dest)s' fehlgeschlagen mit dem Fehler: "
-"%(error)s"
+"Umbenennen des Autors '%(src)s' zu '%(dest)s' fehlgeschlagen mit dem "
+"Fehler: %(error)s"
 
 #: cps/helper.py:583 cps/helper.py:592
 #, python-format
@@ -1443,8 +1446,8 @@ msgstr "Datei %(file)s wurde nicht auf Google Drive gefunden"
 #, python-format
 msgid "Rename title from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr ""
-"Umbenennen des Titels '%(src)s' zu '%(dest)s' fehlgeschlagen mit dem Fehler: "
-"%(error)s"
+"Umbenennen des Titels '%(src)s' zu '%(dest)s' fehlgeschlagen mit dem "
+"Fehler: %(error)s"
 
 #: cps/helper.py:709
 #, python-format
@@ -1468,11 +1471,10 @@ msgid "Password doesn't comply with password validation rules"
 msgstr "Passwort entspricht nicht den Passwortvorgaben"
 
 #: cps/helper.py:1048
-msgid ""
-"Python module 'advocate' is not installed but is needed for cover uploads"
+msgid "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr ""
-"Python-Modul 'advocate' ist nicht installiert, wird aber für das Hochladen "
-"von Covern benötigt"
+"Python-Modul 'advocate' ist nicht installiert, wird aber für das "
+"Hochladen von Covern benötigt"
 
 #: cps/helper.py:1053 cps/helper.py:1061
 #, python-format
@@ -1492,7 +1494,8 @@ msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
 msgstr ""
-"Keine Berechtigung Cover von localhost oder dem lokalen Netzwerk hochzuladen"
+"Keine Berechtigung Cover von localhost oder dem lokalen Netzwerk "
+"hochzuladen"
 
 #: cps/helper.py:1094
 msgid "Failed to create path for cover"
@@ -1529,8 +1532,8 @@ msgstr "Fehler beim Ausführen von UnRar"
 #: cps/helper.py:1338
 #, python-format
 msgid ""
-"Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
-"aarch64."
+"Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 "
+"and aarch64."
 msgstr ""
 "Nicht unterstützte Architektur erkannt: %(arch)s. CWA ist für x86_64 und "
 "aarch64 optimiert."
@@ -1571,11 +1574,48 @@ msgid ""
 "api_endpoint for kobo device"
 msgstr ""
 "Bitte greifen Sie auf Calibre-Web Automated von einem anderen Host als "
-"\"localhost\" zu, um einen gültigen API-Endpunkt für Kobo-Geräte zu erhalten"
+"\"localhost\" zu, um einen gültigen API-Endpunkt für Kobo-Geräte zu "
+"erhalten"
 
 #: cps/kobo_auth.py:106
 msgid "Kobo Setup"
 msgstr "Kobo Setup"
+
+#: cps/kobo_auth.py:138
+msgid "Buch ist wieder für Kobo erlaubt."
+msgstr "Buch ist wieder für Kobo erlaubt."
+
+#: cps/kobo_auth.py:142
+msgid "Das Buch konnte nicht wieder für Kobo erlaubt werden."
+msgstr "Das Buch konnte nicht wieder für Kobo erlaubt werden."
+
+#: cps/kobo_auth.py:169
+msgid "Buch wird beim nächsten Kobo-Sync ausgelassen."
+msgstr "Buch wird beim nächsten Kobo-Sync ausgelassen."
+
+#: cps/kobo_auth.py:173
+msgid "Das Buch konnte nicht aus der Kobo-Auswahl entfernt werden."
+msgstr "Das Buch konnte nicht aus der Kobo-Auswahl entfernt werden."
+
+#: cps/kobo_auth.py:183
+msgid "Ungültiger Kobo-Übertragungsmodus."
+msgstr "Ungültiger Kobo-Übertragungsmodus."
+
+#: cps/kobo_auth.py:220
+msgid "Kobo-Übertragungsmodus aktualisiert."
+msgstr "Kobo-Übertragungsmodus aktualisiert."
+
+#: cps/kobo_auth.py:224
+msgid "Der Kobo-Übertragungsmodus konnte nicht gespeichert werden."
+msgstr "Der Kobo-Übertragungsmodus konnte nicht gespeichert werden."
+
+#: cps/kobo_auth.py:279
+msgid "Kobo Sync Dashboard"
+msgstr "Kobo-Sync-Dashboard"
+
+#: cps/kobo_auth.py:290
+msgid "Unbekanntes Buch"
+msgstr ""
 
 #: cps/oauth_bb.py:199
 #, python-format
@@ -1588,29 +1628,29 @@ msgid ""
 "configuration mismatch. Please check your OAuth scopes configuration or "
 "contact your administrator."
 msgstr ""
-"Anmeldung fehlgeschlagen: OAuth-Token-Validierungsfehler. Dies kann an einer "
-"fehlerhaften Scope-Konfiguration liegen. Bitte prüfen Sie Ihre OAuth-Scopes "
-"oder kontaktieren Sie Ihren Administrator."
+"Anmeldung fehlgeschlagen: OAuth-Token-Validierungsfehler. Dies kann an "
+"einer fehlerhaften Scope-Konfiguration liegen. Bitte prüfen Sie Ihre "
+"OAuth-Scopes oder kontaktieren Sie Ihren Administrator."
 
 #: cps/oauth_bb.py:259
 msgid "Login failed: OAuth token expired. Please try logging in again."
 msgstr ""
-"Anmeldung fehlgeschlagen: OAuth-Token abgelaufen. Bitte versuchen Sie, sich "
-"erneut anzumelden."
+"Anmeldung fehlgeschlagen: OAuth-Token abgelaufen. Bitte versuchen Sie, "
+"sich erneut anzumelden."
 
 #: cps/oauth_bb.py:263
 msgid ""
-"Login failed: Could not connect to the OAuth provider's user info endpoint. "
-"Please try again or contact your administrator."
+"Login failed: Could not connect to the OAuth provider's user info "
+"endpoint. Please try again or contact your administrator."
 msgstr ""
-"Anmeldung fehlgeschlagen: Verbindung zum Benutzerinformations-Endpunkt des "
-"OAuth-Anbieters fehlgeschlagen. Bitte versuchen Sie es erneut oder "
+"Anmeldung fehlgeschlagen: Verbindung zum Benutzerinformations-Endpunkt "
+"des OAuth-Anbieters fehlgeschlagen. Bitte versuchen Sie es erneut oder "
 "kontaktieren Sie Ihren Administrator."
 
 #: cps/oauth_bb.py:268
 msgid ""
-"Login failed: The OAuth provider returned invalid user profile data. Please "
-"contact your administrator."
+"Login failed: The OAuth provider returned invalid user profile data. "
+"Please contact your administrator."
 msgstr ""
 "Anmeldung fehlgeschlagen: Der OAuth-Anbieter hat ungültige "
 "Benutzerprofildaten zurückgegeben. Bitte kontaktieren Sie Ihren "
@@ -1624,17 +1664,17 @@ msgid ""
 "administrator."
 msgstr ""
 "Anmeldung fehlgeschlagen: Der Antwort des OAuth-Providers fehlen "
-"erforderliche Felder: %(fields)s. Bitte prüfen Sie Ihre OAuth-Konfiguration "
-"oder kontaktieren Sie Ihren Administrator."
+"erforderliche Felder: %(fields)s. Bitte prüfen Sie Ihre OAuth-"
+"Konfiguration oder kontaktieren Sie Ihren Administrator."
 
 #: cps/oauth_bb.py:316 cps/oauth_bb.py:560
 msgid "Failed to link OAuth account. Please try again."
 msgstr ""
-"Verknüpfung des OAuth-Kontos fehlgeschlagen. Bitte versuchen Sie es erneut."
+"Verknüpfung des OAuth-Kontos fehlgeschlagen. Bitte versuchen Sie es "
+"erneut."
 
 #: cps/oauth_bb.py:531
-msgid ""
-"OAuth error: Provider returned invalid user information. Please try again."
+msgid "OAuth error: Provider returned invalid user information. Please try again."
 msgstr ""
 "OAuth-Fehler: Provider lieferte ungültige Benutzerinformationen. Bitte "
 "versuchen Sie es erneut."
@@ -1652,19 +1692,19 @@ msgstr "Verbindung mit %(oauth)s erfolgreich"
 #: cps/oauth_bb.py:562
 #, python-format
 msgid ""
-"Login failed: No user account is linked to your %(provider)s account. Please "
-"contact your administrator to create an account or link your existing "
-"account."
+"Login failed: No user account is linked to your %(provider)s account. "
+"Please contact your administrator to create an account or link your "
+"existing account."
 msgstr ""
-"Anmeldung fehlgeschlagen: Es ist kein Benutzerkonto mit Ihrem %(provider)s-"
-"Konto verknüpft. Bitte kontaktieren Sie Ihren Administrator, um ein Konto zu "
-"erstellen oder Ihr bestehendes Konto zu verknüpfen."
+"Anmeldung fehlgeschlagen: Es ist kein Benutzerkonto mit Ihrem "
+"%(provider)s-Konto verknüpft. Bitte kontaktieren Sie Ihren Administrator,"
+" um ein Konto zu erstellen oder Ihr bestehendes Konto zu verknüpfen."
 
 #: cps/oauth_bb.py:570
 msgid "OAuth authentication failed. Please try again or contact administrator."
 msgstr ""
-"OAuth-Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut oder "
-"kontaktieren Sie den Administrator."
+"OAuth-Authentifizierung fehlgeschlagen. Bitte versuchen Sie es erneut "
+"oder kontaktieren Sie den Administrator."
 
 #: cps/oauth_bb.py:574
 msgid "OAuth system error. Please contact administrator."
@@ -1716,14 +1756,14 @@ msgid ""
 "OAuth authentication failed due to an unexpected error. Please contact "
 "administrator."
 msgstr ""
-"OAuth-Authentifizierung aufgrund eines unerwarteten Fehlers fehlgeschlagen. "
-"Bitte kontaktieren Sie den Administrator."
+"OAuth-Authentifizierung aufgrund eines unerwarteten Fehlers "
+"fehlgeschlagen. Bitte kontaktieren Sie den Administrator."
 
 #: cps/oauth_bb.py:909 cps/oauth_bb.py:927 cps/oauth_bb.py:945
 msgid ""
 "OAuth error: Invalid redirect URI. If you're experiencing this error "
-"repeatedly, please configure the 'OAuth Redirect Host' setting in Admin > "
-"Basic Configuration > OAuth."
+"repeatedly, please configure the 'OAuth Redirect Host' setting in Admin >"
+" Basic Configuration > OAuth."
 msgstr ""
 "OAuth-Fehler: Ungültige Redirect-URI. Falls dieser Fehler wiederholt "
 "auftritt, konfigurieren Sie bitte die Einstellung „OAuth-Redirect-Host“ "
@@ -1763,7 +1803,7 @@ msgstr "{} Sterne"
 
 #: cps/remotelogin.py:76 cps/templates/layout.html:135
 #: cps/templates/layout.html:177 cps/templates/login.html:11
-#: cps/templates/login.html:39 cps/web.py:2187
+#: cps/templates/login.html:39 cps/web.py:2215
 msgid "Login"
 msgstr "Anmelden"
 
@@ -1837,7 +1877,7 @@ msgstr "Entdecken"
 msgid "Show Random Books"
 msgstr "Zeige zufällige Bücher"
 
-#: cps/render_template.py:70 cps/templates/book_table.html:106 cps/web.py:1762
+#: cps/render_template.py:70 cps/templates/book_table.html:106 cps/web.py:1790
 msgid "Categories"
 msgstr "Kategorien"
 
@@ -1849,7 +1889,7 @@ msgstr "Zeige Kategorienabschnitt"
 #: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:362
 #: cps/templates/cwa_settings.html:364 cps/templates/cwa_settings.html:1103
 #: cps/templates/hardcover_review_matches.html:140
-#: cps/templates/search_form.html:70 cps/web.py:1642 cps/web.py:1654
+#: cps/templates/search_form.html:70 cps/web.py:1670 cps/web.py:1682
 msgid "Series"
 msgstr "Serien"
 
@@ -1867,7 +1907,7 @@ msgstr "Autoren"
 msgid "Show Author Section"
 msgstr "Zeige Autorenabschnitt"
 
-#: cps/render_template.py:80 cps/templates/book_table.html:111 cps/web.py:1610
+#: cps/render_template.py:80 cps/templates/book_table.html:111 cps/web.py:1638
 msgid "Publishers"
 msgstr "Verleger"
 
@@ -1877,7 +1917,7 @@ msgstr "Zeige Verlegerabschnitt"
 
 #: cps/render_template.py:83 cps/templates/book_table.html:109
 #: cps/templates/detail.html:706 cps/templates/search_form.html:108
-#: cps/web.py:1734
+#: cps/web.py:1762
 msgid "Languages"
 msgstr "Sprachen"
 
@@ -1885,7 +1925,7 @@ msgstr "Sprachen"
 msgid "Show Language Section"
 msgstr "Zeige Sprachenabschnitt"
 
-#: cps/render_template.py:87 cps/web.py:1694
+#: cps/render_template.py:87 cps/web.py:1722
 msgid "Ratings"
 msgstr "Bewertungen"
 
@@ -1909,7 +1949,7 @@ msgstr "Archivierte Bücher"
 msgid "Show Archived Books"
 msgstr "Zeige archivierte Bücher"
 
-#: cps/render_template.py:99 cps/web.py:1430
+#: cps/render_template.py:99 cps/web.py:1458
 msgid "Books List"
 msgstr "Bücherliste"
 
@@ -1930,8 +1970,8 @@ msgid ""
 "ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is "
 "temporarily disabled while we develop a new frontend for v5.0.0."
 msgstr ""
-"ℹ️ Ihr Theme wurde auf caliBlur (Dunkel) aktualisiert. Der Themenwechsel ist "
-"vorübergehend deaktiviert, während wir ein neues Frontend für v5.0.0 "
+"ℹ️ Ihr Theme wurde auf caliBlur (Dunkel) aktualisiert. Der Themenwechsel "
+"ist vorübergehend deaktiviert, während wir ein neues Frontend für v5.0.0 "
 "entwickeln."
 
 #: cps/search.py:53 cps/search.py:440 cps/templates/book_edit.html:275
@@ -1966,21 +2006,19 @@ msgstr "Lesestatus = '%(status)s'"
 
 #: cps/search.py:354
 msgid "Error on search for custom columns, please restart Calibre-Web"
-msgstr ""
-"Fehler bei der Suche nach eigenen Spalten, bitte Calibre-Web neustarten"
+msgstr "Fehler bei der Suche nach eigenen Spalten, bitte Calibre-Web neustarten"
 
 #: cps/search.py:384 cps/search.py:416 cps/templates/layout.html:125
 msgid "Advanced Search"
 msgstr "Erweiterte Suche"
 
-#: cps/shelf.py:34 cps/shelf.py:128
+#: cps/shelf.py:34 cps/shelf.py:130
 msgid "Invalid shelf specified"
 msgstr "Ungültiges Regal angegeben"
 
 #: cps/shelf.py:40
 msgid "Sorry you are not allowed to add a book to that shelf"
-msgstr ""
-"Entschuldige, die Berechtigung ein Buch zu diesem Regal hinzuzufügen fehlt"
+msgstr "Entschuldige, die Berechtigung ein Buch zu diesem Regal hinzuzufügen fehlt"
 
 #: cps/shelf.py:49
 #, python-format
@@ -1994,100 +2032,102 @@ msgstr ""
 "%(book_id)s ist eine ungültige Buch ID. Buch konnte nicht zu Regal "
 "hinzugefügt werden"
 
-#: cps/shelf.py:100
+#: cps/shelf.py:102
 #, python-format
 msgid "Book has been added to shelf: %(sname)s"
 msgstr "Das Buch wurde zum Regal %(sname)s hinzugefügt"
 
-#: cps/shelf.py:133
+#: cps/shelf.py:135
 msgid "You are not allowed to add a book to the shelf"
 msgstr "Keine Berechtigung Bücher zu diesem Regal hinzuzufügen"
 
-#: cps/shelf.py:151
+#: cps/shelf.py:153
 #, python-format
 msgid "Books are already part of the shelf: %(name)s"
 msgstr "Bücher sind bereits Teil des Regals %(name)s"
 
-#: cps/shelf.py:163
+#: cps/shelf.py:167
 #, python-format
 msgid "Books have been added to shelf: %(sname)s"
 msgstr "Bücher wurden zum Regal %(sname)s hinzugefügt"
 
-#: cps/shelf.py:170
+#: cps/shelf.py:174
 #, python-format
 msgid "Could not add books to shelf: %(sname)s"
 msgstr "Bücher konnten nicht zum Regal %(sname)s hinzugefügt werden"
 
-#: cps/shelf.py:234
+#: cps/shelf.py:240
 #, python-format
 msgid "Book has been removed from shelf: %(sname)s"
 msgstr "Das Buch wurde aus dem Regal: %(sname)s entfernt"
 
-#: cps/shelf.py:243
+#: cps/shelf.py:249
 msgid "Sorry you are not allowed to remove a book from this shelf"
 msgstr ""
-"Entschuldige, die Berechtigung, um Bücher aus diesem Regal zu löschen, fehlt"
+"Entschuldige, die Berechtigung, um Bücher aus diesem Regal zu löschen, "
+"fehlt"
 
-#: cps/shelf.py:253
+#: cps/shelf.py:259
 msgid "Create a Shelf"
 msgstr "Neues Regal"
 
-#: cps/shelf.py:261
+#: cps/shelf.py:267
 msgid "Sorry you are not allowed to edit this shelf"
 msgstr "Entschuldige, die Berechtigung das Regal zu editieren fehlt"
 
-#: cps/shelf.py:263
+#: cps/shelf.py:269
 msgid "Edit a shelf"
 msgstr "Regal bearbeiten"
 
-#: cps/shelf.py:272
+#: cps/shelf.py:278
 msgid "Error deleting Shelf"
 msgstr "Fehler beim Löschen des Regals"
 
-#: cps/shelf.py:274
+#: cps/shelf.py:280
 msgid "Shelf successfully deleted"
 msgstr "Regal erfolgreich gelöscht"
 
-#: cps/shelf.py:324
+#: cps/shelf.py:330
 #, python-format
 msgid "Change order of Shelf: '%(name)s'"
 msgstr "Reihenfolge in Regal '%(name)s' verändern"
 
-#: cps/shelf.py:359
+#: cps/shelf.py:365
 msgid "Sorry you are not allowed to create a public shelf"
 msgstr ""
-"Entschuldige, die Berechtigung, um ein öffentliches Regal zu erzeugen, fehlt"
+"Entschuldige, die Berechtigung, um ein öffentliches Regal zu erzeugen, "
+"fehlt"
 
-#: cps/shelf.py:376
+#: cps/shelf.py:383
 #, python-format
 msgid "Shelf %(title)s created"
 msgstr "Regal %(title)s erstellt"
 
-#: cps/shelf.py:379
+#: cps/shelf.py:386
 #, python-format
 msgid "Shelf %(title)s changed"
 msgstr "Regal %(title)s geändert"
 
-#: cps/shelf.py:393
+#: cps/shelf.py:402
 msgid "There was an error"
 msgstr "Es trat ein Fehler auf"
 
-#: cps/shelf.py:415
+#: cps/shelf.py:424
 #, python-format
 msgid "A public shelf with the name '%(title)s' already exists."
 msgstr "Es existiert bereit ein öffentliches Regal mit dem Namen '%(title)s'."
 
-#: cps/shelf.py:426
+#: cps/shelf.py:435
 #, python-format
 msgid "A private shelf with the name '%(title)s' already exists."
 msgstr "Es existiert bereit ein privates Regal mit dem Namen '%(title)s'."
 
-#: cps/shelf.py:516
+#: cps/shelf.py:527
 #, python-format
 msgid "Shelf: '%(name)s'"
 msgstr "Regal: '%(name)s'"
 
-#: cps/shelf.py:522
+#: cps/shelf.py:533
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr ""
 "Fehler beim Öffnen des Regals. Regal exisitert nicht oder ist nicht "
@@ -2132,13 +2172,12 @@ msgstr "Aktualisierungsinformationen enthalten unerwartete Daten"
 
 #: cps/updater.py:443 cps/updater.py:555
 msgid "No update available. You already have the latest version installed"
-msgstr ""
-"Keine Aktualisierung verfügbar. Du nutzt bereits die aktuellste Version"
+msgstr "Keine Aktualisierung verfügbar. Du nutzt bereits die aktuellste Version"
 
 #: cps/updater.py:462
 msgid ""
-"A new update is available. Click on the button below to update to the latest "
-"version."
+"A new update is available. Click on the button below to update to the "
+"latest version."
 msgstr ""
 "Es sind Updates verfügbar. Klicke auf den Button unten, um auf die "
 "aktuellste Version zu aktualisieren."
@@ -2156,11 +2195,11 @@ msgstr ""
 #: cps/updater.py:498 cps/updater.py:512 cps/updater.py:523
 #, python-format
 msgid ""
-"A new update is available. Click on the button below to update to version: "
-"%(version)s"
+"A new update is available. Click on the button below to update to "
+"version: %(version)s"
 msgstr ""
-"Ein neues Update ist verfügbar. Klicke auf den Button unten, um auf Version: "
-"%(version)s zu aktualisieren"
+"Ein neues Update ist verfügbar. Klicke auf den Button unten, um auf "
+"Version: %(version)s zu aktualisieren"
 
 #: cps/updater.py:541
 msgid "No release information available"
@@ -2227,71 +2266,71 @@ msgstr "Fehler beim Laden des magischen Regals"
 msgid "Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s"
 msgstr "Magisches Regal&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s"
 
-#: cps/web.py:1038
+#: cps/web.py:1039
 msgid "No rules provided"
 msgstr "Keine Regeln angegeben"
 
-#: cps/web.py:1044
+#: cps/web.py:1045
 msgid "Invalid rules format"
 msgstr "Ungültiges Regelformat"
 
-#: cps/web.py:1066
+#: cps/web.py:1067
 msgid "Error processing rules"
 msgstr "Fehler beim Verarbeiten der Regeln"
 
-#: cps/web.py:1070
+#: cps/web.py:1071
 msgid "Invalid request"
 msgstr "Ungültige Anfrage"
 
-#: cps/web.py:1114
+#: cps/web.py:1116
 msgid "Name and rules are required"
 msgstr "Name und Regeln sind erforderlich"
 
-#: cps/web.py:1117 cps/web.py:1214
+#: cps/web.py:1119 cps/web.py:1224
 msgid "Shelf name too long (max 100 characters)"
 msgstr "Regalname zu lang (maximal 100 Zeichen)"
 
-#: cps/web.py:1139
+#: cps/web.py:1142
 msgid "Error creating shelf"
 msgstr "Fehler beim Erstellen des Regals"
 
-#: cps/templates/layout.html:314 cps/web.py:1153
+#: cps/templates/layout.html:322 cps/web.py:1161
 msgid "Create Magic Shelf"
 msgstr "Neues magisches Regal"
 
-#: cps/web.py:1207
+#: cps/web.py:1217
 msgid "Permission denied to change public status"
 msgstr "Berechtigung zum Ändern des öffentlichen Status verweigert"
 
-#: cps/web.py:1211
+#: cps/web.py:1221
 msgid "Shelf name is required"
 msgstr "Regalname ist erforderlich"
 
-#: cps/web.py:1245
+#: cps/web.py:1256
 msgid "Error updating shelf"
 msgstr "Fehler beim Aktualisieren des Regals"
 
-#: cps/web.py:1260
+#: cps/web.py:1276
 msgid "Edit Magic Shelf"
 msgstr "Magisches Regal bearbeiten"
 
-#: cps/web.py:1273
+#: cps/web.py:1290
 msgid "Shelf not found"
 msgstr "Regal nicht gefunden"
 
-#: cps/web.py:1278
+#: cps/web.py:1295
 msgid "Permission denied"
 msgstr "Zugriff verweigert"
 
-#: cps/web.py:1309
+#: cps/web.py:1326
 msgid "Shelf duplicated successfully"
 msgstr "Regal erfolgreich dupliziert"
 
-#: cps/web.py:1315
+#: cps/web.py:1332
 msgid "Error duplicating shelf"
 msgstr "Fehler beim Duplizieren des Regals"
 
-#: cps/templates/magic_shelf_edit.html:448 cps/web.py:1342
+#: cps/templates/magic_shelf_edit.html:453 cps/web.py:1359
 msgid ""
 "System shelves cannot be deleted. You can hide them in your user profile "
 "settings."
@@ -2299,114 +2338,113 @@ msgstr ""
 "Systemregale können nicht gelöscht werden. Sie können diese in Ihren "
 "Benutzerprofil-Einstellungen ausblenden."
 
-#: cps/web.py:1359
+#: cps/web.py:1387
 msgid "Error deleting shelf"
 msgstr "Fehler beim Löschen des Regals"
 
-#: cps/web.py:1375
+#: cps/web.py:1403
 msgid ""
-"You cannot hide your own shelves. Delete them instead if you don't want them."
+"You cannot hide your own shelves. Delete them instead if you don't want "
+"them."
 msgstr ""
 "Sie können Ihre eigenen Regale nicht ausblenden. Löschen Sie diese "
 "stattdessen, wenn Sie sie nicht mehr benötigen."
 
-#: cps/web.py:1385
+#: cps/web.py:1413
 msgid "Shelf already hidden"
 msgstr "Regal bereits ausgeblendet"
 
-#: cps/web.py:1399
+#: cps/web.py:1427
 msgid "Error hiding shelf"
 msgstr "Fehler beim Ausblenden des Regals"
 
-#: cps/web.py:1413
+#: cps/web.py:1441
 msgid "Shelf was not hidden"
 msgstr "Regal war nicht ausgeblendet"
 
-#: cps/web.py:1422
+#: cps/web.py:1450
 msgid "Error unhiding shelf"
 msgstr "Fehler beim Einblenden des Regals"
 
-#: cps/templates/admin.html:18 cps/web.py:1569
+#: cps/templates/admin.html:18 cps/web.py:1597
 msgid "Downloads"
 msgstr "Downloads"
 
-#: cps/web.py:1721
+#: cps/web.py:1749
 msgid "File formats list"
 msgstr "Liste der Dateiformate"
 
-#: cps/web.py:1961 cps/web.py:1999
+#: cps/web.py:1989 cps/web.py:2027
 msgid "Please configure the SMTP mail settings first..."
-msgstr ""
-"Bitte zunächst die SMTP-Einstellungen des E-Mail-Server konfigurieren..."
+msgstr "Bitte zunächst die SMTP-Einstellungen des E-Mail-Server konfigurieren..."
 
-#: cps/web.py:1965
+#: cps/web.py:1993
 msgid "Oops! Please update your profile with a valid eReader Email."
 msgstr ""
 "Ups! Bitte zuerst das Profil mit einer validen E-Reader-E-Mail-Adresse "
 "aktualisieren."
 
-#: cps/web.py:1987
+#: cps/web.py:2015
 #, python-format
 msgid "Success! Book queued for sending to %(eReadermail)s"
 msgstr "Erfolg! Buch erfolgreich zum Senden an %(eReadermail)s eingereiht"
 
-#: cps/web.py:1990 cps/web.py:2048
+#: cps/web.py:2018 cps/web.py:2076
 #, python-format
 msgid "Oops! There was an error sending book: %(res)s"
 msgstr "Ups! Beim Senden des Buches trat ein Fehler auf: %(res)s"
 
-#: cps/web.py:2007 cps/web.py:2017
+#: cps/web.py:2035 cps/web.py:2045
 msgid "No email addresses selected"
 msgstr "Keine E-Mail-Adresse ausgewählt"
 
-#: cps/web.py:2024
+#: cps/web.py:2052
 #, fuzzy
 msgid "Additional email addresses are disabled for your account."
 msgstr "Zusätzliche E-Mail-Adressen eingeben (durch Kommas getrennt):"
 
-#: cps/web.py:2046
+#: cps/web.py:2074
 msgid "Success! Book queued for sending to the selected address(es)!"
 msgstr "Erfolg! Buch zum Senden an die ausgewählte(n) Adresse(n) eingereiht!"
 
-#: cps/web.py:2065
+#: cps/web.py:2093
 msgid "Please wait one minute to register next user"
 msgstr "Bitte eine Minute warten vor der Registrierung des nächsten Benutzers"
 
 #: cps/templates/layout.html:136 cps/templates/layout.html:178
-#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2066
-#: cps/web.py:2070 cps/web.py:2075 cps/web.py:2079 cps/web.py:2085
-#: cps/web.py:2110 cps/web.py:2114 cps/web.py:2127 cps/web.py:2130
+#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2094
+#: cps/web.py:2098 cps/web.py:2103 cps/web.py:2107 cps/web.py:2113
+#: cps/web.py:2138 cps/web.py:2142 cps/web.py:2155 cps/web.py:2158
 msgid "Register"
 msgstr "Registrieren"
 
-#: cps/web.py:2069 cps/web.py:2234
+#: cps/web.py:2097 cps/web.py:2262
 msgid "Connection error to limiter backend, please contact your administrator"
 msgstr "Verbindugnsfehler zu Limiter Backend, bitte Administrator kontaktieren"
 
-#: cps/web.py:2074 cps/web.py:2126
-msgid ""
-"Oops! Email server is not configured, please contact your administrator."
+#: cps/web.py:2102 cps/web.py:2154
+msgid "Oops! Email server is not configured, please contact your administrator."
 msgstr ""
 "Ups! Der E-Mail-Server ist nicht konfiguriert, bitte den Administrator "
 "kontaktieren."
 
-#: cps/web.py:2112
+#: cps/web.py:2140
 msgid "Oops! Your Email is not allowed."
 msgstr "Ups! Diese E-Mail ist nicht erlaubt."
 
-#: cps/web.py:2115
+#: cps/web.py:2143
 msgid "Success! Confirmation Email has been sent."
 msgstr "Erfolg! Eine E-Mail zur Bestätigung wurde versendet."
 
-#: cps/web.py:2163
+#: cps/web.py:2191
 msgid ""
-"Authentication loop detected. If you're experiencing login issues, please "
-"contact your administrator."
+"Authentication loop detected. If you're experiencing login issues, please"
+" contact your administrator."
 msgstr ""
-"Authentifizierungsschleife erkannt. Wenn Sie Probleme beim Anmelden haben, "
-"kontaktieren Sie bitte Ihren Administrator."
+"Authentifizierungsschleife erkannt. Wenn Sie Probleme beim Anmelden "
+"haben, kontaktieren Sie bitte Ihren Administrator."
 
-#: cps/web.py:2208
+#: cps/web.py:2236
 msgid ""
 "OAuth authentication is not properly configured. Please contact "
 "administrator."
@@ -2414,98 +2452,96 @@ msgstr ""
 "Die OAuth-Authentifizierung ist nicht korrekt konfiguriert. Bitte "
 "kontaktieren Sie den Administrator."
 
-#: cps/web.py:2213 cps/web.py:2240
+#: cps/web.py:2241 cps/web.py:2268
 msgid "Cannot activate LDAP authentication"
 msgstr "LDAP-Authentifizierung kann nicht aktiviert werden"
 
-#: cps/web.py:2222
+#: cps/web.py:2250
 msgid "Standard login is disabled."
 msgstr "Standard-Login ist deaktiviert."
 
-#: cps/web.py:2230
+#: cps/web.py:2258
 msgid "Please wait one minute before next login"
 msgstr "Bitte eine Minute vor dem nächsten Anmeldeversuch warten"
 
-#: cps/web.py:2248
+#: cps/web.py:2276
 msgid "Username cannot be empty"
 msgstr "Benutzername darf nicht leer sein"
 
-#: cps/web.py:2260
+#: cps/web.py:2288
 #, python-format
 msgid "you are now logged in as: '%(nickname)s'"
 msgstr "du bist nun eingeloggt als: '%(nickname)s'"
 
-#: cps/web.py:2279
+#: cps/web.py:2307
 #, python-format
 msgid ""
-"Welcome! Your account has been automatically created. You are now logged in "
-"as: '%(nickname)s'"
+"Welcome! Your account has been automatically created. You are now logged "
+"in as: '%(nickname)s'"
 msgstr ""
-"Willkommen! Ihr Konto wurde automatisch erstellt. Sie sind jetzt eingeloggt "
-"als: '%(nickname)s'"
+"Willkommen! Ihr Konto wurde automatisch erstellt. Sie sind jetzt "
+"eingeloggt als: '%(nickname)s'"
 
-#: cps/web.py:2284 cps/web.py:2287
+#: cps/web.py:2312 cps/web.py:2315
 msgid ""
-"Authentication successful, but account creation failed. Please contact your "
-"administrator."
+"Authentication successful, but account creation failed. Please contact "
+"your administrator."
 msgstr ""
-"Authentifizierung erfolgreich, aber die Kontoerstellung ist fehlgeschlagen. "
-"Bitte kontaktieren Sie Ihren Administrator."
+"Authentifizierung erfolgreich, aber die Kontoerstellung ist "
+"fehlgeschlagen. Bitte kontaktieren Sie Ihren Administrator."
 
-#: cps/web.py:2291
+#: cps/web.py:2319
 msgid ""
-"Authentication successful, but no local account found. Please contact your "
-"administrator to create your account."
+"Authentication successful, but no local account found. Please contact "
+"your administrator to create your account."
 msgstr ""
 "Authentifizierung erfolgreich, aber kein lokales Konto gefunden. Bitte "
 "kontaktieren Sie Ihren Administrator, um Ihr Konto zu erstellen."
 
-#: cps/web.py:2299
+#: cps/web.py:2327
 #, python-format
 msgid ""
-"Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
-"known"
+"Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not"
+" known"
 msgstr ""
-"Fallback Login als: '%(nickname)s', LDAP Server ist nicht erreichbar, oder "
-"der Nutzer ist unbekannt"
+"Fallback Login als: '%(nickname)s', LDAP Server ist nicht erreichbar, "
+"oder der Nutzer ist unbekannt"
 
-#: cps/web.py:2305
+#: cps/web.py:2333
 #, python-format
 msgid "Could not login: %(message)s"
 msgstr "Login nicht erfolgreich: %(message)s"
 
-#: cps/web.py:2328 cps/web.py:2329 cps/web.py:2372
+#: cps/web.py:2356 cps/web.py:2357 cps/web.py:2400
 msgid "Wrong Username or Password"
 msgstr "Falscher Benutzername oder Passwort"
 
-#: cps/web.py:2337
+#: cps/web.py:2365
 msgid "New Password was sent to your email address"
 msgstr "Das neue Passwort wurde an die E-Mail-Adresse geschickt"
 
-#: cps/web.py:2341
+#: cps/web.py:2369
 msgid "An unknown error occurred. Please try again later."
-msgstr ""
-"Es ist ein unbekannter Fehler aufgetreten. Bitte später erneut versuchen."
+msgstr "Es ist ein unbekannter Fehler aufgetreten. Bitte später erneut versuchen."
 
-#: cps/web.py:2343
+#: cps/web.py:2371
 msgid "Please enter valid username to reset password"
-msgstr ""
-"Bitte einen gültigen Benutzernamen zum Zurücksetzen des Passworts angeben"
+msgstr "Bitte einen gültigen Benutzernamen zum Zurücksetzen des Passworts angeben"
 
-#: cps/web.py:2351
+#: cps/web.py:2379
 #, python-format
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "Du bist nun eingeloggt als: '%(nickname)s'"
 
-#: cps/web.py:2667
+#: cps/web.py:2695
 msgid "Success! Profile Updated"
 msgstr "Erfolg! Profil aktualisiert"
 
-#: cps/web.py:2673
+#: cps/web.py:2701
 msgid "Oops! An account already exists for this Email."
 msgstr "Ups! Es existiert bereits ein Benutzer für diese E-Mail-Adresse."
 
-#: cps/web.py:2894
+#: cps/web.py:2922
 msgid "Invalid book ID."
 msgstr "Ungültige Buch-ID."
 
@@ -2933,7 +2969,7 @@ msgstr "Versionsinformationen&nbsp;&nbsp;📜"
 msgid "Version"
 msgstr "Version"
 
-#: cps/templates/admin.html:251
+#: cps/templates/admin.html:251 cps/templates/kobo_dashboard.html:664
 msgid "Details"
 msgstr "Details"
 
@@ -2971,11 +3007,11 @@ msgstr "OK"
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:111
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:215
 #: cps/templates/cwa_convert_library.html:23
-#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:938
+#: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:1022
 #: cps/templates/duplicates.html:540 cps/templates/duplicates.html:567
 #: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99
 #: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
-#: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:27
+#: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:34
 #: cps/templates/tasks.html:94 cps/templates/tasks.html:166
 #: cps/templates/tasks.html:173 cps/templates/user_edit.html:555
 msgid "Cancel"
@@ -3073,8 +3109,8 @@ msgstr "Lädt hoch..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:587
-#: cps/templates/layout.html:152 cps/templates/layout.html:361
-#: cps/templates/layout.html:426 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:152 cps/templates/layout.html:369
+#: cps/templates/layout.html:434 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:573
 msgid "Close"
 msgstr "Schließen"
@@ -3160,10 +3196,11 @@ msgstr "ID hinzufügen"
 
 #: cps/templates/book_edit.html:146
 msgid ""
-"Fetch Cover from URL (JPEG - Image will be downloaded and stored in database)"
+"Fetch Cover from URL (JPEG - Image will be downloaded and stored in "
+"database)"
 msgstr ""
-"Cover-URL (jpg, Cover wird heruntergeladen und in der Datenbank gespeichert, "
-"Feld erscheint anschließend wieder leer)"
+"Cover-URL (jpg, Cover wird heruntergeladen und in der Datenbank "
+"gespeichert, Feld erscheint anschließend wieder leer)"
 
 #: cps/templates/book_edit.html:150
 msgid "Upload Cover from Local Disk"
@@ -3202,7 +3239,7 @@ msgstr "Metadaten laden"
 #: cps/templates/book_edit.html:252 cps/templates/config_db.html:110
 #: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:214
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:45
-#: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
+#: cps/templates/shelf_edit.html:32 cps/templates/shelf_order.html:41
 #: cps/templates/user_edit.html:553
 msgid "Save"
 msgstr "Speichern"
@@ -3218,7 +3255,8 @@ msgstr "Suche Schlüsselbegriff"
 #: cps/templates/book_edit.html:282
 msgid "Selected metadata fields were applied to the edit form."
 msgstr ""
-"Ausgewählte Metadatenfelder wurden auf das Bearbeitungsformular angewendet."
+"Ausgewählte Metadatenfelder wurden auf das Bearbeitungsformular "
+"angewendet."
 
 #: cps/templates/book_edit.html:288 cps/templates/book_edit.html:368
 msgid "Loading..."
@@ -3410,8 +3448,8 @@ msgstr ""
 
 #: cps/templates/book_table.html:287
 msgid ""
-"Multiple values are supported for Authors, Tags/Categories, Languages, and "
-"Publishers. Use comma-separated values (e.g., \"Name1, Name2\")."
+"Multiple values are supported for Authors, Tags/Categories, Languages, "
+"and Publishers. Use comma-separated values (e.g., \"Name1, Name2\")."
 msgstr ""
 "Für Autoren, Tags/Kategorien, Sprachen und Verlage werden mehrere Werte "
 "unterstützt. Verwenden Sie kommagetrennte Werte (z. B. „Name1, Name2“)."
@@ -3422,8 +3460,7 @@ msgstr "Wähle ein Regal"
 
 #: cps/templates/book_table.html:346
 msgid "Please select a shelf to add the selected books to:"
-msgstr ""
-"Bitte wähle ein Regal aus, dem die ausgewählten Bücher hinzugefügt werden:"
+msgstr "Bitte wähle ein Regal aus, dem die ausgewählten Bücher hinzugefügt werden:"
 
 #: cps/templates/book_table.html:348
 msgid "-- Select a Shelf --"
@@ -3440,74 +3477,80 @@ msgstr "Speicherort der Calibre-Datenbank (metadata.db-Datei)"
 
 #: cps/templates/config_db.html:48
 msgid ""
-"CWA is configured so that your Calibre Database (<code>metadata.db</code> "
-"file) should always be somewhere in <code>/calibre-library</code>.\n"
-"        CWA automatically searches whatever directory you've bound to <code>/"
-"calibre-library</code> in your docker-compose file for existing Calibre\n"
+"CWA is configured so that your Calibre Database (<code>metadata.db</code>"
+" file) should always be somewhere in <code>/calibre-library</code>.\n"
+"        CWA automatically searches whatever directory you've bound to "
+"<code>/calibre-library</code> in your docker-compose file for existing "
+"Calibre\n"
 "        Libraries/metadata.db files on start up. If it finds just one "
 "existing library, it mounts it automatically, if it find multiple, by "
 "default\n"
-"        it will mount the largest one automatically and if it doesn't find "
-"any, it will automatically create and mount a new one. For more details,\n"
-"        <a href=\"https://github.com/crocodilestick/Calibre-Web-Automated/"
-"wiki/Configuration#database-configuration\">see here</a>!"
+"        it will mount the largest one automatically and if it doesn't "
+"find any, it will automatically create and mount a new one. For more "
+"details,\n"
+"        <a href=\"https://github.com/crocodilestick/Calibre-Web-"
+"Automated/wiki/Configuration#database-configuration\">see here</a>!"
 msgstr ""
-"CWA ist so konfiguriert, dass es deine Calibre-Datenbank (<code>metadata.db</"
-"code>-Datei) irgendwo in dem Pfad <code>/calibre-library</code> sucht.\n"
-"        CWA durchsucht automatisch das Verzeichnis, das du auf <code>/"
-"calibre-library</code> in der docker-compose-Datei verbunden hast, um eine "
-"existierende Calibre-\n"
-"        Datenbank metadata.db-Datei beim Start zu finden. Wenn es nur eine "
-"Datenbank findet, wird sie automtisch genutzt; werden mehrere gefunden, wird "
-"standardmäßig\n"
+"CWA ist so konfiguriert, dass es deine Calibre-Datenbank "
+"(<code>metadata.db</code>-Datei) irgendwo in dem Pfad <code>/calibre-"
+"library</code> sucht.\n"
+"        CWA durchsucht automatisch das Verzeichnis, das du auf <code"
+">/calibre-library</code> in der docker-compose-Datei verbunden hast, um "
+"eine existierende Calibre-\n"
+"        Datenbank metadata.db-Datei beim Start zu finden. Wenn es nur "
+"eine Datenbank findet, wird sie automtisch genutzt; werden mehrere "
+"gefunden, wird standardmäßig\n"
 "        die größte Datei automatisch gewählt und wenn gar keine gefunden "
 "wird, wird automatisch eine neue erstellt und genutzt. Für mehr Details\n"
-"        <a href=\"https://github.com/crocodilestick/Calibre-Web-Automated/"
-"wiki/Configuration#database-configuration\">schaue hier</a>!"
+"        <a href=\"https://github.com/crocodilestick/Calibre-Web-"
+"Automated/wiki/Configuration#database-configuration\">schaue hier</a>!"
 
 #: cps/templates/config_db.html:54
 msgid ""
 "Therefore, when configuring your docker-compose file for CWA, <b>DO NOT "
-"CHANGE THE PATHS IN THE VOLUMES SECTION ON THE RIGHT SIDE OF THE COLONS!</b>"
+"CHANGE THE PATHS IN THE VOLUMES SECTION ON THE RIGHT SIDE OF THE "
+"COLONS!</b>"
 msgstr ""
-"Deshalb, wenn du die docker-compose-Datei für CWA konfigurierst, <b>ändere "
-"nicht die Dateipfade in dem Abschnitt für Volumes auf der rechten Seite des "
-"Doppelpunkts!</b>"
+"Deshalb, wenn du die docker-compose-Datei für CWA konfigurierst, "
+"<b>ändere nicht die Dateipfade in dem Abschnitt für Volumes auf der "
+"rechten Seite des Doppelpunkts!</b>"
 
 #: cps/templates/config_db.html:55
 msgid ""
-"These paths are internal to CWA only, you can change what they're bind to to "
-"your heart's content on the left-hand side but there's no reason to\n"
-"        change the paths on the right-hand side.<br><br>If you would like "
-"your <code>metadata.db</code> file in a different location to the rest of "
-"your\n"
-"        library, use the <b>Separate Book Files from Library Option below "
-"and there, enter the path to the rest of the library</b>"
+"These paths are internal to CWA only, you can change what they're bind to"
+" to your heart's content on the left-hand side but there's no reason to\n"
+"        change the paths on the right-hand side.<br><br>If you would like"
+" your <code>metadata.db</code> file in a different location to the rest "
+"of your\n"
+"        library, use the <b>Separate Book Files from Library Option below"
+" and there, enter the path to the rest of the library</b>"
 msgstr ""
 "Diese Dateifpade sind intern nur für CWA, du kannst sie ändern wie du "
 "möchtest, aber es gibt keinen Grund, die\n"
 "        die Pfade auf der rechten Seite zu ändern.<br><br>Wenn du deine "
 "<code>metadata.db</code>-Datei an einem anderen Ort als deine\n"
-"        Bibliothek speichern möchtest, nutze die <b>Separiere Bücherdateien "
-"von der Bibliothek Option unten und dort trägst du den Pfad zu dem Rest "
-"deiner Bibliothek ein</b>"
+"        Bibliothek speichern möchtest, nutze die <b>Separiere "
+"Bücherdateien von der Bibliothek Option unten und dort trägst du den Pfad"
+" zu dem Rest deiner Bibliothek ein</b>"
 
 #: cps/templates/config_db.html:59
 msgid ""
 "E.g. As long as your library's <code>metadata.db</code> file is bound "
 "somewhere within <code>/calibre-library</code>, you could bind the dir\n"
 "        containing the corresponding book files ect. to something like "
-"<code>/books</code> and enter <code>/books</code> in the field that pops up "
-"below\n"
+"<code>/books</code> and enter <code>/books</code> in the field that pops "
+"up below\n"
 "        once you've checked the <b>Separate Book Files from Library</b> "
 "option."
 msgstr ""
-"Z.B. solange deine Bibliotheksdatei <code>metadata.db</code> irgendwo in dem "
-"Ordner <code>/calibre-library</code> ist, kannst du das Verzeichnis mit\n"
-"        den Bücherdateien usw. zu einem Ordner <code>/books</code> verbinden "
-"und <code>/books</code> in dem Feld, das unten genannt wird, eingeben\n"
-"        sobald du die Option <b>Separiere Bücherdateien von der Bibliothek</"
-"b> angewählt hast."
+"Z.B. solange deine Bibliotheksdatei <code>metadata.db</code> irgendwo in "
+"dem Ordner <code>/calibre-library</code> ist, kannst du das Verzeichnis "
+"mit\n"
+"        den Bücherdateien usw. zu einem Ordner <code>/books</code> "
+"verbinden und <code>/books</code> in dem Feld, das unten genannt wird, "
+"eingeben\n"
+"        sobald du die Option <b>Separiere Bücherdateien von der "
+"Bibliothek</b> angewählt hast."
 
 #: cps/templates/config_db.html:63
 msgid "Split Library Functionality"
@@ -3516,12 +3559,13 @@ msgstr "Bibliothek aufspalten-Funktionalität"
 #: cps/templates/config_db.html:66
 msgid ""
 "<b>Separate Book Files from Library</b> - <code>metadata.db</code> file "
-"should remain in <code>/calibre-library</code>, however your library files "
-"can be wherever you desire"
+"should remain in <code>/calibre-library</code>, however your library "
+"files can be wherever you desire"
 msgstr ""
 "<b>Separiere die Bücherdateien von der Bibliothek</b> - die Datei "
-"<code>metadata.db</code> sollte in <code>/calibre-library</code> verbleiben, "
-"die Bücherdateien können jedoch an einem beliebigen Ort gespeichert werden"
+"<code>metadata.db</code> sollte in <code>/calibre-library</code> "
+"verbleiben, die Bücherdateien können jedoch an einem beliebigen Ort "
+"gespeichert werden"
 
 #: cps/templates/config_db.html:79
 msgid "Use Google Drive?"
@@ -3549,21 +3593,23 @@ msgstr "Letzter Ausweg: Calibre-Datenbank wiederherstellen (experimentell)"
 
 #: cps/templates/config_db.html:118
 msgid ""
-"If your Calibre library is corrupted and cannot be opened, you can attempt "
-"to restore it from the OPF files in your library. This will <b>erase all per-"
-"book data</b> (reading progress, bookmarks, shelf links, downloads, etc.) in "
-"the app database, but will not affect user accounts or settings. <b>Both "
-"databases will be automatically backed up in /config/backup before any "
-"destructive action.</b> A restore log will be saved alongside the backups."
+"If your Calibre library is corrupted and cannot be opened, you can "
+"attempt to restore it from the OPF files in your library. This will "
+"<b>erase all per-book data</b> (reading progress, bookmarks, shelf links,"
+" downloads, etc.) in the app database, but will not affect user accounts "
+"or settings. <b>Both databases will be automatically backed up in "
+"/config/backup before any destructive action.</b> A restore log will be "
+"saved alongside the backups."
 msgstr ""
-"Falls Ihre Calibre-Bibliothek beschädigt ist und nicht geöffnet werden kann, "
-"können Sie versuchen, sie aus den OPF-Dateien in Ihrer Bibliothek "
+"Falls Ihre Calibre-Bibliothek beschädigt ist und nicht geöffnet werden "
+"kann, können Sie versuchen, sie aus den OPF-Dateien in Ihrer Bibliothek "
 "wiederherzustellen. Dies wird <b>alle buchspezifischen Daten löschen</b> "
-"(Lesefortschritt, Lesezeichen, Regal-Verknüpfungen, Downloads etc.) in der "
-"App-Datenbank, hat jedoch keine Auswirkungen auf Benutzerkonten oder "
-"Einstellungen. <b>Von beiden Datenbanken wird vor jeder destruktiven Aktion "
-"automatisch ein Backup unter /config/backup erstellt.</b> Ein Protokoll der "
-"Wiederherstellung wird zusammen mit den Backups gespeichert."
+"(Lesefortschritt, Lesezeichen, Regal-Verknüpfungen, Downloads etc.) in "
+"der App-Datenbank, hat jedoch keine Auswirkungen auf Benutzerkonten oder "
+"Einstellungen. <b>Von beiden Datenbanken wird vor jeder destruktiven "
+"Aktion automatisch ein Backup unter /config/backup erstellt.</b> Ein "
+"Protokoll der Wiederherstellung wird zusammen mit den Backups "
+"gespeichert."
 
 #: cps/templates/config_db.html:121
 msgid "Are you sure? This cannot be undone."
@@ -3650,8 +3696,8 @@ msgstr ""
 
 #: cps/templates/config_edit.html:170
 msgid ""
-"Embed Metadata to Ebook File on Download/Conversion/e-mail (needs Calibre/"
-"Kepubify binaries)"
+"Embed Metadata to Ebook File on Download/Conversion/e-mail (needs "
+"Calibre/Kepubify binaries)"
 msgstr ""
 "Metadaten bei Download/Konvertierung/E-Mail zu Ebook Datei hinzufügen "
 "(benötigt Calibre/Kepubify)"
@@ -3662,8 +3708,7 @@ msgstr "Hochladen aktivieren"
 
 #: cps/templates/config_edit.html:174
 msgid "(Please ensure that users also have upload permissions)"
-msgstr ""
-"(Bitte sicherstellen, dass Benutzer über die Upload Berechtigung verfügen)"
+msgstr "(Bitte sicherstellen, dass Benutzer über die Upload Berechtigung verfügen)"
 
 #: cps/templates/config_edit.html:178
 msgid "Allowed Upload Fileformats"
@@ -3731,13 +3776,13 @@ msgstr "Reverse Proxy Authentifizierung zulassen"
 
 #: cps/templates/config_edit.html:249
 msgid ""
-"Trusts the \"Remote-User\" header from a reverse proxy for authentication. "
-"This is an authentication method, distinct from the HTTPS security setting "
-"below."
+"Trusts the \"Remote-User\" header from a reverse proxy for "
+"authentication. This is an authentication method, distinct from the HTTPS"
+" security setting below."
 msgstr ""
 "Vertraut dem „Remote-User“-Header eines Reverse-Proxys zur "
-"Authentifizierung. Dies ist eine Authentifizierungsmethode, die sich von der "
-"unten stehenden HTTPS-Sicherheitseinstellung unterscheidet."
+"Authentifizierung. Dies ist eine Authentifizierungsmethode, die sich von "
+"der unten stehenden HTTPS-Sicherheitseinstellung unterscheidet."
 
 #: cps/templates/config_edit.html:253
 msgid "Use via HTTPS"
@@ -3745,11 +3790,12 @@ msgstr "Über HTTPS nutzen"
 
 #: cps/templates/config_edit.html:254
 msgid ""
-"Enables secure cookie settings (Secure, SameSite=Lax). Enable this ONLY if "
-"you are accessing the server via HTTPS, otherwise you will be locked out."
+"Enables secure cookie settings (Secure, SameSite=Lax). Enable this ONLY "
+"if you are accessing the server via HTTPS, otherwise you will be locked "
+"out."
 msgstr ""
-"Aktiviert sichere Cookie-Einstellungen (Secure, SameSite=Lax). Aktivieren "
-"Sie dies NUR, wenn Sie über HTTPS auf den Server zugreifen, andernfalls "
+"Aktiviert sichere Cookie-Einstellungen (Secure, SameSite=Lax). Aktivieren"
+" Sie dies NUR, wenn Sie über HTTPS auf den Server zugreifen, andernfalls "
 "werden Sie ausgesperrt."
 
 #: cps/templates/config_edit.html:263
@@ -3763,8 +3809,8 @@ msgid ""
 "secured."
 msgstr ""
 "Benutzerkonten automatisch erstellen, wenn gültige Reverse-Proxy-Header "
-"empfangen werden. Nur aktivieren, wenn Ihre Reverse-Proxy-Authentifizierung "
-"ordnungsgemäß abgesichert ist."
+"empfangen werden. Nur aktivieren, wenn Ihre Reverse-Proxy-"
+"Authentifizierung ordnungsgemäß abgesichert ist."
 
 #: cps/templates/config_edit.html:270
 msgid "Login type"
@@ -3796,16 +3842,17 @@ msgstr "SSL"
 
 #: cps/templates/config_edit.html:300
 msgid ""
-"LDAP CACertificate Path (Only needed for Client Certificate Authentication)"
+"LDAP CACertificate Path (Only needed for Client Certificate "
+"Authentication)"
 msgstr ""
 "LDAP-CA-Zertifikatspfad (nur für Client-Zertifikatsauthentifizierung "
 "benötigt)"
 
 #: cps/templates/config_edit.html:307
-msgid ""
-"LDAP Certificate Path (Only needed for Client Certificate Authentication)"
+msgid "LDAP Certificate Path (Only needed for Client Certificate Authentication)"
 msgstr ""
-"LDAP-Zertifikatspfad (nur für Client-Zertifikatsauthentifizierung benötigt)"
+"LDAP-Zertifikatspfad (nur für Client-Zertifikatsauthentifizierung "
+"benötigt)"
 
 #: cps/templates/config_edit.html:314
 msgid "LDAP Keyfile Path (Only needed for Client Certificate Authentication)"
@@ -3855,16 +3902,15 @@ msgstr "Benutzer automatisch über LDAP erstellen"
 
 #: cps/templates/config_edit.html:357
 msgid ""
-"Automatically create user accounts when LDAP authentication succeeds for new "
-"users. Recommended for enterprise environments."
+"Automatically create user accounts when LDAP authentication succeeds for "
+"new users. Recommended for enterprise environments."
 msgstr ""
-"Benutzerkonten automatisch erstellen, wenn die LDAP-Authentifizierung für "
-"neue Benutzer erfolgreich ist. Empfohlen für Unternehmensumgebungen."
+"Benutzerkonten automatisch erstellen, wenn die LDAP-Authentifizierung für"
+" neue Benutzer erfolgreich ist. Empfohlen für Unternehmensumgebungen."
 
 #: cps/templates/config_edit.html:359
 msgid "Following Settings are Needed For User Import"
-msgstr ""
-"Die nachfolgenden Einstellungen werden nur für den Benutzerimport benötigt"
+msgstr "Die nachfolgenden Einstellungen werden nur für den Benutzerimport benötigt"
 
 #: cps/templates/config_edit.html:361
 msgid "LDAP Group Object Filter"
@@ -3900,11 +3946,12 @@ msgstr "Wichtig:"
 
 #: cps/templates/config_edit.html:391
 msgid ""
-"OAuth authentication requires this server to be accessed via HTTPS. If you "
-"are using HTTP, login will fail."
+"OAuth authentication requires this server to be accessed via HTTPS. If "
+"you are using HTTP, login will fail."
 msgstr ""
 "Die OAuth-Authentifizierung erfordert, dass auf diesen Server über HTTPS "
-"zugegriffen wird. Wenn Sie HTTP verwenden, wird die Anmeldung fehlschlagen."
+"zugegriffen wird. Wenn Sie HTTP verwenden, wird die Anmeldung "
+"fehlschlagen."
 
 #: cps/templates/config_edit.html:394
 msgid "Generic OAuth Provider"
@@ -3928,8 +3975,8 @@ msgstr "Nutze manuelle Endpunkt-URLs (überschreibt Autoerkennung)"
 
 #: cps/templates/config_edit.html:412
 msgid ""
-"Check this to manually configure individual OAuth endpoints instead of using "
-"auto-discovery"
+"Check this to manually configure individual OAuth endpoints instead of "
+"using auto-discovery"
 msgstr ""
 "Hake dies an, um manuell individuelle OAuth Endpunkte zu konfigurieren "
 "anstatt automatische Erkennung zu nutzen"
@@ -3972,21 +4019,22 @@ msgstr "OAuth-Redirect-Host"
 
 #: cps/templates/config_edit.html:462
 msgid ""
-"Set a consistent hostname for OAuth redirects to prevent \"invalid redirect "
-"URI\" errors. Include protocol (https://). Leave empty to use automatic "
-"detection."
+"Set a consistent hostname for OAuth redirects to prevent \"invalid "
+"redirect URI\" errors. Include protocol (https://). Leave empty to use "
+"automatic detection."
 msgstr ""
-"Legen Sie einen konsistenten Hostnamen für OAuth-Redirects fest, um Fehler "
-"vom Typ „Ungültige Weiterleitungs-URI“ zu vermeiden. Geben Sie das Protokoll "
-"(https://) mit an. Leer lassen, um die automatische Erkennung zu nutzen."
+"Legen Sie einen konsistenten Hostnamen für OAuth-Redirects fest, um "
+"Fehler vom Typ „Ungültige Weiterleitungs-URI“ zu vermeiden. Geben Sie das"
+" Protokoll (https://) mit an. Leer lassen, um die automatische Erkennung "
+"zu nutzen."
 
 #: cps/templates/config_edit.html:464
 msgid ""
 "Required if: accessing via multiple hostnames, behind reverse proxy, or "
 "getting \"invalid redirect URI\" errors."
 msgstr ""
-"Erforderlich, falls: Zugriff über mehrere Hostnamen, hinter einem Reverse-"
-"Proxy oder bei Fehlern vom Typ „Ungültige Weiterleitungs-URI“."
+"Erforderlich, falls: Zugriff über mehrere Hostnamen, hinter einem "
+"Reverse-Proxy oder bei Fehlern vom Typ „Ungültige Weiterleitungs-URI“."
 
 #: cps/templates/config_edit.html:469
 msgid "OAuth Client Id"
@@ -4022,13 +4070,13 @@ msgstr "OAuth-Gruppe für Admins"
 
 #: cps/templates/config_edit.html:492
 msgid ""
-"Name of the OAuth group that grants admin privileges. Leave empty to disable "
-"group-based admin management, or use the global setting in Security Settings "
-"for more control."
+"Name of the OAuth group that grants admin privileges. Leave empty to "
+"disable group-based admin management, or use the global setting in "
+"Security Settings for more control."
 msgstr ""
-"Name der OAuth-Gruppe, die Administratorrechte gewährt. Leer lassen, um die "
-"gruppenbasierte Administrator-Verwaltung zu deaktivieren, oder verwenden Sie "
-"für mehr Kontrolle die globalen Einstellungen in den "
+"Name der OAuth-Gruppe, die Administratorrechte gewährt. Leer lassen, um "
+"die gruppenbasierte Administrator-Verwaltung zu deaktivieren, oder "
+"verwenden Sie für mehr Kontrolle die globalen Einstellungen in den "
 "Sicherheitseinstellungen."
 
 #: cps/templates/config_edit.html:495
@@ -4080,11 +4128,11 @@ msgstr "Standardanmeldung deaktivieren (Benutzername/Passwort)"
 
 #: cps/templates/config_edit.html:554
 msgid ""
-"Hides the standard login form. Users must log in via OAuth or LDAP. Ensure "
-"you have a working alternative login method before enabling."
+"Hides the standard login form. Users must log in via OAuth or LDAP. "
+"Ensure you have a working alternative login method before enabling."
 msgstr ""
-"Blendet das Standard-Anmeldeformular aus. Benutzer müssen sich über OAuth "
-"oder LDAP anmelden. Stellen Sie sicher, dass Sie eine funktionierende "
+"Blendet das Standard-Anmeldeformular aus. Benutzer müssen sich über OAuth"
+" oder LDAP anmelden. Stellen Sie sicher, dass Sie eine funktionierende "
 "alternative Anmeldemethode haben, bevor Sie dies aktivieren."
 
 #: cps/templates/config_edit.html:558
@@ -4093,14 +4141,14 @@ msgstr "Gruppenbasierte OAuth-Admin-Rollenverwaltung aktivieren"
 
 #: cps/templates/config_edit.html:559
 msgid ""
-"When enabled, admin privileges are automatically granted or revoked based on "
-"OAuth group membership. Disable this to manually manage admin roles in the "
-"user management panel, preventing OAuth logins from overriding local role "
-"assignments."
+"When enabled, admin privileges are automatically granted or revoked based"
+" on OAuth group membership. Disable this to manually manage admin roles "
+"in the user management panel, preventing OAuth logins from overriding "
+"local role assignments."
 msgstr ""
 "Wenn aktiviert, werden Administratorrechte automatisch basierend auf der "
-"OAuth-Gruppenzugehörigkeit gewährt oder entzogen. Deaktivieren Sie dies, um "
-"Admin-Rollen manuell in der Benutzerverwaltung zu verwalten und zu "
+"OAuth-Gruppenzugehörigkeit gewährt oder entzogen. Deaktivieren Sie dies, "
+"um Admin-Rollen manuell in der Benutzerverwaltung zu verwalten und zu "
 "verhindern, dass OAuth-Logins lokale Rollenzuweisungen überschreiben."
 
 #: cps/templates/config_edit.html:563
@@ -4167,13 +4215,13 @@ msgstr "Ansichtskonfiguration"
 
 #: cps/templates/config_view_edit.html:41
 msgid "The title displayed in the browser tab and navbar."
-msgstr ""
-"Der Titel, der im Browser-Tab und in der Navigationsleiste angezeigt wird."
+msgstr "Der Titel, der im Browser-Tab und in der Navigationsleiste angezeigt wird."
 
 #: cps/templates/config_view_edit.html:47
 msgid "Number of books to display per page in list views (1-200)."
 msgstr ""
-"Anzahl der Bücher, die pro Seite in Listenansichten angezeigt werden (1-200)."
+"Anzahl der Bücher, die pro Seite in Listenansichten angezeigt werden "
+"(1-200)."
 
 #: cps/templates/config_view_edit.html:51
 msgid "No. of Random Books to Display"
@@ -4182,7 +4230,8 @@ msgstr "Anzahl anzuzeigender zufälliger Bücher"
 #: cps/templates/config_view_edit.html:53
 msgid "Number of random books shown on the home page (1-30)."
 msgstr ""
-"Anzahl der zufälligen Bücher, die auf der Startseite angezeigt werden (1-30)."
+"Anzahl der zufälligen Bücher, die auf der Startseite angezeigt werden "
+"(1-30)."
 
 #: cps/templates/config_view_edit.html:57
 msgid "No. of Authors to Display Before Hiding (0=Disable Hiding)"
@@ -4190,11 +4239,11 @@ msgstr "Anzahl in Übersicht anzuzeigender Autoren (0=alle werden angezeigt)"
 
 #: cps/templates/config_view_edit.html:59
 msgid ""
-"Maximum number of authors to show in book details before truncating. Set to "
-"0 to disable."
+"Maximum number of authors to show in book details before truncating. Set "
+"to 0 to disable."
 msgstr ""
-"Maximale Anzahl an Autoren, die in den Buchdetails angezeigt werden, bevor "
-"sie gekürzt wird. Zum Deaktivieren auf 0 setzen."
+"Maximale Anzahl an Autoren, die in den Buchdetails angezeigt werden, "
+"bevor sie gekürzt wird. Zum Deaktivieren auf 0 setzen."
 
 #: cps/templates/config_view_edit.html:63
 msgid "Default Theme"
@@ -4206,11 +4255,11 @@ msgstr "caliBlur! dunkles Design"
 
 #: cps/templates/config_view_edit.html:67
 msgid ""
-"Default theme for new users and anonymous browsing. Users can select their "
-"own preferred theme in their profile."
+"Default theme for new users and anonymous browsing. Users can select "
+"their own preferred theme in their profile."
 msgstr ""
-"Standard-Design für neue Benutzer und anonymes browsen. Benutzer können in "
-"ihrem Profil ihr eigenes bevorzugtes Design wählen."
+"Standard-Design für neue Benutzer und anonymes browsen. Benutzer können "
+"in ihrem Profil ihr eigenes bevorzugtes Design wählen."
 
 #: cps/templates/config_view_edit.html:71
 msgid "Regular Expression for Ignoring Columns"
@@ -4229,16 +4278,15 @@ msgstr "Verbinde Gelesen/Ungelesen-Status mit Calibre-Spalte"
 #: cps/templates/config_view_edit.html:84
 msgid "Sync read/unread status with a Calibre boolean custom column."
 msgstr ""
-"Gelesen/Ungelesen-Status mit einer benutzerdefinierten booleschen Calibre-"
-"Spalte synchronisieren."
+"Gelesen/Ungelesen-Status mit einer benutzerdefinierten booleschen "
+"Calibre-Spalte synchronisieren."
 
 #: cps/templates/config_view_edit.html:88
 msgid "View Restrictions based on Calibre column"
 msgstr "Sichtbarkeitsbeschränkung basierend auf Calibre-Spalte"
 
 #: cps/templates/config_view_edit.html:95
-msgid ""
-"Restrict book visibility based on values in a Calibre text custom column."
+msgid "Restrict book visibility based on values in a Calibre text custom column."
 msgstr ""
 "Beschränkt die Sichtbarkeit von Büchern basierend auf den Werten einer "
 "benutzerdefinierten Calibre-Textspalte."
@@ -4252,8 +4300,8 @@ msgid ""
 "Regex to strip prefixes from titles for proper sorting (e.g., \"The\", "
 "\"A\", \"An\")."
 msgstr ""
-"Regex, um Präfixe für die korrekte Sortierung von Titeln zu entfernen (z. B. "
-"„Der“, „Die“, „Das“, „Ein“, „Eine“)."
+"Regex, um Präfixe für die korrekte Sortierung von Titeln zu entfernen (z."
+" B. „Der“, „Die“, „Das“, „Ein“, „Eine“)."
 
 #: cps/templates/config_view_edit.html:107
 msgid "Default Settings for New Users"
@@ -4262,7 +4310,8 @@ msgstr "Standard-Einstellungen für neue Benutzer"
 #: cps/templates/config_view_edit.html:108
 msgid "These settings will be applied to all newly created user accounts."
 msgstr ""
-"Diese Einstellungen werden auf alle neu erstellten Benutzerkonten angewendet."
+"Diese Einstellungen werden auf alle neu erstellten Benutzerkonten "
+"angewendet."
 
 #: cps/templates/config_view_edit.html:110
 msgid "Permissions"
@@ -4432,10 +4481,11 @@ msgstr "Aktiviere CWA Auto-Konvertierung"
 msgid ""
 "On by default, when active all ingested books will automatically be "
 "converted to the target format specified below (epub by default) \n"
-"        <em>EXCEPT</em> those you have specifically told CWA to ignore below."
+"        <em>EXCEPT</em> those you have specifically told CWA to ignore "
+"below."
 msgstr ""
-"Standardmäßig aktiviert, wenn alle ingestierten Bücher automatisch in das "
-"unten spezifizierte Zielformat konvertiert werden (Standard ist epub)\n"
+"Standardmäßig aktiviert, wenn alle ingestierten Bücher automatisch in das"
+" unten spezifizierte Zielformat konvertiert werden (Standard ist epub)\n"
 "        <em>außer</em> denen, die du CWA unten angegeben hast, dass sie "
 "ignoriert werden sollen."
 
@@ -4447,20 +4497,22 @@ msgstr "Aktiviere CWA automatischen Cover & Metadaten Service"
 msgid ""
 "On by default, when active, whenever the Metadata and/or Cover Image is "
 "edited in the Web UI, the CWA Metadata Enforcement service \n"
-"        will then apply those changes the ebook files themselves. Normally "
-"in Stock CW or when this setting is disabled, the changes made \n"
-"        are only applied to what you see in the Web UI, not the ebook files "
-"themselves. This feature currently only supports files in EPUB \n"
+"        will then apply those changes the ebook files themselves. "
+"Normally in Stock CW or when this setting is disabled, the changes made"
+" \n"
+"        are only applied to what you see in the Web UI, not the ebook "
+"files themselves. This feature currently only supports files in EPUB \n"
 "        or AZW3 format."
 msgstr ""
-"Standardmäßig aktiviert, wenn der CWA Metadatenerzwingungsdienst aktiv ist, "
-"werden immer bei Änderungen der Metadaten und/oder Cover über der Web UI\n"
+"Standardmäßig aktiviert, wenn der CWA Metadatenerzwingungsdienst aktiv "
+"ist, werden immer bei Änderungen der Metadaten und/oder Cover über der "
+"Web UI\n"
 "        diese Änderungen in die eBook-Datei selbst geschrieben. "
-"Normalerweise, im Standard-CW oder wenn diese Einstellung deaktiviert ist, "
-"werden gemachte Änderungen \n"
-"        nur angewandt auf das, was du in der Web UI siehst, aber nicht in "
-"der eBook-Datei selbst. Dieses Feature wird im Moment nur für Dateien vom "
-"Format EPUB \n"
+"Normalerweise, im Standard-CW oder wenn diese Einstellung deaktiviert "
+"ist, werden gemachte Änderungen \n"
+"        nur angewandt auf das, was du in der Web UI siehst, aber nicht in"
+" der eBook-Datei selbst. Dieses Feature wird im Moment nur für Dateien "
+"vom Format EPUB \n"
 "        oder AZW3 unterstützt."
 
 #: cps/templates/cwa_settings.html:167
@@ -4469,30 +4521,30 @@ msgstr "Aktiviere CWA Kindle EPUB Fixer"
 
 #: cps/templates/cwa_settings.html:169
 msgid ""
-"When active, the encoding among other attributes of all EPUB files processed "
-"by CWA will be checked and fixed to ensure maximum \n"
-"        compatibility with Amazon's Send-to-Kindle Service. This feature is "
-"particularly useful for users who frequently send EPUB files to their Kindle "
-"devices and have experienced issues with \n"
+"When active, the encoding among other attributes of all EPUB files "
+"processed by CWA will be checked and fixed to ensure maximum \n"
+"        compatibility with Amazon's Send-to-Kindle Service. This feature "
+"is particularly useful for users who frequently send EPUB files to their "
+"Kindle devices and have experienced issues with \n"
 "        file rejections or formatting problems."
 msgstr ""
 "Wenn aktiv, werden die Kodierung sowie weitere Attribute aller von CWA "
 "verarbeiteten EPUB-Dateien geprüft und korrigiert, um eine maximale \n"
-"        Kompatibilität mit Amazons „Send-to-Kindle“-Dienst zu gewährleisten. "
-"Diese Funktion ist besonders nützlich für Benutzer, die häufig EPUB-Dateien "
-"an ihre Kindle-Geräte senden und dabei \n"
+"        Kompatibilität mit Amazons „Send-to-Kindle“-Dienst zu "
+"gewährleisten. Diese Funktion ist besonders nützlich für Benutzer, die "
+"häufig EPUB-Dateien an ihre Kindle-Geräte senden und dabei \n"
 "        Ablehnungen der Dateien oder Formatierungsprobleme festgestellt "
 "haben."
 
 #: cps/templates/cwa_settings.html:174
 msgid ""
-"This tool was adapted from the <a href=\"https://kindle-epub-fix.netlify.app/"
-"\">kindle-epub-fix.netlify.app</a> tool made by <a href=\"https://github.com/"
-"innocenat\">innocenat</a>."
+"This tool was adapted from the <a href=\"https://kindle-epub-"
+"fix.netlify.app/\">kindle-epub-fix.netlify.app</a> tool made by <a "
+"href=\"https://github.com/innocenat\">innocenat</a>."
 msgstr ""
-"Dieses Tool wurde von dem <a href=\"https://kindle-epub-fix.netlify.app/"
-"\">kindle-epub-fix.netlify.app</a> Tool adaptiert, das von <a href=\"https://"
-"github.com/innocenat\">innocenat</a> erstellt wurde."
+"Dieses Tool wurde von dem <a href=\"https://kindle-epub-fix.netlify.app"
+"/\">kindle-epub-fix.netlify.app</a> Tool adaptiert, das von <a "
+"href=\"https://github.com/innocenat\">innocenat</a> erstellt wurde."
 
 #: cps/templates/cwa_settings.html:181
 #, fuzzy
@@ -4508,9 +4560,9 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:185
 msgid ""
-"Note: Enabling this starts a checksum backfill service at startup which can "
-"temporarily lock metadata.db. To stop a running backfill, restart the "
-"container after disabling."
+"Note: Enabling this starts a checksum backfill service at startup which "
+"can temporarily lock metadata.db. To stop a running backfill, restart the"
+" container after disabling."
 msgstr ""
 
 #: cps/templates/cwa_settings.html:192
@@ -4520,7 +4572,8 @@ msgstr "Aggressiven EPUB-Fixer-Modus aktivieren (riskanter)"
 #: cps/templates/cwa_settings.html:194
 msgid ""
 "Aggressive mode applies more invasive fixes and will attempt lower-"
-"confidence encoding conversions. Safe mode is recommended for most libraries."
+"confidence encoding conversions. Safe mode is recommended for most "
+"libraries."
 msgstr ""
 "Der aggressive Modus wendet invasivere Korrekturen an und versucht "
 "Kodierungskonvertierungen mit geringerer Vertrauenswürdigkeit. Für die "
@@ -4535,9 +4588,9 @@ msgid ""
 "Removes stale archived book references in app.db when the book no longer "
 "exists in the Calibre library. Helps keep archived counts accurate."
 msgstr ""
-"Entfernt veraltete Referenzen auf archivierte Bücher in der app.db, wenn das "
-"Buch in der Calibre-Bibliothek nicht mehr existiert. Hilft dabei, die Anzahl "
-"der archivierten Bücher korrekt zu halten."
+"Entfernt veraltete Referenzen auf archivierte Bücher in der app.db, wenn "
+"das Buch in der Calibre-Bibliothek nicht mehr existiert. Hilft dabei, die"
+" Anzahl der archivierten Bücher korrekt zu halten."
 
 #: cps/templates/cwa_settings.html:208
 msgid "Cleanup Schedule:"
@@ -4651,9 +4704,10 @@ msgstr "Automatisches Abrufen von Metadaten für neue Bücher aktivieren"
 #: cps/templates/cwa_settings.html:304
 msgid ""
 "When active, CWA will automatically attempt to fetch and apply metadata "
-"(title, author, description, cover, etc.) for newly ingested books using the "
-"configured metadata provider hierarchy. This helps improve the quality of "
-"book information, especially for books with poor or missing metadata."
+"(title, author, description, cover, etc.) for newly ingested books using "
+"the configured metadata provider hierarchy. This helps improve the "
+"quality of book information, especially for books with poor or missing "
+"metadata."
 msgstr ""
 "Wenn aktiviert, versucht CWA automatisch, Metadaten (Titel, Autor, "
 "Beschreibung, Cover usw.) für neu hinzugefügte Bücher abzurufen und "
@@ -4667,16 +4721,16 @@ msgstr "Intelligente Metadaten-Zuweisung aktivieren"
 
 #: cps/templates/cwa_settings.html:314
 msgid ""
-"When enabled, fetched metadata will only replace existing data if it appears "
-"to be better quality (e.g., longer descriptions, higher resolution covers). "
-"When disabled, fetched metadata will replace existing data as-is from the "
-"preferred provider."
+"When enabled, fetched metadata will only replace existing data if it "
+"appears to be better quality (e.g., longer descriptions, higher "
+"resolution covers). When disabled, fetched metadata will replace existing"
+" data as-is from the preferred provider."
 msgstr ""
 "Wenn aktiviert, werden vorhandene Daten nur durch abgerufene Metadaten "
 "ersetzt, wenn diese eine bessere Qualität aufweisen (z. B. längere "
 "Beschreibungen, höher auflösende Cover). Wenn deaktiviert, ersetzen die "
-"abgerufenen Metadaten des bevorzugten Anbieters die vorhandenen Daten so, "
-"wie sie sind."
+"abgerufenen Metadaten des bevorzugten Anbieters die vorhandenen Daten so,"
+" wie sie sind."
 
 #: cps/templates/cwa_settings.html:319
 msgid "Metadata Fields to Update"
@@ -4684,14 +4738,14 @@ msgstr "Zu aktualisierende Metadatenfelder"
 
 #: cps/templates/cwa_settings.html:321
 msgid ""
-"Select which metadata fields should be updated when auto-fetching. Unchecked "
-"fields will never be modified during automatic metadata fetching, preserving "
-"your existing data."
+"Select which metadata fields should be updated when auto-fetching. "
+"Unchecked fields will never be modified during automatic metadata "
+"fetching, preserving your existing data."
 msgstr ""
 "Wählen Sie aus, welche Metadatenfelder beim automatischen Abrufen "
-"aktualisiert werden sollen. Nicht markierte Felder werden niemals während "
-"des automatischen Abrufens von Metadaten geändert, wodurch Ihre vorhandenen "
-"Daten erhalten bleiben."
+"aktualisiert werden sollen. Nicht markierte Felder werden niemals während"
+" des automatischen Abrufens von Metadaten geändert, wodurch Ihre "
+"vorhandenen Daten erhalten bleiben."
 
 #: cps/templates/cwa_settings.html:355 cps/templates/cwa_settings.html:357
 msgid "Tags/Genres"
@@ -4723,8 +4777,9 @@ msgid ""
 msgstr ""
 "Diese Feldauswahl gilt sowohl für den intelligenten als auch für den "
 "direkten Ersetzungsmodus. Der intelligente Modus wendet zusätzlich "
-"Qualitätskriterien auf die ausgewählten Felder an, während der direkte Modus "
-"alle ausgewählten Felder eins zu eins durch die Daten des Anbieters ersetzt."
+"Qualitätskriterien auf die ausgewählten Felder an, während der direkte "
+"Modus alle ausgewählten Felder eins zu eins durch die Daten des Anbieters"
+" ersetzt."
 
 #: cps/templates/cwa_settings.html:403
 msgid "Cover File Max Size (MB):"
@@ -4737,8 +4792,8 @@ msgstr "Bereich: 5-120 Minuten (Standard: 15)"
 
 #: cps/templates/cwa_settings.html:419
 msgid ""
-"Limits the maximum size of cover images downloaded from metadata providers "
-"or URLs to prevent slow or stalled saves."
+"Limits the maximum size of cover images downloaded from metadata "
+"providers or URLs to prevent slow or stalled saves."
 msgstr ""
 
 #: cps/templates/cwa_settings.html:428
@@ -4752,9 +4807,9 @@ msgid ""
 "investigation."
 msgstr ""
 "Maximale Zeit (in Minuten), die es erlaubt ist, ein einzelnes Buch zu "
-"verarbeiten bevor eine Zeitüberschreitung auftritt. Dateien, bei denen eine "
-"Zeitüberschreitung auftritt werden in Ordner für fehlgeschlagen Dateien "
-"geschoben, um sie untersuchen zu können."
+"verarbeiten bevor eine Zeitüberschreitung auftritt. Dateien, bei denen "
+"eine Zeitüberschreitung auftritt werden in Ordner für fehlgeschlagen "
+"Dateien geschoben, um sie untersuchen zu können."
 
 #: cps/templates/cwa_settings.html:432
 msgid "Timeout (minutes):"
@@ -4771,8 +4826,8 @@ msgstr "Bereinigung veralteter temporärer Dateien"
 #: cps/templates/cwa_settings.html:449
 msgid ""
 "Ignored temporary upload files (.uploading, .part, etc.) can be cleaned "
-"after a set age. Setting either value to 0 disables cleanup. Changes apply "
-"on the next cleanup cycle."
+"after a set age. Setting either value to 0 disables cleanup. Changes "
+"apply on the next cleanup cycle."
 msgstr ""
 "Ignorierte temporäre Upload-Dateien (.uploading, .part usw.) können nach "
 "einem festgelegten Alter bereinigt werden. Wenn einer der Werte auf 0 "
@@ -4803,13 +4858,13 @@ msgstr "Verzögerung für automatisches Senden neuer Bücher"
 msgid ""
 "Delay (in minutes) before automatically sending newly ingested books to "
 "eReaders. This allows time for metadata fetching and other processing to "
-"complete before sending. Only applies to users who have enabled auto-send in "
-"their profile."
+"complete before sending. Only applies to users who have enabled auto-send"
+" in their profile."
 msgstr ""
 "Verzögerung (in Minuten), bevor neu aufgenommene Bücher automatisch an "
 "eReader gesendet werden. Dies lässt Zeit für den Abruf von Metadaten und "
-"andere Verarbeitungsschritte. Gilt nur für Benutzer, die das automatische "
-"Senden in ihrem Profil aktiviert haben."
+"andere Verarbeitungsschritte. Gilt nur für Benutzer, die das automatische"
+" Senden in ihrem Profil aktiviert haben."
 
 #: cps/templates/cwa_settings.html:494
 msgid "Delay (minutes):"
@@ -4837,8 +4892,8 @@ msgstr ""
 #: cps/templates/cwa_settings.html:526
 msgid "Providers are tried in order from top to bottom. Drag to reorder."
 msgstr ""
-"Die Anbieter werden nacheinander von oben nach unten abgefragt. Ziehen Sie "
-"die Einträge, um die Reihenfolge zu ändern."
+"Die Anbieter werden nacheinander von oben nach unten abgefragt. Ziehen "
+"Sie die Einträge, um die Reihenfolge zu ändern."
 
 #: cps/templates/cwa_settings.html:535
 msgid "Enabled Metadata Providers"
@@ -4858,9 +4913,10 @@ msgid ""
 "Hardcover IDs enable reading progress sync and annotation sync with "
 "Hardcover.app when using compatible eReaders."
 msgstr ""
-"Hardcover-IDs automatisch abrufen und Büchern in Ihrer Bibliothek zuweisen. "
-"Hardcover-IDs ermöglichen die Synchronisierung von Lesefortschritten und "
-"Anmerkungen mit Hardcover.app bei Verwendung kompatibler eReader."
+"Hardcover-IDs automatisch abrufen und Büchern in Ihrer Bibliothek "
+"zuweisen. Hardcover-IDs ermöglichen die Synchronisierung von "
+"Lesefortschritten und Anmerkungen mit Hardcover.app bei Verwendung "
+"kompatibler eReader."
 
 #: cps/templates/cwa_settings.html:557
 msgid "Hardcover Token Required"
@@ -4868,14 +4924,16 @@ msgstr "Hardcover-Token erforderlich"
 
 #: cps/templates/cwa_settings.html:558
 msgid ""
-"To enable Hardcover auto-fetch, you must set a valid HARDCOVER_TOKEN in your "
-"docker-compose environment variables or configure a global token in Basic "
-"Configuration. Without a valid token, this feature will remain disabled."
+"To enable Hardcover auto-fetch, you must set a valid HARDCOVER_TOKEN in "
+"your docker-compose environment variables or configure a global token in "
+"Basic Configuration. Without a valid token, this feature will remain "
+"disabled."
 msgstr ""
 "Um den automatischen Abruf von Hardcover-Daten zu aktivieren, müssen Sie "
-"einen gültigen HARDCOVER_TOKEN in Ihren Docker-Compose-Umgebungsvariablen "
-"festlegen oder einen globalen Token in der Grundkonfiguration konfigurieren. "
-"Ohne einen gültigen Token bleibt diese Funktion deaktiviert."
+"einen gültigen HARDCOVER_TOKEN in Ihren Docker-Compose-Umgebungsvariablen"
+" festlegen oder einen globalen Token in der Grundkonfiguration "
+"konfigurieren. Ohne einen gültigen Token bleibt diese Funktion "
+"deaktiviert."
 
 #: cps/templates/cwa_settings.html:569
 msgid "Enable Hardcover Auto-Fetch"
@@ -4889,8 +4947,8 @@ msgid ""
 msgstr ""
 "Sucht automatisch auf Hardcover nach Büchern ohne Hardcover-IDs. "
 "Übereinstimmungen mit hoher Vertrauenswürdigkeit werden automatisch "
-"zugewiesen; Übereinstimmungen mit geringer Vertrauenswürdigkeit werden zur "
-"manuellen Überprüfung in eine Warteschlange gestellt."
+"zugewiesen; Übereinstimmungen mit geringer Vertrauenswürdigkeit werden "
+"zur manuellen Überprüfung in eine Warteschlange gestellt."
 
 #: cps/templates/cwa_settings.html:576
 msgid "Run Schedule:"
@@ -4913,12 +4971,12 @@ msgstr "Bereich: 0,50–1,00 (Standard: 0,85)"
 #: cps/templates/cwa_settings.html:689
 msgid ""
 "Matches with confidence scores above this threshold are automatically "
-"applied. Lower scores are queued for manual review. Higher values = fewer "
-"auto-matches but higher accuracy."
+"applied. Lower scores are queued for manual review. Higher values = fewer"
+" auto-matches but higher accuracy."
 msgstr ""
 "Treffer mit einem Vertrauenswert über diesem Schwellenwert werden "
-"automatisch angewendet. Niedrigere Werte werden zur manuellen Überprüfung "
-"vorgemerkt. Höhere Werte = weniger automatische Treffer, aber höhere "
+"automatisch angewendet. Niedrigere Werte werden zur manuellen Überprüfung"
+" vorgemerkt. Höhere Werte = weniger automatische Treffer, aber höhere "
 "Genauigkeit."
 
 #: cps/templates/cwa_settings.html:695
@@ -4931,12 +4989,12 @@ msgstr "Bereich: 10–200 Bücher pro Durchlauf (Standard: 50)"
 
 #: cps/templates/cwa_settings.html:707
 msgid ""
-"Number of books to process in each scheduled run. Smaller batches reduce API "
-"load; larger batches process your library faster."
+"Number of books to process in each scheduled run. Smaller batches reduce "
+"API load; larger batches process your library faster."
 msgstr ""
-"Anzahl der Bücher, die pro geplantem Durchlauf verarbeitet werden. Kleinere "
-"Stapel reduzieren die API-Last; größere Stapel verarbeiten Ihre Bibliothek "
-"schneller."
+"Anzahl der Bücher, die pro geplantem Durchlauf verarbeitet werden. "
+"Kleinere Stapel reduzieren die API-Last; größere Stapel verarbeiten Ihre "
+"Bibliothek schneller."
 
 #: cps/templates/cwa_settings.html:713
 msgid "Rate Limit Delay (seconds):"
@@ -4948,23 +5006,23 @@ msgstr "Bereich: 0–60 Sekunden (Standard: 5,0)"
 
 #: cps/templates/cwa_settings.html:725
 msgid ""
-"Delay between API requests to Hardcover. Prevents rate limiting and protects "
-"your API key. Uses exponential backoff on errors."
+"Delay between API requests to Hardcover. Prevents rate limiting and "
+"protects your API key. Uses exponential backoff on errors."
 msgstr ""
-"Verzögerung zwischen API-Anfragen an Hardcover. Verhindert Ratenbegrenzungen "
-"und schützt Ihren API-Schlüssel. Verwendet einen exponentiellen Backoff bei "
-"Fehlern."
+"Verzögerung zwischen API-Anfragen an Hardcover. Verhindert "
+"Ratenbegrenzungen und schützt Ihren API-Schlüssel. Verwendet einen "
+"exponentiellen Backoff bei Fehlern."
 
 #: cps/templates/cwa_settings.html:731
 msgid ""
-"You can manually trigger the Hardcover auto-fetch task from the Admin panel "
-"at any time. Check the CWA Stats page to see progress and review queued "
-"matches that need manual approval."
+"You can manually trigger the Hardcover auto-fetch task from the Admin "
+"panel at any time. Check the CWA Stats page to see progress and review "
+"queued matches that need manual approval."
 msgstr ""
-"Sie können den automatischen Abruf der Hardcover-IDs jederzeit manuell über "
-"den Administrationsbereich auslösen. Auf der CWA-Statistikseite können Sie "
-"den Fortschritt einsehen und Treffer in der Warteschlange überprüfen, die "
-"eine manuelle Freigabe erfordern."
+"Sie können den automatischen Abruf der Hardcover-IDs jederzeit manuell "
+"über den Administrationsbereich auslösen. Auf der CWA-Statistikseite "
+"können Sie den Fortschritt einsehen und Treffer in der Warteschlange "
+"überprüfen, die eine manuelle Freigabe erfordern."
 
 #: cps/templates/cwa_settings.html:738
 msgid "Web UI Settings"
@@ -4976,11 +5034,11 @@ msgstr "Aktiviere CWA Aktualisierungsbenachrichtigungen"
 
 #: cps/templates/cwa_settings.html:747
 msgid ""
-"When active, you will receive notifications in the Web UI when a new version "
-"of CWA is released"
+"When active, you will receive notifications in the Web UI when a new "
+"version of CWA is released"
 msgstr ""
-"Wenn aktiv, erscheint in der Web-Benutzeroberfläche eine Benachrichtigung, "
-"sobald eine neue Version von CWA veröffentlicht wird."
+"Wenn aktiv, erscheint in der Web-Benutzeroberfläche eine "
+"Benachrichtigung, sobald eine neue Version von CWA veröffentlicht wird."
 
 #: cps/templates/cwa_settings.html:755
 msgid "Enable Contribute Translations Notifications"
@@ -4988,9 +5046,9 @@ msgstr "Aktiviere Benachrichtigungen zur Übersetzungsbeitragung"
 
 #: cps/templates/cwa_settings.html:757
 msgid ""
-"When disabled, you will no longer receive notifications in the Web UI when "
-"using a language other than English if the translations for your chosen "
-"language are not complete."
+"When disabled, you will no longer receive notifications in the Web UI "
+"when using a language other than English if the translations for your "
+"chosen language are not complete."
 msgstr ""
 "Wenn es deaktiviert ist, wirst du keine Benachrichtigungen in der Web UI "
 "mehr erhalten, wenn du eine andere Sprache als Englisch nutzt und es "
@@ -5015,12 +5073,12 @@ msgstr "Aktiviere unscharfe Hintergründe auf dem Handy (&lt;768px)"
 
 #: cps/templates/cwa_settings.html:777
 msgid ""
-"When active, the blurred cover background effect is also rendered on small "
-"screens. Disable if you notice scrolling or animation lag."
+"When active, the blurred cover background effect is also rendered on "
+"small screens. Disable if you notice scrolling or animation lag."
 msgstr ""
-"Wenn es aktiviert ist, wird der Effekt für unscharfe Hintergründe bei Covern "
-"auf kleinen Bildschirm dargestellt. Deaktiviere es, wenn du beim Scrollen "
-"oder bei Animationen Stocken siehst."
+"Wenn es aktiviert ist, wird der Effekt für unscharfe Hintergründe bei "
+"Covern auf kleinen Bildschirm dargestellt. Deaktiviere es, wenn du beim "
+"Scrollen oder bei Animationen Stocken siehst."
 
 #: cps/templates/cwa_settings.html:782
 msgid "Automatic Backup Settings"
@@ -5032,11 +5090,11 @@ msgstr "Aktiviere CWA Import Auto-Backup"
 
 #: cps/templates/cwa_settings.html:791
 msgid ""
-"When active, a copy of all imported files will be stored in <i>/config/"
-"processed_books/imported</i>"
+"When active, a copy of all imported files will be stored in "
+"<i>/config/processed_books/imported</i>"
 msgstr ""
-"Wenn es aktiviert ist, wird eine Kopie aller importierten Dateien unter <i>/"
-"config/processed_books/imported</i> gespeichert"
+"Wenn es aktiviert ist, wird eine Kopie aller importierten Dateien unter "
+"<i>/config/processed_books/imported</i> gespeichert"
 
 #: cps/templates/cwa_settings.html:799
 msgid "Enable CWA Conversion Auto-Backup"
@@ -5044,8 +5102,8 @@ msgstr "Aktiviere CWA Konvertierer Auto-Backup"
 
 #: cps/templates/cwa_settings.html:801
 msgid ""
-"When active, the originals of ingested files that undergo conversion will be "
-"stored in /config/processed_books/converted"
+"When active, the originals of ingested files that undergo conversion will"
+" be stored in /config/processed_books/converted"
 msgstr ""
 "Wenn es aktiviert ist, werden die Orignale der ingestierten Dateien, die "
 "konvertiert wurden, gespeichert unter /config/processed_books/converted"
@@ -5056,11 +5114,12 @@ msgstr "Aktiviere CWA EPUB Fixer Auto-Backup"
 
 #: cps/templates/cwa_settings.html:811
 msgid ""
-"When active, the originals of EPUBs processed by the CWA Kindle EPUB Fixer "
-"service will be stored in /config/processed_books/fixed_originals"
+"When active, the originals of EPUBs processed by the CWA Kindle EPUB "
+"Fixer service will be stored in /config/processed_books/fixed_originals"
 msgstr ""
-"Wenn es aktiviert ist, werden die Orignale der vom Kinde EPUB Fixer-Dienst "
-"verarbeiteten EPUBs gespeichert unter /config/processed_books/fixed_originals"
+"Wenn es aktiviert ist, werden die Orignale der vom Kinde EPUB Fixer-"
+"Dienst verarbeiteten EPUBs gespeichert unter "
+"/config/processed_books/fixed_originals"
 
 #: cps/templates/cwa_settings.html:821
 msgid "Enable CWA Auto-Zip Backups"
@@ -5068,16 +5127,16 @@ msgstr "Aktiviere CWA Auto-Zip Backups"
 
 #: cps/templates/cwa_settings.html:823
 msgid ""
-"When active, just before midnight each day, the cwa-auto-zipper service will "
-"make zip archives of all the backed up converted, imported and failed files "
-"from that day. This is to help keep the subdirectories of /config/"
-"processed_books organised and to minimise disk space usage."
+"When active, just before midnight each day, the cwa-auto-zipper service "
+"will make zip archives of all the backed up converted, imported and "
+"failed files from that day. This is to help keep the subdirectories of "
+"/config/processed_books organised and to minimise disk space usage."
 msgstr ""
-"Wenn es aktiviert ist, wird täglich kurz vor Mitternacht der CWA Auto-Zip-"
-"Dienst Zip-Archive von allen gespeicherten konvertierten, importierten und "
-"fehlgeschlagenen Dateien dieses Tages erstellen. Dies hilft, um die "
-"Unterverzeichnisse von /config/processed_books übersichtlich zu halten und "
-"die Festplattennutzung zu minimieren."
+"Wenn es aktiviert ist, wird täglich kurz vor Mitternacht der CWA Auto-"
+"Zip-Dienst Zip-Archive von allen gespeicherten konvertierten, "
+"importierten und fehlgeschlagenen Dateien dieses Tages erstellen. Dies "
+"hilft, um die Unterverzeichnisse von /config/processed_books "
+"übersichtlich zu halten und die Festplattennutzung zu minimieren."
 
 #: cps/templates/cwa_settings.html:828
 msgid "CWA Auto-Conversion Target Format - EPUB by Default"
@@ -5090,8 +5149,9 @@ msgid ""
 "selected in the ignore list below)"
 msgstr ""
 "Wenn das automatische Konvertieren-Feature aktiv ist, werden alle "
-"ingestierten Bücher automatisch in das hier ausgewählte Format konvertiert "
-"(außer der gewählten Formate in der Liste mit ignorierten Formaten von unten)"
+"ingestierten Bücher automatisch in das hier ausgewählte Format "
+"konvertiert (außer der gewählten Formate in der Liste mit ignorierten "
+"Formaten von unten)"
 
 #: cps/templates/cwa_settings.html:833
 msgid "Choose a target format:"
@@ -5099,13 +5159,13 @@ msgstr "Wähle ein Zielformat:"
 
 #: cps/templates/cwa_settings.html:845
 msgid ""
-"Note: CWA's Metadata Enforcement service can currently only support file in "
-"either EPUB and AZW3 format. Files in other formats will simply be ignored "
-"by the service"
+"Note: CWA's Metadata Enforcement service can currently only support file "
+"in either EPUB and AZW3 format. Files in other formats will simply be "
+"ignored by the service"
 msgstr ""
 "Hinweis: Der Metadatenerzwingungsdienst von CWA unterstützt derzeit nur "
-"Dateien im EPUB- oder AZW3-Format. Dateien in anderen Formaten werden vom "
-"Dienst einfach ignoriert."
+"Dateien im EPUB- oder AZW3-Format. Dateien in anderen Formaten werden vom"
+" Dienst einfach ignoriert."
 
 #: cps/templates/cwa_settings.html:851
 msgid "CWA Auto-Convert - Ignored Formats"
@@ -5113,12 +5173,12 @@ msgstr "CWA Auto-Konvertierung - Ignorierte Dateiformate"
 
 #: cps/templates/cwa_settings.html:853
 msgid ""
-"The formats selected here will be ignored by CWA's Auto-Conversion feature "
-"when it's active, meaning they will be imported as is."
+"The formats selected here will be ignored by CWA's Auto-Conversion "
+"feature when it's active, meaning they will be imported as is."
 msgstr ""
 "Die hier ausgewählten Formate werden von CWAs Autokonvertierungsdienstes "
-"ignoriert, wenn dieser aktiv ist, was bedeutet, dass sie importiert werden "
-"wie sie sind."
+"ignoriert, wenn dieser aktiv ist, was bedeutet, dass sie importiert "
+"werden wie sie sind."
 
 #: cps/templates/cwa_settings.html:878
 msgid "CWA Auto-Convert - Retained Formats"
@@ -5126,15 +5186,15 @@ msgstr "CWA Auto-Konvertierung - Beibehaltene Formate"
 
 #: cps/templates/cwa_settings.html:880
 msgid ""
-"The formats selected here will always be added to the library, even after "
-"they have been converted to the target format. However, if the format is in "
-"the \"CWA Auto-Ingest - Ignored Formats\" list, it will not be imported. "
-"Note that the target format is always retained."
+"The formats selected here will always be added to the library, even after"
+" they have been converted to the target format. However, if the format is"
+" in the \"CWA Auto-Ingest - Ignored Formats\" list, it will not be "
+"imported. Note that the target format is always retained."
 msgstr ""
 "Die hier ausgewählten Formate werden immer zur Bibliothek hinzugefügt, "
 "selbst nachdem sie in das Zielformat konvertiert wurden. Wenn ein Format "
-"jedoch in der Liste „CWA Auto-Ingest - Ignorierte Formate“ enthalten ist, "
-"wird es nicht importiert. Beachten Sie, dass das Zielformat immer "
+"jedoch in der Liste „CWA Auto-Ingest - Ignorierte Formate“ enthalten ist,"
+" wird es nicht importiert. Beachten Sie, dass das Zielformat immer "
 "beibehalten wird."
 
 #: cps/templates/cwa_settings.html:907
@@ -5143,8 +5203,7 @@ msgstr "CWA Auto-Ingestierung automatisches Zusammenführen"
 
 #: cps/templates/cwa_settings.html:910
 msgid "Calibre can detect Duplicate Book Titles on Import and depending on the"
-msgstr ""
-"Calibre kann doppelte Buchtitel beim Import erkennen und abhängig von dem"
+msgstr "Calibre kann doppelte Buchtitel beim Import erkennen und abhängig von dem"
 
 #: cps/templates/cwa_settings.html:910
 msgid "automerge"
@@ -5164,8 +5223,7 @@ msgstr "Verwirft duplizierte Importe, behält die Kopie in der Bibliothek"
 
 #: cps/templates/cwa_settings.html:933
 msgid "Overwrites library copy with newly imported file"
-msgstr ""
-"Überschreibt die Kopie in der Bibliothek mit der neu importierten Datei"
+msgstr "Überschreibt die Kopie in der Bibliothek mit der neu importierten Datei"
 
 #: cps/templates/cwa_settings.html:937
 msgid "Creates a duplicate record, keeping both copies"
@@ -5178,8 +5236,8 @@ msgstr "CWA Auto-Ingestierung - Ignorierte Dateiformate"
 #: cps/templates/cwa_settings.html:945
 msgid ""
 "The formats selected here will be ignored by CWA's Auto-Ingest feature, "
-"meaning files in these formats won't be added to the library by CWA during "
-"the ingest process"
+"meaning files in these formats won't be added to the library by CWA "
+"during the ingest process"
 msgstr ""
 "Die hier gewählten Formate werden von CWAs Auto-Ingestierungs-Feature "
 "ignoriert, was bedeutet, dass Dateien in diesen Formaten nicht zur "
@@ -5191,12 +5249,12 @@ msgstr "CWA Duplikaterkennungssystem"
 
 #: cps/templates/cwa_settings.html:973
 msgid ""
-"Enable or disable the duplicate detection system. When disabled, duplicate "
-"scanning will not run and no notifications will be shown."
+"Enable or disable the duplicate detection system. When disabled, "
+"duplicate scanning will not run and no notifications will be shown."
 msgstr ""
 "Aktivieren oder deaktivieren des Systems zur Dublettenerkennung. Wenn "
-"deaktiviert, wird kein Scan nach Dubletten ausgeführt und es werden keine "
-"Benachrichtigungen angezeigt."
+"deaktiviert, wird kein Scan nach Dubletten ausgeführt und es werden keine"
+" Benachrichtigungen angezeigt."
 
 #: cps/templates/cwa_settings.html:978
 msgid "Enable Duplicate Detection"
@@ -5224,12 +5282,12 @@ msgstr "Nur Legacy-SQL (experimentell)"
 
 #: cps/templates/cwa_settings.html:1005
 msgid ""
-"Hybrid mode uses a fast SQL pre-filter to narrow candidates, then applies "
-"the robust Python logic for final results."
+"Hybrid mode uses a fast SQL pre-filter to narrow candidates, then applies"
+" the robust Python logic for final results."
 msgstr ""
 "Der Hybrid-Modus nutzt einen schnellen SQL-Vorfilter, um potenzielle "
-"Kandidaten einzugrenzen, und wendet dann die robuste Python-Logik für die "
-"Endergebnisse an."
+"Kandidaten einzugrenzen, und wendet dann die robuste Python-Logik für die"
+" Endergebnisse an."
 
 #: cps/templates/cwa_settings.html:1014
 msgid "Automatic Duplicate Scanning"
@@ -5240,8 +5298,8 @@ msgid ""
 "Configure background duplicate scans. These run automatically without "
 "blocking the UI."
 msgstr ""
-"Konfigurieren Sie Dubletten-Scans im Hintergrund. Diese werden automatisch "
-"ausgeführt, ohne die Benutzeroberfläche zu blockieren."
+"Konfigurieren Sie Dubletten-Scans im Hintergrund. Diese werden "
+"automatisch ausgeführt, ohne die Benutzeroberfläche zu blockieren."
 
 #: cps/templates/cwa_settings.html:1022
 msgid "Enable automatic duplicate scans"
@@ -5265,8 +5323,8 @@ msgstr "Wartezeit nach Import (Sekunden)"
 
 #: cps/templates/cwa_settings.html:1046
 msgid ""
-"Wait this many seconds after the last import before starting a background "
-"scan."
+"Wait this many seconds after the last import before starting a background"
+" scan."
 msgstr ""
 "Wartet diese Anzahl an Sekunden nach dem letzten Import ab, bevor ein "
 "Hintergrund-Scan gestartet wird."
@@ -5302,9 +5360,9 @@ msgid ""
 "duplicates. Books must match ALL selected criteria to be considered "
 "duplicates."
 msgstr ""
-"Konfigurieren Sie, welche Metadatenfelder verwendet werden, um zu bestimmen, "
-"ob Bücher Dubletten sind. Bücher müssen ALLE ausgewählten Kriterien "
-"erfüllen, um als Dubletten eingestuft zu werden."
+"Konfigurieren Sie, welche Metadatenfelder verwendet werden, um zu "
+"bestimmen, ob Bücher Dubletten sind. Bücher müssen ALLE ausgewählten "
+"Kriterien erfüllen, um als Dubletten eingestuft zu werden."
 
 #: cps/templates/cwa_settings.html:1086
 msgid "Consider book titles when detecting duplicates"
@@ -5340,11 +5398,11 @@ msgstr "Hinweis:"
 
 #: cps/templates/cwa_settings.html:1122
 msgid ""
-"At least one criterion must be selected. Title and Author are recommended as "
-"core criteria."
+"At least one criterion must be selected. Title and Author are recommended"
+" as core criteria."
 msgstr ""
-"Es muss mindestens ein Kriterium ausgewählt werden. Titel und Autor werden "
-"als Kernkriterien empfohlen."
+"Es muss mindestens ein Kriterium ausgewählt werden. Titel und Autor "
+"werden als Kernkriterien empfohlen."
 
 #: cps/templates/cwa_settings.html:1128
 msgid "Duplicate Format Priority Ranking"
@@ -5352,14 +5410,14 @@ msgstr "Prioritätsrangfolge für Dubletten-Formate"
 
 #: cps/templates/cwa_settings.html:1131
 msgid ""
-"Configure which file formats are preferred when using the \"Highest Quality "
-"Format\" auto-resolution strategy. Drag and drop to reorder formats by "
-"priority (higher = better)."
+"Configure which file formats are preferred when using the \"Highest "
+"Quality Format\" auto-resolution strategy. Drag and drop to reorder "
+"formats by priority (higher = better)."
 msgstr ""
 "Konfigurieren Sie, welche Dateiformate bei der automatischen "
 "Lösungsstrategie „Format mit höchster Qualität“ bevorzugt werden. "
-"Verschieben Sie die Formate per Drag-and-Drop, um die Priorität festzulegen "
-"(höher = besser)."
+"Verschieben Sie die Formate per Drag-and-Drop, um die Priorität "
+"festzulegen (höher = besser)."
 
 #: cps/templates/cwa_settings.html:1144
 msgid "Tip:"
@@ -5367,13 +5425,13 @@ msgstr "Tipp:"
 
 #: cps/templates/cwa_settings.html:1144
 msgid ""
-"When resolving duplicates with \"Highest Quality Format\" strategy, books "
-"with higher-ranked formats will be kept. Lower priority formats will be "
+"When resolving duplicates with \"Highest Quality Format\" strategy, books"
+" with higher-ranked formats will be kept. Lower priority formats will be "
 "deleted."
 msgstr ""
-"Beim Auflösen von Dubletten mit der Strategie „Format mit höchster Qualität“ "
-"werden Bücher mit höher eingestuften Formaten beibehalten. Formate mit "
-"niedrigerer Priorität werden gelöscht."
+"Beim Auflösen von Dubletten mit der Strategie „Format mit höchster "
+"Qualität“ werden Bücher mit höher eingestuften Formaten beibehalten. "
+"Formate mit niedrigerer Priorität werden gelöscht."
 
 #: cps/templates/cwa_settings.html:1152
 msgid "Duplicate Notifications & Auto-Resolution"
@@ -5381,8 +5439,8 @@ msgstr "Dubletten-Benachrichtigungen & automatische Lösung"
 
 #: cps/templates/cwa_settings.html:1155
 msgid ""
-"Configure how you are notified about duplicate books and optionally enable "
-"automatic resolution."
+"Configure how you are notified about duplicate books and optionally "
+"enable automatic resolution."
 msgstr ""
 "Konfigurieren Sie, wie Sie über Buchdubletten benachrichtigt werden, und "
 "aktivieren Sie optional die automatische Auflösung."
@@ -5393,14 +5451,14 @@ msgstr "Duplikatbenachrichtigungen aktivieren"
 
 #: cps/templates/cwa_settings.html:1162
 msgid ""
-"Show popup notifications when unresolved duplicates are detected. Admins and "
-"users with edit rights will see a badge on the Duplicates sidebar button and "
-"a notification popup when they login."
+"Show popup notifications when unresolved duplicates are detected. Admins "
+"and users with edit rights will see a badge on the Duplicates sidebar "
+"button and a notification popup when they login."
 msgstr ""
-"Popup-Benachrichtigungen anzeigen, wenn ungelöste Dubletten erkannt werden. "
-"Administratoren und Benutzer mit Bearbeitungsrechten sehen ein Badge an der "
-"Schaltfläche „Dubletten“ in der Seitenleiste sowie ein Benachrichtigungs-"
-"Popup beim Login."
+"Popup-Benachrichtigungen anzeigen, wenn ungelöste Dubletten erkannt "
+"werden. Administratoren und Benutzer mit Bearbeitungsrechten sehen ein "
+"Badge an der Schaltfläche „Dubletten“ in der Seitenleiste sowie ein "
+"Benachrichtigungs-Popup beim Login."
 
 #: cps/templates/cwa_settings.html:1166
 msgid "Enable Automatic Duplicate Resolution"
@@ -5412,8 +5470,8 @@ msgstr "Warnung:"
 
 #: cps/templates/cwa_settings.html:1169
 msgid ""
-"This will automatically delete books based on the strategy below. Original "
-"files will be backed up to"
+"This will automatically delete books based on the strategy below. "
+"Original files will be backed up to"
 msgstr ""
 "Dies wird automatisch Bücher basierend auf der untenstehenden Strategie "
 "löschen. Originaldateien werden gesichert unter"
@@ -5488,16 +5546,16 @@ msgstr "Abkühlzeit (Minuten)"
 
 #: cps/templates/cwa_settings.html:1203
 msgid ""
-"Minimum time between automatic resolutions (0 to disable). Prevents rapid-"
-"fire deletions during batch imports."
+"Minimum time between automatic resolutions (0 to disable). Prevents "
+"rapid-fire deletions during batch imports."
 msgstr ""
 "Mindestzeit zwischen automatischen Auflösungen (0 zum Deaktivieren). "
 "Verhindert schlagartige Löschungen während Massenimporten."
 
 #: cps/templates/cwa_settings.html:1208
 msgid ""
-"Auto-resolution runs after duplicate scans detect new duplicates. Dismissed "
-"duplicate groups are never auto-resolved."
+"Auto-resolution runs after duplicate scans detect new duplicates. "
+"Dismissed duplicate groups are never auto-resolved."
 msgstr ""
 "Die automatische Auflösung erfolgt, nachdem der Dubletten-Scan neue "
 "Dubletten erkannt hat. Ignorierte Dubletten-Gruppen werden niemals "
@@ -5561,15 +5619,15 @@ msgid "Restored from archive"
 msgstr "Aus dem Archiv wiederhergestellt"
 
 #: cps/templates/detail.html:579 cps/templates/detail.html:773
-#: cps/templates/detail.html:774 cps/templates/detail.html:1288
+#: cps/templates/detail.html:774 cps/templates/detail.html:1372
 #: cps/templates/listenmp3.html:190 cps/templates/search.html:16
 msgid "Add to shelf"
 msgstr "Zu Regal hinzufügen"
 
 #: cps/templates/detail.html:590 cps/templates/detail.html:612
-#: cps/templates/detail.html:765 cps/templates/detail.html:1251
+#: cps/templates/detail.html:765 cps/templates/detail.html:1335
 #: cps/templates/feed.xml:83 cps/templates/feed.xml:85
-#: cps/templates/layout.html:302 cps/templates/layout.html:311
+#: cps/templates/layout.html:309 cps/templates/layout.html:314
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:22
 msgid "(Public)"
@@ -5629,7 +5687,7 @@ msgid "Remove tag"
 msgstr "Tag entfernen"
 
 #: cps/templates/detail.html:741 cps/templates/detail.html:742
-#: cps/templates/detail.html:1166
+#: cps/templates/detail.html:1250
 msgid "Add tag"
 msgstr "Tag hinzufügen"
 
@@ -5641,51 +5699,131 @@ msgstr "Herausgabedatum"
 msgid "KOReader Progress"
 msgstr "KOReader-Fortschritt"
 
-#: cps/templates/detail.html:863 cps/templates/listenmp3.html:177
+#: cps/templates/detail.html:862
+msgid "Kobo eReader-Übertragung"
+msgstr "Kobo eReader-Übertragung"
+
+#: cps/templates/detail.html:867
+msgid "Übertragungs-Freigabe (Soll auf Reader):"
+msgstr "Übertragungs-Freigabe (Soll auf Reader):"
+
+#: cps/templates/detail.html:869
+msgid "Freigabe erteilt"
+msgstr "Freigabe erteilt"
+
+#: cps/templates/detail.html:871
+msgid "Bleibt in der Cloud"
+msgstr "Bleibt in der Cloud"
+
+#: cps/templates/detail.html:875
+msgid "Aktueller Sync-Zustand (Ist auf Reader):"
+msgstr "Aktueller Sync-Zustand (Ist auf Reader):"
+
+#: cps/templates/detail.html:877
+msgid "Auf dem Reader vorhanden"
+msgstr "Auf dem Reader vorhanden"
+
+#: cps/templates/detail.html:879
+msgid "Ausstehend (wird beim nächsten Synchronisieren übertragen)"
+msgstr "Ausstehend (wird beim nächsten Synchronisieren übertragen)"
+
+#: cps/templates/detail.html:881
+msgid "Nicht übertragen"
+msgstr "Nicht übertragen"
+
+#: cps/templates/detail.html:887
+msgid "Das Buch ist archiviert (und wird daher nicht auf das Gerät geladen)."
+msgstr "Das Buch ist archiviert (und wird daher nicht auf das Gerät geladen)."
+
+#: cps/templates/detail.html:892
+msgid "Begründung:"
+msgstr "Begründung:"
+
+#: cps/templates/detail.html:894
+msgid "Das Buch wurde manuell als 'Immer auf dem Reader' markiert."
+msgstr "Das Buch wurde manuell als 'Immer auf dem Reader' markiert."
+
+#: cps/templates/detail.html:896
+msgid "Das Buch wurde manuell als 'Nie auf dem Reader' markiert."
+msgstr "Das Buch wurde manuell als 'Nie auf dem Reader' markiert."
+
+#: cps/templates/detail.html:899
+msgid "Übertragen durch Regal(e):"
+msgstr "Übertragen durch Regal(e):"
+
+#: cps/templates/detail.html:904
+msgid ""
+"Das Buch befindet sich in keinem aktiven Kobo-Regal und folgt der "
+"automatischen Auswahl."
+msgstr ""
+"Das Buch befindet sich in keinem aktiven Kobo-Regal und folgt der "
+"automatischen Auswahl."
+
+#: cps/templates/detail.html:915
+msgid "Einstellung für dieses Buch:"
+msgstr "Einstellung für dieses Buch:"
+
+#: cps/templates/detail.html:919
+msgid "Automatisch (folgt Regalen)"
+msgstr "Automatisch (folgt Regalen)"
+
+#: cps/templates/detail.html:925
+msgid "Immer auf dem Reader"
+msgstr "Immer auf dem Reader"
+
+#: cps/templates/detail.html:931
+msgid "Nie auf dem Reader"
+msgstr "Nie auf dem Reader"
+
+#: cps/templates/detail.html:936
+msgid "Kobo-Einstellung anwenden"
+msgstr "Kobo-Einstellung anwenden"
+
+#: cps/templates/detail.html:947 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "Beschreibung:"
 
-#: cps/templates/detail.html:880
+#: cps/templates/detail.html:964
 msgid "Select eReader Email Addresses"
 msgstr "Wähle E-Reader-E-Mail-Adressen"
 
-#: cps/templates/detail.html:893
+#: cps/templates/detail.html:977
 msgid "Choose email addresses:"
 msgstr "Wähle die E-Mail-Adressen:"
 
-#: cps/templates/detail.html:898
+#: cps/templates/detail.html:982
 msgid "Select All"
 msgstr "Wähle alle"
 
-#: cps/templates/detail.html:917
+#: cps/templates/detail.html:1001
 msgid "Additional email addresses:"
 msgstr "Zusätzliche E-Mail-Adressen:"
 
-#: cps/templates/detail.html:918
+#: cps/templates/detail.html:1002
 msgid "Enter additional email addresses (separated by commas):"
 msgstr "Zusätzliche E-Mail-Adressen eingeben (durch Kommas getrennt):"
 
-#: cps/templates/detail.html:919
+#: cps/templates/detail.html:1003
 msgid "example@domain.com, another@domain.com"
 msgstr "beispiel@domain.de, person@domain.de"
 
-#: cps/templates/detail.html:920
+#: cps/templates/detail.html:1004
 msgid "Enter one or more email addresses separated by commas"
 msgstr "Geben Sie eine oder mehrere E-Mail-Adressen durch Kommas getrennt ein"
 
-#: cps/templates/detail.html:925
+#: cps/templates/detail.html:1009
 msgid "Select format:"
 msgstr "Wähle Formate:"
 
-#: cps/templates/detail.html:937
+#: cps/templates/detail.html:1021
 msgid "Send"
 msgstr "Senden"
 
-#: cps/templates/detail.html:1144
+#: cps/templates/detail.html:1228
 msgid "Failed to update tags"
 msgstr "Aktualisierung der Tags fehlgeschlagen"
 
-#: cps/templates/detail.html:1252
+#: cps/templates/detail.html:1336
 #, fuzzy
 msgid "Failed to update shelves"
 msgstr "Aktualisierung der Tags fehlgeschlagen"
@@ -5728,8 +5866,8 @@ msgstr "Duplikate automatisch bereinigen"
 
 #: cps/templates/duplicates.html:413
 msgid ""
-"Automatically resolve all duplicate groups by keeping one book and deleting "
-"others based on a strategy."
+"Automatically resolve all duplicate groups by keeping one book and "
+"deleting others based on a strategy."
 msgstr ""
 "Alle Dubletten-Gruppen automatisch auflösen, indem ein Buch behalten und "
 "andere basierend auf einer Strategie gelöscht werden."
@@ -5741,22 +5879,23 @@ msgstr "Strategie:"
 #: cps/templates/duplicates.html:419
 msgid "Keep Newest - Delete older copies, keep the most recently added"
 msgstr ""
-"Neueste behalten – Ältere Kopien löschen, das zuletzt hinzugefügte behalten"
+"Neueste behalten – Ältere Kopien löschen, das zuletzt hinzugefügte "
+"behalten"
 
 #: cps/templates/duplicates.html:420
 msgid "Keep Oldest - Delete newer copies, keep the earliest added"
-msgstr ""
-"Älteste behalten – Neuere Kopien löschen, das zuerst hinzugefügte behalten"
+msgstr "Älteste behalten – Neuere Kopien löschen, das zuerst hinzugefügte behalten"
 
 #: cps/templates/duplicates.html:421
 msgid "Merge Formats - Merge formats into the newest book, delete the rest"
 msgstr ""
-"Formate zusammenführen – Formate im neuesten Buch bündeln, den Rest löschen"
+"Formate zusammenführen – Formate im neuesten Buch bündeln, den Rest "
+"löschen"
 
 #: cps/templates/duplicates.html:422
 msgid ""
-"Keep Highest Quality Format - Prefer formats based on your Duplicate Format "
-"Priority Ranking"
+"Keep Highest Quality Format - Prefer formats based on your Duplicate "
+"Format Priority Ranking"
 msgstr ""
 "Format mit höchster Qualität behalten – Bevorzugt Formate basierend auf "
 "Ihrer Prioritätsrangfolge"
@@ -5764,8 +5903,8 @@ msgstr ""
 #: cps/templates/duplicates.html:423
 msgid "Keep Most Metadata - Keep book with most complete information"
 msgstr ""
-"Die meisten Metadaten behalten – Buch mit den vollständigsten Informationen "
-"behalten"
+"Die meisten Metadaten behalten – Buch mit den vollständigsten "
+"Informationen behalten"
 
 #: cps/templates/duplicates.html:424
 msgid "Keep Largest File Size - Keep book with largest total file size"
@@ -5783,8 +5922,7 @@ msgstr "Bereinigung ausführen"
 
 #: cps/templates/duplicates.html:438
 msgid "This will permanently delete books. Original files will be backed up to"
-msgstr ""
-"Dies wird Bücher dauerhaft löschen. Originaldateien werden gesichert unter"
+msgstr "Dies wird Bücher dauerhaft löschen. Originaldateien werden gesichert unter"
 
 #: cps/templates/duplicates.html:456
 msgid "Merge Selected"
@@ -5822,8 +5960,8 @@ msgstr ""
 
 #: cps/templates/duplicates.html:518
 msgid ""
-"This search looks for books with identical titles AND authors to avoid false "
-"positives."
+"This search looks for books with identical titles AND authors to avoid "
+"false positives."
 msgstr ""
 "Diese Suche sucht nach Büchern mit identischen Titeln UND Autoren, um "
 "Fehlalarme zu vermeiden."
@@ -5931,7 +6069,7 @@ msgstr "Domainnamen eingeben"
 msgid "Denied Domains (Blacklist)"
 msgstr "Verbotene Domains für eine Registrierung"
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:345
+#: cps/templates/feed.xml:22 cps/templates/layout.html:353
 msgid "Next"
 msgstr "Nächste"
 
@@ -5944,8 +6082,8 @@ msgid ""
 "Open the .kobo/Kobo/Kobo eReader.conf file in a text editor and add (or "
 "edit):"
 msgstr ""
-"Öffne die .kobo/Kobo/Kobo eReader.conf-Datei in einem Texteditor und füge "
-"hinzu (oder bearbeite):"
+"Öffne die .kobo/Kobo/Kobo eReader.conf-Datei in einem Texteditor und füge"
+" hinzu (oder bearbeite):"
 
 #: cps/templates/generate_kobo_auth_url.html:11
 msgid "Kobo Token:"
@@ -5965,12 +6103,12 @@ msgstr "Alles erledigt!"
 
 #: cps/templates/hardcover_review_matches.html:59
 msgid ""
-"There are no pending Hardcover matches requiring review. New matches will "
-"appear here when the auto-fetch task runs."
+"There are no pending Hardcover matches requiring review. New matches will"
+" appear here when the auto-fetch task runs."
 msgstr ""
-"Es gibt keine ausstehenden Hardcover-Treffer, die überprüft werden müssen. "
-"Neue Treffer erscheinen hier, sobald die automatische Abfrage ausgeführt "
-"wird."
+"Es gibt keine ausstehenden Hardcover-Treffer, die überprüft werden "
+"müssen. Neue Treffer erscheinen hier, sobald die automatische Abfrage "
+"ausgeführt wird."
 
 #: cps/templates/hardcover_review_matches.html:61
 msgid "Back to Admin Panel"
@@ -5983,12 +6121,13 @@ msgstr "Überprüfung erforderlich"
 #: cps/templates/hardcover_review_matches.html:69
 #, python-format
 msgid ""
-"%(count)s book(s) have ambiguous Hardcover matches. Please review each match "
-"and select the correct result, or skip/reject if no good match exists."
+"%(count)s book(s) have ambiguous Hardcover matches. Please review each "
+"match and select the correct result, or skip/reject if no good match "
+"exists."
 msgstr ""
-"%(count)s Buch/Bücher haben mehrdeutige Hardcover-Treffer. Bitte prüfen Sie "
-"jeden Treffer und wählen Sie das korrekte Ergebnis aus, oder überspringen/"
-"ablehnen Sie ihn, falls kein passender Treffer existiert."
+"%(count)s Buch/Bücher haben mehrdeutige Hardcover-Treffer. Bitte prüfen "
+"Sie jeden Treffer und wählen Sie das korrekte Ergebnis aus, oder "
+"überspringen/ablehnen Sie ihn, falls kein passender Treffer existiert."
 
 #: cps/templates/hardcover_review_matches.html:73
 msgid "Pending Matches"
@@ -6000,9 +6139,9 @@ msgid ""
 "confidence matches are applied automatically; these require manual "
 "verification."
 msgstr ""
-"Prüfen und bestätigen Sie mehrdeutige Hardcover-ID-Treffer für Ihre Bücher. "
-"Eindeutige Treffer werden automatisch zugewiesen; diese hier erfordern eine "
-"manuelle Verifizierung."
+"Prüfen und bestätigen Sie mehrdeutige Hardcover-ID-Treffer für Ihre "
+"Bücher. Eindeutige Treffer werden automatisch zugewiesen; diese hier "
+"erfordern eine manuelle Verifizierung."
 
 #: cps/templates/hardcover_review_matches.html:81
 msgid "Reject All Pending"
@@ -6065,8 +6204,8 @@ msgstr "Zuweisung des Treffers fehlgeschlagen"
 
 #: cps/templates/hardcover_review_matches.html:299
 msgid ""
-"Are you sure you want to reject all matches for this book? This cannot be "
-"undone."
+"Are you sure you want to reject all matches for this book? This cannot be"
+" undone."
 msgstr ""
 "Sind Sie sicher, dass Sie alle Treffer für dieses Buch ablehnen möchten? "
 "Dies kann nicht rückgängig gemacht werden."
@@ -6082,10 +6221,11 @@ msgstr "Ablehnen des Treffers fehlgeschlagen"
 
 #: cps/templates/hardcover_review_matches.html:342
 msgid ""
-"Are you sure you want to reject all pending matches? This cannot be undone."
+"Are you sure you want to reject all pending matches? This cannot be "
+"undone."
 msgstr ""
-"Sind Sie sicher, dass Sie alle ausstehenden Treffer ablehnen möchten? Dies "
-"kann nicht rückgängig gemacht werden."
+"Sind Sie sicher, dass Sie alle ausstehenden Treffer ablehnen möchten? "
+"Dies kann nicht rückgängig gemacht werden."
 
 #: cps/templates/hardcover_review_matches.html:361
 #: cps/templates/hardcover_review_matches.html:370
@@ -6189,6 +6329,472 @@ msgstr "Sortiere nach Serienindex aufsteigend"
 msgid "Sort descending according to series index"
 msgstr "Sortiere nach Serienindex absteigend"
 
+#: cps/templates/kobo_dashboard.html:93
+msgid "Kobo-Auswahl & Sync-Dashboard"
+msgstr "Kobo-Auswahl & Sync-Dashboard"
+
+#: cps/templates/kobo_dashboard.html:94
+msgid ""
+"Hier siehst du, welche Bücher und Sammlungen für deine Kobo-Geräte "
+"freigegeben und synchronisiert sind."
+msgstr ""
+"Hier siehst du, welche Bücher und Sammlungen für deine Kobo-Geräte "
+"freigegeben und synchronisiert sind."
+
+#: cps/templates/kobo_dashboard.html:101
+msgid "Kobo-Verbindung"
+msgstr "Kobo-Verbindung"
+
+#: cps/templates/kobo_dashboard.html:105
+msgid "Status:"
+msgstr "Status:"
+
+#: cps/templates/kobo_dashboard.html:107
+msgid "Schnittstelle aktiv"
+msgstr "Schnittstelle aktiv"
+
+#: cps/templates/kobo_dashboard.html:109
+msgid "Nicht eingerichtet"
+msgstr "Nicht eingerichtet"
+
+#: cps/templates/kobo_dashboard.html:114
+msgid "Ein Token für Kobo-Geräte ist erzeugt. Geräte können sich synchronisieren."
+msgstr "Ein Token für Kobo-Geräte ist erzeugt. Geräte können sich synchronisieren."
+
+#: cps/templates/kobo_dashboard.html:116
+msgid "Generiere einen Kobo-Token in deinem Benutzerprofil, um Geräte anzubinden."
+msgstr "Generiere einen Kobo-Token in deinem Benutzerprofil, um Geräte anzubinden."
+
+#: cps/templates/kobo_dashboard.html:119
+msgid "Profil bearbeiten"
+msgstr "Profil bearbeiten"
+
+#: cps/templates/kobo_dashboard.html:127
+msgid "Sync-Modus"
+msgstr "Sync-Modus"
+
+#: cps/templates/kobo_dashboard.html:131
+msgid "Modus:"
+msgstr "Modus:"
+
+#: cps/templates/kobo_dashboard.html:133
+msgid "Zwei-Säulen-Sync"
+msgstr "Zwei-Säulen-Sync"
+
+#: cps/templates/kobo_dashboard.html:135
+msgid "Ganze Bibliothek"
+msgstr "Ganze Bibliothek"
+
+#: cps/templates/kobo_dashboard.html:140
+msgid "Nur Bücher in Regalen mit Kobo-Sync-Häkchen werden übertragen."
+msgstr "Nur Bücher in Regalen mit Kobo-Sync-Häkchen werden übertragen."
+
+#: cps/templates/kobo_dashboard.html:142
+msgid "Vorsicht: Deine gesamte Calibre-Bibliothek wird auf den Kobo geladen."
+msgstr "Vorsicht: Deine gesamte Calibre-Bibliothek wird auf den Kobo geladen."
+
+#: cps/templates/kobo_dashboard.html:152
+msgid "Sync-Statistik"
+msgstr "Sync-Statistik"
+
+#: cps/templates/kobo_dashboard.html:156
+msgid "Für Kobo ausgewählt:"
+msgstr "Für Kobo ausgewählt:"
+
+#: cps/templates/kobo_dashboard.html:160
+msgid "Alle Bücher"
+msgstr "Alle Bücher"
+
+#: cps/templates/kobo_dashboard.html:164
+msgid "Bereits synchronisiert:"
+msgstr "Bereits synchronisiert:"
+
+#: cps/templates/kobo_dashboard.html:168
+msgid "Nicht auf Kobo:"
+msgstr "Nicht auf Kobo:"
+
+#: cps/templates/kobo_dashboard.html:172
+msgid ""
+"Synchronisiert zählt Bücher, die bereits mindestens einmal an deinen Kobo"
+" ausgeliefert wurden."
+msgstr ""
+"Synchronisiert zählt Bücher, die bereits mindestens einmal an deinen Kobo"
+" ausgeliefert wurden."
+
+#: cps/templates/kobo_dashboard.html:183
+msgid "System-Check & Hinweise"
+msgstr "System-Check & Hinweise"
+
+#: cps/templates/kobo_dashboard.html:190
+msgid "Kritisch:"
+msgstr "Kritisch:"
+
+#: cps/templates/kobo_dashboard.html:191
+msgid "Hinweis:"
+msgstr "Hinweis:"
+
+#: cps/templates/kobo_dashboard.html:201
+msgid "Keine Probleme gefunden. Deine Kobo-Synchronisation läuft sauber!"
+msgstr "Keine Probleme gefunden. Deine Kobo-Synchronisation läuft sauber!"
+
+#: cps/templates/kobo_dashboard.html:208 cps/templates/kobo_dashboard.html:242
+msgid "Für Kobo ausgewählt"
+msgstr "Für Kobo ausgewählt"
+
+#: cps/templates/kobo_dashboard.html:217
+msgid ""
+"Diese Bücher werden beim nächsten Sync angeboten, solange sie nicht "
+"ausgeschlossen werden."
+msgstr ""
+"Diese Bücher werden beim nächsten Sync angeboten, solange sie nicht "
+"ausgeschlossen werden."
+
+#: cps/templates/kobo_dashboard.html:219
+msgid "Im Modus Ganze Bibliothek wird keine manuelle Kobo-Auswahl angezeigt."
+msgstr "Im Modus Ganze Bibliothek wird keine manuelle Kobo-Auswahl angezeigt."
+
+#: cps/templates/kobo_dashboard.html:227 cps/templates/kobo_dashboard.html:279
+#: cps/templates/kobo_dashboard.html:430 cps/templates/kobo_dashboard.html:662
+msgid "Titel"
+msgstr "Titel"
+
+#: cps/templates/kobo_dashboard.html:228 cps/templates/kobo_dashboard.html:280
+#: cps/templates/kobo_dashboard.html:433 cps/templates/kobo_dashboard.html:663
+#: cps/templates/tasks.html:16
+msgid "Status"
+msgstr "Status"
+
+#: cps/templates/kobo_dashboard.html:229 cps/templates/kobo_dashboard.html:281
+#: cps/templates/kobo_dashboard.html:333
+msgid "Aktionen"
+msgstr "Aktionen"
+
+#: cps/templates/kobo_dashboard.html:237 cps/templates/kobo_dashboard.html:289
+#: cps/templates/kobo_dashboard.html:445 cps/templates/kobo_dashboard.html:694
+#, fuzzy
+msgid "Details anzeigen"
+msgstr "Anzeigen"
+
+#: cps/templates/kobo_dashboard.html:247
+msgid "Beim nächsten Sync auslassen"
+msgstr "Beim nächsten Sync auslassen"
+
+#: cps/templates/kobo_dashboard.html:248 cps/templates/kobo_dashboard.html:266
+#: cps/templates/kobo_dashboard.html:294 cps/templates/kobo_dashboard.html:330
+msgid "Nicht auf Kobo"
+msgstr "Nicht auf Kobo"
+
+#: cps/templates/kobo_dashboard.html:258
+msgid "Keine Bücher für Kobo ausgewählt."
+msgstr "Keine Bücher für Kobo ausgewählt."
+
+#: cps/templates/kobo_dashboard.html:272
+msgid ""
+"Diese Bücher bleiben in Alexandria, werden aber beim Kobo-Sync "
+"ausgelassen."
+msgstr ""
+"Diese Bücher bleiben in Alexandria, werden aber beim Kobo-Sync "
+"ausgelassen."
+
+#: cps/templates/kobo_dashboard.html:299
+msgid "Beim nächsten Sync wieder anbieten"
+msgstr "Beim nächsten Sync wieder anbieten"
+
+#: cps/templates/kobo_dashboard.html:300
+msgid "Wieder für Kobo erlauben"
+msgstr "Wieder für Kobo erlauben"
+
+#: cps/templates/kobo_dashboard.html:310
+msgid "Keine Bücher sind als Nicht auf Kobo markiert."
+msgstr "Keine Bücher sind als Nicht auf Kobo markiert."
+
+#: cps/templates/kobo_dashboard.html:318 cps/templates/kobo_dashboard.html:431
+#: cps/templates/kobo_dashboard.html:595
+msgid "Kobo-Sammlungen"
+msgstr "Kobo-Sammlungen"
+
+#: cps/templates/kobo_dashboard.html:326
+msgid "Name"
+msgstr "Name"
+
+#: cps/templates/kobo_dashboard.html:327
+msgid "Typ"
+msgstr "Typ"
+
+#: cps/templates/kobo_dashboard.html:328
+msgid "Kobo-Sync"
+msgstr "Kobo-Sync"
+
+#: cps/templates/kobo_dashboard.html:329
+msgid "Bücher lokal"
+msgstr "Bücher lokal"
+
+#: cps/templates/kobo_dashboard.html:331
+msgid "Sync-berechtigt"
+msgstr "Sync-berechtigt"
+
+#: cps/templates/kobo_dashboard.html:332
+msgid "Synchronisiert"
+msgstr "Synchronisiert"
+
+#: cps/templates/kobo_dashboard.html:344 cps/templates/kobo_dashboard.html:464
+msgid "Automatisch"
+msgstr "Automatisch"
+
+#: cps/templates/kobo_dashboard.html:346
+msgid "Normal"
+msgstr "Normal"
+
+#: cps/templates/kobo_dashboard.html:351
+msgid "Aktiv"
+msgstr "Aktiv"
+
+#: cps/templates/kobo_dashboard.html:353
+msgid "Display-Only"
+msgstr "Nur Anzeige"
+
+#: cps/templates/kobo_dashboard.html:359
+msgid "Diese Bücher sind bewusst als Nicht auf Kobo markiert."
+msgstr "Diese Bücher sind bewusst als Nicht auf Kobo markiert."
+
+#: cps/templates/kobo_dashboard.html:368
+msgid "Synchronisations-Details anzeigen"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:380 cps/templates/kobo_dashboard.html:383
+msgid "Bearbeiten"
+msgstr "Bearbeiten"
+
+#: cps/templates/kobo_dashboard.html:382
+msgid "Anzeigen"
+msgstr "Anzeigen"
+
+#: cps/templates/kobo_dashboard.html:392
+msgid "Keine Regale oder Magic Shelves sind für das Kobo-Display konfiguriert."
+msgstr "Keine Regale oder Magic Shelves sind für das Kobo-Display konfiguriert."
+
+#: cps/templates/kobo_dashboard.html:400
+msgid "Arbeitsbereich: Bücher auf dem Reader"
+msgstr "Arbeitsbereich: Bücher auf dem Reader"
+
+#: cps/templates/kobo_dashboard.html:404
+msgid ""
+"Analysiere den Synchronisationsstatus deiner Bücher auf dem Kobo-Gerät "
+"(Zustand laut letztem Sync)."
+msgstr ""
+"Analysiere den Synchronisationsstatus deiner Bücher auf dem Kobo-Gerät "
+"(Zustand laut letztem Sync)."
+
+#: cps/templates/kobo_dashboard.html:410
+msgid "Alle auf dem Reader"
+msgstr "Alle auf dem Reader"
+
+#: cps/templates/kobo_dashboard.html:413
+msgid "In keiner Sammlung (verwaist)"
+msgstr "In keiner Sammlung (verwaist)"
+
+#: cps/templates/kobo_dashboard.html:417 cps/templates/kobo_dashboard.html:473
+msgid "Ausstehender Sync"
+msgstr "Ausstehender Sync"
+
+#: cps/templates/kobo_dashboard.html:421
+msgid "Manuelle Ausnahmen"
+msgstr "Manuelle Ausnahmen"
+
+#: cps/templates/kobo_dashboard.html:432
+msgid "Übertragungsmodus"
+msgstr "Übertragungsmodus"
+
+#: cps/templates/kobo_dashboard.html:460
+msgid "Dieses Buch wird immer übertragen."
+msgstr "Dieses Buch wird immer übertragen."
+
+#: cps/templates/kobo_dashboard.html:460
+msgid "Immer auf Reader"
+msgstr "Immer auf Reader"
+
+#: cps/templates/kobo_dashboard.html:462
+msgid "Dieses Buch wird nie übertragen."
+msgstr "Dieses Buch wird nie übertragen."
+
+#: cps/templates/kobo_dashboard.html:462
+msgid "Nie auf Reader"
+msgstr "Nie auf Reader"
+
+#: cps/templates/kobo_dashboard.html:464
+msgid "Dieses Buch folgt den Regaleinstellungen."
+msgstr "Dieses Buch folgt den Regaleinstellungen."
+
+#: cps/templates/kobo_dashboard.html:469
+msgid "Auf Reader"
+msgstr "Auf Reader"
+
+#: cps/templates/kobo_dashboard.html:471
+msgid ""
+"Dieses Buch ist auf dem Reader, aber die Freigabe wurde in Calibre-Web "
+"aufgehoben. Es wird beim nächsten Sync entfernt."
+msgstr ""
+"Dieses Buch ist auf dem Reader, aber die Freigabe wurde in Calibre-Web "
+"aufgehoben. Es wird beim nächsten Sync entfernt."
+
+#: cps/templates/kobo_dashboard.html:471
+msgid "Auf Reader (nicht mehr freigegeben)"
+msgstr "Auf Reader (nicht mehr freigegeben)"
+
+#: cps/templates/kobo_dashboard.html:473
+msgid "Dieses Buch wurde freigegeben, wurde aber noch nicht vom Reader abgerufen."
+msgstr "Dieses Buch wurde freigegeben, wurde aber noch nicht vom Reader abgerufen."
+
+#: cps/templates/kobo_dashboard.html:475
+msgid "Blockiert / Nicht freigegeben"
+msgstr "Blockiert / Nicht freigegeben"
+
+#: cps/templates/kobo_dashboard.html:484
+msgid "Keine relevanten Bücher im Arbeitsbereich vorhanden."
+msgstr "Keine relevanten Bücher im Arbeitsbereich vorhanden."
+
+#: cps/templates/kobo_dashboard.html:502
+msgid "Schließen"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:529
+msgid "Lade Buch-Details..."
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:541
+msgid "Kobo-Auswahl (Geräte-Synchronisation)"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:547
+msgid "Auf Kobo-Gerät verfügbar"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:549
+msgid "Freigegeben, aber in Calibre archiviert"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:551
+#, fuzzy
+msgid "Nicht auf Kobo-Gerät übertragen"
+msgstr "Nicht übertragen"
+
+#: cps/templates/kobo_dashboard.html:556
+#, fuzzy
+msgid "Freigegeben über:"
+msgstr "Freigabe erteilt"
+
+#: cps/templates/kobo_dashboard.html:561
+#, fuzzy
+msgid "Regal"
+msgstr "Gelesen"
+
+#: cps/templates/kobo_dashboard.html:563
+#, fuzzy
+msgid "Automatische Sammlung"
+msgstr "Automatisch"
+
+#: cps/templates/kobo_dashboard.html:570
+msgid "Keine Kobo-Freigabe (nicht in Kobo-Regalen enthalten)"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:575
+#, fuzzy
+msgid "Nicht übertragen, weil:"
+msgstr "Nicht übertragen"
+
+#: cps/templates/kobo_dashboard.html:579
+msgid "Dieses Buch ist in Calibre archiviert."
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:581
+msgid "Manuell für den Kobo blockiert („Nicht auf Kobo“)."
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:583
+#, fuzzy
+msgid "Dieses Buch ist in keinem aktiven Kobo-Auswahlregal enthalten."
+msgstr "Dieses Buch ist bereits nicht in der Kobo-Auswahl."
+
+#: cps/templates/kobo_dashboard.html:598
+msgid "Dieses Buch soll in folgenden Kobo-Sammlungen angezeigt werden:"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:610
+#, fuzzy
+msgid "automatisch"
+msgstr "Automatisch"
+
+#: cps/templates/kobo_dashboard.html:610
+#, fuzzy
+msgid "normal"
+msgstr "Normal"
+
+#: cps/templates/kobo_dashboard.html:616
+#, fuzzy
+msgid "erscheint in Kobo-Sammlung"
+msgstr "Kobo-Sammlungen"
+
+#: cps/templates/kobo_dashboard.html:620
+msgid "Limit von 1000 Büchern der automatischen Sammlung überschritten"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:622
+msgid ""
+"Nicht im Kobo-Sync erlaubt (keine Kobo-Auswahltabelle hat dieses Buch "
+"freigegeben)"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:631
+msgid ""
+"Dieses Buch ist keiner als Kobo-Sammlung konfigurierten Kategorie "
+"zugeordnet."
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:638 cps/templates/kobo_dashboard.html:717
+msgid "Fehler"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:639 cps/templates/kobo_dashboard.html:718
+#, fuzzy
+msgid "Details konnten nicht geladen werden."
+msgstr "Der Kobo-Übertragungsmodus konnte nicht gespeichert werden."
+
+#: cps/templates/kobo_dashboard.html:644
+msgid "Lade Sammlungs-Bücher..."
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:654
+msgid ""
+"Hier siehst du den Synchronisations-Status aller Bücher in dieser "
+"Sammlung."
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:677
+msgid "Auf Kobo verfügbar"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:679
+msgid "Freigegeben, aber archiviert"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:681
+#, fuzzy
+msgid "Nicht für Kobo ausgewählt"
+msgstr "Für Kobo ausgewählt"
+
+#: cps/templates/kobo_dashboard.html:684
+#, fuzzy
+msgid "Nicht auf Kobo (Ausschlussregal)"
+msgstr "Nicht auf Kobo"
+
+#: cps/templates/kobo_dashboard.html:686
+msgid "In Calibre archiviert"
+msgstr ""
+
+#: cps/templates/kobo_dashboard.html:705
+msgid "Keine Bücher in dieser Sammlung."
+msgstr ""
+
 #: cps/templates/kosync_plugin.html:112
 #, fuzzy
 msgid "KOReader Sync is disabled."
@@ -6259,47 +6865,47 @@ msgstr "Bitte diese Seite nicht neu laden"
 msgid "Browse"
 msgstr "Durchsuchen"
 
-#: cps/templates/layout.html:299 cps/templates/search_form.html:88
-msgid "Shelves"
-msgstr "Regale"
+#: cps/templates/layout.html:301
+msgid "Kobo-Auswahl"
+msgstr "Kobo-Auswahl"
 
-#: cps/templates/layout.html:305
+#: cps/templates/layout.html:306
+msgid "Collections"
+msgstr "Sammlungen"
+
+#: cps/templates/layout.html:319
 msgid "Create Shelf"
 msgstr "Neues Regal"
 
-#: cps/templates/layout.html:309
-msgid "Magic Shelves ✨"
-msgstr "Magische Regale ✨"
-
-#: cps/templates/layout.html:318 cps/templates/stats.html:3
+#: cps/templates/layout.html:326 cps/templates/stats.html:3
 msgid "About"
 msgstr "Über"
 
-#: cps/templates/layout.html:330
+#: cps/templates/layout.html:338
 msgid "Previous"
 msgstr "Vorheriger Eintrag"
 
-#: cps/templates/layout.html:357
+#: cps/templates/layout.html:365
 msgid "Book Details"
 msgstr "Buchdetails"
 
-#: cps/templates/layout.html:427
+#: cps/templates/layout.html:435
 msgid "Duplicate Books Detected"
 msgstr "Bücherduplikate erkannt"
 
-#: cps/templates/layout.html:428
+#: cps/templates/layout.html:436
 msgid "You have unresolved duplicate books in your library"
 msgstr "Nicht aufgelöste Buch-Dubletten in der Bibliothek"
 
-#: cps/templates/layout.html:433
+#: cps/templates/layout.html:441
 msgid "Duplicate Groups Found"
 msgstr "Duplikatgruppen gefunden"
 
-#: cps/templates/layout.html:441
+#: cps/templates/layout.html:449
 msgid "Remind Me Later"
 msgstr "Später erinnern"
 
-#: cps/templates/layout.html:444
+#: cps/templates/layout.html:452
 msgid "View & Resolve Duplicates"
 msgstr "Duplikate anzeigen & bereinigen"
 
@@ -6341,7 +6947,8 @@ msgstr "Anmelden mit SSO"
 
 #: cps/templates/login.html:102
 msgid ""
-"Standard login is disabled. Please use one of the alternative login methods."
+"Standard login is disabled. Please use one of the alternative login "
+"methods."
 msgstr ""
 "Der Standard-Login ist deaktiviert. Bitte verwenden Sie eine der "
 "alternativen Login-Methoden."
@@ -6377,13 +6984,14 @@ msgstr "Systemvorlage"
 #: cps/templates/magic_shelf_edit.html:332
 msgid "This is a pre-configured template shelf. You can edit it freely."
 msgstr ""
-"Dies ist eine vorkonfigurierte Regalvorlage. Sie können sie frei bearbeiten."
+"Dies ist eine vorkonfigurierte Regalvorlage. Sie können sie frei "
+"bearbeiten."
 
-#: cps/templates/magic_shelf_edit.html:399
+#: cps/templates/magic_shelf_edit.html:404
 msgid "Share with Everyone (Public)"
 msgstr "Mit allen teilen (öffentlich)"
 
-#: cps/templates/magic_shelf_edit.html:402
+#: cps/templates/magic_shelf_edit.html:407
 msgid ""
 "Other users can view this shelf. Users with \"Edit Public Shelves\" "
 "permission can edit/delete it."
@@ -6428,19 +7036,18 @@ msgid "and hard disk"
 msgstr "und von der Festplatte gelöscht"
 
 #: cps/templates/modal_dialogs.html:56
-msgid ""
-"Important Kobo Note: deleted books will remain on any paired Kobo device."
+msgid "Important Kobo Note: deleted books will remain on any paired Kobo device."
 msgstr ""
-"Wichtiger Kobo Hinweis: Gelöschte Bücher bleiben auf allen verbundenen Kobo "
-"Geräten erhalten."
+"Wichtiger Kobo Hinweis: Gelöschte Bücher bleiben auf allen verbundenen "
+"Kobo Geräten erhalten."
 
 #: cps/templates/modal_dialogs.html:57
 msgid ""
-"Books must first be archived and the device synced before a book can safely "
-"be deleted."
+"Books must first be archived and the device synced before a book can "
+"safely be deleted."
 msgstr ""
-"Bücher müssen zuerst archiviert werden und dann mit dem Gerät synchronisiert "
-"werden, bevor ein Buch sicher gelöscht werden kann."
+"Bücher müssen zuerst archiviert werden und dann mit dem Gerät "
+"synchronisiert werden, bevor ein Buch sicher gelöscht werden kann."
 
 #: cps/templates/modal_dialogs.html:76
 msgid "Choose File Location"
@@ -6708,8 +7315,7 @@ msgstr "Benutze eein anderes Gerät, logge dich ein und besuche:"
 
 #: cps/templates/remote_login.html:17
 msgid "Once verified, you will automatically be logged in on this device."
-msgstr ""
-"Einmal verifiziert, wirst du automatisch auf diesem Gerät eingeloggt sein."
+msgstr "Einmal verifiziert, wirst du automatisch auf diesem Gerät eingeloggt sein."
 
 #: cps/templates/remote_login.html:20
 msgid "This verification link will expire in 10 minutes."
@@ -6720,9 +7326,9 @@ msgid ""
 "Automatically refresh all thumbnails during scheduled maintenance. "
 "Thumbnails are always generated on-demand regardless of this setting."
 msgstr ""
-"Alle Vorschaubilder während der geplanten Wartung automatisch aktualisieren. "
-"Vorschaubilder werden unabhängig von dieser Einstellung immer bei Bedarf "
-"generiert."
+"Alle Vorschaubilder während der geplanten Wartung automatisch "
+"aktualisieren. Vorschaubilder werden unabhängig von dieser Einstellung "
+"immer bei Bedarf generiert."
 
 #: cps/templates/schedule_edit.html:34
 msgid "Generate Series Cover Thumbnails"
@@ -6767,6 +7373,10 @@ msgstr "Tags ausschließen"
 #: cps/templates/search_form.html:78
 msgid "Exclude Series"
 msgstr "Serien ausschließen"
+
+#: cps/templates/search_form.html:88
+msgid "Shelves"
+msgstr "Regale"
 
 #: cps/templates/search_form.html:96
 msgid "Exclude Shelves"
@@ -6834,9 +7444,13 @@ msgstr "Sortiere nach Buch zu Regal hinzugefügt, älteste zuerst"
 msgid "Share with Everyone"
 msgstr "Mit allen teilen"
 
-#: cps/templates/shelf_edit.html:21
+#: cps/templates/shelf_edit.html:22
 msgid "Sync this shelf with Kobo device"
 msgstr "Dieses Regal mit Kobo synchronisieren"
+
+#: cps/templates/shelf_edit.html:28
+msgid "Display this shelf as a Kobo collection"
+msgstr "Dieses Regal als Kobo-Sammlung anzeigen"
 
 #: cps/templates/shelf_order.html:5
 msgid "Drag to Rearrange Order"
@@ -6891,10 +7505,6 @@ msgstr "Benutzer"
 msgid "Task"
 msgstr "Aufgabe"
 
-#: cps/templates/tasks.html:16
-msgid "Status"
-msgstr "Status"
-
 #: cps/templates/tasks.html:17
 msgid "Progress"
 msgstr "Fortschritt"
@@ -6929,9 +7539,9 @@ msgid ""
 "Upcoming sends are persisted and will enqueue as tasks at the scheduled "
 "time. You can cancel a pending send before it runs."
 msgstr ""
-"Anstehende Versendungen sind dauerhaft gespeichert und werden zum geplanten "
-"Zeitpunkt in die Warteschlange gestellt. Sie können eine ausstehende "
-"Versendung abbrechen, bevor sie ausgeführt wird."
+"Anstehende Versendungen sind dauerhaft gespeichert und werden zum "
+"geplanten Zeitpunkt in die Warteschlange gestellt. Sie können eine "
+"ausstehende Versendung abbrechen, bevor sie ausgeführt wird."
 
 #: cps/templates/tasks.html:55
 msgid "Upcoming scheduled operations"
@@ -6946,13 +7556,12 @@ msgid ""
 "Convert Library and EPUB Fixer runs scheduled here will persist across "
 "restarts. Cancel to prevent them from triggering."
 msgstr ""
-"Geplante Durchläufe für „Bibliothek konvertieren“ und „EPUB-Fixer“ bleiben "
-"nach Neustarts erhalten. Brechen Sie diese ab, um die Ausführung zu "
-"verhindern."
+"Geplante Durchläufe für „Bibliothek konvertieren“ und „EPUB-Fixer“ "
+"bleiben nach Neustarts erhalten. Brechen Sie diese ab, um die Ausführung "
+"zu verhindern."
 
 #: cps/templates/tasks.html:88
-msgid ""
-"This task will be cancelled. Any progress made by this task will be saved."
+msgid "This task will be cancelled. Any progress made by this task will be saved."
 msgstr "Diese Aufgabe wird abgebrochen. Der Fortschritt wird gespeichert."
 
 #: cps/templates/tasks.html:89
@@ -6984,11 +7593,10 @@ msgid "Account Information"
 msgstr "Kontoinformationen"
 
 #: cps/templates/user_edit.html:190
-msgid ""
-"If you need to change your email address or password, you can do so here."
+msgid "If you need to change your email address or password, you can do so here."
 msgstr ""
-"Falls Sie Ihre E-Mail-Adresse oder Ihr Passwort ändern müssen, können Sie "
-"dies hier tun."
+"Falls Sie Ihre E-Mail-Adresse oder Ihr Passwort ändern müssen, können Sie"
+" dies hier tun."
 
 #: cps/templates/user_edit.html:200
 msgid "Reset user Password"
@@ -7008,8 +7616,8 @@ msgstr "Verwenden Sie Kommas, um mehrere Adressen zu trennen"
 
 #: cps/templates/user_edit.html:217
 msgid ""
-"Email address(es) for your eReader devices. Separate multiple addresses with "
-"commas."
+"Email address(es) for your eReader devices. Separate multiple addresses "
+"with commas."
 msgstr ""
 "E-Mail-Adresse(n) für Ihre eReader-Geräte. Trennen Sie mehrere Adressen "
 "durch Kommas."
@@ -7020,9 +7628,9 @@ msgstr ""
 
 #: cps/templates/user_edit.html:230
 msgid ""
-"Enables or disables the Send-to-eReader Pop-up Modal that allows users to "
-"enter extra email addresses and only send to a selection of saved addresses "
-"when sending to eReader."
+"Enables or disables the Send-to-eReader Pop-up Modal that allows users to"
+" enter extra email addresses and only send to a selection of saved "
+"addresses when sending to eReader."
 msgstr ""
 
 #: cps/templates/user_edit.html:232
@@ -7061,7 +7669,8 @@ msgstr "Zeige nur Bücher mit dieser Sprache"
 #: cps/templates/user_edit.html:268 cps/templates/user_edit.html:290
 msgid "Filter the library to only show books in a specific language."
 msgstr ""
-"Die Bibliothek filtern, um nur Bücher in einer bestimmten Sprache anzuzeigen."
+"Die Bibliothek filtern, um nur Bücher in einer bestimmten Sprache "
+"anzuzeigen."
 
 #: cps/templates/user_edit.html:280
 msgid "Book Language Filter"
@@ -7114,7 +7723,8 @@ msgstr "Seitenleisten-Anzeigeeinstellungen"
 #: cps/templates/user_edit.html:347
 msgid "Choose which sections to display in your sidebar navigation."
 msgstr ""
-"Wählen Sie aus, welche Bereiche in der Seitenleiste angezeigt werden sollen."
+"Wählen Sie aus, welche Bereiche in der Seitenleiste angezeigt werden "
+"sollen."
 
 #: cps/templates/user_edit.html:372
 msgid "Add allowed/Denied Custom Column Values"
@@ -7126,8 +7736,8 @@ msgstr "OPDS-Katalog-Sortierung"
 
 #: cps/templates/user_edit.html:381
 msgid ""
-"Reorder the OPDS root catalog by listing entry IDs in the order you want. "
-"Unknown IDs are ignored and missing entries are appended automatically."
+"Reorder the OPDS root catalog by listing entry IDs in the order you want."
+" Unknown IDs are ignored and missing entries are appended automatically."
 msgstr ""
 "Ordnen Sie den OPDS-Stammkatalog neu, indem Sie die Eintrags-IDs in der "
 "gewünschten Reihenfolge auflisten. Unbekannte IDs werden ignoriert und "
@@ -7138,8 +7748,8 @@ msgid ""
 "Drag to reorder OPDS root entries. Missing entries are appended "
 "automatically."
 msgstr ""
-"Ziehen Sie die OPDS-Stammeinträge, um sie neu zu ordnen. Fehlende Einträge "
-"werden automatisch angehängt."
+"Ziehen Sie die OPDS-Stammeinträge, um sie neu zu ordnen. Fehlende "
+"Einträge werden automatisch angehängt."
 
 #: cps/templates/user_edit.html:398
 msgid "User Permissions"
@@ -7210,8 +7820,9 @@ msgstr "Sichtbarkeit der Magischen Regale"
 
 #: cps/templates/user_edit.html:487
 msgid ""
-"Uncheck shelves you want to hide from your sidebar. System shelves cannot be "
-"deleted, only hidden. Public shelves from other users can also be hidden."
+"Uncheck shelves you want to hide from your sidebar. System shelves cannot"
+" be deleted, only hidden. Public shelves from other users can also be "
+"hidden."
 msgstr ""
 "Deaktivieren Sie Regale, die Sie in der Seitenleiste ausblenden möchten. "
 "Systemregale können nicht gelöscht, sondern nur ausgeblendet werden. "
@@ -7343,294 +7954,6 @@ msgstr "Ausgewählte Regale mit Kobo synchronisieren"
 msgid "Show Read/Unread Section"
 msgstr "Zeige Gelesen/Ungelesen-Abschnitt"
 
-#: cps/kobo_auth.py:132
-msgid "Das Ausschlussregal wurde nicht gefunden."
-msgstr "Das Ausschlussregal wurde nicht gefunden."
-
-#: cps/kobo_auth.py:141
-msgid "Dieses Buch ist bereits wieder für Kobo erlaubt."
-msgstr "Dieses Buch ist bereits wieder für Kobo erlaubt."
-
-#: cps/kobo_auth.py:155
-msgid "Buch ist wieder für Kobo erlaubt."
-msgstr "Buch ist wieder für Kobo erlaubt."
-
-#: cps/kobo_auth.py:159
-msgid "Das Buch konnte nicht wieder für Kobo erlaubt werden."
-msgstr "Das Buch konnte nicht wieder für Kobo erlaubt werden."
-
-#: cps/kobo_auth.py:214
-msgid "Kobo Sync Dashboard"
-msgstr "Kobo-Sync-Dashboard"
-
-#: cps/templates/kobo_dashboard.html:65
-msgid "Kobo-Auswahl & Sync-Dashboard"
-msgstr "Kobo-Auswahl & Sync-Dashboard"
-
-#: cps/templates/kobo_dashboard.html:66
-msgid ""
-"Hier siehst du, welche Bücher und Sammlungen für deine Kobo-Geräte "
-"freigegeben und synchronisiert sind."
-msgstr ""
-"Hier siehst du, welche Bücher und Sammlungen für deine Kobo-Geräte "
-"freigegeben und synchronisiert sind."
-
-#: cps/templates/kobo_dashboard.html:73
-msgid "Kobo-Verbindung"
-msgstr "Kobo-Verbindung"
-
-#: cps/templates/kobo_dashboard.html:77
-msgid "Status:"
-msgstr "Status:"
-
-#: cps/templates/kobo_dashboard.html:79
-msgid "Schnittstelle aktiv"
-msgstr "Schnittstelle aktiv"
-
-#: cps/templates/kobo_dashboard.html:81
-msgid "Nicht eingerichtet"
-msgstr "Nicht eingerichtet"
-
-#: cps/templates/kobo_dashboard.html:86
-msgid "Ein Token für Kobo-Geräte ist erzeugt. Geräte können sich synchronisieren."
-msgstr "Ein Token für Kobo-Geräte ist erzeugt. Geräte können sich synchronisieren."
-
-#: cps/templates/kobo_dashboard.html:88
-msgid "Generiere einen Kobo-Token in deinem Benutzerprofil, um Geräte anzubinden."
-msgstr "Generiere einen Kobo-Token in deinem Benutzerprofil, um Geräte anzubinden."
-
-#: cps/templates/kobo_dashboard.html:91
-msgid "Profil bearbeiten"
-msgstr "Profil bearbeiten"
-
-#: cps/templates/kobo_dashboard.html:99
-msgid "Sync-Modus"
-msgstr "Sync-Modus"
-
-#: cps/templates/kobo_dashboard.html:103
-msgid "Modus:"
-msgstr "Modus:"
-
-#: cps/templates/kobo_dashboard.html:105
-msgid "Zwei-Säulen-Sync"
-msgstr "Zwei-Säulen-Sync"
-
-#: cps/templates/kobo_dashboard.html:107
-msgid "Ganze Bibliothek"
-msgstr "Ganze Bibliothek"
-
-#: cps/templates/kobo_dashboard.html:112
-msgid "Nur Bücher in Regalen mit Kobo-Sync-Häkchen werden übertragen."
-msgstr "Nur Bücher in Regalen mit Kobo-Sync-Häkchen werden übertragen."
-
-#: cps/templates/kobo_dashboard.html:114
-msgid "Vorsicht: Deine gesamte Calibre-Bibliothek wird auf den Kobo geladen."
-msgstr "Vorsicht: Deine gesamte Calibre-Bibliothek wird auf den Kobo geladen."
-
-#: cps/templates/kobo_dashboard.html:124
-msgid "Sync-Statistik"
-msgstr "Sync-Statistik"
-
-#: cps/templates/kobo_dashboard.html:128
-msgid "Berechtigte Bücher:"
-msgstr "Berechtigte Bücher:"
-
-#: cps/templates/kobo_dashboard.html:132
-msgid "Alle Bücher"
-msgstr "Alle Bücher"
-
-#: cps/templates/kobo_dashboard.html:136
-msgid "Bereits synchronisiert:"
-msgstr "Bereits synchronisiert:"
-
-#: cps/templates/kobo_dashboard.html:140
-msgid "Blockiert:"
-msgstr "Blockiert:"
-
-#: cps/templates/kobo_dashboard.html:144
-msgid "Bücher, die mindestens einmal an deinen Kobo ausgeliefert wurden."
-msgstr "Bücher, die mindestens einmal an deinen Kobo ausgeliefert wurden."
-
-#: cps/templates/kobo_dashboard.html:180
-msgid "System-Check & Hinweise"
-msgstr "System-Check & Hinweise"
-
-#: cps/templates/kobo_dashboard.html:187
-msgid "Kritisch:"
-msgstr "Kritisch:"
-
-#: cps/templates/kobo_dashboard.html:188
-msgid "Hinweis:"
-msgstr "Hinweis:"
-
-#: cps/templates/kobo_dashboard.html:174
-msgid "Keine Probleme gefunden. Deine Kobo-Synchronisation läuft sauber!"
-msgstr "Keine Probleme gefunden. Deine Kobo-Synchronisation läuft sauber!"
-
-#: cps/templates/kobo_dashboard.html:181
-msgid "Nicht auf Kobo"
-msgstr "Nicht auf Kobo"
-
-#: cps/templates/kobo_dashboard.html:188
-msgid "Titel"
-msgstr "Titel"
-
-#: cps/templates/kobo_dashboard.html:190 cps/templates/kobo_dashboard.html:234
-msgid "Aktionen"
-msgstr "Aktionen"
-
-#: cps/templates/kobo_dashboard.html:198
-msgid "Kobo: Ausgeschlossen"
-msgstr "Kobo: Ausgeschlossen"
-
-#: cps/templates/kobo_dashboard.html:204
-msgid "Wieder erlauben"
-msgstr "Wieder erlauben"
-
-#: cps/templates/kobo_dashboard.html:220
-msgid "Kobo-Sammlungen"
-msgstr "Kobo-Sammlungen"
-
-#: cps/templates/kobo_dashboard.html:228
-msgid "Name"
-msgstr "Name"
-
-#: cps/templates/kobo_dashboard.html:229
-msgid "Typ"
-msgstr "Typ"
-
-#: cps/templates/kobo_dashboard.html:230
-msgid "Kobo-Sync"
-msgstr "Kobo-Sync"
-
-#: cps/templates/kobo_dashboard.html:231
-msgid "Bücher lokal"
-msgstr "Bücher lokal"
-
-#: cps/templates/kobo_dashboard.html:232
-msgid "Sync-berechtigt"
-msgstr "Sync-berechtigt"
-
-#: cps/templates/kobo_dashboard.html:233
-msgid "Synchronisiert"
-msgstr "Synchronisiert"
-
-#: cps/templates/kobo_dashboard.html:245
-msgid "Automatisch"
-msgstr "Automatisch"
-
-#: cps/templates/kobo_dashboard.html:247
-msgid "Normal"
-msgstr "Normal"
-
-#: cps/templates/kobo_dashboard.html:252
-msgid "Aktiv"
-msgstr "Aktiv"
-
-#: cps/templates/kobo_dashboard.html:254
-msgid "Display-Only"
-msgstr "Nur Anzeige"
-
-#: cps/templates/kobo_dashboard.html:356
-msgid "Einige Bücher dieser Sammlung sind aktuell nicht für Kobo ausgewählt."
-msgstr "Einige Bücher dieser Sammlung sind aktuell nicht für Kobo ausgewählt."
-
-#: cps/templates/kobo_dashboard.html:272 cps/templates/kobo_dashboard.html:275
-msgid "Bearbeiten"
-msgstr "Bearbeiten"
-
-#: cps/templates/kobo_dashboard.html:274
-msgid "Anzeigen"
-msgstr "Anzeigen"
-
-#: cps/templates/kobo_dashboard.html:284
-msgid "Keine Regale oder Magic Shelves sind für das Kobo-Display konfiguriert."
-msgstr "Keine Regale oder Magic Shelves sind für das Kobo-Display konfiguriert."
-
-#: cps/templates/layout.html:301
-msgid "Kobo-Auswahl"
-msgstr "Kobo-Auswahl"
-
-#: cps/templates/layout.html:306
-msgid "Collections"
-msgstr "Sammlungen"
-
-#: cps/templates/shelf_edit.html:28
-msgid "Display this shelf as a Kobo collection"
-msgstr "Dieses Regal als Kobo-Sammlung anzeigen"
-
-#: cps/templates/kobo_dashboard.html:192
-msgid "Diese Bücher bleiben in Alexandria und werden beim Kobo-Sync ausgelassen."
-msgstr "Diese Bücher bleiben in Alexandria und werden beim Kobo-Sync ausgelassen."
-
-#: cps/templates/kobo_dashboard.html:214
-msgid "Beim nächsten Sync wieder anbieten"
-msgstr "Beim nächsten Sync wieder anbieten"
-
-#: cps/templates/kobo_dashboard.html:290
-msgid "Keine Bücher sind als Nicht auf Kobo markiert."
-msgstr "Keine Bücher sind als Nicht auf Kobo markiert."
-
-#: cps/kobo_auth.py:168
-msgid "Manuelles Blockieren ist nur im Zwei-Säulen-Sync verfügbar."
-msgstr "Manuelles Blockieren ist nur im Zwei-Säulen-Sync verfügbar."
-
-#: cps/kobo_auth.py:175
-msgid "Dieses Buch ist bereits nicht in der Kobo-Auswahl."
-msgstr "Dieses Buch ist bereits nicht in der Kobo-Auswahl."
-
-#: cps/kobo_auth.py:185
-msgid "Buch wird beim nächsten Kobo-Sync ausgelassen."
-msgstr "Buch wird beim nächsten Kobo-Sync ausgelassen."
-
-#: cps/kobo_auth.py:189
-msgid "Das Buch konnte nicht aus der Kobo-Auswahl entfernt werden."
-msgstr "Das Buch konnte nicht aus der Kobo-Auswahl entfernt werden."
-
-#: cps/templates/kobo_dashboard.html:133
-msgid "Für Kobo ausgewählt:"
-msgstr "Für Kobo ausgewählt:"
-
-#: cps/templates/kobo_dashboard.html:145
-msgid "Nicht auf Kobo:"
-msgstr "Nicht auf Kobo:"
-
-#: cps/templates/kobo_dashboard.html:149
-msgid "Synchronisiert zählt Bücher, die bereits mindestens einmal an deinen Kobo ausgeliefert wurden."
-msgstr "Synchronisiert zählt Bücher, die bereits mindestens einmal an deinen Kobo ausgeliefert wurden."
-
-#: cps/templates/kobo_dashboard.html:186 cps/templates/kobo_dashboard.html:215
-msgid "Für Kobo ausgewählt"
-msgstr "Für Kobo ausgewählt"
-
-#: cps/templates/kobo_dashboard.html:195
-msgid "Diese Bücher werden beim nächsten Sync angeboten, solange sie nicht ausgeschlossen werden."
-msgstr "Diese Bücher werden beim nächsten Sync angeboten, solange sie nicht ausgeschlossen werden."
-
-#: cps/templates/kobo_dashboard.html:197
-msgid "Im Modus Ganze Bibliothek wird keine manuelle Kobo-Auswahl angezeigt."
-msgstr "Im Modus Ganze Bibliothek wird keine manuelle Kobo-Auswahl angezeigt."
-
-#: cps/templates/kobo_dashboard.html:220
-msgid "Beim nächsten Sync auslassen"
-msgstr "Beim nächsten Sync auslassen"
-
-#: cps/templates/kobo_dashboard.html:231
-msgid "Keine Bücher für Kobo ausgewählt."
-msgstr "Keine Bücher für Kobo ausgewählt."
-
-#: cps/templates/kobo_dashboard.html:245
-msgid "Diese Bücher bleiben in Alexandria, werden aber beim Kobo-Sync ausgelassen."
-msgstr "Diese Bücher bleiben in Alexandria, werden aber beim Kobo-Sync ausgelassen."
-
-#: cps/templates/kobo_dashboard.html:268
-msgid "Wieder für Kobo erlauben"
-msgstr "Wieder für Kobo erlauben"
-
-#: cps/templates/kobo_dashboard.html:327
-msgid "Diese Bücher sind bewusst als Nicht auf Kobo markiert."
-msgstr "Diese Bücher sind bewusst als Nicht auf Kobo markiert."
-
 #~ msgid "Standard Theme"
 #~ msgstr "Standarddesign"
 
@@ -7648,12 +7971,11 @@ msgstr "Diese Bücher sind bewusst als Nicht auf Kobo markiert."
 
 #~ msgid "Popular publications from this catalog based on Downloads."
 #~ msgstr ""
-#~ "Beliebte Publikationen aus dieser Bibliothek basierend auf Anzahl der "
-#~ "Downloads."
+#~ "Beliebte Publikationen aus dieser Bibliothek"
+#~ " basierend auf Anzahl der Downloads."
 
 #~ msgid "Popular publications from this catalog based on Rating."
-#~ msgstr ""
-#~ "Beliebte Veröffentlichungen dieses Katalogs basierend auf Bewertung."
+#~ msgstr "Beliebte Veröffentlichungen dieses Katalogs basierend auf Bewertung."
 
 #~ msgid "Recently added Books"
 #~ msgstr "Kürzlich hinzugefügte Bücher"
@@ -7702,14 +8024,15 @@ msgstr "Diese Bücher sind bewusst als Nicht auf Kobo markiert."
 
 #~ msgid "Login failed: User profile from provider is incomplete."
 #~ msgstr ""
-#~ "Anmeldung fehlgeschlagen: Benutzerprofil des Anbieters ist unvollständig."
+#~ "Anmeldung fehlgeschlagen: Benutzerprofil des "
+#~ "Anbieters ist unvollständig."
 
 #~ msgid "Login failed, No User Linked With OAuth Account"
 #~ msgstr ""
-#~ "Anmeldung fehlgeschlagen, es ist kein Benutzer mit diesem OAuth-Account "
+#~ "Anmeldung fehlgeschlagen, es ist kein "
+#~ "Benutzer mit diesem OAuth-Account "
 #~ "verbunden"
 
-#, python-format
 #~ msgid "%(name)s's Profile"
 #~ msgstr "%(name)s's Profil"
 
@@ -7717,47 +8040,59 @@ msgstr "Diese Bücher sind bewusst als Nicht auf Kobo markiert."
 #~ msgstr "Buchcover Miniaturansichten erzeugen"
 
 #~ msgid ""
-#~ "Default Theme (users can select their own preferred theme however new "
-#~ "users will receive this theme by default)"
+#~ "Default Theme (users can select their"
+#~ " own preferred theme however new "
+#~ "users will receive this theme by "
+#~ "default)"
 #~ msgstr ""
-#~ "Default Design (Benutzer können ihr präferiertes Design selbst "
-#~ "einstellen, standardmäßig verwenden neue Benutzer dieses Design)"
+#~ "Default Design (Benutzer können ihr "
+#~ "präferiertes Design selbst einstellen, "
+#~ "standardmäßig verwenden neue Benutzer dieses"
+#~ " Design)"
 
 #~ msgid ""
-#~ "Per-user theme switching enabled; this global default only affects new "
+#~ "Per-user theme switching enabled; this"
+#~ " global default only affects new "
 #~ "users & anonymous"
 #~ msgstr ""
-#~ "Designwechsel pro Benutzer aktiviert; diese globale Standardeinstellung "
-#~ "wirkt sich nur auf neue & anonyme Benutzer aus"
+#~ "Designwechsel pro Benutzer aktiviert; diese"
+#~ " globale Standardeinstellung wirkt sich nur"
+#~ " auf neue & anonyme Benutzer aus"
 
 #~ msgid "Please select at least one email address"
 #~ msgstr "Bitte wähle mindestens eine E-Mail Adresse aus"
 
 #~ msgid ""
-#~ "Send to eReader Email Address. Use comma to separate emails for multiple "
-#~ "eReaders"
+#~ "Send to eReader Email Address. Use "
+#~ "comma to separate emails for multiple"
+#~ " eReaders"
 #~ msgstr ""
-#~ "An die E-Mail-Adresse des E-Readers senden. Kommas verwenden, um E-Mails "
-#~ "für mehrere E-Reader zu trennen"
+#~ "An die E-Mail-Adresse des E-Readers "
+#~ "senden. Kommas verwenden, um E-Mails für"
+#~ " mehrere E-Reader zu trennen"
 
 #~ msgid ""
-#~ "Library Refresh 🔄 The book ingest service is already running ✋ Please "
-#~ "wait until it has finished before trying again ⌛"
+#~ "Library Refresh 🔄 The book ingest "
+#~ "service is already running ✋ Please "
+#~ "wait until it has finished before "
+#~ "trying again ⌛"
 #~ msgstr ""
-#~ "Bibliothek aktualisieren 🔄 Der Ingest-Dienst läuft bereits ✋ Bitte "
-#~ "warte bis der Lauf beendet wurde, vor erneuter Aktualisierung ⌛"
+#~ "Bibliothek aktualisieren 🔄 Der Ingest-"
+#~ "Dienst läuft bereits ✋ Bitte warte "
+#~ "bis der Lauf beendet wurde, vor "
+#~ "erneuter Aktualisierung ⌛"
 
 #~ msgid "Library Refresh 🔄 Library refreshed & ingest process complete! ✅"
 #~ msgstr ""
-#~ "Bibliothek aktualisieren 🔄 Bibliothek aktualisiert & "
-#~ "Eingangsverarbeitung beendet! ✅"
+#~ "Bibliothek aktualisieren 🔄 Bibliothek "
+#~ "aktualisiert & Eingangsverarbeitung beendet! ✅"
 
 #~ msgid "Library Refresh 🔄 An unexpected error occurred, check the logs ⛔"
 #~ msgstr ""
-#~ "Bibliothek aktualisieren 🔄 Ein unerwarteter Fehler ist aufgetreten, "
-#~ "bitte Logs prüfen ⛔"
+#~ "Bibliothek aktualisieren 🔄 Ein unerwarteter"
+#~ " Fehler ist aufgetreten, bitte Logs "
+#~ "prüfen ⛔"
 
-#, python-format
 #~ msgid "File %(file)s uploaded"
 #~ msgstr "Datei %(file)s hochgeladen"
 
@@ -7774,74 +8109,49 @@ msgstr "Diese Bücher sind bewusst als Nicht auf Kobo markiert."
 #~ msgstr "Buch als gelesen oder ungelesen markieren"
 
 #~ msgid ""
-#~ "Mark Book as archived or not, to hide it in Calibre-Web and delete it "
-#~ "from Kobo Reader"
+#~ "Mark Book as archived or not, to"
+#~ " hide it in Calibre-Web and "
+#~ "delete it from Kobo Reader"
 #~ msgstr ""
-#~ "Buch als archiviert oder nicht markieren, um es in Calibre-Web "
-#~ "auszublenden und vom Kobo Reader zu löschen"
+#~ "Buch als archiviert oder nicht "
+#~ "markieren, um es in Calibre-Web "
+#~ "auszublenden und vom Kobo Reader zu "
+#~ "löschen"
 
-msgid "Kobo eReader-Übertragung"
-msgstr "Kobo eReader-Übertragung"
+#~ msgid "Magic Shelves ✨"
+#~ msgstr "Magische Regale ✨"
 
-msgid "Übertragungs-Freigabe (Soll auf Reader):"
-msgstr "Übertragungs-Freigabe (Soll auf Reader):"
+#~ msgid "Das Ausschlussregal wurde nicht gefunden."
+#~ msgstr "Das Ausschlussregal wurde nicht gefunden."
 
-msgid "Freigabe erteilt"
-msgstr "Freigabe erteilt"
+#~ msgid "Dieses Buch ist bereits wieder für Kobo erlaubt."
+#~ msgstr "Dieses Buch ist bereits wieder für Kobo erlaubt."
 
-msgid "Bleibt in der Cloud"
-msgstr "Bleibt in der Cloud"
+#~ msgid "Berechtigte Bücher:"
+#~ msgstr "Berechtigte Bücher:"
 
-msgid "Aktueller Sync-Zustand (Ist auf Reader):"
-msgstr "Aktueller Sync-Zustand (Ist auf Reader):"
+#~ msgid "Blockiert:"
+#~ msgstr "Blockiert:"
 
-msgid "Auf dem Reader vorhanden"
-msgstr "Auf dem Reader vorhanden"
+#~ msgid "Bücher, die mindestens einmal an deinen Kobo ausgeliefert wurden."
+#~ msgstr "Bücher, die mindestens einmal an deinen Kobo ausgeliefert wurden."
 
-msgid "Ausstehend (wird beim nächsten Synchronisieren übertragen)"
-msgstr "Ausstehend (wird beim nächsten Synchronisieren übertragen)"
+#~ msgid "Kobo: Ausgeschlossen"
+#~ msgstr "Kobo: Ausgeschlossen"
 
-msgid "Nicht übertragen"
-msgstr "Nicht übertragen"
+#~ msgid "Wieder erlauben"
+#~ msgstr "Wieder erlauben"
 
-msgid "Das Buch ist archiviert (und wird daher nicht auf das Gerät geladen)."
-msgstr "Das Buch ist archiviert (und wird daher nicht auf das Gerät geladen)."
+#~ msgid "Einige Bücher dieser Sammlung sind aktuell nicht für Kobo ausgewählt."
+#~ msgstr "Einige Bücher dieser Sammlung sind aktuell nicht für Kobo ausgewählt."
 
-msgid "Begründung:"
-msgstr "Begründung:"
+#~ msgid ""
+#~ "Diese Bücher bleiben in Alexandria und"
+#~ " werden beim Kobo-Sync ausgelassen."
+#~ msgstr ""
+#~ "Diese Bücher bleiben in Alexandria und"
+#~ " werden beim Kobo-Sync ausgelassen."
 
-msgid "Das Buch wurde manuell als 'Immer auf dem Reader' markiert."
-msgstr "Das Buch wurde manuell als 'Immer auf dem Reader' markiert."
+#~ msgid "Manuelles Blockieren ist nur im Zwei-Säulen-Sync verfügbar."
+#~ msgstr "Manuelles Blockieren ist nur im Zwei-Säulen-Sync verfügbar."
 
-msgid "Das Buch wurde manuell als 'Nie auf dem Reader' markiert."
-msgstr "Das Buch wurde manuell als 'Nie auf dem Reader' markiert."
-
-msgid "Übertragen durch Regal(e):"
-msgstr "Übertragen durch Regal(e):"
-
-msgid "Das Buch befindet sich in keinem aktiven Kobo-Regal und folgt der automatischen Auswahl."
-msgstr "Das Buch befindet sich in keinem aktiven Kobo-Regal und folgt der automatischen Auswahl."
-
-msgid "Einstellung für dieses Buch:"
-msgstr "Einstellung für dieses Buch:"
-
-msgid "Automatisch (folgt Regalen)"
-msgstr "Automatisch (folgt Regalen)"
-
-msgid "Immer auf dem Reader"
-msgstr "Immer auf dem Reader"
-
-msgid "Nie auf dem Reader"
-msgstr "Nie auf dem Reader"
-
-msgid "Kobo-Einstellung anwenden"
-msgstr "Kobo-Einstellung anwenden"
-
-msgid "Ungültiger Kobo-Übertragungsmodus."
-msgstr "Ungültiger Kobo-Übertragungsmodus."
-
-msgid "Kobo-Übertragungsmodus aktualisiert."
-msgstr "Kobo-Übertragungsmodus aktualisiert."
-
-msgid "Der Kobo-Übertragungsmodus konnte nicht gespeichert werden."
-msgstr "Der Kobo-Übertragungsmodus konnte nicht gespeichert werden."

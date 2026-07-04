@@ -130,18 +130,11 @@ class TestKoboDashboard:
         fake_user.role_download.return_value = True
         fake_user.kobo_only_shelves_sync = 1  # Two-column mode
 
-        # Mock remote token check
-        mock_token = MagicMock()
-        mock_session.query().filter_by().first.side_effect = [
-            mock_token,  # RemoteAuthToken first() call
-        ]
-
         # Mock allowed book IDs (union of kobo_sync shelves)
         mock_allowed_books.return_value = {10, 20, 30}
 
         # Mock KoboSyncedBooks
         fake_synced = [MagicMock(book_id=10), MagicMock(book_id=20)]
-        mock_session.query().filter_by().all.return_value = fake_synced
 
         # Mock normal shelves query (kobo_display = True)
         fake_normal_shelf = MagicMock()
@@ -159,12 +152,27 @@ class TestKoboDashboard:
         fake_magic_shelf.kobo_sync = False
         mock_magic_ids.return_value = {20, 30}
 
-        # Setup side effect for normal & magic shelves
-        mock_session.query().filter_by().all.side_effect = [
-            fake_synced,         # KoboSyncedBooks.all()
-            [fake_normal_shelf], # Shelf query
-            [fake_magic_shelf]   # MagicShelf query
-        ]
+        # Mock remote token check
+        mock_token = MagicMock()
+
+        def session_query_side_effect(*args):
+            q = MagicMock()
+            if not args:
+                return q
+            model_str = str(args[0])
+            if "RemoteAuthToken" in model_str:
+                q.filter_by.return_value.first.return_value = mock_token
+            elif "KoboSyncedBooks" in model_str:
+                q.filter_by.return_value.all.return_value = fake_synced
+            elif "KoboBookOverride" in model_str:
+                q.filter_by.return_value.all.return_value = [MagicMock(book_id=40, reader_override="never")]
+            elif "Shelf" in model_str and "MagicShelf" not in model_str:
+                q.filter_by.return_value.all.return_value = [fake_normal_shelf]
+            elif "MagicShelf" in model_str:
+                q.filter_by.return_value.all.return_value = [fake_magic_shelf]
+            return q
+
+        mock_session.query.side_effect = session_query_side_effect
 
         dashboard_data = get_kobo_dashboard_data(fake_user)
 
@@ -222,13 +230,10 @@ class TestKoboDashboard:
         fake_user.kobo_only_shelves_sync = 0  # Full Sync mode
 
         # Token exists
-        mock_session.query().filter_by().first.return_value = MagicMock()
+        mock_token = MagicMock()
 
         # In Full Sync mode allowed_book_ids is None
         mock_allowed_books.return_value = None
-
-        # Synced books
-        mock_session.query().filter_by().all.return_value = []
 
         fake_magic_shelf = MagicMock()
         fake_magic_shelf.id = 99
@@ -237,12 +242,24 @@ class TestKoboDashboard:
         fake_magic_shelf.kobo_sync = True
         mock_magic_ids.return_value = set()
 
-        # Mock session queries
-        mock_session.query().filter_by().all.side_effect = [
-            [],                  # KoboSyncedBooks
-            [],                  # Shelf (no normal shelves)
-            [fake_magic_shelf]   # MagicShelf
-        ]
+        def session_query_side_effect(*args):
+            q = MagicMock()
+            if not args:
+                return q
+            model_str = str(args[0])
+            if "RemoteAuthToken" in model_str:
+                q.filter_by.return_value.first.return_value = mock_token
+            elif "KoboSyncedBooks" in model_str:
+                q.filter_by.return_value.all.return_value = []
+            elif "KoboBookOverride" in model_str:
+                q.filter_by.return_value.all.return_value = []
+            elif "Shelf" in model_str and "MagicShelf" not in model_str:
+                q.filter_by.return_value.all.return_value = []
+            elif "MagicShelf" in model_str:
+                q.filter_by.return_value.all.return_value = [fake_magic_shelf]
+            return q
+
+        mock_session.query.side_effect = session_query_side_effect
 
         dashboard_data = get_kobo_dashboard_data(fake_user)
         warns = dashboard_data["warnings"]
@@ -666,3 +683,252 @@ class TestKoboDashboard:
             with patch('cps.kobo_auth.current_user', fake_user):
                 with pytest.raises(NotFound):
                     collection_explanation.__wrapped__(42)
+
+    @patch('cps.kobo.magic_shelf.build_query_from_rules')
+    @patch('cps.kobo.magic_shelf.get_books_for_magic_shelf')
+    @patch('cps.kobo.db.CalibreDB')
+    @patch('cps.kobo.ub.session')
+    @patch('cps.kobo.config')
+    def test_get_kobo_books_sync_explanations_golden_cases(
+        self,
+        mock_config,
+        mock_session,
+        mock_calibredb_cls,
+        mock_get_magic_books,
+        mock_build_query
+    ):
+        """Test Batch Sync Explanations with golden cases (always, never, auto, passive collection)."""
+        from cps.kobo import get_kobo_books_sync_explanations
+        mock_config.config_kobo_sync_magic_shelves = True
+
+        # Mock user
+        fake_user = MagicMock()
+        fake_user.id = 1
+        fake_user.kobo_only_shelves_sync = 1 # selective sync
+        mock_session.query.return_value.filter.return_value.first.return_value = fake_user
+
+        # Books list
+        book_ids = [10, 20, 30, 40, 50]
+
+        # Mock Calibre Books
+        fake_books = []
+        for bid in book_ids:
+            b = MagicMock()
+            b.id = bid
+            b.title = f"Book {bid}"
+            fake_books.append(b)
+
+        mock_cdb = MagicMock()
+        mock_calibredb_cls.return_value = mock_cdb
+        mock_cdb.session.query.return_value.filter.return_value.filter.return_value.all.return_value = fake_books
+
+        # Mocks for database tables
+        # ArchivedBooks: Book 30 is archived
+        fake_archived = MagicMock(book_id=30, is_archived=True)
+        # Overrides: Book 10 is 'always', Book 20 is 'never', Book 30, 40, 50 are 'auto'
+        fake_override_10 = MagicMock(book_id=10, reader_override="always")
+        fake_override_20 = MagicMock(book_id=20, reader_override="never")
+
+        # SyncedBooks: Book 10 and 20 are synced
+        fake_synced_10 = MagicMock(book_id=10)
+        fake_synced_20 = MagicMock(book_id=20)
+
+        # Setup mock shelf objects
+        fake_shelf_40 = MagicMock()
+        fake_shelf_40.id = 100
+        fake_shelf_40.name = "Active Sync Shelf"
+        fake_shelf_40.kobo_sync = True
+        fake_shelf_40.kobo_display = True
+        fake_shelf_40.books = [MagicMock(book_id=40)]
+
+        fake_shelf_50 = MagicMock()
+        fake_shelf_50.id = 200
+        fake_shelf_50.name = "Passive Display Shelf"
+        fake_shelf_50.kobo_sync = False
+        fake_shelf_50.kobo_display = True
+        fake_shelf_50.books = [MagicMock(book_id=50)]
+
+        # Mock session query side effect
+        def query_side_effect(model):
+            q = MagicMock()
+            if model == ub.User:
+                q.filter.return_value.first.return_value = fake_user
+            elif model == ub.ArchivedBook:
+                q.filter.return_value.all.return_value = [fake_archived]
+            elif model == ub.KoboBookOverride:
+                q.filter.return_value.all.return_value = [fake_override_10, fake_override_20]
+            elif model == ub.MagicShelf:
+                q.filter_by.return_value.all.return_value = []
+            elif model == ub.KoboSyncedBooks:
+                q.filter.return_value.all.return_value = [fake_synced_10, fake_synced_20]
+            else:
+                # normal shelves join returning Shelf models
+                q.options.return_value.join.return_value.filter.return_value.filter.return_value.all.return_value = [
+                    fake_shelf_40, fake_shelf_50
+                ]
+            return q
+
+        mock_session.query.side_effect = query_side_effect
+
+        explanations = get_kobo_books_sync_explanations(1, book_ids)
+
+        assert len(explanations) == 5
+
+        # Book 10: always override
+        assert explanations[10]["reader_override"] == "always"
+        assert explanations[10]["is_allowed_on_device"] is True
+        assert explanations[10]["is_synced"] is True
+
+        # Book 20: never override
+        assert explanations[20]["reader_override"] == "never"
+        assert explanations[20]["is_allowed_on_device"] is False
+        assert explanations[20]["is_synced"] is True
+
+        # Book 30: archived, auto, not allowed
+        assert explanations[30]["reader_override"] == "auto"
+        assert explanations[30]["is_archived"] is True
+        assert explanations[30]["is_allowed_on_device"] is False
+
+        # Book 40: in active sync shelf -> allowed
+        assert explanations[40]["reader_override"] == "auto"
+        assert explanations[40]["is_allowed_on_device"] is True
+        assert len(explanations[40]["kobo_actual_collections"]) == 1
+        assert explanations[40]["kobo_actual_collections"][0]["name"] == "Active Sync Shelf"
+
+        # Book 50: in passive display shelf, but not allowed (no sync source)
+        assert explanations[50]["reader_override"] == "auto"
+        assert explanations[50]["is_allowed_on_device"] is False
+        assert len(explanations[50]["kobo_display_collections"]) == 1
+        assert len(explanations[50]["kobo_actual_collections"]) == 0
+
+    @patch('cps.kobo.magic_shelf.build_query_from_rules')
+    @patch('cps.kobo.magic_shelf.get_books_for_magic_shelf')
+    @patch('cps.kobo.db.CalibreDB')
+    @patch('cps.kobo.ub.session')
+    @patch('cps.kobo.config')
+    def test_passive_collection_rendered_when_book_allowed_by_other_source(
+        self,
+        mock_config,
+        mock_session,
+        mock_calibredb_cls,
+        mock_get_magic_books,
+        mock_build_query
+    ):
+        """A book in a passive collection (kobo_display=True, kobo_sync=False) should render if allowed by another source."""
+        from cps.kobo import get_kobo_books_sync_explanations
+        mock_config.config_kobo_sync_magic_shelves = True
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+        fake_user.kobo_only_shelves_sync = 1
+
+        mock_cdb = MagicMock()
+        mock_calibredb_cls.return_value = mock_cdb
+        fake_book = MagicMock(id=10, title="Multi-shelf Book")
+        mock_cdb.session.query.return_value.filter.return_value.filter.return_value.all.return_value = [fake_book]
+
+        # Setup mock shelf objects
+        fake_shelf_100 = MagicMock()
+        fake_shelf_100.id = 100
+        fake_shelf_100.name = "Active Sync Only"
+        fake_shelf_100.kobo_sync = True
+        fake_shelf_100.kobo_display = False
+        fake_shelf_100.books = [MagicMock(book_id=10)]
+
+        fake_shelf_200 = MagicMock()
+        fake_shelf_200.id = 200
+        fake_shelf_200.name = "Passive Display Only"
+        fake_shelf_200.kobo_sync = False
+        fake_shelf_200.kobo_display = True
+        fake_shelf_200.books = [MagicMock(book_id=10)]
+
+        def query_side_effect(model):
+            q = MagicMock()
+            if model == ub.User:
+                q.filter.return_value.first.return_value = fake_user
+            elif model == ub.ArchivedBook:
+                q.filter.return_value.all.return_value = []
+            elif model == ub.KoboBookOverride:
+                q.filter.return_value.all.return_value = []
+            elif model == ub.MagicShelf:
+                q.filter_by.return_value.all.return_value = []
+            elif model == ub.KoboSyncedBooks:
+                q.filter.return_value.all.return_value = []
+            else:
+                q.options.return_value.join.return_value.filter.return_value.filter.return_value.all.return_value = [
+                    fake_shelf_100, fake_shelf_200
+                ]
+            return q
+
+        mock_session.query.side_effect = query_side_effect
+
+        explanations = get_kobo_books_sync_explanations(1, [10, 11])
+
+        assert explanations[10]["is_allowed_on_device"] is True
+        assert len(explanations[10]["kobo_display_collections"]) == 1
+        assert explanations[10]["kobo_display_collections"][0]["id"] == 200
+        assert len(explanations[10]["kobo_actual_collections"]) == 1
+        assert explanations[10]["kobo_actual_collections"][0]["id"] == 200
+
+    @patch('cps.kobo.get_kobo_books_sync_explanations')
+    @patch('cps.kobo.get_kobo_blocked_book_ids')
+    @patch('cps.kobo_dashboard.get_kobo_excluded_books')
+    @patch('cps.kobo_dashboard.config')
+    @patch('cps.kobo.get_kobo_allowed_book_ids')
+    @patch('cps.ub.session')
+    @patch('cps.kobo_dashboard.db.CalibreDB')
+    def test_get_kobo_dashboard_data_full_sync_limits_workspace(
+        self,
+        mock_calibredb_cls,
+        mock_session,
+        mock_allowed_books,
+        mock_config,
+        mock_excluded,
+        mock_blocked,
+        mock_batch_explain
+    ):
+        """In Full Sync mode, the workspace books list is limited to SyncedBooks + Overrides."""
+        mock_blocked.return_value = set()
+        mock_config.config_kobo_sync_magic_shelves = False
+        mock_excluded.return_value = []
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+        fake_user.role_download.return_value = True
+        fake_user.kobo_only_shelves_sync = 0
+
+        mock_allowed_books.return_value = None
+
+        fake_synced = [MagicMock(book_id=10)]
+        fake_override = MagicMock(book_id=20, reader_override="always")
+
+        q = MagicMock()
+        q.filter_by.return_value.first.return_value = MagicMock()
+        q.filter_by.return_value.all.side_effect = [
+            fake_synced,
+            [fake_override],
+            [],
+            []
+        ]
+        mock_session.query.return_value = q
+
+        mock_cdb = MagicMock()
+        mock_calibredb_cls.return_value = mock_cdb
+        fake_book_10 = MagicMock(id=10, title="Synced Book")
+        fake_book_20 = MagicMock(id=20, title="Override Book")
+        mock_cdb.session.query.return_value.filter.return_value.filter.return_value.all.return_value = [fake_book_10, fake_book_20]
+
+        mock_batch_explain.return_value = {
+            10: {"is_synced": True, "is_allowed_on_device": True, "reader_override": "auto", "kobo_actual_collections": []},
+            20: {"is_synced": False, "is_allowed_on_device": True, "reader_override": "always", "kobo_actual_collections": []}
+        }
+
+        dashboard_data = get_kobo_dashboard_data(fake_user)
+
+        called_book_ids = set(mock_batch_explain.call_args[0][1])
+        assert called_book_ids == {10, 20}
+
+        wb = dashboard_data["workspace_books"]
+        assert len(wb) == 2
+        assert wb[0]["id"] == 10
+        assert wb[1]["id"] == 20

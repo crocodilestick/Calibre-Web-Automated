@@ -119,7 +119,7 @@ def get_kobo_dashboard_data(user):
     magic_shelves_enabled = config.config_kobo_sync_magic_shelves
 
     # 2. Sync-erlaubte Bücher ermitteln (Lazy-Import zur Zirkularimport-Vermeidung)
-    from .kobo import get_kobo_allowed_book_ids, get_kobo_blocked_book_ids
+    from .kobo import get_kobo_allowed_book_ids, get_kobo_blocked_book_ids, get_kobo_books_sync_explanations
     allowed_book_ids = get_kobo_allowed_book_ids(user.id)
     blocked_book_ids = get_kobo_blocked_book_ids(user.id)
 
@@ -128,6 +128,44 @@ def get_kobo_dashboard_data(user):
     excluded_books = get_kobo_excluded_books(user.id)
     excluded_book_ids = {book["id"] for book in excluded_books}
     allowed_books = [] if allowed_book_ids is None else get_kobo_allowed_books_for_dashboard(allowed_book_ids)
+
+    # Workspace Books ermitteln (Grundmenge)
+    override_book_ids = {o.book_id for o in ub.session.query(ub.KoboBookOverride.book_id).filter_by(user_id=user.id).all()}
+    if allowed_book_ids is not None:
+        workspace_book_ids = synced_book_ids.union(override_book_ids).union(allowed_book_ids)
+    else:
+        workspace_book_ids = synced_book_ids.union(override_book_ids)
+
+    workspace_books = []
+    if workspace_book_ids:
+        explanations = get_kobo_books_sync_explanations(user.id, list(workspace_book_ids))
+        try:
+            cdb = db.CalibreDB(init=True)
+            books = (
+                cdb.session.query(db.Books)
+                .filter(db.Books.id.in_(workspace_book_ids))
+                .filter(cdb.common_filters(allow_show_archived=True))
+                .all()
+            )
+            titles_by_id = {book.id: book.title for book in books}
+        except Exception as e:
+            log.error("Failed to query workspace books: %s", e)
+            titles_by_id = {}
+
+        for bid in sorted(workspace_book_ids):
+            title = titles_by_id.get(bid)
+            if not title:
+                continue
+            exp = explanations.get(bid, {})
+            workspace_books.append({
+                "id": bid,
+                "title": title,
+                "is_synced": bool(exp.get("is_synced", False)),
+                "is_allowed": bool(exp.get("is_allowed_on_device", False)),
+                "reader_override": exp.get("reader_override", "auto"),
+                "collections": [col["name"] for col in exp.get("kobo_actual_collections", [])],
+                "is_orphan": bool(exp.get("is_synced", False) and not exp.get("kobo_actual_collections"))
+            })
 
     # 3. Sammlungen aggregieren (kobo_display == True)
     collections = []
@@ -269,5 +307,6 @@ def get_kobo_dashboard_data(user):
         "excluded_books": excluded_books,
         "allowed_book_count": allowed_book_count,
         "excluded_book_count": len(excluded_books),
-        "synced_book_count": len(synced_book_ids)
+        "synced_book_count": len(synced_book_ids),
+        "workspace_books": workspace_books
     }

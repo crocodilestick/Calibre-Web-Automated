@@ -393,6 +393,98 @@
       {% endif %}
     </div>
   </div>
+
+  <!-- Arbeitsbereich: Bücher auf dem Reader -->
+  <div class="panel panel-default" style="margin-top: 2rem;">
+    <div class="panel-heading">
+      <h3 class="panel-title">{{ _('Arbeitsbereich: Bücher auf dem Reader') }}</h3>
+    </div>
+    <div class="panel-body">
+      <p class="text-muted" style="font-size: 90%;">
+        {{ _('Analysiere den Synchronisationsstatus deiner Bücher auf dem Kobo-Gerät (Zustand laut letztem Sync).') }}
+      </p>
+
+      <!-- Filter-Schaltflächen -->
+      <div class="btn-group" role="group" aria-label="Filter" style="margin-bottom: 1.5rem;">
+        <button type="button" class="btn btn-default active kobo-filter-btn" data-filter="all">
+          {{ _('Alle auf dem Reader') }} <span class="badge" id="kobo-count-all">0</span>
+        </button>
+        <button type="button" class="btn btn-default kobo-filter-btn" data-filter="orphans">
+          {{ _('In keiner Sammlung (verwaist)') }} <span class="badge" id="kobo-count-orphans">0</span>
+        </button>
+        {% if is_two_column_sync %}
+          <button type="button" class="btn btn-default kobo-filter-btn" data-filter="pending">
+            {{ _('Ausstehender Sync') }} <span class="badge" id="kobo-count-pending">0</span>
+          </button>
+        {% endif %}
+        <button type="button" class="btn btn-default kobo-filter-btn" data-filter="exceptions">
+          {{ _('Manuelle Ausnahmen') }} <span class="badge" id="kobo-count-exceptions">0</span>
+        </button>
+      </div>
+
+      {% if workspace_books %}
+        <div class="table-responsive">
+          <table class="table table-hover table-kobo" id="kobo-workspace-table">
+            <thead>
+              <tr>
+                <th>{{ _('Titel') }}</th>
+                <th>{{ _('Kobo-Sammlungen') }}</th>
+                <th>{{ _('Übertragungsmodus') }}</th>
+                <th>{{ _('Status') }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for book in workspace_books %}
+                <tr class="kobo-workspace-row"
+                    data-synced="{{ 'true' if book.is_synced else 'false' }}"
+                    data-allowed="{{ 'true' if book.is_allowed else 'false' }}"
+                    data-override="{{ book.reader_override }}"
+                    data-orphan="{{ 'true' if book.is_orphan else 'false' }}">
+                  <td>
+                    <strong><a href="{{ url_for('web.show_book', book_id=book.id) }}">{{ book.title }}</a></strong>
+                    <a href="#" class="kobo-book-details text-muted" data-book-id="{{ book.id }}" style="margin-left: 5px;" title="{{ _('Details anzeigen') }}">
+                      <span class="glyphicon glyphicon-info-sign"></span>
+                    </a>
+                  </td>
+                  <td>
+                    {% if book.collections %}
+                      {% for col in book.collections %}
+                        <span class="label label-default" style="display: inline-block; margin-bottom: 2px;">{{ col }}</span>
+                      {% endfor %}
+                    {% else %}
+                      <span class="text-muted" style="font-size: 90%;">—</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if book.reader_override == 'always' %}
+                      <span class="label label-success" title="{{ _('Dieses Buch wird immer übertragen.') }}">{{ _('Immer auf Reader') }}</span>
+                    {% elif book.reader_override == 'never' %}
+                      <span class="label label-danger" title="{{ _('Dieses Buch wird nie übertragen.') }}">{{ _('Nie auf Reader') }}</span>
+                    {% else %}
+                      <span class="label label-primary" title="{{ _('Dieses Buch folgt den Regaleinstellungen.') }}">{{ _('Automatisch') }}</span>
+                    {% endif %}
+                  </td>
+                  <td>
+                    {% if book.is_synced and book.is_allowed %}
+                      <span class="text-success"><span class="glyphicon glyphicon-ok-sign"></span> {{ _('Auf Reader') }}</span>
+                    {% elif book.is_synced and not book.is_allowed %}
+                      <span class="text-warning" title="{{ _('Dieses Buch ist auf dem Reader, aber die Freigabe wurde in Calibre-Web aufgehoben. Es wird beim nächsten Sync entfernt.') }}"><span class="glyphicon glyphicon-exclamation-sign"></span> {{ _('Auf Reader (nicht mehr freigegeben)') }}</span>
+                    {% elif not book.is_synced and book.is_allowed %}
+                      <span class="text-primary" title="{{ _('Dieses Buch wurde freigegeben, wurde aber noch nicht vom Reader abgerufen.') }}"><span class="glyphicon glyphicon-refresh"></span> {{ _('Ausstehender Sync') }}</span>
+                    {% else %}
+                      <span class="text-danger"><span class="glyphicon glyphicon-remove-sign"></span> {{ _('Blockiert / Nicht freigegeben') }}</span>
+                    {% endif %}
+                  </td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="kobo-empty-state">{{ _('Keine relevanten Bücher im Arbeitsbereich vorhanden.') }}</p>
+      {% endif %}
+    </div>
+  </div>
 </div>
 
 <!-- Kobo Explanation Modal -->
@@ -626,6 +718,83 @@ $(document).ready(function() {
       $('#koboExplanationModalBody').html('<div class="alert alert-danger">{{ _('Details konnten nicht geladen werden.') }}</div>');
     });
   }
+
+  // Workspace filtering logic
+  function updateWorkspaceCounts() {
+    var countAll = 0;
+    var countOrphans = 0;
+    var countPending = 0;
+    var countExceptions = 0;
+
+    $('.kobo-workspace-row').each(function() {
+      var isSynced = $(this).data('synced') === true;
+      var isAllowed = $(this).data('allowed') === true;
+      var isOrphan = $(this).data('orphan') === true;
+      var override = $(this).data('override');
+
+      if (isSynced) {
+        countAll++;
+      }
+      if (isOrphan) {
+        countOrphans++;
+      }
+      if (isAllowed && !isSynced) {
+        countPending++;
+      }
+      if (override === 'always' || override === 'never') {
+        countExceptions++;
+      }
+    });
+
+    $('#kobo-count-all').text(countAll);
+    $('#kobo-count-orphans').text(countOrphans);
+    $('#kobo-count-pending').text(countPending);
+    $('#kobo-count-exceptions').text(countExceptions);
+  }
+
+  function applyWorkspaceFilter(filter) {
+    $('.kobo-workspace-row').each(function() {
+      var isSynced = $(this).data('synced') === true;
+      var isAllowed = $(this).data('allowed') === true;
+      var isOrphan = $(this).data('orphan') === true;
+      var override = $(this).data('override');
+
+      var show = false;
+      if (filter === 'all') {
+        show = isSynced;
+      } else if (filter === 'orphans') {
+        show = isOrphan;
+      } else if (filter === 'pending') {
+        show = isAllowed && !isSynced;
+      } else if (filter === 'exceptions') {
+        show = (override === 'always' || override === 'never');
+      }
+
+      if (show) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  }
+
+  // Filter button click handler
+  $('.kobo-filter-btn').on('click', function() {
+    $('.kobo-filter-btn').removeClass('active');
+    $(this).addClass('active');
+    var filter = $(this).data('filter');
+    applyWorkspaceFilter(filter);
+  });
+
+  // Attach details click handler for workspace rows
+  $(document).on('click', '.kobo-workspace-row .kobo-book-details', function(e) {
+    e.preventDefault();
+    var bookId = $(this).data('book-id');
+    showBookExplanation(bookId);
+  });
+
+  updateWorkspaceCounts();
+  applyWorkspaceFilter('all');
 
   function escapeHtml(text) {
     if (!text) return '';

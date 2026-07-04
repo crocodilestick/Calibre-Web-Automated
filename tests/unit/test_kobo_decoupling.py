@@ -368,8 +368,8 @@ class TestKoboSyncDecoupling:
 
     @patch('cps.kobo.get_magic_shelf_book_ids_for_kobo')
     @patch('cps.ub.session')
-    def test_get_kobo_allowed_book_ids_with_exclusion_shelf(self, mock_session, mock_get_magic):
-        """Verify that get_kobo_allowed_book_ids subtracts books from exclusion shelves, read-only."""
+    def test_get_kobo_allowed_book_ids_ignores_legacy_exclusion_shelf(self, mock_session, mock_get_magic):
+        """Verify that get_kobo_allowed_book_ids does not subtract books from legacy exclusion shelves."""
         fake_user = MagicMock()
         fake_user.id = 1
         fake_user.kobo_only_shelves_sync = True
@@ -381,29 +381,16 @@ class TestKoboSyncDecoupling:
         # Mock normal shelf books query: returns book IDs [10, 20]
         fake_bookshelf_records = [MagicMock(book_id=10), MagicMock(book_id=20)]
 
-        # Mock exclusion shelf query: returns a shelf "Kobo: Ausgeschlossen" with ID 99
-        fake_ex_shelf = MagicMock()
-        fake_ex_shelf.id = 99
-        fake_ex_shelf.name = "Kobo: Ausgeschlossen"
-
-        mock_shelf_query = MagicMock()
-        mock_shelf_query.filter.return_value.all.return_value = [fake_ex_shelf]
-
-        # Mock BookShelf query for exclusion shelf: returns book ID [20]
-        fake_ex_bookshelf_records = [MagicMock(book_id=20)]
-
         def query_side_effect(model_or_column):
             if model_or_column is ub.User:
                 return mock_user_query
-            elif model_or_column is ub.Shelf:
-                return mock_shelf_query
             elif model_or_column is ub.BookShelf.book_id:
-                # normal shelf query does query(ub.BookShelf.book_id).join(...).filter(...).all()
-                # exclusion shelf query does query(ub.BookShelf.book_id).filter(...).all()
-                # We return a mock that handles both calls selectively
                 mock_q = MagicMock()
                 mock_q.join.return_value.filter.return_value.all.return_value = fake_bookshelf_records
-                mock_q.filter.return_value.all.return_value = fake_ex_bookshelf_records
+                return mock_q
+            elif model_or_column is ub.KoboBookOverride.book_id:
+                mock_q = MagicMock()
+                mock_q.filter_by.return_value.all.return_value = []
                 return mock_q
             return MagicMock()
 
@@ -414,10 +401,10 @@ class TestKoboSyncDecoupling:
 
         allowed = get_kobo_allowed_book_ids(1)
 
-        # Expected: {10, 20} - {20} = {10}
-        assert allowed == {10}
+        # Expected: {10, 20} (no subtraction of any exclusion shelf)
+        assert allowed == {10, 20}
 
-        # Check that we did not add anything to the session (read-only constraint)
+        # Check that we did not add anything to the session
         assert not mock_session.add.called
 
     @patch('cps.magic_shelf.invalidate_magic_shelf_cache')
@@ -465,59 +452,7 @@ class TestKoboSyncDecoupling:
         # Verify book tracking remove
         mock_sync_status.remove_synced_book.assert_called_once_with(42)
 
-    @patch('cps.kobo.kobo_sync_status')
-    @patch('cps.kobo.calibre_db')
-    @patch('cps.kobo.current_user')
-    def test_handle_book_deletion_request_full_sync_with_visibility(
-        self, mock_current_user, mock_calibre_db, mock_sync_status
-    ):
-        """Kobo-DELETE on full sync archives book if check_visibility(32768) is True."""
-        from cps.kobo import HandleBookDeletionRequest
 
-        mock_current_user.id = 1
-        mock_current_user.kobo_only_shelves_sync = False
-        mock_current_user.check_visibility.return_value = True
-
-        fake_book = MagicMock()
-        fake_book.id = 42
-        mock_calibre_db.get_book_by_uuid.return_value = fake_book
-
-        response, code = HandleBookDeletionRequest.__wrapped__("book-uuid")
-
-        assert code == 204
-        assert response == ""
-
-        # Verify visibility was checked for archiving permission
-        mock_current_user.check_visibility.assert_called_once_with(32768)
-        mock_sync_status.change_archived_books.assert_called_once_with(42, True)
-        mock_sync_status.remove_synced_book.assert_called_once_with(42)
-
-    @patch('cps.kobo.kobo_sync_status')
-    @patch('cps.kobo.calibre_db')
-    @patch('cps.kobo.current_user')
-    def test_handle_book_deletion_request_full_sync_without_visibility(
-        self, mock_current_user, mock_calibre_db, mock_sync_status
-    ):
-        """Kobo-DELETE on full sync does not archive book if check_visibility(32768) is False."""
-        from cps.kobo import HandleBookDeletionRequest
-
-        mock_current_user.id = 1
-        mock_current_user.kobo_only_shelves_sync = False
-        mock_current_user.check_visibility = MagicMock(return_value=False)
-
-        fake_book = MagicMock()
-        fake_book.id = 42
-        mock_calibre_db.get_book_by_uuid.return_value = fake_book
-
-        response, code = HandleBookDeletionRequest.__wrapped__("book-uuid")
-
-        assert code == 204
-        assert response == ""
-
-        # Verify visibility was checked for archiving permission
-        mock_current_user.check_visibility.assert_called_once_with(32768)
-        mock_sync_status.change_archived_books.assert_not_called()
-        mock_sync_status.remove_synced_book.assert_called_once_with(42)
 
     @patch('cps.kobo.make_response')
     @patch('scripts.cwa_db.CWA_DB')
@@ -733,3 +668,119 @@ class TestKoboSyncDecoupling:
 
         # It must commit the changes
         mock_session.commit.assert_called_once()
+
+    @patch('cps.ub.session')
+    def test_get_kobo_blocked_book_ids_never_override(self, mock_session):
+        """Verify that get_kobo_blocked_book_ids returns only books with never override."""
+        from cps.kobo import get_kobo_blocked_book_ids
+        fake_overrides = [MagicMock(book_id=42), MagicMock(book_id=43)]
+        mock_session.query().filter_by().all.return_value = fake_overrides
+        blocked = get_kobo_blocked_book_ids(1)
+        assert blocked == {42, 43}
+
+    @patch('cps.kobo.get_magic_shelf_book_ids_for_kobo')
+    @patch('cps.ub.session')
+    def test_get_kobo_allowed_book_ids_with_always_override(self, mock_session, mock_get_magic):
+        """Verify that always override adds books to allowed IDs in selective sync."""
+        fake_user = MagicMock()
+        fake_user.id = 1
+        fake_user.kobo_only_shelves_sync = True
+
+        mock_user_query = MagicMock()
+        mock_user_query.filter.return_value.first.return_value = fake_user
+
+        fake_bookshelf_records = [MagicMock(book_id=10)]
+        fake_always_records = [MagicMock(book_id=99)]
+
+        mock_override_q = MagicMock()
+        mock_override_filter = MagicMock()
+        mock_override_q.filter_by.return_value = mock_override_filter
+        # first call (always) returns fake_always_records, second call (never) returns []
+        mock_override_filter.all.side_effect = [fake_always_records, []]
+
+        def query_side_effect(model_or_column):
+            if model_or_column is ub.User:
+                return mock_user_query
+            elif model_or_column is ub.BookShelf.book_id:
+                mock_q = MagicMock()
+                mock_q.join.return_value.filter.return_value.all.return_value = fake_bookshelf_records
+                return mock_q
+            else:
+                return mock_override_q
+
+        mock_session.query.side_effect = query_side_effect
+        mock_get_magic.return_value = set()
+
+        allowed = get_kobo_allowed_book_ids(1)
+        assert allowed == {10, 99}
+
+    @patch('cps.kobo.get_magic_shelf_book_ids_for_kobo')
+    @patch('cps.ub.session')
+    def test_get_kobo_allowed_book_ids_with_never_override(self, mock_session, mock_get_magic):
+        """Verify that never override subtracts books from allowed IDs in selective sync."""
+        fake_user = MagicMock()
+        fake_user.id = 1
+        fake_user.kobo_only_shelves_sync = True
+
+        mock_user_query = MagicMock()
+        mock_user_query.filter.return_value.first.return_value = fake_user
+
+        fake_bookshelf_records = [MagicMock(book_id=10), MagicMock(book_id=20)]
+        fake_never_records = [MagicMock(book_id=20)]
+
+        mock_override_q = MagicMock()
+        mock_override_filter = MagicMock()
+        mock_override_q.filter_by.return_value = mock_override_filter
+        # first call (always) returns [], second call (never) returns fake_never_records
+        mock_override_filter.all.side_effect = [[], fake_never_records]
+
+        def query_side_effect(model_or_column):
+            if model_or_column is ub.User:
+                return mock_user_query
+            elif model_or_column is ub.BookShelf.book_id:
+                mock_q = MagicMock()
+                mock_q.join.return_value.filter.return_value.all.return_value = fake_bookshelf_records
+                return mock_q
+            else:
+                return mock_override_q
+
+        mock_session.query.side_effect = query_side_effect
+        mock_get_magic.return_value = set()
+
+        allowed = get_kobo_allowed_book_ids(1)
+        assert allowed == {10}
+
+    @patch('cps.magic_shelf.invalidate_magic_shelf_cache')
+    @patch('cps.kobo.kobo_sync_status')
+    @patch('cps.kobo.calibre_db')
+    @patch('cps.ub.session')
+    @patch('cps.kobo.current_user')
+    def test_handle_book_deletion_request_full_sync(self, mock_current_user, mock_session, mock_calibre_db, mock_sync_status, mock_invalidate):
+        """Kobo-DELETE on full sync marks the book as reader_override = 'never'."""
+        from cps.kobo import HandleBookDeletionRequest
+
+        mock_current_user.id = 1
+        mock_current_user.kobo_only_shelves_sync = False
+
+        fake_book = MagicMock()
+        fake_book.id = 42
+        mock_calibre_db.get_book_by_uuid.return_value = fake_book
+
+        # No override exists yet
+        mock_session.query().filter_by().first.return_value = None
+
+        response, code = HandleBookDeletionRequest.__wrapped__("book-uuid")
+
+        assert code == 204
+        assert response == ""
+
+        # Verify new override was added
+        mock_session.add.assert_called_once()
+        added_override = mock_session.add.call_args[0][0]
+        assert added_override.book_id == 42
+        assert added_override.reader_override == "never"
+        assert added_override.user_id == 1
+
+        mock_invalidate.assert_called_once()
+        mock_session.commit.assert_called_once()
+        mock_sync_status.remove_synced_book.assert_called_once_with(42)

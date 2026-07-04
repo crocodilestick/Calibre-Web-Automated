@@ -45,9 +45,8 @@ def get_magic_shelf_book_ids_direct(shelf):
 
 def get_kobo_excluded_books(user_id):
     excluded_rows = (
-        ub.session.query(ub.BookShelf.book_id)
-        .join(ub.Shelf, ub.BookShelf.shelf == ub.Shelf.id)
-        .filter(ub.Shelf.user_id == user_id, ub.Shelf.name == KOBO_EXCLUSION_SHELF_NAME)
+        ub.session.query(ub.KoboBookOverride.book_id)
+        .filter_by(user_id=user_id, reader_override="never")
         .all()
     )
     excluded_ids = sorted({row.book_id for row in excluded_rows})
@@ -120,8 +119,9 @@ def get_kobo_dashboard_data(user):
     magic_shelves_enabled = config.config_kobo_sync_magic_shelves
 
     # 2. Sync-erlaubte Bücher ermitteln (Lazy-Import zur Zirkularimport-Vermeidung)
-    from .kobo import get_kobo_allowed_book_ids
+    from .kobo import get_kobo_allowed_book_ids, get_kobo_blocked_book_ids
     allowed_book_ids = get_kobo_allowed_book_ids(user.id)
+    blocked_book_ids = get_kobo_blocked_book_ids(user.id)
 
     # Tatsächlich synchronisierte Buch-IDs
     synced_book_ids = {b.book_id for b in ub.session.query(ub.KoboSyncedBooks.book_id).filter_by(user_id=user.id).all()}
@@ -136,9 +136,9 @@ def get_kobo_dashboard_data(user):
     normal_shelves = ub.session.query(ub.Shelf).filter_by(user_id=user.id, kobo_display=True).all()
     for shelf in normal_shelves:
         book_ids = {b.book_id for b in shelf.books}
-        allowed_in_shelf = book_ids if allowed_book_ids is None else book_ids.intersection(allowed_book_ids)
+        allowed_in_shelf = book_ids - blocked_book_ids if allowed_book_ids is None else book_ids.intersection(allowed_book_ids)
         synced_in_shelf = book_ids.intersection(synced_book_ids)
-        blocked_in_shelf = book_ids.intersection(excluded_book_ids) if is_two_column_sync else set()
+        blocked_in_shelf = book_ids.intersection(excluded_book_ids)
 
         collections.append({
             "id": shelf.id,
@@ -158,9 +158,9 @@ def get_kobo_dashboard_data(user):
         # Performante ID-Ermittlung
         book_ids = get_magic_shelf_book_ids_direct(shelf)
 
-        allowed_in_shelf = book_ids if allowed_book_ids is None else book_ids.intersection(allowed_book_ids)
+        allowed_in_shelf = book_ids - blocked_book_ids if allowed_book_ids is None else book_ids.intersection(allowed_book_ids)
         synced_in_shelf = book_ids.intersection(synced_book_ids)
-        blocked_in_shelf = book_ids.intersection(excluded_book_ids) if is_two_column_sync else set()
+        blocked_in_shelf = book_ids.intersection(excluded_book_ids)
 
         collections.append({
             "id": shelf.id,
@@ -216,7 +216,7 @@ def get_kobo_dashboard_data(user):
                 "message": f"Sammlung '{col['name']}' ist leer (keine Bücher zugeordnet)."
             })
 
-        elif is_two_column_sync and col["blocked_books"] > 0:
+        elif col["blocked_books"] > 0:
             blocked_books_verb = "ist" if col["blocked_books"] == 1 else "sind"
             warnings.append({
                 "type": "info",
@@ -242,6 +242,17 @@ def get_kobo_dashboard_data(user):
                 "message": f"In Sammlung '{col['name']}' {unselected_books_verb} {format_book_count(unselected_books)} nicht für Kobo ausgewählt."
             })
 
+    if allowed_book_ids is None:
+        try:
+            cdb = db.CalibreDB(init=True)
+            total_visible_count = cdb.session.query(db.Books.id).filter(cdb.common_filters(allow_show_archived=True)).distinct().count()
+        except Exception as e:
+            log.error(f"Failed to fetch total visible calibre books count: {e}")
+            total_visible_count = 0
+        allowed_book_count = max(0, total_visible_count - len(blocked_book_ids))
+    else:
+        allowed_book_count = len(allowed_book_ids)
+
     return {
         "is_two_column_sync": is_two_column_sync,
         "has_kobo_token": has_kobo_token,
@@ -249,7 +260,7 @@ def get_kobo_dashboard_data(user):
         "warnings": warnings,
         "allowed_books": allowed_books,
         "excluded_books": excluded_books,
-        "allowed_book_count": 0 if allowed_book_ids is None else len(allowed_book_ids),
+        "allowed_book_count": allowed_book_count,
         "excluded_book_count": len(excluded_books),
         "synced_book_count": len(synced_book_ids)
     }

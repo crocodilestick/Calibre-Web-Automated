@@ -30,12 +30,12 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 - Helper-Methoden `get_kobo_blocked_book_ids(user_id)` und die aktualisierte `get_kobo_allowed_book_ids(user_id)` in `cps/kobo.py` implementiert, um reader-spezifische Overrides (`always` / `never` / `auto`) zu verarbeiten. `Kobo: Ausgeschlossen` wird nicht mehr als aktive Sync-Entscheidung verwendet.
 - Kobo-Live-Synchronisation in `cps/kobo.py` (`HandleSyncRequest()`) angepasst: blockierte Bücher werden bei der Deletionslogik, den geänderten Büchern (`changed_entries`), den geänderten Leseständen (`changed_reading_states`) sowie in normalen und magischen Kobo-Sammlungen (`sync_shelves()`) in beiden Sync-Modi (Full & Selective Sync) ausgeschlossen.
 - Kobo-DELETE Request-Handler `HandleBookDeletionRequest()` angepasst: sowohl im Full Sync als auch im Selective Sync wird nun `reader_override = "never"` gesetzt.
-- Dashboard-Statistiken in `cps/kobo_dashboard.py` (`get_kobo_dashboard_data()`) angepasst: Zähler und Warnungen ziehen `never`-Blocker ab; `allowed_book_count` berücksichtigt nun Kobo-Format-Filterung im Full-Sync-Pfad.
+- Dashboard-Statistiken in `cps/kobo_dashboard.py` (`get_kobo_dashboard_data()`) angepasst: Zähler und Warnungen ziehen `never`-Blocker ab; `allowed_book_count` berücksichtigt nun Kobo-Format-Filterung im Full-Sync-Pfad und schließt blockierte IDs direkt im SQL-Filter aus, um Subtraktionsfehler bei nicht sichtbaren Büchern zu verhindern.
 - Die Dashboard-Aktionen "Nicht auf Kobo" und "Wieder erlauben" in `cps/kobo_auth.py` auf `KoboBookOverride` umgestellt. `allow_excluded_book()` löscht nur noch `never`-Overrides, wodurch `always` geschützt wird.
 - Behebung des `NameError` bei `KOSyncProgress` in `add_missing_tables()` durch lokalen Import.
 - UI-Templates (`kobo_dashboard.html`) bereinigt: "Kobo: Ausgeschlossen" durch "Nicht auf Kobo" ersetzt, JS-Modal um `never_override` Blocker erweitert.
 - Workflow-Dokumentation `docs/alexandria/kobo-workflow.md` aktualisiert und das alte Hilfsregal historisch eingeordnet.
-- Unit-Tests in `tests/unit/test_kobo_decoupling.py`, `tests/unit/test_kobo_explanation.py` und `tests/unit/test_kobo_dashboard.py` erweitert und auf das neue Overrides-Modell angepasst (inklusive Migrationstest und Regressionsschutz-Tests).
+- Unit-Tests in `tests/unit/test_kobo_decoupling.py`, `tests/unit/test_kobo_explanation.py` und `tests/unit/test_kobo_dashboard.py` erweitert und auf das neue Overrides-Modell angepasst (inklusive erweitertem Migrationstest für Unique Constraints und Regressionsschutz-Tests).
 - Kompilierung und Syntaxprüfung (`py_compile`) sowie `git diff --check` fehlerfrei durchgeführt.
 
 ### Nächster Schritt

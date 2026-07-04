@@ -480,7 +480,7 @@ class TestKoboDashboard:
         template = Path("cps/templates/kobo_dashboard.html").read_text(encoding="utf-8")
 
         assert "{% block js %}" in template
-        assert template.index("{% block js %}") < template.index("$('.kobo-book-details')")
+        assert template.index("{% block js %}") < template.index(".kobo-book-details")
         assert template.index("{% block js %}") < template.index("$('.kobo-collection-details')")
 
     @patch('cps.kobo_auth._', new=lambda x: x)

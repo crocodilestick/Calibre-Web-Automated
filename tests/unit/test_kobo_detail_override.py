@@ -624,6 +624,8 @@ class TestKoboDetailOverride:
                     assert data["success"] is True
                     assert data["reader_override"] == "always"
                     assert data["explanation"]["error_generating_explanation"] is True
+                    assert data["explanation"]["is_allowed_on_device"] is None
+                    assert data["explanation"]["is_synced"] is None
                     mock_session.add.assert_called_once()
                     mock_invalidate.assert_called_once()
                     mock_session.commit.assert_called_once()

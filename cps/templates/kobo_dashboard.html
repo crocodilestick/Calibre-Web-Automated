@@ -845,28 +845,37 @@ $(document).ready(function() {
         var exp = response.explanation;
         $row.attr('data-override', newValue);
         $row.data('override', newValue);
-        $row.data('allowed', exp.is_allowed_on_device);
-        $row.data('synced', exp.is_synced);
 
-        var isOrphan = (exp.is_synced && (!exp.kobo_actual_collections || exp.kobo_actual_collections.length === 0));
-        $row.data('orphan', isOrphan);
-        $row.attr('data-orphan', isOrphan ? 'true' : 'false');
-        $row.attr('data-allowed', exp.is_allowed_on_device ? 'true' : 'false');
-        $row.attr('data-synced', exp.is_synced ? 'true' : 'false');
-
-        // Statusspalte rendern
-        var statusCell = $row.find('.kobo-status-cell');
-        var statusHtml = '';
-        if (exp.is_synced && exp.is_allowed_on_device) {
-          statusHtml = '<span class="text-success"><span class="glyphicon glyphicon-ok-sign"></span> <span class="status-text">' + escapeHtml("{{ _('Auf Reader') }}") + '</span></span>';
-        } else if (exp.is_synced && !exp.is_allowed_on_device) {
-          statusHtml = '<span class="text-warning" title="' + escapeHtml("{{ _('Dieses Buch ist auf dem Reader, aber die Freigabe wurde in Calibre-Web aufgehoben. Es wird beim nächsten Sync entfernt.') }}") + '"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="status-text">' + escapeHtml("{{ _('Auf Reader (nicht mehr freigegeben)') }}") + '</span></span>';
-        } else if (!exp.is_synced && exp.is_allowed_on_device) {
-          statusHtml = '<span class="text-primary" title="' + escapeHtml("{{ _('Dieses Buch wurde freigegeben, wurde aber noch nicht vom Reader abgerufen.') }}") + '"><span class="glyphicon glyphicon-refresh"></span> <span class="status-text">' + escapeHtml("{{ _('Ausstehender Sync') }}") + '</span></span>';
+        if (exp.error_generating_explanation) {
+          // Statuszelle nicht neu berechnen, sondern nur ein Hinweissymbol anfügen
+          var statusCell = $row.find('.kobo-status-cell');
+          if (statusCell.find('.kobo-status-stale-warn').length === 0) {
+            statusCell.append(' <span class="text-warning kobo-status-stale-warn" title="' + escapeHtml("{{ _('Status-Details können erst nach dem Aktualisieren präzise berechnet werden.') }}") + '"><span class="glyphicon glyphicon-question-sign"></span></span>');
+          }
         } else {
-          statusHtml = '<span class="text-danger"><span class="glyphicon glyphicon-remove-sign"></span> <span class="status-text">' + escapeHtml("{{ _('Blockiert / Nicht freigegeben') }}") + '</span></span>';
+          $row.data('allowed', exp.is_allowed_on_device);
+          $row.data('synced', exp.is_synced);
+
+          var isOrphan = (exp.is_synced && (!exp.kobo_actual_collections || exp.kobo_actual_collections.length === 0));
+          $row.data('orphan', isOrphan);
+          $row.attr('data-orphan', isOrphan ? 'true' : 'false');
+          $row.attr('data-allowed', exp.is_allowed_on_device ? 'true' : 'false');
+          $row.attr('data-synced', exp.is_synced ? 'true' : 'false');
+
+          // Statusspalte rendern
+          var statusCell = $row.find('.kobo-status-cell');
+          var statusHtml = '';
+          if (exp.is_synced && exp.is_allowed_on_device) {
+            statusHtml = '<span class="text-success"><span class="glyphicon glyphicon-ok-sign"></span> <span class="status-text">' + escapeHtml("{{ _('Auf Reader') }}") + '</span></span>';
+          } else if (exp.is_synced && !exp.is_allowed_on_device) {
+            statusHtml = '<span class="text-warning" title="' + escapeHtml("{{ _('Dieses Buch ist auf dem Reader, aber die Freigabe wurde in Calibre-Web aufgehoben. Es wird beim nächsten Sync entfernt.') }}") + '"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="status-text">' + escapeHtml("{{ _('Auf Reader (nicht mehr freigegeben)') }}") + '</span></span>';
+          } else if (!exp.is_synced && exp.is_allowed_on_device) {
+            statusHtml = '<span class="text-primary" title="' + escapeHtml("{{ _('Dieses Buch wurde freigegeben, wurde aber noch nicht vom Reader abgerufen.') }}") + '"><span class="glyphicon glyphicon-refresh"></span> <span class="status-text">' + escapeHtml("{{ _('Ausstehender Sync') }}") + '</span></span>';
+          } else {
+            statusHtml = '<span class="text-danger"><span class="glyphicon glyphicon-remove-sign"></span> <span class="status-text">' + escapeHtml("{{ _('Blockiert / Nicht freigegeben') }}") + '</span></span>';
+          }
+          statusCell.html(statusHtml);
         }
-        statusCell.html(statusHtml);
 
         // Filter-Zähler dynamisch aktualisieren und aktiven Filter erneut anwenden
         updateWorkspaceCounts();

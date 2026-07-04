@@ -242,8 +242,8 @@ def set_kobo_book_override(book_id):
             explanation = {
                 "book_id": book_id,
                 "exists": True,
-                "is_allowed_on_device": reader_override == "always" or (reader_override == "auto"),
-                "is_synced": False,
+                "is_allowed_on_device": None,
+                "is_synced": None,
                 "reader_override": reader_override,
                 "error_generating_explanation": True
             }

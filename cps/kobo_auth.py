@@ -175,6 +175,57 @@ def block_kobo_book(book_id):
     return redirect(url_for("kobo_auth.dashboard"))
 
 
+@kobo_auth.route("/book/<int:book_id>/override", methods=["POST"])
+@user_login_required
+def set_kobo_book_override(book_id):
+    reader_override = request.form.get("reader_override")
+    if reader_override not in ("auto", "always", "never"):
+        flash(_("Ungültiger Kobo-Übertragungsmodus."), category="error")
+        return abort(400)
+
+    book = None
+    try:
+        cdb = db.CalibreDB(init=True)
+        book = cdb.session.query(db.Books).filter(db.Books.id == book_id).filter(cdb.common_filters(allow_show_archived=True)).first()
+    except Exception as e:
+        log.error("Failed to check book existence for Kobo override: %s", e)
+        return abort(500)
+
+    if not book:
+        return abort(404)
+
+    try:
+        override = ub.session.query(ub.KoboBookOverride).filter_by(
+            user_id=current_user.id,
+            book_id=book_id
+        ).first()
+
+        if reader_override == "auto":
+            if override:
+                ub.session.delete(override)
+        else:
+            if not override:
+                override = ub.KoboBookOverride(
+                    user_id=current_user.id,
+                    book_id=book_id,
+                    reader_override=reader_override
+                )
+                ub.session.add(override)
+            else:
+                override.reader_override = reader_override
+
+        from .magic_shelf import invalidate_magic_shelf_cache
+        invalidate_magic_shelf_cache()
+        ub.session.commit()
+        flash(_("Kobo-Übertragungsmodus aktualisiert."), category="success")
+    except Exception as e:
+        ub.session.rollback()
+        log.error("Failed to set Kobo book override for book %d: %s", book_id, e)
+        flash(_("Der Kobo-Übertragungsmodus konnte nicht gespeichert werden."), category="error")
+
+    return redirect(url_for("web.show_book", book_id=book_id))
+
+
 def disable_failed_auth_redirect_for_blueprint(bp):
     lm.blueprint_login_views[bp.name] = None
 

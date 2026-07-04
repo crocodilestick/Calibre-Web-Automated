@@ -855,6 +855,90 @@
                                 {% endif %}
                             </div>
                         {% endif %}
+
+                        {% if kobo_sync_enabled and current_user.is_authenticated and kobo_explanation and kobo_explanation.exists %}
+                            <div class="kobo-sync-panel panel panel-default" style="margin-top: 20px; background: rgba(0, 0, 0, 0.15); border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 10px; color: inherit;">
+                                <div class="panel-heading" style="background: rgba(0, 0, 0, 0.1); border-bottom: 1px solid rgba(255, 255, 255, 0.08); border-top-left-radius: 10px; border-top-right-radius: 10px; color: inherit;">
+                                    <h3 class="panel-title" style="font-weight: 600;">{{ _('Kobo eReader-Übertragung') }}</h3>
+                                </div>
+                                <div class="panel-body">
+                                    <div class="kobo-status-row" style="margin-bottom: 15px; display: flex; flex-direction: column; gap: 8px;">
+                                        <div style="margin-bottom: 6px;">
+                                            <strong>{{ _('Übertragungs-Freigabe (Soll auf Reader):') }}</strong>
+                                            {% if kobo_explanation.is_allowed_on_device %}
+                                                <span class="label label-success" style="font-size: 0.9em; padding: 0.3em 0.6em; border-radius: 4px;">{{ _('Freigabe erteilt') }}</span>
+                                            {% else %}
+                                                <span class="label label-default" style="font-size: 0.9em; padding: 0.3em 0.6em; border-radius: 4px; background-color: #777;">{{ _('Bleibt in der Cloud') }}</span>
+                                            {% endif %}
+                                        </div>
+                                        <div style="margin-bottom: 6px;">
+                                            <strong>{{ _('Aktueller Sync-Zustand (Ist auf Reader):') }}</strong>
+                                            {% if kobo_explanation.is_synced %}
+                                                <span class="label label-success" style="font-size: 0.9em; padding: 0.3em 0.6em; border-radius: 4px;">{{ _('Auf dem Reader vorhanden') }}</span>
+                                            {% elif kobo_explanation.is_visible_on_device %}
+                                                <span class="label label-info" style="font-size: 0.9em; padding: 0.3em 0.6em; border-radius: 4px; background-color: #5bc0de;">{{ _('Ausstehend (wird beim nächsten Synchronisieren übertragen)') }}</span>
+                                            {% else %}
+                                                <span class="label label-default" style="font-size: 0.9em; padding: 0.3em 0.6em; border-radius: 4px; background-color: #777;">{{ _('Nicht übertragen') }}</span>
+                                            {% endif %}
+                                        </div>
+
+                                        {% if kobo_explanation.is_archived %}
+                                            <div class="alert alert-warning" style="margin-top: 10px; margin-bottom: 10px; padding: 10px; border-radius: 6px; background-color: rgba(240, 173, 78, 0.15); border-color: rgba(240, 173, 78, 0.3); color: #f0ad4e;">
+                                                <span class="glyphicon glyphicon-warning-sign"></span> {{ _('Das Buch ist archiviert (und wird daher nicht auf das Gerät geladen).') }}
+                                            </div>
+                                        {% endif %}
+
+                                        <div class="kobo-reason" style="margin-top: 5px; opacity: 0.85; font-size: 0.95em;">
+                                            <strong>{{ _('Begründung:') }}</strong>
+                                            {% if kobo_explanation.reader_override == 'always' %}
+                                                {{ _("Das Buch wurde manuell als 'Immer auf dem Reader' markiert.") }}
+                                            {% elif kobo_explanation.reader_override == 'never' %}
+                                                {{ _("Das Buch wurde manuell als 'Nie auf dem Reader' markiert.") }}
+                                            {% elif kobo_explanation.reader_override == 'auto' %}
+                                                {% if kobo_explanation.is_allowed_on_device %}
+                                                    {{ _('Übertragen durch Regal(e):') }}
+                                                    {% for source in kobo_explanation.release_sources %}
+                                                        <span class="label label-primary" style="font-size: 0.85em; margin-left: 2px;">{{ source.name }}</span>{% if not loop.last %}, {% endif %}
+                                                    {% endfor %}
+                                                {% else %}
+                                                    {{ _('Das Buch befindet sich in keinem aktiven Kobo-Regal und folgt der automatischen Auswahl.') }}
+                                                {% endif %}
+                                            {% endif %}
+                                        </div>
+                                    </div>
+
+                                    <hr style="border-top: 1px solid rgba(255, 255, 255, 0.08); margin: 15px 0;">
+
+                                    <form action="{{ url_for('kobo_auth.set_kobo_book_override', book_id=entry.id) }}" method="POST">
+                                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                        <div class="form-group" style="margin-bottom: 15px;">
+                                            <label style="font-weight: 600; margin-bottom: 8px;">{{ _('Einstellung für dieses Buch:') }}</label>
+                                            <div class="radio" style="margin-top: 5px;">
+                                                <label>
+                                                    <input type="radio" name="reader_override" value="auto" {% if kobo_explanation.reader_override == 'auto' %}checked{% endif %}>
+                                                    {{ _('Automatisch (folgt Regalen)') }}
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input type="radio" name="reader_override" value="always" {% if kobo_explanation.reader_override == 'always' %}checked{% endif %}>
+                                                    {{ _('Immer auf dem Reader') }}
+                                                </label>
+                                            </div>
+                                            <div class="radio">
+                                                <label>
+                                                    <input type="radio" name="reader_override" value="never" {% if kobo_explanation.reader_override == 'never' %}checked{% endif %}>
+                                                    {{ _('Nie auf dem Reader') }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <button type="submit" class="btn btn-default" style="background: rgba(255, 255, 255, 0.08); border: 1px solid rgba(255, 255, 255, 0.15); color: inherit;">
+                                            {{ _('Kobo-Einstellung anwenden') }}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        {% endif %}
                     </div>
                 </div>
 

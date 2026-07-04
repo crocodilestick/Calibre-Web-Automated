@@ -2979,6 +2979,14 @@ def show_book(book_id):
         cwa_db = CWA_DB()
         cwa_settings = cwa_db.cwa_settings
 
+        kobo_explanation = None
+        if config.config_kobo_sync and current_user.is_authenticated:
+            try:
+                from .kobo import get_kobo_book_sync_explanation
+                kobo_explanation = get_kobo_book_sync_explanation(current_user.id, book_id)
+            except Exception as e:
+                log.error(f"Failed to fetch kobo explanation in show_book: {e}")
+
         return render_title_template('detail.html',
                                      entry=entry,
                                      cc=cc,
@@ -2988,6 +2996,7 @@ def show_book(book_id):
                                      cwa_settings=cwa_settings,
                                      kosync_progress=kosync_progress,
                                      kosync_progress_timestamp=kosync_progress_timestamp,
+                                     kobo_explanation=kobo_explanation,
                                      page="book")
     else:
         log.debug("Selected book is unavailable. File does not exist or is not accessible")

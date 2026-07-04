@@ -261,7 +261,8 @@ def get_kobo_book_sync_explanation(user_id, book_id):
             "is_synced": False,
             "kobo_display_collections": [],
             "kobo_actual_collections": [],
-            "blocker_reasons": ["not_found"]
+            "blocker_reasons": ["not_found"],
+            "reader_override": "auto"
         }
 
     # Check if book is archived
@@ -416,7 +417,8 @@ def get_kobo_book_sync_explanation(user_id, book_id):
         "is_synced": is_synced,
         "kobo_display_collections": display_collections,
         "kobo_actual_collections": actual_collections,
-        "blocker_reasons": blocker_reasons
+        "blocker_reasons": blocker_reasons,
+        "reader_override": reader_override
     }
 
 

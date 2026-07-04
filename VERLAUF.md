@@ -18,6 +18,28 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-04 — Kobo-Reader-Modell Phase 2: UI-Slice (Buchdetailseite & Overrides)
+
+- **Feature/Bug:** Kobo-Reader-Modell Phase 2 (Buchdetailseite & Overrides)
+- **Branch / Worktree:** `feature/kobo-detail-page-override`
+- **Status:** Phase 2 vollständig implementiert, übersetzt, lokal getestet und alle 57 Unit-Tests erfolgreich verifiziert.
+
+### Erledigt
+
+- **Backend-Erweiterung**: `get_kobo_book_sync_explanation` in `cps/kobo.py` gibt jetzt `"reader_override"` zurück (sowohl regulär als auch im Not-found-Fall).
+- **POST-Route**: `@kobo_auth.route("/book/<int:book_id>/override")` mit `@user_login_required` und vollständiger CSRF- und Scope-Sichtbarkeitsprüfung über `cdb.common_filters` in `cps/kobo_auth.py` implementiert. Ungültige Werte werden mit `400` abgewiesen, unautorisierte via standardmäßiges Flask-Login-Verhalten.
+- **show_book-Integration**: `show_book` in `cps/web.py` lädt die Kobo-Erklärung und übergibt sie an das Detail-Template.
+- **UI-Slice**: Kobo-Sync-Panel in `cps/templates/detail.html` am Ende des Metadaten-Bereichs eingebettet. Es visualisiert getrennt die Übertragungs-Freigabe („Freigabe erteilt“ vs. „Bleibt in der Cloud“), den aktuellen Sync-Zustand des Geräts und bietet die Auswahl über Radio-Buttons samt CSRF-geschütztem Absende-Button.
+- **Archiv-Semantik**: Archiv-Schranken-Prüfung integriert (roter/gelber Warnhinweis bei archivierten Büchern).
+- **Übersetzungen**: Neue UI-Texte und Route-Flash-Nachrichten in `cps/translations/de/LC_MESSAGES/messages.po` übersetzt und kompiliert.
+- **Testabdeckung**: Neue Testdatei `tests/unit/test_kobo_detail_override.py` mit 10 neuen Tests (always, never, auto, invalid, Scope, template context sowie echten CSRF- und Auth-Integrationstests über den Flask-Client) erstellt. Alle 57 Kobo-Tests bestehen fehlerfrei.
+
+### Belege
+
+- Unit tests passed: `.venv/bin/pytest tests/unit/test_kobo_explanation.py tests/unit/test_kobo_dashboard.py tests/unit/test_kobo_decoupling.py tests/unit/test_kobo_detail_override.py`
+- Compilation passed: `.venv/bin/python -m babel.messages.frontend compile -d cps/translations -l de`
+- Syntax- und Git Checks fehlerfrei (inklusive `git diff --check`).
+
 ## 2026-07-04 — Kobo-Reader-Modell Phase 1: Datenmodell & Sync-Eligibility
 
 - **Feature/Bug:** Phase 1 des neuen Kobo-Reader-Modells (Datenmodell & Sync-Eligibility).

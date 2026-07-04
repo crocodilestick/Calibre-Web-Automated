@@ -7779,3 +7779,69 @@ msgstr "Diese Bücher sind bewusst als Nicht auf Kobo markiert."
 #~ msgstr ""
 #~ "Buch als archiviert oder nicht markieren, um es in Calibre-Web "
 #~ "auszublenden und vom Kobo Reader zu löschen"
+
+msgid "Kobo eReader-Übertragung"
+msgstr "Kobo eReader-Übertragung"
+
+msgid "Übertragungs-Freigabe (Soll auf Reader):"
+msgstr "Übertragungs-Freigabe (Soll auf Reader):"
+
+msgid "Freigabe erteilt"
+msgstr "Freigabe erteilt"
+
+msgid "Bleibt in der Cloud"
+msgstr "Bleibt in der Cloud"
+
+msgid "Aktueller Sync-Zustand (Ist auf Reader):"
+msgstr "Aktueller Sync-Zustand (Ist auf Reader):"
+
+msgid "Auf dem Reader vorhanden"
+msgstr "Auf dem Reader vorhanden"
+
+msgid "Ausstehend (wird beim nächsten Synchronisieren übertragen)"
+msgstr "Ausstehend (wird beim nächsten Synchronisieren übertragen)"
+
+msgid "Nicht übertragen"
+msgstr "Nicht übertragen"
+
+msgid "Das Buch ist archiviert (und wird daher nicht auf das Gerät geladen)."
+msgstr "Das Buch ist archiviert (und wird daher nicht auf das Gerät geladen)."
+
+msgid "Begründung:"
+msgstr "Begründung:"
+
+msgid "Das Buch wurde manuell als 'Immer auf dem Reader' markiert."
+msgstr "Das Buch wurde manuell als 'Immer auf dem Reader' markiert."
+
+msgid "Das Buch wurde manuell als 'Nie auf dem Reader' markiert."
+msgstr "Das Buch wurde manuell als 'Nie auf dem Reader' markiert."
+
+msgid "Übertragen durch Regal(e):"
+msgstr "Übertragen durch Regal(e):"
+
+msgid "Das Buch befindet sich in keinem aktiven Kobo-Regal und folgt der automatischen Auswahl."
+msgstr "Das Buch befindet sich in keinem aktiven Kobo-Regal und folgt der automatischen Auswahl."
+
+msgid "Einstellung für dieses Buch:"
+msgstr "Einstellung für dieses Buch:"
+
+msgid "Automatisch (folgt Regalen)"
+msgstr "Automatisch (folgt Regalen)"
+
+msgid "Immer auf dem Reader"
+msgstr "Immer auf dem Reader"
+
+msgid "Nie auf dem Reader"
+msgstr "Nie auf dem Reader"
+
+msgid "Kobo-Einstellung anwenden"
+msgstr "Kobo-Einstellung anwenden"
+
+msgid "Ungültiger Kobo-Übertragungsmodus."
+msgstr "Ungültiger Kobo-Übertragungsmodus."
+
+msgid "Kobo-Übertragungsmodus aktualisiert."
+msgstr "Kobo-Übertragungsmodus aktualisiert."
+
+msgid "Der Kobo-Übertragungsmodus konnte nicht gespeichert werden."
+msgstr "Der Kobo-Übertragungsmodus konnte nicht gespeichert werden."

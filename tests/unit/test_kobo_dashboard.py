@@ -255,6 +255,67 @@ class TestKoboDashboard:
         assert next(w for w in warns if w["code"] == "FULL_SYNC_MODE")["type"] == "info"
         assert next(w for w in warns if w["code"] == "MAGIC_SHELVES_DISABLED")["type"] == "info"
 
+    @patch('cps.kobo.get_kobo_blocked_book_ids')
+    @patch('cps.kobo_dashboard.db.CalibreDB')
+    @patch('cps.kobo_dashboard.get_kobo_excluded_books')
+    @patch('cps.kobo_dashboard.config')
+    @patch('cps.kobo_dashboard.get_magic_shelf_book_ids_direct')
+    @patch('cps.kobo.get_kobo_allowed_book_ids')
+    @patch('cps.ub.session')
+    def test_get_kobo_dashboard_data_full_sync_allowed_count_query(
+        self,
+        mock_session,
+        mock_allowed_books,
+        mock_magic_ids,
+        mock_config,
+        mock_excluded,
+        mock_calibre_db_cls,
+        mock_blocked_books
+    ):
+        """Test allowed_book_count calculation in Full Sync mode.
+        It should filter by Kobo formats and exclude blocked books in SQL query.
+        """
+        # ID 40 is blocked (never override)
+        mock_blocked_books.return_value = {40}
+        mock_config.config_kobo_sync_magic_shelves = False
+        mock_excluded.return_value = []
+        mock_allowed_books.return_value = None  # Full Sync
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+        fake_user.role_download.return_value = True
+        fake_user.kobo_only_shelves_sync = 0  # Full Sync
+
+        # Mock token & synced & shelves
+        mock_session.query().filter_by().first.return_value = MagicMock()
+        mock_session.query().filter_by().all.return_value = []
+
+        # Mock CalibreDB Session query for total_visible_count
+        mock_cdb = MagicMock()
+        mock_calibre_db_cls.return_value = mock_cdb
+        mock_cdb_session = MagicMock()
+        mock_cdb.session = mock_cdb_session
+
+        # Mock query chain
+        mock_query = mock_cdb_session.query.return_value
+        mock_join = mock_query.join.return_value
+        mock_filter1 = mock_join.filter.return_value
+        mock_filter2 = mock_filter1.filter.return_value
+        mock_filter3 = mock_filter2.filter.return_value
+        mock_distinct = mock_filter3.distinct.return_value
+        mock_distinct.count.return_value = 5
+
+        # Call dashboard data
+        dashboard_data = get_kobo_dashboard_data(fake_user)
+
+        # The allowed count must be exactly 5
+        assert dashboard_data["allowed_book_count"] == 5
+
+        # Verify SQL filter arg for notin_ was called
+        mock_filter2.filter.assert_called_once()
+        filter_arg = mock_filter2.filter.call_args[0][0]
+        assert filter_arg is not True
+
     @patch('cps.magic_shelf.invalidate_magic_shelf_cache')
     @patch('cps.kobo_auth.url_for')
     @patch('cps.kobo_auth.redirect')

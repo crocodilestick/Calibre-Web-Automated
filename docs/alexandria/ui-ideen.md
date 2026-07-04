@@ -25,10 +25,8 @@ Erwartete Elemente:
 - Filter fuer Universum, Inhaltstyp, Buchart und Lesestatus.
 - Schnelle Aktion: `Nicht auf Kobo`, um ein Buch bewusst aus der
   Kobo-Auswahl auszuschliessen.
-- Sichtbare Kennzeichnung fuer Buecher in `Kobo: Ausgeschlossen`, damit klar
-  ist, warum ein Buch trotz passender Regel nicht synchronisiert wird.
-- Aktion: `Wieder fuer Kobo erlauben`, indem das Buch aus
-  `Kobo: Ausgeschlossen` entfernt wird. Eine erste Dashboard-Aktion dafuer ist
+- Sichtbare Kennzeichnung fuer blockierte Buecher (`reader_override = "never"`), damit klar ist, warum ein Buch trotz passender Regel nicht synchronisiert wird.
+- Aktion: `Wieder fuer Kobo erlauben`, indem der Blocker-Override geloescht wird. Eine erste Dashboard-Aktion dafuer ist
   implementiert; spaeter kann die Darstellung noch dichter in die eigentliche
   Kobo-Auswahl integriert werden.
 - Dashboard-Politur: Die Sektion `Nicht auf Kobo` bleibt sichtbar, zeigt die

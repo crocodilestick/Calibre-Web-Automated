@@ -178,8 +178,11 @@ def block_kobo_book(book_id):
 @kobo_auth.route("/book/<int:book_id>/override", methods=["POST"])
 @user_login_required
 def set_kobo_book_override(book_id):
+    is_ajax = request.headers.get("X-Requested-With") == "XMLHttpRequest" or request.form.get("ajax") == "1"
     reader_override = request.form.get("reader_override")
     if reader_override not in ("auto", "always", "never"):
+        if is_ajax:
+            return jsonify({"error": _("Ungültiger Kobo-Übertragungsmodus.")}), 400
         flash(_("Ungültiger Kobo-Übertragungsmodus."), category="error")
         return abort(400)
 
@@ -189,9 +192,13 @@ def set_kobo_book_override(book_id):
         book = cdb.session.query(db.Books).filter(db.Books.id == book_id).filter(cdb.common_filters(allow_show_archived=True)).first()
     except Exception as e:
         log.error("Failed to check book existence for Kobo override: %s", e)
+        if is_ajax:
+            return jsonify({"error": _("Datenbankfehler bei der Buchsuche.")}), 500
         return abort(500)
 
     if not book:
+        if is_ajax:
+            return jsonify({"error": _("Buch nicht gefunden.")}), 404
         return abort(404)
 
     try:
@@ -217,10 +224,23 @@ def set_kobo_book_override(book_id):
         from .magic_shelf import invalidate_magic_shelf_cache
         invalidate_magic_shelf_cache()
         ub.session.commit()
+
+        if is_ajax:
+            from .kobo import get_kobo_book_sync_explanation
+            explanation = get_kobo_book_sync_explanation(current_user.id, book_id)
+            return jsonify({
+                "success": True,
+                "book_id": book_id,
+                "reader_override": reader_override,
+                "explanation": explanation
+            })
+
         flash(_("Kobo-Übertragungsmodus aktualisiert."), category="success")
     except Exception as e:
         ub.session.rollback()
         log.error("Failed to set Kobo book override for book %d: %s", book_id, e)
+        if is_ajax:
+            return jsonify({"error": _("Der Kobo-Übertragungsmodus konnte nicht gespeichert werden.")}), 500
         flash(_("Der Kobo-Übertragungsmodus konnte nicht gespeichert werden."), category="error")
 
     return redirect(url_for("web.show_book", book_id=book_id))

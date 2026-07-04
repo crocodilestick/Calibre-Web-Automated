@@ -404,6 +404,19 @@
         {{ _('Analysiere den Synchronisationsstatus deiner Bücher auf dem Kobo-Gerät (Zustand laut letztem Sync).') }}
       </p>
 
+      <!-- CSRF Token für Workspace AJAX-Aktionen -->
+      <input type="hidden" id="kobo-workspace-csrf" value="{{ csrf_token() }}">
+
+      <!-- AJAX globaler Hinweis und Aktualisierungs-Button -->
+      <div id="kobo-workspace-alert" class="alert alert-info" style="display: none; margin-bottom: 1.5rem;">
+        <span class="glyphicon glyphicon-info-sign"></span>
+        <span id="kobo-workspace-alert-text">{{ _('Gespeichert. Manche Statistiken werden erst nach dem Aktualisieren neu berechnet.') }}</span>
+        <button type="button" class="btn btn-primary btn-xs pull-right" id="kobo-workspace-refresh-btn" onclick="window.location.reload();">
+          <span class="glyphicon glyphicon-refresh"></span> {{ _('Ansicht aktualisieren') }}
+        </button>
+        <div class="clearfix"></div>
+      </div>
+
       <!-- Filter-Schaltflächen -->
       <div class="btn-group" role="group" aria-label="Filter" style="margin-bottom: 1.5rem;">
         <button type="button" class="btn btn-default active kobo-filter-btn" data-filter="all">
@@ -456,23 +469,22 @@
                     {% endif %}
                   </td>
                   <td>
-                    {% if book.reader_override == 'always' %}
-                      <span class="label label-success" title="{{ _('Dieses Buch wird immer übertragen.') }}">{{ _('Immer auf Reader') }}</span>
-                    {% elif book.reader_override == 'never' %}
-                      <span class="label label-danger" title="{{ _('Dieses Buch wird nie übertragen.') }}">{{ _('Nie auf Reader') }}</span>
-                    {% else %}
-                      <span class="label label-primary" title="{{ _('Dieses Buch folgt den Regaleinstellungen.') }}">{{ _('Automatisch') }}</span>
-                    {% endif %}
+                    <select class="form-control input-sm kobo-override-select" data-book-id="{{ book.id }}" style="display: inline-block; width: auto; max-width: 155px; vertical-align: middle;">
+                      <option value="auto" {% if book.reader_override == 'auto' %}selected{% endif %}>{{ _('Automatisch') }}</option>
+                      <option value="always" {% if book.reader_override == 'always' %}selected{% endif %}>{{ _('Immer auf Reader') }}</option>
+                      <option value="never" {% if book.reader_override == 'never' %}selected{% endif %}>{{ _('Nie auf Reader') }}</option>
+                    </select>
+                    <span class="kobo-save-status" style="margin-left: 5px; font-size: 90%; vertical-align: middle; white-space: nowrap;"></span>
                   </td>
-                  <td>
+                  <td class="kobo-status-cell">
                     {% if book.is_synced and book.is_allowed %}
-                      <span class="text-success"><span class="glyphicon glyphicon-ok-sign"></span> {{ _('Auf Reader') }}</span>
+                      <span class="text-success"><span class="glyphicon glyphicon-ok-sign"></span> <span class="status-text">{{ _('Auf Reader') }}</span></span>
                     {% elif book.is_synced and not book.is_allowed %}
-                      <span class="text-warning" title="{{ _('Dieses Buch ist auf dem Reader, aber die Freigabe wurde in Calibre-Web aufgehoben. Es wird beim nächsten Sync entfernt.') }}"><span class="glyphicon glyphicon-exclamation-sign"></span> {{ _('Auf Reader (nicht mehr freigegeben)') }}</span>
+                      <span class="text-warning" title="{{ _('Dieses Buch ist auf dem Reader, aber die Freigabe wurde in Calibre-Web aufgehoben. Es wird beim nächsten Sync entfernt.') }}"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="status-text">{{ _('Auf Reader (nicht mehr freigegeben)') }}</span></span>
                     {% elif not book.is_synced and book.is_allowed %}
-                      <span class="text-primary" title="{{ _('Dieses Buch wurde freigegeben, wurde aber noch nicht vom Reader abgerufen.') }}"><span class="glyphicon glyphicon-refresh"></span> {{ _('Ausstehender Sync') }}</span>
+                      <span class="text-primary" title="{{ _('Dieses Buch wurde freigegeben, wurde aber noch nicht vom Reader abgerufen.') }}"><span class="glyphicon glyphicon-refresh"></span> <span class="status-text">{{ _('Ausstehender Sync') }}</span></span>
                     {% else %}
-                      <span class="text-danger"><span class="glyphicon glyphicon-remove-sign"></span> {{ _('Blockiert / Nicht freigegeben') }}</span>
+                      <span class="text-danger"><span class="glyphicon glyphicon-remove-sign"></span> <span class="status-text">{{ _('Blockiert / Nicht freigegeben') }}</span></span>
                     {% endif %}
                   </td>
                 </tr>
@@ -786,7 +798,105 @@ $(document).ready(function() {
     applyWorkspaceFilter(filter);
   });
 
+  // Store previous value on focus/mousedown to support Undo
+  $(document).on('focus mousedown', '.kobo-override-select', function() {
+    if ($(this).data('prev-val') === undefined) {
+      $(this).data('prev-val', $(this).val());
+    }
+  });
 
+  // Change override select handler
+  $(document).on('change', '.kobo-override-select', function() {
+    var $select = $(this);
+    var bookId = $select.data('book-id');
+    var newValue = $select.val();
+    var prevValue = $select.data('prev-val') !== undefined ? $select.data('prev-val') : 'auto';
+    var $row = $select.closest('.kobo-workspace-row');
+    var $statusSpan = $row.find('.kobo-save-status');
+
+    // Deaktivieren und Lade-Status anzeigen
+    $select.prop('disabled', true);
+    $statusSpan.html('<span class="text-muted"><span class="glyphicon glyphicon-refresh glyphicon-spin"></span> ' + escapeHtml("{{ _('Speichern...') }}") + '</span>');
+
+    var csrfToken = $('#kobo-workspace-csrf').val();
+
+    $.ajax({
+      url: "{{ url_for('kobo_auth.set_kobo_book_override', book_id=0) }}".replace('0', bookId),
+      type: 'POST',
+      data: {
+        reader_override: newValue,
+        ajax: '1'
+      },
+      headers: {
+        'X-CSRF-Token': csrfToken,
+        'X-Requested-With': 'XMLHttpRequest'
+      },
+      success: function(response) {
+        $select.prop('disabled', false);
+        $select.data('prev-val', newValue); // Neuen Wert als vorherigen Wert merken
+
+        // UI-Feedback für Speichern
+        $statusSpan.html('<span class="text-success"><span class="glyphicon glyphicon-ok"></span> ' + escapeHtml("{{ _('Gespeichert') }}") + '</span> | <a href="#" class="kobo-undo-btn" data-book-id="' + bookId + '" data-prev-val="' + prevValue + '">' + escapeHtml("{{ _('Rückgängig') }}") + '</a>');
+
+        // Globalen Hinweis einblenden
+        $('#kobo-workspace-alert').slideDown();
+
+        // Zeilenattribute und jQuery Data aktualisieren
+        var exp = response.explanation;
+        $row.attr('data-override', newValue);
+        $row.data('override', newValue);
+        $row.data('allowed', exp.is_allowed_on_device);
+        $row.data('synced', exp.is_synced);
+
+        var isOrphan = (exp.is_synced && (!exp.kobo_actual_collections || exp.kobo_actual_collections.length === 0));
+        $row.data('orphan', isOrphan);
+        $row.attr('data-orphan', isOrphan ? 'true' : 'false');
+        $row.attr('data-allowed', exp.is_allowed_on_device ? 'true' : 'false');
+        $row.attr('data-synced', exp.is_synced ? 'true' : 'false');
+
+        // Statusspalte rendern
+        var statusCell = $row.find('.kobo-status-cell');
+        var statusHtml = '';
+        if (exp.is_synced && exp.is_allowed_on_device) {
+          statusHtml = '<span class="text-success"><span class="glyphicon glyphicon-ok-sign"></span> <span class="status-text">' + escapeHtml("{{ _('Auf Reader') }}") + '</span></span>';
+        } else if (exp.is_synced && !exp.is_allowed_on_device) {
+          statusHtml = '<span class="text-warning" title="' + escapeHtml("{{ _('Dieses Buch ist auf dem Reader, aber die Freigabe wurde in Calibre-Web aufgehoben. Es wird beim nächsten Sync entfernt.') }}") + '"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="status-text">' + escapeHtml("{{ _('Auf Reader (nicht mehr freigegeben)') }}") + '</span></span>';
+        } else if (!exp.is_synced && exp.is_allowed_on_device) {
+          statusHtml = '<span class="text-primary" title="' + escapeHtml("{{ _('Dieses Buch wurde freigegeben, wurde aber noch nicht vom Reader abgerufen.') }}") + '"><span class="glyphicon glyphicon-refresh"></span> <span class="status-text">' + escapeHtml("{{ _('Ausstehender Sync') }}") + '</span></span>';
+        } else {
+          statusHtml = '<span class="text-danger"><span class="glyphicon glyphicon-remove-sign"></span> <span class="status-text">' + escapeHtml("{{ _('Blockiert / Nicht freigegeben') }}") + '</span></span>';
+        }
+        statusCell.html(statusHtml);
+
+        // Filter-Zähler dynamisch aktualisieren
+        updateWorkspaceCounts();
+      },
+      error: function(xhr) {
+        $select.prop('disabled', false);
+        $select.val(prevValue); // Zurücksetzen auf alten Wert
+
+        var errMsg = "{{ _('Der Kobo-Übertragungsmodus konnte nicht gespeichert werden.') }}";
+        if (xhr.responseJSON && xhr.responseJSON.error) {
+          errMsg = xhr.responseJSON.error;
+        }
+        $statusSpan.html('<span class="text-danger"><span class="glyphicon glyphicon-remove"></span> ' + escapeHtml("{{ _('Fehler') }}") + '</span>');
+        alert(errMsg);
+      }
+    });
+  });
+
+  // Undo button click handler
+  $(document).on('click', '.kobo-undo-btn', function(e) {
+    e.preventDefault();
+    var $undoBtn = $(this);
+    var bookId = $undoBtn.data('book-id');
+    var prevVal = $undoBtn.data('prev-val');
+    var $select = $('.kobo-override-select[data-book-id="' + bookId + '"]');
+
+    // Data value vorübergehend überschreiben, damit der Change-Handler den nächsten Undo korrekt speichert
+    $select.data('prev-val', $select.val());
+    $select.val(prevVal).trigger('change');
+  });
 
   updateWorkspaceCounts();
   applyWorkspaceFilter('all');

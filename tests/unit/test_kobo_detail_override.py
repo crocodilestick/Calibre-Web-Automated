@@ -382,3 +382,130 @@ class TestKoboDetailOverride:
         res = client.post("/kobo_auth/book/42/override", data={"reader_override": "always"})
 
         assert res.status_code == 400
+
+    @patch('cps.kobo_auth._', new=lambda x: x)
+    @patch('cps.kobo_auth.db.CalibreDB')
+    @patch('cps.kobo_auth.ub.session')
+    @patch('cps.kobo.get_kobo_book_sync_explanation')
+    def test_ajax_set_override_success(self, mock_explanation, mock_session, mock_calibredb_cls):
+        """AJAX POST to set_kobo_book_override returns JSON on success."""
+        from cps.kobo_auth import set_kobo_book_override
+
+        fake_book = MagicMock()
+        fake_book.id = 42
+        mock_cdb = MagicMock()
+        mock_calibredb_cls.return_value = mock_cdb
+        mock_cdb.session.query().filter().filter().first.return_value = fake_book
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+
+        mock_query = mock_session.query().filter_by
+        mock_query.return_value.first.return_value = None  # No existing override
+
+        mock_explanation.return_value = {"book_id": 42, "is_allowed_on_device": True, "reader_override": "always"}
+
+        app = self._setup_app_with_blueprint()
+        with app.test_request_context(method="POST",
+                                     headers={"X-Requested-With": "XMLHttpRequest"},
+                                     data={"reader_override": "always"}):
+            with patch('cps.kobo_auth.current_user', fake_user):
+                with patch('cps.magic_shelf.invalidate_magic_shelf_cache') as mock_invalidate:
+                    res = set_kobo_book_override.__wrapped__(42)
+
+                    assert res.status_code == 200
+                    data = res.get_json()
+                    assert data["success"] is True
+                    assert data["reader_override"] == "always"
+                    assert data["explanation"]["is_allowed_on_device"] is True
+                    mock_session.add.assert_called_once()
+                    mock_invalidate.assert_called_once()
+                    mock_session.commit.assert_called_once()
+
+    @patch('cps.kobo_auth._', new=lambda x: x)
+    def test_ajax_set_override_invalid_value(self):
+        """AJAX POST to set_kobo_book_override with invalid value returns JSON 400."""
+        from cps.kobo_auth import set_kobo_book_override
+        from flask import Flask
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+
+        app = Flask("test_app")
+        app.secret_key = "test_secret"
+        with app.test_request_context(method="POST",
+                                     headers={"X-Requested-With": "XMLHttpRequest"},
+                                     data={"reader_override": "invalid"}):
+            with patch('cps.kobo_auth.current_user', fake_user):
+                res = set_kobo_book_override.__wrapped__(42)
+                if isinstance(res, tuple):
+                    res_obj, status_code = res
+                    assert status_code == 400
+                    assert res_obj.get_json()["error"] is not None
+                else:
+                    assert res.status_code == 400
+                    assert res.get_json()["error"] is not None
+
+    @patch('cps.kobo_auth._', new=lambda x: x)
+    @patch('cps.kobo_auth.db.CalibreDB')
+    def test_ajax_set_override_not_found(self, mock_calibredb_cls):
+        """AJAX POST to set_kobo_book_override for non-existent book returns JSON 404."""
+        from cps.kobo_auth import set_kobo_book_override
+        from flask import Flask
+
+        mock_cdb = MagicMock()
+        mock_calibredb_cls.return_value = mock_cdb
+        mock_cdb.session.query().filter().filter().first.return_value = None  # Not found
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+
+        app = Flask("test_app")
+        app.secret_key = "test_secret"
+        with app.test_request_context(method="POST",
+                                     headers={"X-Requested-With": "XMLHttpRequest"},
+                                     data={"reader_override": "always"}):
+            with patch('cps.kobo_auth.current_user', fake_user):
+                res = set_kobo_book_override.__wrapped__(42)
+                if isinstance(res, tuple):
+                    res_obj, status_code = res
+                    assert status_code == 404
+                    assert res_obj.get_json()["error"] is not None
+                else:
+                    assert res.status_code == 404
+                    assert res.get_json()["error"] is not None
+
+    @patch('cps.kobo_auth._', new=lambda x: x)
+    @patch('cps.kobo_auth.db.CalibreDB')
+    @patch('cps.kobo_auth.ub.session')
+    def test_ajax_set_override_db_error(self, mock_session, mock_calibredb_cls):
+        """AJAX POST to set_kobo_book_override with database error does rollback and returns JSON 500."""
+        from cps.kobo_auth import set_kobo_book_override
+        from flask import Flask
+
+        fake_book = MagicMock()
+        fake_book.id = 42
+        mock_cdb = MagicMock()
+        mock_calibredb_cls.return_value = mock_cdb
+        mock_cdb.session.query().filter().filter().first.return_value = fake_book
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+
+        mock_session.query.side_effect = Exception("DB error")
+
+        app = Flask("test_app")
+        app.secret_key = "test_secret"
+        with app.test_request_context(method="POST",
+                                     headers={"X-Requested-With": "XMLHttpRequest"},
+                                     data={"reader_override": "always"}):
+            with patch('cps.kobo_auth.current_user', fake_user):
+                res = set_kobo_book_override.__wrapped__(42)
+                if isinstance(res, tuple):
+                    res_obj, status_code = res
+                    assert status_code == 500
+                    assert res_obj.get_json()["error"] is not None
+                else:
+                    assert res.status_code == 500
+                    assert res.get_json()["error"] is not None
+                mock_session.rollback.assert_called_once()

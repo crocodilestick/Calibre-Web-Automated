@@ -1,6 +1,6 @@
 # Konzept: Kobo-Reader-Modell (Synchronisations-Hierarchie)
 
-Dieses Konzeptdokument beschreibt die geplante Neuausrichtung und Vereinfachung des Kobo-Synchronisationsmodells in Alexandria. Es dient als fachliche und konzeptionelle Grundlage für künftige Entwicklungen im Bereich Kobo-Dashboard, Einstellungen und Sammlungs-Synchronisation. Ziel ist es, dem Anwender ein klares, nachvollziehbbares Modell ohne technisches Rauschen (wie UUIDs, Datenbank-Trigger oder Sync-Token) zur Verfügung zu stellen.
+Dieses Konzeptdokument beschreibt die geplante Neuausrichtung und Vereinfachung des Kobo-Synchronisationsmodells in Alexandria. Es dient als fachliche und konzeptionelle Grundlage für künftige Entwicklungen im Bereich Kobo-Dashboard, Einstellungen und Sammlungs-Synchronisation. Ziel ist es, dem Anwender ein klares, nachvollziehbares Modell ohne technisches Rauschen (wie UUIDs, Datenbank-Trigger oder Sync-Token) zur Verfügung zu stellen.
 
 ---
 
@@ -161,10 +161,10 @@ Dieser zentrale Arbeitsbereich im Dashboard dient der Analyse und Verwaltung all
 
 ### Begriffsunterscheidung (Fachglossar)
 
-*   **Reader-Sammlung**: Eine Sammlung, die tatsächlich auf dem Kobo angezeigt wird (Regale oder automatische Sammlungen mit `kobo_display = Ja`).
-*   **Regal**: Ein lokales Regal (oder automatische Sammlung) in Alexandria/Calibre-Web.
+*   **Reader-Sammlung**: Eine Sammlung, in der das Buch auf dem eReader tatsächlich erscheint (technisch ermittelt über das Ergebnis der Sammlungszuordnung in `get_kobo_book_sync_explanation()`).
+*   **Regal**: Ein lokales Regal (oder eine automatische Sammlung) in Alexandria/Calibre-Web.
 *   **Soll auf den Reader**: Das fachliche Ergebnis der Auswertungslogik (das Buch ist zur Übertragung freigegeben).
-*   **Ist auf dem Reader**: Der tatsächliche eReader-Status (erfolgreich übertragen, ermittelt über `KoboSyncedBooks`).
+*   **Ist auf dem Reader**: Der bekannte eReader-Status laut letztem erfolgreichem Sync-Durchlauf (ermittelt über `KoboSyncedBooks`).
 
 ### Filter-Optionen des Arbeitsbereichs
 
@@ -190,8 +190,7 @@ Zeige: In keiner Reader-Sammlung (5 Bücher)
 ├──────────────────────┼──────────────────────┼──────────────────────┼──────────────────────┤
 │ Der Hobbit           │ (Keines)             │ [ Immer auf Reader v]│ green[ Ist auf Reader]│
 ├──────────────────────┼──────────────────────┼──────────────────────┼──────────────────────┤
-│ 1984                 │ Sci-Fi (Sync: Ja)    │ [ Automatisch    v ] │ yellow[ Soll auf Read]│
-│                      │                      │                      │ (Wartet auf Sync)    │
+│ 1984                 │ Sci-Fi (Anzeige: Nein)│ [ Automatisch    v ] │ green[ Ist auf Reader]│
 └──────────────────────┴──────────────────────┴──────────────────────┴──────────────────────┘
 ```
 

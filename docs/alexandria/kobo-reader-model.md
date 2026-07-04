@@ -155,16 +155,45 @@ Kobo-Reader-Übertragung
 
 ---
 
-## 8. Kontrollansicht: „Auf Reader, aber in keiner Sammlung“
+## 8. Arbeitsbereich: „Bücher auf dem Reader“
 
-Eine wichtige Qualitätskontrolle verhindert verwaiste Bücher:
-*   Es werden alle Bücher erfasst, die auf dem Reader vorhanden sind, dort aber in keiner einzigen angezeigten Sammlung (`kobo_display = True`) eingeordnet sind.
-*   Dies betrifft:
-    *   Bücher, die über die Buch-Einstellung *„Immer auf Reader“* übertragen werden.
-    *   Bücher, die über ein Regal übertragen werden, bei dem die Option *„Sammlung auf dem Reader anzeigen“* inaktiv ist.
-    *   Bücher, die bei aktiver vollständiger Synchronisation (Vollsync) übertragen wurden, aber in keinem synchronisierten Regal einsortiert sind.
-*   Diese Bücher landen auf dem eReader lose im Hauptverzeichnis („Meine Bücher“) ohne Ordnung.
-*   **Lösung:** Eine eigene Kontrollliste im Dashboard listet diese Bücher auf, damit der Benutzer sie entweder gezielt einem angezeigten Regal zuweisen oder die Übertragung beenden kann.
+Dieser zentrale Arbeitsbereich im Dashboard dient der Analyse und Verwaltung aller Bücher, die für den eReader relevant sind. Er ersetzt die bisherige starre Kontrollansicht durch einen flexiblen Filterbereich.
+
+### Begriffsunterscheidung (Fachglossar)
+
+*   **Reader-Sammlung**: Eine Sammlung, die tatsächlich auf dem Kobo angezeigt wird (Regale oder automatische Sammlungen mit `kobo_display = Ja`).
+*   **Regal**: Ein lokales Regal (oder automatische Sammlung) in Alexandria/Calibre-Web.
+*   **Soll auf den Reader**: Das fachliche Ergebnis der Auswertungslogik (das Buch ist zur Übertragung freigegeben).
+*   **Ist auf dem Reader**: Der tatsächliche eReader-Status (erfolgreich übertragen, ermittelt über `KoboSyncedBooks`).
+
+### Filter-Optionen des Arbeitsbereichs
+
+Der Arbeitsbereich bietet eine Liste mit folgenden Schnellfiltern:
+
+1.  **Alle Bücher auf dem Reader**: Zeigt den gesamten Bestand des eReaders (`Ist auf dem Reader == Ja`).
+2.  **In keiner Reader-Sammlung**: Ersetzt die bisherige Kontrollansicht. Zeigt Bücher, die `Ist auf dem Reader == Ja` sind, aber in keiner angezeigten Sammlung liegen (verwaiste Bücher im eReader-Hauptverzeichnis).
+3.  **In keinem Regal**: Bücher, die `Ist auf dem Reader == Ja` sind, sich aber in keinem lokalen Regal in Alexandria befinden (z. B. Altlasten).
+4.  **Manuell immer auf Reader**: Listet alle Bücher mit dem aktiven Override *„Immer auf Reader“*.
+5.  **Manuell nie auf Reader**: Listet alle Bücher mit dem aktiven Override *„Nie auf Reader“*.
+6.  **Automatisch auf Reader**: Bücher mit der Einstellung *„Automatisch“*, die durch ein aktives Übertragungsregal übertragen werden.
+7.  **Soll auf den Reader, aber noch nicht übertragen**: Zeigt Bücher, für die die Freigabe erteilt wurde (`Soll auf den Reader == Ja`), die aber physisch noch nicht übertragen wurden (`Ist auf dem Reader == Nein`), da der eReader noch nicht synchronisiert hat.
+
+### UI-Skizze des Arbeitsbereichs
+```text
+Arbeitsbereich: Bücher auf dem Reader
+[ Alle (120) ] [ In keiner Sammlung (5) ] [ In keinem Regal (2) ] [ Ausstehender Sync (10) ]
+[ Nur manuelle Ausnahmen (15) ]
+
+Zeige: In keiner Reader-Sammlung (5 Bücher)
+┌──────────────────────┬──────────────────────┬──────────────────────┬──────────────────────┐
+│ Buchtitel            │ Reguläre Regale      │ Einstellung          │ Sync-Status          │
+├──────────────────────┼──────────────────────┼──────────────────────┼──────────────────────┤
+│ Der Hobbit           │ (Keines)             │ [ Immer auf Reader v]│ green[ Ist auf Reader]│
+├──────────────────────┼──────────────────────┼──────────────────────┼──────────────────────┤
+│ 1984                 │ Sci-Fi (Sync: Ja)    │ [ Automatisch    v ] │ yellow[ Soll auf Read]│
+│                      │                      │                      │ (Wartet auf Sync)    │
+└──────────────────────┴──────────────────────┴──────────────────────┴──────────────────────┘
+```
 
 ---
 

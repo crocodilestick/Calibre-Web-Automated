@@ -18,6 +18,27 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-04 — Kobo-Reader-Modell (Konzept)
+
+- **Feature/Bug:** Konzeptdokument zur Vereinfachung des Kobo-/Reader-Modells (Grundlage für künftige Features).
+- **Branch / Worktree:** `main` (zuvor `docs/kobo-reader-model`)
+- **Status:** Konzeptdokument erstellt, verifiziert und in `main` gemergt.
+
+### Erledigt
+
+- Konzeptdokument `docs/alexandria/kobo-reader-model.md` erstellt.
+- Mentales Modell präzisiert: „Regale geben Vorgaben. Bücher entscheiden. Regale können auf dem Reader als Sammlungen angezeigt werden.“
+- Begrifflichkeiten und Glossar für deutsche UX-Begriffe etabliert.
+- Unabhängige eReader-Sammlungssteuerungen per Regal (`kobo_sync` und `kobo_display`) entkoppelt.
+- Globales tri-state Buchentscheidungs-Modell (Automatisch / Immer / Nie) inklusive Prioritätskaskade konzipiert.
+- Text-Mockups für Dashboard-Batch-Bearbeitung, Buchdetail-Sektion und den Arbeitsbereich „Bücher auf dem Reader“ entworfen.
+- Alle Review-Findings erfolgreich behoben (Whitespaces gereinigt, Glossardefinitionen und Mockup-Filter widerspruchsfrei gelöst).
+
+### Belege
+
+- git check passed: `git diff --check main...HEAD`
+- Konzept in `main` gemergt und auf origin gepusht.
+
 ## 2026-07-03 — Kobo-Dashboard: Live-Smoke-Test und JS-Ladefix
 
 - **Feature/Bug:** Live-Smoke-Test und Fix der Kobo-Dashboard-Modal-Initialisierung.

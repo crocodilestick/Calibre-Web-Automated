@@ -868,8 +868,10 @@ $(document).ready(function() {
         }
         statusCell.html(statusHtml);
 
-        // Filter-Zähler dynamisch aktualisieren
+        // Filter-Zähler dynamisch aktualisieren und aktiven Filter erneut anwenden
         updateWorkspaceCounts();
+        var activeFilter = $('.kobo-filter-btn.active').data('filter') || 'all';
+        applyWorkspaceFilter(activeFilter);
       },
       error: function(xhr) {
         $select.prop('disabled', false);

@@ -224,25 +224,37 @@ def set_kobo_book_override(book_id):
         from .magic_shelf import invalidate_magic_shelf_cache
         invalidate_magic_shelf_cache()
         ub.session.commit()
-
-        if is_ajax:
-            from .kobo import get_kobo_book_sync_explanation
-            explanation = get_kobo_book_sync_explanation(current_user.id, book_id)
-            return jsonify({
-                "success": True,
-                "book_id": book_id,
-                "reader_override": reader_override,
-                "explanation": explanation
-            })
-
-        flash(_("Kobo-Übertragungsmodus aktualisiert."), category="success")
     except Exception as e:
         ub.session.rollback()
         log.error("Failed to set Kobo book override for book %d: %s", book_id, e)
         if is_ajax:
             return jsonify({"error": _("Der Kobo-Übertragungsmodus konnte nicht gespeichert werden.")}), 500
         flash(_("Der Kobo-Übertragungsmodus konnte nicht gespeichert werden."), category="error")
+        return redirect(url_for("web.show_book", book_id=book_id))
 
+    if is_ajax:
+        explanation = {}
+        try:
+            from .kobo import get_kobo_book_sync_explanation
+            explanation = get_kobo_book_sync_explanation(current_user.id, book_id)
+        except Exception as explanation_err:
+            log.error("Failed to generate Kobo book explanation after successful override for book %d: %s", book_id, explanation_err)
+            explanation = {
+                "book_id": book_id,
+                "exists": True,
+                "is_allowed_on_device": reader_override == "always" or (reader_override == "auto"),
+                "is_synced": False,
+                "reader_override": reader_override,
+                "error_generating_explanation": True
+            }
+        return jsonify({
+            "success": True,
+            "book_id": book_id,
+            "reader_override": reader_override,
+            "explanation": explanation
+        })
+
+    flash(_("Kobo-Übertragungsmodus aktualisiert."), category="success")
     return redirect(url_for("web.show_book", book_id=book_id))
 
 

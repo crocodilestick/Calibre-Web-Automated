@@ -509,3 +509,121 @@ class TestKoboDetailOverride:
                     assert res.status_code == 500
                     assert res.get_json()["error"] is not None
                 mock_session.rollback.assert_called_once()
+
+    @patch('cps.kobo_auth._', new=lambda x: x)
+    @patch('cps.kobo_auth.db.CalibreDB')
+    @patch('cps.kobo_auth.ub.session')
+    @patch('cps.kobo.get_kobo_book_sync_explanation')
+    def test_ajax_set_override_never(self, mock_explanation, mock_session, mock_calibredb_cls):
+        """AJAX POST to set_kobo_book_override with 'never' sets KoboBookOverride in DB and returns JSON."""
+        from cps.kobo_auth import set_kobo_book_override
+
+        fake_book = MagicMock()
+        fake_book.id = 42
+        mock_cdb = MagicMock()
+        mock_calibredb_cls.return_value = mock_cdb
+        mock_cdb.session.query().filter().filter().first.return_value = fake_book
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+
+        mock_query = mock_session.query().filter_by
+        mock_query.return_value.first.return_value = None  # No existing override
+
+        mock_explanation.return_value = {"book_id": 42, "is_allowed_on_device": False, "reader_override": "never"}
+
+        app = self._setup_app_with_blueprint()
+        with app.test_request_context(method="POST",
+                                     headers={"X-Requested-With": "XMLHttpRequest"},
+                                     data={"reader_override": "never"}):
+            with patch('cps.kobo_auth.current_user', fake_user):
+                with patch('cps.magic_shelf.invalidate_magic_shelf_cache') as mock_invalidate:
+                    res = set_kobo_book_override.__wrapped__(42)
+
+                    assert res.status_code == 200
+                    data = res.get_json()
+                    assert data["success"] is True
+                    assert data["reader_override"] == "never"
+                    assert data["explanation"]["is_allowed_on_device"] is False
+                    mock_session.add.assert_called_once()
+                    mock_invalidate.assert_called_once()
+                    mock_session.commit.assert_called_once()
+
+    @patch('cps.kobo_auth._', new=lambda x: x)
+    @patch('cps.kobo_auth.db.CalibreDB')
+    @patch('cps.kobo_auth.ub.session')
+    @patch('cps.kobo.get_kobo_book_sync_explanation')
+    def test_ajax_set_override_auto_deletes_existing(self, mock_explanation, mock_session, mock_calibredb_cls):
+        """AJAX POST to set_kobo_book_override with 'auto' deletes existing KoboBookOverride in DB and returns JSON."""
+        from cps.kobo_auth import set_kobo_book_override
+
+        fake_book = MagicMock()
+        fake_book.id = 42
+        mock_cdb = MagicMock()
+        mock_calibredb_cls.return_value = mock_cdb
+        mock_cdb.session.query().filter().filter().first.return_value = fake_book
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+
+        existing_override = MagicMock()
+        mock_query = mock_session.query().filter_by
+        mock_query.return_value.first.return_value = existing_override
+
+        mock_explanation.return_value = {"book_id": 42, "is_allowed_on_device": False, "reader_override": "auto"}
+
+        app = self._setup_app_with_blueprint()
+        with app.test_request_context(method="POST",
+                                     headers={"X-Requested-With": "XMLHttpRequest"},
+                                     data={"reader_override": "auto"}):
+            with patch('cps.kobo_auth.current_user', fake_user):
+                with patch('cps.magic_shelf.invalidate_magic_shelf_cache') as mock_invalidate:
+                    res = set_kobo_book_override.__wrapped__(42)
+
+                    assert res.status_code == 200
+                    data = res.get_json()
+                    assert data["success"] is True
+                    assert data["reader_override"] == "auto"
+                    mock_session.delete.assert_called_once_with(existing_override)
+                    mock_invalidate.assert_called_once()
+                    mock_session.commit.assert_called_once()
+
+    @patch('cps.kobo_auth._', new=lambda x: x)
+    @patch('cps.kobo_auth.db.CalibreDB')
+    @patch('cps.kobo_auth.ub.session')
+    @patch('cps.kobo.get_kobo_book_sync_explanation')
+    def test_ajax_set_override_explanation_fails_returns_success_with_fallback(self, mock_explanation, mock_session, mock_calibredb_cls):
+        """AJAX POST returns success even if generating explanation fails post-commit."""
+        from cps.kobo_auth import set_kobo_book_override
+
+        fake_book = MagicMock()
+        fake_book.id = 42
+        mock_cdb = MagicMock()
+        mock_calibredb_cls.return_value = mock_cdb
+        mock_cdb.session.query().filter().filter().first.return_value = fake_book
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+
+        mock_query = mock_session.query().filter_by
+        mock_query.return_value.first.return_value = None
+
+        # Simulate exception in get_kobo_book_sync_explanation
+        mock_explanation.side_effect = Exception("Explanation generation failed")
+
+        app = self._setup_app_with_blueprint()
+        with app.test_request_context(method="POST",
+                                     headers={"X-Requested-With": "XMLHttpRequest"},
+                                     data={"reader_override": "always"}):
+            with patch('cps.kobo_auth.current_user', fake_user):
+                with patch('cps.magic_shelf.invalidate_magic_shelf_cache') as mock_invalidate:
+                    res = set_kobo_book_override.__wrapped__(42)
+
+                    assert res.status_code == 200
+                    data = res.get_json()
+                    assert data["success"] is True
+                    assert data["reader_override"] == "always"
+                    assert data["explanation"]["error_generating_explanation"] is True
+                    mock_session.add.assert_called_once()
+                    mock_invalidate.assert_called_once()
+                    mock_session.commit.assert_called_once()

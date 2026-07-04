@@ -67,6 +67,4 @@ Magic-Shelf-Regeln bleiben moeglich, aber mit klareren Namen:
 - Eine Sammlung basiert nur auf einem breiten Genre-Tag.
 - Ein Buch ist fuer Kobo ausgewaehlt, hat aber keine sinnvolle Sammlung.
 - Ein Buch ist in einer Kobo-Sammlung, aber nicht fuer den Kobo ausgewaehlt.
-- Ein Buch wird durch eine Regel eingeschlossen, aber durch
-  `Kobo: Ausgeschlossen` blockiert. Im Dashboard wird dies fuer Sammlungen
-  inzwischen als `Nicht auf Kobo`-Zaehler und Hinweis sichtbar.
+- Ein Buch wird durch eine Regel eingeschlossen, aber durch einen manuellen Blocker (`reader_override = "never"`) blockiert. Im Dashboard wird dies fuer Sammlungen inzwischen als `Nicht auf Kobo`-Zaehler und Hinweis sichtbar.

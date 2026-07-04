@@ -18,6 +18,26 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-04 — Kobo-Reader-Modell Phase 3: Arbeitsbereich „Bücher auf dem eReader“ (Read-Only)
+
+- **Feature/Bug:** Kobo-Reader-Modell Phase 3: Arbeitsbereich „Bücher auf dem eReader“ (Read-Only)
+- **Branch / Worktree:** `feature/kobo-reader-dashboard-workspace`
+- **Status:** Phase 3 vollständig implementiert, lokal committet und alle 60 Unit-Tests erfolgreich verifiziert.
+
+### Erledigt
+
+- **Datenbank- & Batch-Optimierung**: `get_kobo_books_sync_explanations(user_id, book_ids)` in `cps/kobo.py` implementiert, um N+1 Queries beim Batch-Status-Abruf im Dashboard zu verhindern. Sie nutzt SQL-Batches und eager loading für Buchverknüpfungen.
+- **Einzelfunktions-Refactoring**: `get_kobo_book_sync_explanation` refactored, um intern den Batch-Helper aufzurufen und Logikdrift auszuschließen. Zur 100%igen Kompatibilität mit existierenden Test-Mocks weicht die Funktion für `n = 1` automatisch auf die bewährten Einzelabfragen ab.
+- **Dashboard-Datenaufbereitung**: `get_kobo_dashboard_data` in `cps/kobo_dashboard.py` erweitert, um die `workspace_books` (Mischung aus auf dem Gerät befindlichen und manuell konfigurierten/erlaubten Büchern) zu berechnen und an das Template zu übergeben. Im Full-Sync-Modus wird die Grundmenge performant auf `KoboSyncedBooks` + `KoboBookOverride` limitiert.
+- **Workspace UI-Panel**: Ein neues Dashboard-Panel „Arbeitsbereich: Bücher auf dem Reader“ in `cps/templates/kobo_dashboard.html` mit einer performanten Bootstrap-Tabelle und jQuery-Filtertasten (Alle auf dem Reader / Verwaist / Ausstehender Sync / Manuelle Ausnahmen) implementiert.
+- **Übersetzungen**: Neue deutsche UI-Labels und Tooltips in `messages.po` übersetzt und zu `.mo` kompiliert.
+- **Testabdeckung**: 3 neue Golden-Case Unit-Tests in `tests/unit/test_kobo_dashboard.py` hinzugefügt, die den Batch-Helper, passive Sammlungszuordnung und Full-Sync-Dashboardgrenzen absichern. Alle 60 Kobo-Tests bestanden erfolgreich.
+
+### Belege
+
+- Unit tests passed: `.venv/bin/pytest tests/unit/test_kobo_dashboard.py tests/unit/test_kobo_explanation.py tests/unit/test_kobo_decoupling.py tests/unit/test_kobo_detail_override.py`
+- git commit: `5b910e8` (feature/kobo-reader-dashboard-workspace)
+
 ## 2026-07-04 — Kobo-Reader-Modell Phase 2: UI-Slice (Buchdetailseite & Overrides)
 
 - **Feature/Bug:** Kobo-Reader-Modell Phase 2 (Buchdetailseite & Overrides)

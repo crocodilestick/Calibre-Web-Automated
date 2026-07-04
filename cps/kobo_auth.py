@@ -122,35 +122,18 @@ def delete_auth_token(user_id):
 @kobo_auth.route("/allow_excluded_book/<int:book_id>", methods=["POST"])
 @user_login_required
 def allow_excluded_book(book_id):
-    from .kobo_dashboard import KOBO_EXCLUSION_SHELF_NAME
-
-    shelves = ub.session.query(ub.Shelf).filter(
-        ub.Shelf.user_id == current_user.id,
-        ub.Shelf.name == KOBO_EXCLUSION_SHELF_NAME
-    ).all()
-    if not shelves:
-        flash(_("Das Ausschlussregal wurde nicht gefunden."), category="warning")
-        return redirect(url_for("kobo_auth.dashboard"))
-
-    shelves_by_id = {shelf.id: shelf for shelf in shelves}
-    book_shelves = ub.session.query(ub.BookShelf).filter(
-        ub.BookShelf.shelf.in_(list(shelves_by_id)),
-        ub.BookShelf.book_id == book_id
-    ).all()
-    if not book_shelves:
-        flash(_("Dieses Buch ist bereits wieder für Kobo erlaubt."), category="info")
-        return redirect(url_for("kobo_auth.dashboard"))
-
     try:
+        override = ub.session.query(ub.KoboBookOverride).filter_by(
+            user_id=current_user.id,
+            book_id=book_id,
+            reader_override="never"
+        ).first()
+
+        if override:
+            ub.session.delete(override)
+
         from .magic_shelf import invalidate_magic_shelf_cache
         invalidate_magic_shelf_cache()
-        now = datetime.now(timezone.utc)
-        for book_shelf in book_shelves:
-            shelf = shelves_by_id.get(book_shelf.shelf)
-            if shelf:
-                book_shelf.ub_shelf = shelf
-                shelf.last_modified = now
-            ub.session.delete(book_shelf)
         ub.session.commit()
         flash(_("Buch ist wieder für Kobo erlaubt."), category="success")
     except Exception as e:
@@ -164,20 +147,21 @@ def allow_excluded_book(book_id):
 @kobo_auth.route("/block_kobo_book/<int:book_id>", methods=["POST"])
 @user_login_required
 def block_kobo_book(book_id):
-    if not current_user.kobo_only_shelves_sync:
-        flash(_("Manuelles Blockieren ist nur im Zwei-Säulen-Sync verfügbar."), category="warning")
-        return redirect(url_for("kobo_auth.dashboard"))
-
     try:
-        from .kobo import get_kobo_allowed_book_ids, get_or_create_kobo_exclusion_shelf
-        allowed_book_ids = get_kobo_allowed_book_ids(current_user.id)
-        if allowed_book_ids is None or book_id not in allowed_book_ids:
-            flash(_("Dieses Buch ist bereits nicht in der Kobo-Auswahl."), category="info")
-            return redirect(url_for("kobo_auth.dashboard"))
+        override = ub.session.query(ub.KoboBookOverride).filter_by(
+            user_id=current_user.id,
+            book_id=book_id
+        ).first()
 
-        exclusion_shelf = get_or_create_kobo_exclusion_shelf(current_user.id)
-        exclusion_shelf.books.append(ub.BookShelf(book_id=book_id))
-        exclusion_shelf.last_modified = datetime.now(timezone.utc)
+        if not override:
+            override = ub.KoboBookOverride(
+                user_id=current_user.id,
+                book_id=book_id,
+                reader_override="never"
+            )
+            ub.session.add(override)
+        else:
+            override.reader_override = "never"
 
         from .magic_shelf import invalidate_magic_shelf_cache
         invalidate_magic_shelf_cache()

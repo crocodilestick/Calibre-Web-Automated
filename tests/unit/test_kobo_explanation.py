@@ -217,8 +217,8 @@ class TestKoboSyncExplanation:
     @patch('cps.kobo.config')
     @patch('cps.ub.session')
     @patch('cps.kobo.db.CalibreDB')
-    def test_explanation_selective_sync_blocked_by_exclusion_shelf(self, mock_calibre_db_class, mock_session, mock_config):
-        """Selective sync mode: book is in normal sync shelf but also in exclusion shelf."""
+    def test_explanation_selective_sync_blocked_by_never_override(self, mock_calibre_db_class, mock_session, mock_config):
+        """Selective sync mode: book is in normal sync shelf but has reader_override == 'never'."""
         fake_user = MagicMock()
         fake_user.id = 1
         fake_user.kobo_only_shelves_sync = True
@@ -232,10 +232,6 @@ class TestKoboSyncExplanation:
         fake_sync_shelf.name = "My Sync Shelf"
         fake_sync_shelf.kobo_sync = True
 
-        fake_ex_shelf = MagicMock()
-        fake_ex_shelf.id = 99
-        fake_ex_shelf.name = "Kobo: Ausgeschlossen"
-
         # Setup mock queries
         mock_user_query = MagicMock()
         mock_user_query.filter.return_value.first.return_value = fake_user
@@ -244,11 +240,13 @@ class TestKoboSyncExplanation:
         mock_archived_query.filter_by.return_value.first.return_value = None
 
         mock_shelf_query = MagicMock()
-        mock_shelf_query.filter.return_value.all.return_value = [fake_ex_shelf]
         mock_shelf_query.join().filter().all.return_value = [fake_sync_shelf]
 
-        mock_bookshelf_query = MagicMock()
-        mock_bookshelf_query.filter().filter().first.return_value = MagicMock()
+        # Mock KoboBookOverride to return never override
+        fake_override = MagicMock()
+        fake_override.reader_override = "never"
+        mock_override_query = MagicMock()
+        mock_override_query.filter_by.return_value.first.return_value = fake_override
 
         def session_query_side_effect(model):
             if model is ub.User:
@@ -257,8 +255,8 @@ class TestKoboSyncExplanation:
                 return mock_archived_query
             elif model is ub.Shelf:
                 return mock_shelf_query
-            elif model is ub.BookShelf:
-                return mock_bookshelf_query
+            elif model is ub.KoboBookOverride:
+                return mock_override_query
             return MagicMock()
 
         mock_session.query.side_effect = session_query_side_effect
@@ -268,11 +266,11 @@ class TestKoboSyncExplanation:
         mock_calibre_db_class.return_value = mock_cdb
 
         res = get_kobo_book_sync_explanation(1, 42)
-        assert res["is_allowed_by_selection"] is True
+        assert res["is_allowed_by_selection"] is False
         assert res["is_blocked_by_exclusion"] is True
         assert res["is_allowed_on_device"] is False
         assert res["is_visible_on_device"] is False
-        assert res["blocker_reasons"] == ["exclusion_shelf"]
+        assert res["blocker_reasons"] == ["never_override"]
 
     @patch('cps.kobo.config')
     @patch('cps.ub.session')
@@ -292,10 +290,6 @@ class TestKoboSyncExplanation:
         fake_sync_shelf.name = "My Sync Shelf"
         fake_sync_shelf.kobo_sync = True
 
-        fake_ex_shelf = MagicMock()
-        fake_ex_shelf.id = 99
-        fake_ex_shelf.name = "Kobo: Ausgeschlossen"
-
         fake_display_shelf = MagicMock()
         fake_display_shelf.id = 11
         fake_display_shelf.name = "My Display Shelf"
@@ -307,18 +301,17 @@ class TestKoboSyncExplanation:
         mock_archived_query.filter_by.return_value.first.return_value = None
 
         mock_shelf_query = MagicMock()
-        mock_shelf_query.filter.return_value.all.return_value = [fake_ex_shelf]
 
         mock_join_query = MagicMock()
         mock_shelf_query.join.return_value = mock_join_query
 
-        mock_join_query.filter().all.side_effect = [
-            [fake_sync_shelf],     # first call: normal_sync_shelves
-            [fake_display_shelf]   # second call: display_shelves
-        ]
+        mock_join_query.filter().all.return_value = [fake_display_shelf]
 
-        mock_bookshelf_query = MagicMock()
-        mock_bookshelf_query.filter().filter().first.return_value = MagicMock()
+        # Mock KoboBookOverride to return never override
+        fake_override = MagicMock()
+        fake_override.reader_override = "never"
+        mock_override_query = MagicMock()
+        mock_override_query.filter_by.return_value.first.return_value = fake_override
 
         def session_query_side_effect(model):
             if model is ub.User:
@@ -327,8 +320,8 @@ class TestKoboSyncExplanation:
                 return mock_archived_query
             elif model is ub.Shelf:
                 return mock_shelf_query
-            elif model is ub.BookShelf:
-                return mock_bookshelf_query
+            elif model is ub.KoboBookOverride:
+                return mock_override_query
             return MagicMock()
 
         mock_session.query.side_effect = session_query_side_effect
@@ -342,13 +335,13 @@ class TestKoboSyncExplanation:
         assert len(res["kobo_display_collections"]) == 1
         assert res["kobo_display_collections"][0]["id"] == 11
         assert len(res["kobo_actual_collections"]) == 0
-        assert res["blocker_reasons"] == ["exclusion_shelf"]
+        assert res["blocker_reasons"] == ["never_override"]
 
     @patch('cps.kobo.config')
     @patch('cps.ub.session')
     @patch('cps.kobo.db.CalibreDB')
-    def test_explanation_full_sync_ignores_exclusion_shelf(self, mock_calibre_db_class, mock_session, mock_config):
-        """Full sync mode: exclusion shelf is ignored, book is allowed on device."""
+    def test_explanation_full_sync_ignores_legacy_exclusion_shelf(self, mock_calibre_db_class, mock_session, mock_config):
+        """Full sync mode: legacy exclusion shelf is ignored, book is allowed on device."""
         fake_user = MagicMock()
         fake_user.id = 1
         fake_user.kobo_only_shelves_sync = False
@@ -357,10 +350,6 @@ class TestKoboSyncExplanation:
         fake_book = MagicMock()
         fake_book.id = 42
 
-        fake_ex_shelf = MagicMock()
-        fake_ex_shelf.id = 99
-        fake_ex_shelf.name = "Kobo: Ausgeschlossen"
-
         # Setup mock queries
         mock_user_query = MagicMock()
         mock_user_query.filter.return_value.first.return_value = fake_user
@@ -368,11 +357,11 @@ class TestKoboSyncExplanation:
         mock_archived_query.filter_by.return_value.first.return_value = None
 
         mock_shelf_query = MagicMock()
-        mock_shelf_query.filter.return_value.all.return_value = [fake_ex_shelf]
         mock_shelf_query.join().filter().all.return_value = []
 
-        mock_bookshelf_query = MagicMock()
-        mock_bookshelf_query.filter().filter().first.return_value = MagicMock()
+        # Mock KoboBookOverride to return no override (auto)
+        mock_override_query = MagicMock()
+        mock_override_query.filter_by.return_value.first.return_value = None
 
         def session_query_side_effect(model):
             if model is ub.User:
@@ -381,8 +370,8 @@ class TestKoboSyncExplanation:
                 return mock_archived_query
             elif model is ub.Shelf:
                 return mock_shelf_query
-            elif model is ub.BookShelf:
-                return mock_bookshelf_query
+            elif model is ub.KoboBookOverride:
+                return mock_override_query
             return MagicMock()
 
         mock_session.query.side_effect = session_query_side_effect

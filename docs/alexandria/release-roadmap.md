@@ -10,7 +10,7 @@ Bisher wurden die Berechnungen (Sync-Erlaubnis, Kobo-Ausschlussregale und Magic 
 
 ### Ziele
 * **Erklärung der Erlaubnis-Quelle:** Das Dashboard soll für jedes Buch im Sync-Bereich erklären, *welche* Quelle (z. B. ein bestimmtes normales Regal, eine Magic-Shelf-Regel oder ein Kobo-Sync-Flag) das Buch für den Kobo freigegeben hat.
-* **Sichtbare Begründung des Kobo-Ausschlusses:** Ein durch `Kobo: Ausgeschlossen` mitgeführtes Buch soll in den Listen markiert und mit einem Hinweis versehen sein (z. B. „Manuell auf dem Kobo gelöscht / ausgeschlossen“).
+* **Sichtbare Begründung des Kobo-Ausschlusses:** Ein durch einen manuellen Blocker (`reader_override = "never"`) ausgeschlossenes Buch soll in den Listen markiert und mit einem Hinweis versehen sein (z. B. „Manuell für den Kobo blockiert“).
 * **Nachvollziehbarkeit in Sammlungen:** Wenn eine Sammlung auf dem Kobo weniger Bücher enthält als in der lokalen Bibliothek, soll der Benutzer auf einen Blick sehen, *welche* Bücher dieser Sammlung nicht sync-berechtigt sind und *warum* (z. B. „Keine Kobo-Freigabe für dieses Buch“ oder „Manuell ausgeschlossen“).
 * **Arbeitsfilter in der Kobo-Auswahl:** Filter für Universum, Inhaltstyp, Buchart und Lesestatus, um die Menge der angezeigten Bücher in der Kobo-Auswahl schnell zu reduzieren.
 * **Proaktive Warnhinweise:**

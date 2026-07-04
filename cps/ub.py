@@ -577,6 +577,21 @@ class KoboSyncedBooks(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     book_id = Column(Integer)
 
+
+class KoboBookOverride(Base):
+    __tablename__ = 'kobo_book_override'
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), index=True, nullable=False)
+    book_id = Column(Integer, index=True, nullable=False)
+    reader_override = Column(String(20), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'book_id', name='_user_book_override_uc'),
+    )
+
+    def __repr__(self):
+        return '<KoboBookOverride User %d, Book %d: %s>' % (self.user_id, self.book_id, self.reader_override)
+
 # The Kobo ReadingState API keeps track of 4 timestamped entities:
 #   ReadingState, StatusInfo, Statistics, CurrentBookmark
 # Which we map to the following 4 tables:
@@ -791,6 +806,7 @@ def add_missing_tables(engine, _session):
     if not engine.dialect.has_table(engine.connect(), "thumbnail"):
         Thumbnail.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "kosync_progress"):
+        from .progress_syncing import KOSyncProgress
         KOSyncProgress.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "magic_shelf"):
         MagicShelf.__table__.create(bind=engine, checkfirst=True)
@@ -798,6 +814,8 @@ def add_missing_tables(engine, _session):
         MagicShelfCache.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "hidden_magic_shelf_templates"):
         HiddenMagicShelfTemplate.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "kobo_book_override"):
+        KoboBookOverride.__table__.create(bind=engine, checkfirst=True)
 
 
 # migrate all settings missing in registration table

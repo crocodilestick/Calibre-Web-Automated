@@ -25,10 +25,8 @@ Erwartete Elemente:
 - Filter fuer Universum, Inhaltstyp, Buchart und Lesestatus.
 - Schnelle Aktion: `Nicht auf Kobo`, um ein Buch bewusst aus der
   Kobo-Auswahl auszuschliessen.
-- Sichtbare Kennzeichnung fuer Buecher in `Kobo: Ausgeschlossen`, damit klar
-  ist, warum ein Buch trotz passender Regel nicht synchronisiert wird.
-- Aktion: `Wieder fuer Kobo erlauben`, indem das Buch aus
-  `Kobo: Ausgeschlossen` entfernt wird. Eine erste Dashboard-Aktion dafuer ist
+- Sichtbare Kennzeichnung fuer blockierte Buecher (`reader_override = "never"`), damit klar ist, warum ein Buch trotz passender Regel nicht synchronisiert wird.
+- Aktion: `Wieder fuer Kobo erlauben`, indem der Blocker-Override geloescht wird. Eine erste Dashboard-Aktion dafuer ist
   implementiert; spaeter kann die Darstellung noch dichter in die eigentliche
   Kobo-Auswahl integriert werden.
 - Dashboard-Politur: Die Sektion `Nicht auf Kobo` bleibt sichtbar, zeigt die
@@ -69,6 +67,4 @@ Magic-Shelf-Regeln bleiben moeglich, aber mit klareren Namen:
 - Eine Sammlung basiert nur auf einem breiten Genre-Tag.
 - Ein Buch ist fuer Kobo ausgewaehlt, hat aber keine sinnvolle Sammlung.
 - Ein Buch ist in einer Kobo-Sammlung, aber nicht fuer den Kobo ausgewaehlt.
-- Ein Buch wird durch eine Regel eingeschlossen, aber durch
-  `Kobo: Ausgeschlossen` blockiert. Im Dashboard wird dies fuer Sammlungen
-  inzwischen als `Nicht auf Kobo`-Zaehler und Hinweis sichtbar.
+- Ein Buch wird durch eine Regel eingeschlossen, aber durch einen manuellen Blocker (`reader_override = "never"`) blockiert. Im Dashboard wird dies fuer Sammlungen inzwischen als `Nicht auf Kobo`-Zaehler und Hinweis sichtbar.

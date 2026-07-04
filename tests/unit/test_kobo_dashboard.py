@@ -733,38 +733,38 @@ class TestKoboDashboard:
         fake_synced_10 = MagicMock(book_id=10)
         fake_synced_20 = MagicMock(book_id=20)
 
-        # Setup mock shelf objects
-        fake_shelf_40 = MagicMock()
-        fake_shelf_40.id = 100
-        fake_shelf_40.name = "Active Sync Shelf"
-        fake_shelf_40.kobo_sync = True
-        fake_shelf_40.kobo_display = True
-        fake_shelf_40.books = [MagicMock(book_id=40)]
+        # Setup mock row objects
+        fake_row_40 = MagicMock()
+        fake_row_40.book_id = 40
+        fake_row_40.id = 100
+        fake_row_40.name = "Active Sync Shelf"
+        fake_row_40.kobo_sync = True
+        fake_row_40.kobo_display = True
 
-        fake_shelf_50 = MagicMock()
-        fake_shelf_50.id = 200
-        fake_shelf_50.name = "Passive Display Shelf"
-        fake_shelf_50.kobo_sync = False
-        fake_shelf_50.kobo_display = True
-        fake_shelf_50.books = [MagicMock(book_id=50)]
+        fake_row_50 = MagicMock()
+        fake_row_50.book_id = 50
+        fake_row_50.id = 200
+        fake_row_50.name = "Passive Display Shelf"
+        fake_row_50.kobo_sync = False
+        fake_row_50.kobo_display = True
 
         # Mock session query side effect
-        def query_side_effect(model):
+        def query_side_effect(model, *args):
             q = MagicMock()
-            if model == ub.User:
+            if model is ub.User:
                 q.filter.return_value.first.return_value = fake_user
-            elif model == ub.ArchivedBook:
+            elif model is ub.ArchivedBook:
                 q.filter.return_value.all.return_value = [fake_archived]
-            elif model == ub.KoboBookOverride:
+            elif model is ub.KoboBookOverride:
                 q.filter.return_value.all.return_value = [fake_override_10, fake_override_20]
-            elif model == ub.MagicShelf:
+            elif model is ub.MagicShelf:
                 q.filter_by.return_value.all.return_value = []
-            elif model == ub.KoboSyncedBooks:
+            elif model is ub.KoboSyncedBooks:
                 q.filter.return_value.all.return_value = [fake_synced_10, fake_synced_20]
             else:
-                # normal shelves join returning Shelf models
-                q.options.return_value.join.return_value.filter.return_value.filter.return_value.all.return_value = [
-                    fake_shelf_40, fake_shelf_50
+                # normal shelves column join returning rows
+                q.join.return_value.filter.return_value.filter.return_value.all.return_value = [
+                    fake_row_40, fake_row_50
                 ]
             return q
 
@@ -827,36 +827,36 @@ class TestKoboDashboard:
         fake_book = MagicMock(id=10, title="Multi-shelf Book")
         mock_cdb.session.query.return_value.filter.return_value.filter.return_value.all.return_value = [fake_book]
 
-        # Setup mock shelf objects
-        fake_shelf_100 = MagicMock()
-        fake_shelf_100.id = 100
-        fake_shelf_100.name = "Active Sync Only"
-        fake_shelf_100.kobo_sync = True
-        fake_shelf_100.kobo_display = False
-        fake_shelf_100.books = [MagicMock(book_id=10)]
+        # Setup mock row objects
+        fake_row_100 = MagicMock()
+        fake_row_100.book_id = 10
+        fake_row_100.id = 100
+        fake_row_100.name = "Active Sync Only"
+        fake_row_100.kobo_sync = True
+        fake_row_100.kobo_display = False
 
-        fake_shelf_200 = MagicMock()
-        fake_shelf_200.id = 200
-        fake_shelf_200.name = "Passive Display Only"
-        fake_shelf_200.kobo_sync = False
-        fake_shelf_200.kobo_display = True
-        fake_shelf_200.books = [MagicMock(book_id=10)]
+        fake_row_200 = MagicMock()
+        fake_row_200.book_id = 10
+        fake_row_200.id = 200
+        fake_row_200.name = "Passive Display Only"
+        fake_row_200.kobo_sync = False
+        fake_row_200.kobo_display = True
 
-        def query_side_effect(model):
+        def query_side_effect(model, *args):
             q = MagicMock()
-            if model == ub.User:
+            if model is ub.User:
                 q.filter.return_value.first.return_value = fake_user
-            elif model == ub.ArchivedBook:
+            elif model is ub.ArchivedBook:
                 q.filter.return_value.all.return_value = []
-            elif model == ub.KoboBookOverride:
+            elif model is ub.KoboBookOverride:
                 q.filter.return_value.all.return_value = []
-            elif model == ub.MagicShelf:
+            elif model is ub.MagicShelf:
                 q.filter_by.return_value.all.return_value = []
-            elif model == ub.KoboSyncedBooks:
+            elif model is ub.KoboSyncedBooks:
                 q.filter.return_value.all.return_value = []
             else:
-                q.options.return_value.join.return_value.filter.return_value.filter.return_value.all.return_value = [
-                    fake_shelf_100, fake_shelf_200
+                q.join.return_value.filter.return_value.filter.return_value.all.return_value = [
+                    fake_row_100, fake_row_200
                 ]
             return q
 

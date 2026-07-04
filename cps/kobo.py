@@ -357,36 +357,30 @@ def get_kobo_books_sync_explanations(user_id, book_ids):
         except Exception as e:
             log.error("Failed to query normal shelves in single sync explanation: %s", e)
     else:
-        from sqlalchemy.orm import joinedload
         try:
-            normal_shelves = (
-                ub.session.query(ub.Shelf)
-                .options(joinedload(ub.Shelf.books))
-                .join(ub.BookShelf, ub.Shelf.id == ub.BookShelf.shelf)
+            # Query specific columns to bypass lazy="dynamic" population issues on Shelf.books
+            normal_shelves_data = (
+                ub.session.query(
+                    ub.BookShelf.book_id,
+                    ub.Shelf.id,
+                    ub.Shelf.name,
+                    ub.Shelf.kobo_sync,
+                    ub.Shelf.kobo_display
+                )
+                .join(ub.Shelf, ub.Shelf.id == ub.BookShelf.shelf)
                 .filter(ub.Shelf.user_id == user_id)
                 .filter(ub.BookShelf.book_id.in_(book_ids_set))
                 .all()
             )
+            for row in normal_shelves_data:
+                normal_shelves_by_book.setdefault(row.book_id, []).append({
+                    "id": row.id,
+                    "name": row.name,
+                    "kobo_sync": bool(row.kobo_sync),
+                    "kobo_display": bool(row.kobo_display)
+                })
         except Exception as e:
             log.error("Failed to query normal shelves in batch sync explanation: %s", e)
-            normal_shelves = []
-
-        for shelf in normal_shelves:
-            books_list = getattr(shelf, 'books', [])
-            if hasattr(books_list, 'all'):
-                try:
-                    books_list = books_list.all()
-                except Exception:
-                    books_list = []
-            for bs in books_list:
-                bid = getattr(bs, 'book_id', None)
-                if bid in book_ids_set:
-                    normal_shelves_by_book.setdefault(bid, []).append({
-                        "id": shelf.id,
-                        "name": shelf.name,
-                        "kobo_sync": bool(shelf.kobo_sync),
-                        "kobo_display": bool(shelf.kobo_display)
-                    })
 
     # Get Magic Shelves that have kobo_sync = True or kobo_display = True
     magic_shelves_by_book = {}

@@ -510,8 +510,8 @@
 {% block js %}
 <script>
 $(document).ready(function() {
-  // Book details click handler
-  $('.kobo-book-details').on('click', function(e) {
+  // Book details click handler (delegated to support dynamically rendered workspace rows)
+  $(document).on('click', '.kobo-book-details', function(e) {
     e.preventDefault();
     var bookId = $(this).data('book-id');
     showBookExplanation(bookId);
@@ -786,12 +786,7 @@ $(document).ready(function() {
     applyWorkspaceFilter(filter);
   });
 
-  // Attach details click handler for workspace rows
-  $(document).on('click', '.kobo-workspace-row .kobo-book-details', function(e) {
-    e.preventDefault();
-    var bookId = $(this).data('book-id');
-    showBookExplanation(bookId);
-  });
+
 
   updateWorkspaceCounts();
   applyWorkspaceFilter('all');

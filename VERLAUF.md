@@ -18,6 +18,27 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-04 — Kobo-Reader-Modell Phase 1: Datenmodell & Sync-Eligibility
+
+- **Feature/Bug:** Phase 1 des neuen Kobo-Reader-Modells (Datenmodell & Sync-Eligibility).
+- **Branch / Worktree:** `feature/kobo-reader-override-eligibility`
+- **Status:** Phase 1 vollständig implementiert, lokal committet und alle 44 Unit-Tests erfolgreich verifiziert.
+
+### Erledigt
+
+- Neues Datenmodell `KoboBookOverride` (Tabelle `kobo_book_override` mit SQLAlchemy-Schema) in `cps/ub.py` definiert und in `add_missing_tables()` integriert.
+- Helper-Methoden `get_kobo_blocked_book_ids(user_id)` und die aktualisierte `get_kobo_allowed_book_ids(user_id)` in `cps/kobo.py` implementiert, um reader-spezifische Overrides (`always` / `never` / `auto`) zu verarbeiten. `Kobo: Ausgeschlossen` wird nicht mehr als aktive Sync-Entscheidung verwendet.
+- Kobo-Live-Synchronisation in `cps/kobo.py` (`HandleSyncRequest()`) angepasst: blockierte Bücher werden bei der Deletionslogik, den geänderten Büchern (`changed_entries`), den geänderten Leseständen (`changed_reading_states`) sowie in normalen und magischen Kobo-Sammlungen (`sync_shelves()`) in beiden Sync-Modi (Full & Selective Sync) ausgeschlossen.
+- Dashboard-Statistiken in `cps/kobo_dashboard.py` (`get_kobo_dashboard_data()`) angepasst: Zähler und Warnungen ziehen `never`-Blocker auch im Full-Sync-Modus ab.
+- Die Dashboard-Aktionen "Nicht auf Kobo" und "Wieder erlauben" in `cps/kobo_auth.py` auf `KoboBookOverride` umgestellt.
+- Kobo-DELETE Request-Handler `HandleBookDeletionRequest()` angepasst: im Full Sync wird nun `reader_override = "never"` gesetzt.
+- Unit-Tests in `tests/unit/test_kobo_decoupling.py`, `tests/unit/test_kobo_explanation.py` und `tests/unit/test_kobo_dashboard.py` erweitert und auf das neue Overrides-Modell angepasst.
+- Kompilierung und Syntaxprüfung (`py_compile`) sowie `git diff --check` fehlerfrei durchgeführt.
+
+### Nächster Schritt
+
+- Phase 2 (UI und Bearbeitbarkeit auf der Buchdetailseite) angehen, sobald das Feedback vorliegt.
+
 ## 2026-07-04 — Kobo-Reader-Modell (Konzept)
 
 - **Feature/Bug:** Konzeptdokument zur Vereinfachung des Kobo-/Reader-Modells (Grundlage für künftige Features).

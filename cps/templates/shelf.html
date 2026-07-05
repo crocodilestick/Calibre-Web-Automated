@@ -41,7 +41,7 @@
           {% if page == 'magicshelf' %}
             {{ _('Magic Shelf') }}&nbsp;&nbsp;&nbsp;—&nbsp;&nbsp;&nbsp;<span style="font-size: 1.1em;">{{ shelf.icon }}</span> {{ shelf.name }}
           {% else %}
-            {{ _('Shelf:') }} '{{ shelf.name }}'
+            {{ shelf.name }}
           {% endif %}
         </h2>
 
@@ -51,17 +51,17 @@
             <span>
               <strong>{{ _('Kobo Sync:') }}</strong>
               {% if shelf.kobo_sync %}
-                <span class="text-success"><span class="glyphicon glyphicon-ok"></span> {{ _('Enabled') }}</span>
+                <span class="cwa-status-enabled"><span class="glyphicon glyphicon-ok"></span> {{ _('Enabled') }}</span>
               {% else %}
-                <span class="text-warning"><span class="glyphicon glyphicon-remove"></span> {{ _('Disabled') }}</span>
+                <span class="cwa-status-disabled"><span class="glyphicon glyphicon-remove"></span> {{ _('Disabled') }}</span>
               {% endif %}
             </span>
             <span>
               <strong>{{ _('Kobo Collection:') }}</strong>
               {% if shelf.kobo_display %}
-                <span class="text-success"><span class="glyphicon glyphicon-ok"></span> {{ _('Shown as Collection') }}</span>
+                <span class="cwa-status-enabled"><span class="glyphicon glyphicon-ok"></span> {{ _('Shown as Collection') }}</span>
               {% else %}
-                <span class="text-warning"><span class="glyphicon glyphicon-remove"></span> {{ _('Hidden') }}</span>
+                <span class="cwa-status-disabled"><span class="glyphicon glyphicon-remove"></span> {{ _('Hidden') }}</span>
               {% endif %}
             </span>
           </div>

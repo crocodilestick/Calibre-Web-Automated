@@ -101,8 +101,15 @@ body.modal-open #remove-from-shelves + .tags {
 /* Full-page flat near-black background with a subtle vertical gradient,
    modelled on streaming UIs (Netflix-style) */
 body.cwa-shelf-view-gallery {
-    background-color: #141414 !important;
-    background-image: linear-gradient(180deg, #1c1c1c 0%, #141414 320px) !important;
+    background-color: #0c0a0c !important;
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(20, 32, 65, 0.45) 0%, transparent 60%),
+        radial-gradient(circle at 90% 80%, rgba(55, 18, 38, 0.35) 0%, transparent 70%),
+        linear-gradient(180deg, rgba(12, 10, 12, 0.7) 0%, rgba(12, 10, 12, 0.92) 100%),
+        url('../img/alexandria/wood_dark.jpg') !important;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
     background-repeat: no-repeat !important;
 }
 
@@ -665,4 +672,39 @@ body.cwa-shelf-view-reader .dropdown-menu li a.disabled {
         grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
         gap: 28px 16px !important;
     }
+}
+
+/* ----------------- D) ALEXANDRIA LAYOUT & SEMANTICS ----------------- */
+@media (min-width: 768px) {
+    body.cwa-shelf-page .col-sm-10 {
+        padding-left: 55px !important;
+        padding-right: 35px !important;
+    }
+}
+@media (min-width: 1200px) {
+    body.cwa-shelf-page .col-sm-10 {
+        padding-left: 80px !important;
+        padding-right: 50px !important;
+    }
+}
+
+/* Kobo Status Semantics */
+body.cwa-shelf-view-gallery .cwa-status-enabled {
+    color: #34d399 !important;
+    font-weight: 600;
+}
+body.cwa-shelf-view-gallery .cwa-status-disabled {
+    color: #f87171 !important;
+    opacity: 0.8;
+    font-weight: 500;
+}
+
+body.cwa-shelf-view-reader .cwa-status-enabled {
+    color: #111111 !important;
+    font-weight: 600;
+}
+body.cwa-shelf-view-reader .cwa-status-disabled {
+    color: #71717a !important;
+    opacity: 0.6;
+    font-weight: 400;
 }

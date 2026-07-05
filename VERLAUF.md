@@ -18,6 +18,28 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-05 — Kobo-Reader-Sammlung-Warnung im Kobo-Dashboard
+
+- **Feature/Bug:** Kobo-Reader-Sammlung-Warnung (Zusatzerklärung für Bücher, die auf den Reader dürfen, aber in keiner Reader-Sammlung sind).
+- **Branch / Worktree:** `feature/kobo-reader-collection-warning`
+- **Status:** Umgesetzt und getestet, in `main` gemerged.
+
+### Erledigt
+
+- **Badge & Tooltip-Implementierung**: Wenn ein Buch freigegeben ist (`is_allowed=True`/`is_allowed_on_device=True`), aber keine Kobo-Sammlungen hat, wird der Badge „Keine Reader-Sammlung“ samt Tooltip-Erklärung angezeigt.
+- **AJAX-Handler-Erweiterung**: Der Badge wird auch live über JavaScript aktualisiert und bei `error_generating_explanation` stabil gehalten.
+- **Unit-Tests**: Assertions im Template-Smoke-Test erweitert und neue Tests `test_workspace_book_warning_for_no_collections` (Datenstruktur) und `test_workspace_book_warning_renders_in_template` (Template-Snippet-Rendering) hinzugefügt.
+
+### Belege
+
+- Unit-Tests erfolgreich ausgeführt (70 Tests bestanden):
+  ```
+  tests/unit/test_kobo_dashboard.py PASSED
+  tests/unit/test_kobo_explanation.py PASSED
+  tests/unit/test_kobo_decoupling.py PASSED
+  tests/unit/test_kobo_detail_override.py PASSED
+  ```
+
 ## 2026-07-05 — Kobo-Dashboard: kompakte Begründungs-Badges im Arbeitsbereich
 
 - **Feature/Bug:** Kobo-Dashboard: kompakte Begründungs-Badges im Arbeitsbereich

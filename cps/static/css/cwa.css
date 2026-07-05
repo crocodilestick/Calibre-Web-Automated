@@ -46,9 +46,18 @@ body.modal-open #remove-from-shelves + .tags {
     max-width: 40vw;
 }
 
-/* --- Alexandria Beautiful Shelf Views (Roadmap Step 3) --- */
+/* --- Alexandria Beautiful Shelf Views (Phase 3: full-page theme) ---
+ *
+ * Two visual systems, both scoped to shelf pages only via the body classes
+ * `cwa-shelf-view-gallery` / `cwa-shelf-view-reader` (set by shelf.html):
+ *   A) Gallery = "dark library": wood texture across the whole page,
+ *      glass navbar/sidebar, bronze accents, shelf-board under each cover.
+ *   B) Reader  = "unified eInk": flat paper surface across the whole page,
+ *      thin grey lines, black/white controls, no shadows.
+ * Shared typography: serif display stack for headings and book titles.
+ */
 
-/* Grid Layout */
+/* Base grid layout (both modes) */
 #shelf-container .shelf-books-grid {
     display: grid !important;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -62,12 +71,15 @@ body.modal-open #remove-from-shelves + .tags {
 }
 #shelf-container .shelf-book-card {
     width: auto !important;
+    /* caliBlur pins .book:not(body) to exactly 180px via min/max-width */
+    max-width: none !important;
+    min-width: 0 !important;
     float: none !important;
     margin: 0 !important;
     padding: 0 !important;
 }
 
-/* View Mode Toggle Styles */
+/* View mode toggle: neutral base, mode-specific accents further below */
 .view-mode-toggle button {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -80,44 +92,102 @@ body.modal-open #remove-from-shelves + .tags {
     color: #fff;
 }
 .view-mode-toggle button.active {
-    background: #337ab7 !important;
-    border-color: #2e6da4 !important;
+    background: #3f3f46 !important;
+    border-color: #52525b !important;
     color: #fff !important;
 }
 
-/* Light Theme overrides for Toggle Button */
-body:not(.blur) .view-mode-toggle button {
-    background: #fff;
-    border-color: #ccc;
-    color: #333;
-}
-body:not(.blur) .view-mode-toggle button:hover {
-    background: #f5f5f5;
-}
-body:not(.blur) .view-mode-toggle button.active {
-    background: #337ab7 !important;
-    border-color: #2e6da4 !important;
-    color: #fff !important;
-}
+/* ----------------- A) GALLERY VIEW (DARK LIBRARY) ----------------- */
 
-/* ----------------- A) GALLERY VIEW ----------------- */
-#shelf-container.shelf-view-gallery {
+/* Full-page wood background (body does not scroll in caliBlur, so the
+   texture stays put without background-attachment tricks) */
+body.cwa-shelf-view-gallery {
     background-color: #1e1b18 !important;
     background-image:
-      radial-gradient(circle, rgba(0, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.8) 100%),
+      radial-gradient(ellipse at 50% 20%, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.75) 100%),
       url('../img/alexandria/wood_dark.jpg') !important;
-    background-size: cover;
-    background-position: center;
-    background-attachment: fixed;
-    padding: 30px !important;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: inset 0 0 100px rgba(0,0,0,0.8);
+    background-size: cover !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
 }
 
+/* Navbar as dark matte glass over the wood */
+body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top {
+    background: rgba(14, 10, 6, 0.55) !important;
+    background-image: none !important;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35) !important;
+}
+
+/* Navbar sub-elements (brand block, collapse bar) keep their own caliBlur
+   backgrounds; flatten them so the glass navbar is one surface */
+body.cwa-shelf-view-gallery .navbar .navbar-header,
+body.cwa-shelf-view-gallery .navbar .navbar-collapse {
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+body.cwa-shelf-view-gallery .navbar .navbar-brand {
+    color: #e8ddcc !important;
+}
+/* caliBlur styles the brand link with a very specific selector; match it */
+body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top div.navbar-header > a.navbar-brand {
+    color: #e8ddcc !important;
+    background: transparent !important;
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+}
+
+/* Left sidebar as matching glass panel */
+body.cwa-shelf-view-gallery .col-sm-2 {
+    background: rgba(14, 10, 6, 0.4) !important;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+    border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
+    min-height: 100vh;
+}
+
+body.cwa-shelf-view-gallery .navigation li a {
+    color: #d9cdbb !important;
+}
+body.cwa-shelf-view-gallery .navigation li a:hover {
+    background-color: rgba(163, 112, 76, 0.18) !important;
+    color: #f3ead9 !important;
+}
+body.cwa-shelf-view-gallery .navigation li.active a {
+    background-color: rgba(163, 112, 76, 0.28) !important;
+    color: #ffffff !important;
+}
+body.cwa-shelf-view-gallery .navigation .nav-head {
+    color: #b08968 !important;
+}
+
+/* The shelf container itself becomes transparent: the wood is the page */
+#shelf-container.shelf-view-gallery {
+    background: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-radius: 0;
+    box-shadow: none !important;
+    padding: 20px 10px 60px !important;
+}
+
+/* Display typography: classic serif for the page heading */
+body.cwa-shelf-view-gallery .shelf-header-wrapper h2 {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+    color: #f3ead9 !important;
+    letter-spacing: 0.01em;
+    text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.7);
+}
+body.cwa-shelf-view-gallery .shelf-header-wrapper {
+    border-bottom-color: rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Larger covers, extra row spacing for the shelf boards */
 #shelf-container.shelf-view-gallery .shelf-books-grid {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)) !important;
-    gap: 35px !important;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
+    gap: 50px 30px !important;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card {
@@ -127,33 +197,66 @@ body:not(.blur) .view-mode-toggle button.active {
     border: none !important;
     border-radius: 0;
     padding: 0 !important;
-    transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
     box-shadow: none !important;
 }
 
-#shelf-container.shelf-view-gallery .shelf-book-card:hover {
-    transform: translateY(-6px);
+/* Cover block: keeps its footprint, the inner .img span is what lifts on
+   hover so the shelf board (a ::after on .cover) stays fixed in place */
+#shelf-container.shelf-view-gallery .shelf-book-card .cover {
+    position: relative;
+    overflow: visible;
+    aspect-ratio: 2 / 3;
+    /* style.css forces a fixed 225px height on .book .cover which would
+       override the aspect-ratio and detach covers from their shelf board */
+    height: auto !important;
+    width: 100%;
+    margin-bottom: 26px;
+    background: transparent;
+    border-radius: 0;
+    box-shadow: none;
 }
 
-#shelf-container.shelf-view-gallery .shelf-book-card .cover {
-    margin-bottom: 12px;
-    border-radius: 2px;
-    overflow: hidden;
-    aspect-ratio: 2 / 3;
+#shelf-container.shelf-view-gallery .shelf-book-card .cover .img {
+    display: block;
+    position: relative;
+    bottom: auto;
+    width: 100%;
+    height: 100%;
     background: rgba(0, 0, 0, 0.3);
     box-shadow: 5px 8px 16px rgba(0, 0, 0, 0.6), 0 0 2px rgba(255, 255, 255, 0.1);
     transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
 }
 
-#shelf-container.shelf-view-gallery .shelf-book-card:hover .cover {
-    transform: scale(1.02);
-    box-shadow: 8px 14px 24px rgba(0, 0, 0, 0.75);
+#shelf-container.shelf-view-gallery .shelf-book-card:hover .cover .img {
+    transform: translateY(-7px) scale(1.02);
+    box-shadow: 8px 16px 26px rgba(0, 0, 0, 0.75);
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .cover img {
-    width: 100%;
-    height: 100%;
+    /* caliBlur pins .book.isotope-item .cover img to 150px with !important
+       and layers it behind content backgrounds via z-index: -9 */
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    position: relative;
+    z-index: 1 !important;
     object-fit: cover;
+    border-radius: 2px 2px 0 0;
+}
+
+/* Shelf board: a wooden plank directly under the cover. It extends by half
+   the column gap (15px) on both sides so the planks of one row visually
+   connect into a continuous board. */
+#shelf-container.shelf-view-gallery .shelf-book-card .cover::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: -15px;
+    right: -15px;
+    height: 14px;
+    background: linear-gradient(180deg, #7a5233 0%, #5b3b22 40%, #33210f 100%);
+    border-top: 1px solid rgba(255, 226, 189, 0.25);
+    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.5);
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta {
@@ -165,11 +268,12 @@ body:not(.blur) .view-mode-toggle button.active {
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .title {
+    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
     font-weight: 600;
-    font-size: 1.05em;
+    font-size: 1.08em;
     line-height: 1.3;
     margin: 0 0 2px 0;
-    color: #ffffff !important;
+    color: #f5efe6 !important;
     text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -192,7 +296,7 @@ body:not(.blur) .view-mode-toggle button.active {
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .series-meta {
     font-size: 0.82em;
-    color: #9ca3af !important;
+    color: #b3a893 !important;
     text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
     margin: 0;
     white-space: nowrap;
@@ -202,11 +306,75 @@ body:not(.blur) .view-mode-toggle button.active {
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .rating {
+    /* caliBlur hides grid ratings globally; the dark library shows them */
+    display: block !important;
     margin-top: 4px;
+    color: #c9a227;
 }
 
+/* caliBlur colours the links inside the meta lines, not the paragraphs */
+#shelf-container.shelf-view-gallery .shelf-book-card .meta .author a {
+    color: #e5e7eb !important;
+}
+#shelf-container.shelf-view-gallery .shelf-book-card .meta .series-meta a {
+    color: #b3a893 !important;
+}
 
-/* ----------------- B) READER VIEW (UNIFIED) ----------------- */
+/* Bronze/graphite controls: no loud Bootstrap orange or blue on this page */
+body.cwa-shelf-view-gallery .shelf-toolbar .btn-default,
+body.cwa-shelf-view-gallery .sidebar-sort-item .btn-default,
+body.cwa-shelf-view-gallery .sidebar-view-mode-item .btn-default {
+    background: rgba(255, 255, 255, 0.07) !important;
+    border: 1px solid rgba(255, 255, 255, 0.18) !important;
+    color: #e8ddcc !important;
+    box-shadow: none !important;
+}
+body.cwa-shelf-view-gallery .shelf-toolbar .btn-default:hover,
+body.cwa-shelf-view-gallery .sidebar-sort-item .btn-default:hover,
+body.cwa-shelf-view-gallery .sidebar-view-mode-item .btn-default:hover {
+    background: rgba(163, 112, 76, 0.25) !important;
+    border-color: rgba(191, 138, 95, 0.6) !important;
+    color: #ffffff !important;
+}
+
+body.cwa-shelf-view-gallery .dropdown-menu {
+    background: rgba(30, 21, 13, 0.96) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+}
+body.cwa-shelf-view-gallery .dropdown-menu li a {
+    color: #e8ddcc !important;
+}
+body.cwa-shelf-view-gallery .dropdown-menu li a:hover {
+    background-color: rgba(163, 112, 76, 0.25) !important;
+    color: #ffffff !important;
+}
+body.cwa-shelf-view-gallery .dropdown-menu li.active a {
+    background-color: #a3704c !important;
+    color: #ffffff !important;
+}
+
+body.cwa-shelf-view-gallery .view-mode-toggle button.active {
+    background: #a3704c !important;
+    border-color: #8a5a3b !important;
+    color: #ffffff !important;
+}
+
+/* Neutralise caliBlur's orange on primary buttons (e.g. modal dialogs) */
+body.cwa-shelf-view-gallery .btn-primary.active,
+body.cwa-shelf-view-gallery .btn-primary:active,
+body.cwa-shelf-view-gallery .btn-primary:focus,
+body.cwa-shelf-view-gallery .btn-primary:hover,
+body.cwa-shelf-view-gallery .open .dropdown-toggle.btn-primary {
+    background-color: #a3704c !important;
+    border-color: #8a5a3b !important;
+    color: #ffffff !important;
+}
+body.cwa-shelf-view-gallery input[type=checkbox] {
+    accent-color: #a3704c;
+}
+
+/* ----------------- B) READER VIEW (UNIFIED EINK) ----------------- */
 body.cwa-shelf-view-reader {
     background-color: #f7f6f2 !important;
     background-image: url('../img/alexandria/reader_paper.jpg') !important;
@@ -214,7 +382,7 @@ body.cwa-shelf-view-reader {
     color: #111111 !important;
 }
 
-/* Navbar und Sidebar in Reader-Papieroptik übergehen lassen */
+/* Navbar and sidebar melt into the paper surface */
 body.cwa-shelf-view-reader .navbar,
 body.cwa-shelf-view-reader .navigation,
 body.cwa-shelf-view-reader #shelf-container {
@@ -228,12 +396,33 @@ body.cwa-shelf-view-reader .navbar {
     border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
 }
 
-body.cwa-shelf-view-reader .col-sm-2 {
-    border-right: 1px solid rgba(0, 0, 0, 0.12) !important;
-    height: 100vh;
+/* Flatten caliBlur's own navbar sub-surfaces onto the paper */
+body.cwa-shelf-view-reader div.navbar.navbar-default.navbar-static-top,
+body.cwa-shelf-view-reader .navbar .navbar-header,
+body.cwa-shelf-view-reader .navbar .navbar-collapse {
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+body.cwa-shelf-view-reader .navbar .navbar-brand,
+body.cwa-shelf-view-reader .navbar a {
+    color: #111111 !important;
+}
+/* caliBlur styles the brand link with a very specific selector; match it */
+body.cwa-shelf-view-reader div.navbar.navbar-default.navbar-static-top div.navbar-header > a.navbar-brand {
+    color: #111111 !important;
+    background: transparent !important;
+    text-shadow: none !important;
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
 }
 
-/* Link-Farben in der Sidebar auf Reader-Text ausrichten */
+body.cwa-shelf-view-reader .col-sm-2 {
+    background: transparent !important;
+    border-right: 1px solid rgba(0, 0, 0, 0.12) !important;
+    min-height: 100vh;
+}
+
+/* Sidebar links follow the reader ink colours */
 body.cwa-shelf-view-reader .navigation li a {
     color: #27272a !important;
     font-weight: 500;
@@ -257,7 +446,24 @@ body.cwa-shelf-view-reader .navigation .nav-head {
     margin-top: 15px;
 }
 
-/* Das Grid im Reader-Modus */
+/* Page heading: book-like serif in plain black ink */
+body.cwa-shelf-view-reader .shelf-header-wrapper h2 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+    color: #000000 !important;
+    text-shadow: none;
+}
+body.cwa-shelf-view-reader .shelf-header-wrapper {
+    border-bottom-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+/* eInk is monochrome: Kobo status lines lose their green/yellow */
+body.cwa-shelf-view-reader .shelf-kobo-status,
+body.cwa-shelf-view-reader .shelf-kobo-status .text-success,
+body.cwa-shelf-view-reader .shelf-kobo-status .text-warning {
+    color: #111111 !important;
+}
+
+/* The grid in reader mode */
 #shelf-container.shelf-view-reader .shelf-books-grid {
     gap: 30px !important;
 }
@@ -279,10 +485,21 @@ body.cwa-shelf-view-reader .navigation .nav-head {
     border: 1px solid #3f3f46;
     border-radius: 0;
     aspect-ratio: 2 / 3;
+    /* see gallery note: neutralise the fixed 225px height from style.css */
+    height: auto !important;
+    width: 100%;
     background: #e4e4e7;
     box-shadow: none !important;
     transition: none !important;
     transform: none !important;
+}
+
+#shelf-container.shelf-view-reader .shelf-book-card .cover .img {
+    display: block;
+    position: relative;
+    bottom: auto;
+    width: 100%;
+    height: 100%;
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card:hover .cover {
@@ -290,9 +507,15 @@ body.cwa-shelf-view-reader .navigation .nav-head {
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .cover img {
-    width: 100%;
-    height: 100%;
+    /* see gallery note: beat caliBlur's fixed 150px width and z-index: -9 */
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    position: relative;
+    z-index: 1 !important;
     object-fit: cover;
+    /* eInk displays are monochrome; covers render in greyscale */
+    filter: grayscale(100%) contrast(1.05);
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .meta {
@@ -303,6 +526,7 @@ body.cwa-shelf-view-reader .navigation .nav-head {
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .meta .title {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
     font-weight: 700;
     font-size: 1.1em;
     line-height: 1.3;
@@ -340,6 +564,44 @@ body.cwa-shelf-view-reader .navigation .nav-head {
     display: none !important;
 }
 
+/* caliBlur colours the links inside the meta lines, not the paragraphs */
+#shelf-container.shelf-view-reader .shelf-book-card .meta .author a {
+    color: #27272a !important;
+}
+#shelf-container.shelf-view-reader .shelf-book-card .meta .series-meta a {
+    color: #52525b !important;
+}
+
+/* Flat black/white active state for the view toggle in reader mode */
+body.cwa-shelf-view-reader .view-mode-toggle button {
+    background: transparent !important;
+    border: 1px solid #71717a !important;
+    color: #27272a !important;
+    border-radius: 0 !important;
+}
+body.cwa-shelf-view-reader .view-mode-toggle button:hover {
+    background: rgba(0, 0, 0, 0.06) !important;
+    color: #000000 !important;
+}
+body.cwa-shelf-view-reader .view-mode-toggle button.active {
+    background: #111111 !important;
+    border-color: #111111 !important;
+    color: #ffffff !important;
+}
+
+/* Neutralise caliBlur's orange on primary buttons in reader mode too */
+body.cwa-shelf-view-reader .btn-primary.active,
+body.cwa-shelf-view-reader .btn-primary:active,
+body.cwa-shelf-view-reader .btn-primary:focus,
+body.cwa-shelf-view-reader .btn-primary:hover,
+body.cwa-shelf-view-reader .open .dropdown-toggle.btn-primary {
+    background-color: #111111 !important;
+    border-color: #111111 !important;
+    color: #ffffff !important;
+}
+body.cwa-shelf-view-reader input[type=checkbox] {
+    accent-color: #111111;
+}
 
 /* ----------------- C) TOOLBAR & CONTROL STYLINGS ----------------- */
 .shelf-toolbar {
@@ -353,7 +615,7 @@ body.cwa-shelf-view-reader .navigation .nav-head {
     letter-spacing: normal !important;
 }
 
-/* Deaktivierte Sortier-Links ausgrauen und blockieren */
+/* Grey out and block disabled sort links */
 .dropdown-menu li a.disabled {
     color: #9ca3af !important;
     pointer-events: none;
@@ -362,7 +624,7 @@ body.cwa-shelf-view-reader .navigation .nav-head {
     opacity: 0.5;
 }
 
-/* View Mode Toggle in der Sidebar */
+/* View mode toggle inside the sidebar */
 .sidebar-view-mode-item .btn-group {
     display: flex;
     width: 100%;
@@ -375,13 +637,8 @@ body.cwa-shelf-view-reader .navigation .nav-head {
     letter-spacing: normal !important;
     border-radius: 4px;
 }
-.sidebar-view-mode-item .btn-group .btn.active {
-    background-color: #337ab7 !important;
-    color: #ffffff !important;
-    border-color: #2e6da4 !important;
-}
 
-/* Sortier-Dropdown in der Sidebar */
+/* Sort dropdown inside the sidebar */
 .sidebar-sort-item {
     margin-bottom: 10px;
 }
@@ -391,7 +648,7 @@ body.cwa-shelf-view-reader .navigation .nav-head {
     right: 15px !important;
 }
 
-/* Anpassung der Dropdown-Buttons im Reader-Modus (flach und kontrastreich) */
+/* Reader mode: flat, high-contrast dropdown buttons */
 body.cwa-shelf-view-reader .btn-default,
 body.cwa-shelf-view-reader .dropdown-menu {
     background-color: #f7f6f2 !important;
@@ -417,4 +674,16 @@ body.cwa-shelf-view-reader .dropdown-menu li.active a {
 body.cwa-shelf-view-reader .dropdown-menu li a.disabled {
     color: #a1a1aa !important;
     opacity: 0.4;
+}
+
+/* Narrow screens: tighter grid so the shelf still fits a phone */
+@media (max-width: 767px) {
+    #shelf-container.shelf-view-gallery .shelf-books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
+        gap: 40px 20px !important;
+    }
+    #shelf-container.shelf-view-gallery .shelf-book-card .cover::after {
+        left: -10px;
+        right: -10px;
+    }
 }

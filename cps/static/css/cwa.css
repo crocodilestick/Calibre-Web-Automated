@@ -115,18 +115,23 @@ body.cwa-shelf-view-gallery {
 
 /* Navbar as translucent glass over the page */
 body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.005) 100%), rgba(10, 10, 14, 0.3) !important;
-    background-image: none !important;
-    -webkit-backdrop-filter: blur(25px) saturate(1.4);
-    backdrop-filter: blur(25px) saturate(1.4);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.015) 100%), rgba(8, 8, 12, 0.08) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(1.55);
+    backdrop-filter: blur(30px) saturate(1.55);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -1px 0 rgba(0, 0, 0, 0.4), 0 4px 24px rgba(0, 0, 0, 0.3) !important;
+    z-index: 10 !important;
 }
 
 /* Navbar sub-elements (brand block, collapse bar) keep their own caliBlur
    backgrounds; flatten them so the glass navbar is one surface */
 body.cwa-shelf-view-gallery .navbar .navbar-header,
-body.cwa-shelf-view-gallery .navbar .navbar-collapse {
+body.cwa-shelf-view-gallery .navbar .navbar-collapse,
+body.cwa-shelf-view-gallery .navbar > .container-fluid,
+body.cwa-shelf-view-gallery .navbar form,
+body.cwa-shelf-view-gallery .navbar form > .form-group,
+body.cwa-shelf-view-gallery .navbar .input-group,
+body.cwa-shelf-view-gallery .navbar .input-group-btn {
     background: transparent !important;
     background-image: none !important;
     box-shadow: none !important;
@@ -144,12 +149,32 @@ body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top div.navb
 
 /* Left sidebar as translucent glass panel */
 body.cwa-shelf-view-gallery .col-sm-2 {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.005) 100%), rgba(10, 10, 14, 0.3) !important;
-    -webkit-backdrop-filter: blur(25px) saturate(1.4);
-    backdrop-filter: blur(25px) saturate(1.4);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.085) 0%, rgba(255, 255, 255, 0.015) 100%), rgba(8, 8, 12, 0.08) !important;
+    -webkit-backdrop-filter: blur(30px) saturate(1.55);
+    backdrop-filter: blur(30px) saturate(1.55);
     border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
     box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.12), inset -1px 0 0 rgba(0, 0, 0, 0.4), 4px 0 24px rgba(0, 0, 0, 0.4);
     min-height: 100vh;
+}
+
+body.cwa-shelf-view-gallery .col-sm-10,
+body.cwa-shelf-view-gallery > .container-fluid,
+body.cwa-shelf-view-gallery > .container-fluid > .row-fluid,
+body.cwa-shelf-view-gallery .container-fluid .discover {
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+
+body.cwa-shelf-view-gallery #main-nav + .col-sm-2:after,
+body.cwa-shelf-view-gallery .col-sm-10:before,
+body.cwa-shelf-view-gallery .col-sm-10:after,
+body.cwa-shelf-view-gallery .discover:before,
+body.cwa-shelf-view-gallery .discover:after {
+    content: none !important;
+    display: none !important;
+    background: transparent !important;
+    background-image: none !important;
 }
 
 body.cwa-shelf-view-gallery .navigation li a {
@@ -177,7 +202,7 @@ body.cwa-shelf-view-gallery .navigation .nav-head {
     border: none !important;
     border-radius: 0;
     box-shadow: none !important;
-    padding: 20px 10px 60px !important;
+    padding: 0 10px 56px !important;
 }
 
 /* Display typography: big, bold, clean heading */
@@ -188,6 +213,9 @@ body.cwa-shelf-view-gallery .shelf-header-wrapper h2 {
 }
 body.cwa-shelf-view-gallery .shelf-header-wrapper {
     border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+    margin-top: -22px !important;
+    margin-bottom: 18px !important;
+    padding-bottom: 10px !important;
 }
 
 /* Compact covers in clean rows: more books per row */
@@ -683,16 +711,16 @@ body.cwa-shelf-view-reader .dropdown-menu li a.disabled {
         padding-right: 15px !important;
     }
     body.cwa-shelf-page #shelf-container {
-        padding-left: 45px !important;
-        padding-right: 45px !important;
+        padding-left: 34px !important;
+        padding-right: 34px !important;
         box-sizing: border-box;
         max-width: 100%;
     }
 }
 @media (min-width: 1200px) {
     body.cwa-shelf-page #shelf-container {
-        padding-left: 60px !important;
-        padding-right: 60px !important;
+        padding-left: 44px !important;
+        padding-right: 44px !important;
     }
 }
 
@@ -715,6 +743,14 @@ body.cwa-shelf-view-reader .cwa-status-disabled {
     color: #71717a !important;
     opacity: 0.6;
     font-weight: 400;
+}
+
+body.cwa-shelf-page .shelf-kobo-status .glyphicon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1 !important;
+    transform: translateY(3px);
 }
 
 /* Alexandria Icon & Text Alignment */

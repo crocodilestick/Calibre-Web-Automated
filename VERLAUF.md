@@ -42,7 +42,10 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 - [x] **UX & Layout-Spacing:**
   - Deutliche Vergrößerung des Desktop-Gutters (Abstand) zwischen linker Sidebar und Hauptinhalt für mehr "Atemraum", voll responsive.
   - Korrektur des Bootstrap-Grid-Overflows: Die symmetrischen Desktop-Abstände liegen nun auf `#shelf-container` statt auf `.col-sm-10`; die Spaltenbreite bleibt stabil, wodurch kein horizontaler Versatz nach rechts entsteht.
-  - Kobo-Status-Bereich mit eigenen semantischen Statusklassen (`cwa-status-enabled`, `cwa-status-disabled`) ausgestattet. `Kobo Collection: Hidden` und inaktive Zustände wirken nun rot und disabled (Galerie) beziehungsweise dezent verblasst (monochromer Reader).
+  - Feinjustierung nach visueller Abnahme: Desktop-Gutter wieder auf einen Mittelweg reduziert, der Headerbereich nach oben verdichtet und die Status-Icons optisch tiefer an die Textmitte gesetzt.
+  - Kobo-Status-Bereich mit eigenen semantischen Statusklassen (`cwa-status-enabled`, `cwa-status-disabled`) ausgestattet. `Kobo Collection: Disabled` und inaktive Zustände wirken nun rot und disabled (Galerie) beziehungsweise dezent verblasst (monochromer Reader).
+- [x] **caliBlur-Zwischenflächen neutralisiert:**
+  - Für `.cwa-shelf-view-gallery` werden Navbar-/Sidebar-Untercontainer sowie `.col-sm-10`/`.discover`-Hintergründe und Pseudoelemente gezielt transparent gesetzt, damit Holztextur und Verlauf wirklich durch die Glasflächen scheinen.
 - [x] **Titel-Bereinigung:**
   - Entfernung des Präfixes `Shelf:` und der Anführungszeichen bei normalen Regalen (nur noch der Regalname wird gerendert). Magic Shelves bleiben sauber getrennt.
 

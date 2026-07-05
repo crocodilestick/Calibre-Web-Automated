@@ -259,6 +259,33 @@ def get_settings_context():
 
     mail_content = config.get_mail_settings()
 
+    # Generate starttime and duration lists for scheduled tasks
+    from flask_babel import format_time, format_timedelta
+    from datetime import time as datetime_time, timedelta
+    time_field = list()
+    duration_field = list()
+    for n in range(24):
+        time_field.append((n, format_time(datetime_time(hour=n), format="short")))
+    for n in range(5, 65, 5):
+        t = timedelta(hours=n // 60, minutes=n % 60)
+        duration_field.append((n, format_timedelta(t, threshold=.97)))
+
+    cleanup_schedules = [
+        ('disabled', _('Disabled')),
+        ('daily', _('Daily')),
+        ('weekly', _('Weekly')),
+        ('monthly', _('Monthly'))
+    ]
+    cleanup_days = [
+        ('monday', _('Monday')),
+        ('tuesday', _('Tuesday')),
+        ('wednesday', _('Wednesday')),
+        ('thursday', _('Thursday')),
+        ('friday', _('Friday')),
+        ('saturday', _('Saturday')),
+        ('sunday', _('Sunday'))
+    ]
+
     # Build dynamic fields
     dyn_ajax_fields = list(AJAXCONFIG_FIELDS) + get_dynamic_oauth_fields()
     dyn_cwa_fields = list(CWA_FIELDS) + get_dynamic_format_fields()
@@ -282,6 +309,10 @@ def get_settings_context():
         "languages": languages,
         "translations": translations,
         "content": mail_content,
+        "starttime": time_field,
+        "duration": duration_field,
+        "cleanup_schedules": cleanup_schedules,
+        "cleanup_days": cleanup_days,
         "feature_support": feature_support,
         "provider": oauth_blueprints,
         "AJAXCONFIG_FIELDS": dyn_ajax_fields,

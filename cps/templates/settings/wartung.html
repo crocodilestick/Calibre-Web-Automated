@@ -1,10 +1,251 @@
 {% extends "settings/_shell.html" %}
+{% from "settings/_macros.html" import spiegel_inputs %}
+{% from 'modal_dialogs.html' import change_confirm_modal %}
 
 {% block settings_content %}
-<div class="settings-card">
-  <div class="settings-card-title">
-    <span class="glyphicon glyphicon-wrench"></span> {{ _("Maintenance and Tasks") }}
+<div class="row">
+  <div class="col-md-12 col-lg-6">
+    <!-- Standard Scheduled Tasks Form -->
+    <form id="scheduled-tasks-form" role="form" method="POST" action="{{ url_for('admin.update_scheduledtasks') }}" autocomplete="off" style="margin-bottom: 2rem;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <div class="settings-card">
+        <div class="settings-card-title">
+          <span class="glyphicon glyphicon-wrench"></span> {{ _("Scheduled Maintenance Tasks") }}
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="schedule_start_time">{{ _("Start Time") }}</label>
+          <select name="schedule_start_time" id="schedule_start_time" class="settings-input">
+            {% for n in starttime %}
+              <option value="{{ n[0] }}" {% if config.schedule_start_time == n[0] %}selected{% endif %}>{{ n[1] }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="schedule_duration">{{ _("Maximum Duration") }}</label>
+          <select name="schedule_duration" id="schedule_duration" class="settings-input">
+            {% for n in duration %}
+              <option value="{{ n[0] }}" {% if config.schedule_duration == n[0] %}selected{% endif %}>{{ n[1] }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Scheduled Thumbnail Refresh") }}</span>
+            <span class="settings-switch-desc">{{ _("Automatically refresh all thumbnails during scheduled maintenance.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="schedule_generate_book_covers" name="schedule_generate_book_covers" {% if config.schedule_generate_book_covers %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Reconnect Calibre Database") }}</span>
+            <span class="settings-switch-desc">{{ _("Re-read metadata.db database file during scheduled maintenance.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="schedule_reconnect" name="schedule_reconnect" {% if config.schedule_reconnect %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Generate Metadata Backup Files") }}</span>
+            <span class="settings-switch-desc">{{ _("Backup metadata files during scheduled maintenance.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="schedule_metadata_backup" name="schedule_metadata_backup" {% if config.schedule_metadata_backup %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: right;">
+          <button type="submit" name="submit" value="submit" class="settings-btn settings-btn-primary">{{ _("Save Tasks") }}</button>
+        </div>
+      </div>
+    </form>
+
+    <!-- Manual Actions Card -->
+    <div class="settings-card">
+      <div class="settings-card-title">
+        <span class="glyphicon glyphicon-play"></span> {{ _("Manual Actions") }}
+      </div>
+      <p style="color: #909296; font-size: 0.85rem; margin-bottom: 1.5rem;">{{ _("Execute maintenance tasks immediately.") }}</p>
+
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <button type="button" class="settings-btn settings-btn-secondary text-left" id="admin_refresh_cover_cache" style="text-align: left; display: flex; align-items: center; gap: 0.75rem;">
+          <span class="glyphicon glyphicon-refresh"></span> {{ _("Refresh Thumbnail Cache") }}
+        </button>
+        <button type="button" class="settings-btn settings-btn-secondary" id="restart_database" data-toggle="modal" data-target="#StatusDialog" style="text-align: left; display: flex; align-items: center; gap: 0.75rem;">
+          <span class="glyphicon glyphicon-link"></span> {{ _("Reconnect Calibre Database") }}
+        </button>
+        {% if config.schedule_metadata_backup %}
+          <button type="button" class="settings-btn settings-btn-secondary" id="metadata_backup" data-toggle="modal" data-target="#StatusDialog" style="text-align: left; display: flex; align-items: center; gap: 0.75rem;">
+            <span class="glyphicon glyphicon-floppy-save"></span> {{ _("Queue all books for metadata backup") }}
+          </button>
+        {% endif %}
+        <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+          <button type="button" class="settings-btn settings-btn-secondary" id="admin_restart" data-toggle="modal" data-target="#RestartDialog" style="flex-grow: 1; border-color: rgba(34, 139, 230, 0.3); color: #a5d8ff;">
+            <span class="glyphicon glyphicon-repeat"></span> {{ _("Restart Application") }}
+          </button>
+          <button type="button" class="settings-btn settings-btn-secondary" id="admin_stop" data-toggle="modal" data-target="#ShutdownDialog" style="flex-grow: 1; border-color: rgba(224, 49, 49, 0.3); color: #ffc9c9;">
+            <span class="glyphicon glyphicon-off"></span> {{ _("Shutdown") }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
-  <p>{{ _("Placeholder for Maintenance and Tasks.") }}</p>
+
+  <div class="col-md-12 col-lg-6">
+    <!-- CWA Auto-Cleanup Form -->
+    {% set visible_cwa_fields = [
+      'archived_cleanup_enabled', 'archived_cleanup_schedule',
+      'archived_cleanup_schedule_day', 'archived_cleanup_schedule_hour'
+    ] %}
+    <form id="cleanup-form" role="form" method="POST" action="{{ url_for('cwa_settings.set_cwa_settings') }}" autocomplete="off">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="submit_button" value="Submit">
+
+      {# Mirror remaining CWA settings to prevent checkbox-reset bug #}
+      {{ spiegel_inputs(CWA_FIELDS, visible_cwa_fields, cwa_settings, BOOLEAN_SETTINGS) }}
+
+      <div class="settings-card">
+        <div class="settings-card-title">
+          <span class="glyphicon glyphicon-trash"></span> {{ _("Database Auto-Cleanup") }}
+        </div>
+
+        <div class="settings-switch-group" style="margin-bottom: 1.5rem;">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Enable Auto-Cleanup") }}</span>
+            <span class="settings-switch-desc">{{ _("Automatically purge archived/temporary import files on a schedule.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="archived_cleanup_enabled" name="archived_cleanup_enabled" data-control="cleanup-settings" {% if cwa_settings.archived_cleanup_enabled %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div data-related="cleanup-settings" style="{% if not cwa_settings.archived_cleanup_enabled %}display: none;{% endif %}">
+          <div class="settings-form-group">
+            <label class="settings-label" for="archived_cleanup_schedule">{{ _("Cleanup Frequency") }}</label>
+            <select name="archived_cleanup_schedule" id="archived_cleanup_schedule" class="settings-input" data-control="cleanup-freq">
+              {% for opt in cleanup_schedules %}
+                <option value="{{ opt[0] }}" {% if cwa_settings.archived_cleanup_schedule == opt[0] %}selected{% endif %}>{{ opt[1] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="settings-form-group" data-related="cleanup-freq-weekly" style="{% if cwa_settings.archived_cleanup_schedule != 'weekly' %}display: none;{% endif %}">
+            <label class="settings-label" for="archived_cleanup_schedule_day">{{ _("Cleanup Day") }}</label>
+            <select name="archived_cleanup_schedule_day" id="archived_cleanup_schedule_day" class="settings-input">
+              {% for opt in cleanup_days %}
+                <option value="{{ opt[0] }}" {% if cwa_settings.archived_cleanup_schedule_day == opt[0] %}selected{% endif %}>{{ opt[1] }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="settings-form-group">
+            <label class="settings-label" for="archived_cleanup_schedule_hour">{{ _("Cleanup Hour") }}</label>
+            <select name="archived_cleanup_schedule_hour" id="archived_cleanup_schedule_hour" class="settings-input">
+              {% for h in range(24) %}
+                <option value="{{ h }}" {% if cwa_settings.archived_cleanup_schedule_hour|int == h %}selected{% endif %}>{{ "%02d:00"|format(h) }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: right;">
+          <button type="submit" class="settings-btn settings-btn-primary">{{ _("Save Cleanup Settings") }}</button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
+{% endblock %}
+
+{% block modal %}
+<div id="RestartDialog" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content" style="background: #1a1b1e; border: 1px solid rgba(255, 255, 255, 0.1); color: #f8f9fa;">
+      <div class="modal-header bg-info" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);"></div>
+      <div class="modal-body text-center">
+        <p>{{ _('Are you sure you want to restart?') }}</p>
+        <div id="spinner" class="spinner" style="display:none; margin: 1rem 0;">
+          <img id="img-spinner" src="{{ url_for('static', filename='css/libs/images/loading-icon.gif') }}"/>
+        </div>
+        <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem;">
+          <button type="button" class="btn btn-primary" id="restart">{{ _('OK') }}</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Cancel') }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="ShutdownDialog" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content" style="background: #1a1b1e; border: 1px solid rgba(255, 255, 255, 0.1); color: #f8f9fa;">
+      <div class="modal-header bg-info" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);"></div>
+      <div class="modal-body text-center">
+        <p>{{ _('Are you sure you want to shutdown?') }}</p>
+        <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem;">
+          <button type="button" class="btn btn-danger" id="shutdown" data-dismiss="modal">{{ _('OK') }}</button>
+          <button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Cancel') }}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="StatusDialog" class="modal fade" role="dialog">
+  <div class="modal-dialog modal-sm">
+    <div class="modal-content" style="background: #1a1b1e; border: 1px solid rgba(255, 255, 255, 0.1); color: #f8f9fa;">
+      <div class="modal-header bg-info text-center" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 1rem;">
+        <span id="DialogHeader" style="font-weight: 500;">{{ _('Updating, please do not reload this page') }}</span>
+      </div>
+      <div class="modal-body text-center">
+        <div id="spinner2" class="spinner2" style="display:none; margin: 1rem 0;">
+          <img id="img-spinner2" src="{{ url_for('static', filename='css/libs/images/loading-icon.gif') }}"/>
+        </div>
+        <div id="DialogContent" style="margin: 1rem 0;"></div>
+        <button type="button" class="btn btn-default hidden" id="DialogFinished" data-dismiss="modal">{{ _('OK') }}</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+{{ change_confirm_modal() }}
+{% endblock %}
+
+{% block js %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/main.js') }}"></script>
+<script>
+  $(document).ready(function() {
+    // Show/hide cleanup frequency settings based on enabled checkbox
+    $('#archived_cleanup_enabled').change(function() {
+      if ($(this).is(':checked')) {
+        $('[data-related="cleanup-settings"]').slideDown(200);
+      } else {
+        $('[data-related="cleanup-settings"]').slideUp(200);
+      }
+    });
+
+    // Show/hide cleanup day based on frequency
+    $('#archived_cleanup_schedule').change(function() {
+      var val = $(this).val();
+      if (val === 'weekly') {
+        $('[data-related="cleanup-freq-weekly"]').slideDown(200);
+      } else {
+        $('[data-related="cleanup-freq-weekly"]').slideUp(200);
+      }
+    });
+  });
+</script>
 {% endblock %}

@@ -138,7 +138,7 @@
               {% endif %}
               <li role="separator" class="divider"></li>
               <li>
-                <a href="#" class="text-danger" data-action="{{url_for('shelf.delete_shelf', shelf_id=shelf.id)}}" id="delete_shelf" data-value="{{ shelf.id }}">
+                <a href="javascript:void(0);" class="text-danger" data-action="{{url_for('shelf.delete_shelf', shelf_id=shelf.id)}}" id="delete_shelf" data-value="{{ shelf.id }}">
                   <span class="glyphicon glyphicon-trash"></span> {{ _('Delete this Shelf') }}
                 </a>
               </li>

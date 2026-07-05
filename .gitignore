@@ -211,3 +211,5 @@ STAND.md
 .mcp.json
 /local-dev/
 /graphify-out/
+.cwa_migrations/
+gdrive.db

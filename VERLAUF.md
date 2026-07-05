@@ -26,7 +26,8 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 
 ### Erledigt
 - [x] **Integration web-optimierter Design-Assets:**
-  - `wood_dark.jpg` (dunkle Holztextur, ca. 525 KB), `wood_light.jpg` (ca. 605 KB) und `reader_paper.jpg` (ca. 259 KB) per `sips` komprimiert und in `cps/static/img/alexandria/` abgelegt.
+  - `wood_dark.jpg` (dunkle Holztextur, ca. 525 KB) und `reader_paper.jpg` (ca. 259 KB) per `sips` komprimiert und in `cps/static/img/alexandria/` abgelegt. Ungenutzte Assets (`wood_light.jpg`) wurden entfernt.
+  - *Quellennachweis:* Die Texturen stammen von Pixabay (`wood_dark.jpg` von User *peggy_marco*, `reader_paper.jpg` von User *byunilho*) und sind unter der freien Pixabay-Lizenz lizenzfrei zur Modifikation und Nutzung freigegeben.
 - [x] **Zusammenhängender Papier-Look im Reader-Modus:**
   - Der gesamte Hintergrund (Navbar, linke Sidebar, Hauptbereich und Cards) verwendet einheitlich die `reader_paper.jpg`-Textur auf cremeweißem Grund. Harte weiße Kartenboxen, Schatten und Rundungen wurden durch flache eInk-Linien ersetzt.
 - [x] **Cover-First Galerie-Modus mit Holztextur:**

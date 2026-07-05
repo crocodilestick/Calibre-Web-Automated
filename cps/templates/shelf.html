@@ -301,13 +301,12 @@
 {{ super() }}
 <script>
 $(document).ready(function() {
-    // 1. Sidebar View & Sort Toggle einhängen (Kindelemente klonen, um Source-Container unberührt zu lassen)
+    // 1. Sidebar View & Sort Toggle einhängen (Kindelemente verschieben, um doppelte IDs im DOM zu verhindern)
     if ($('#scnd-nav').length && $('#sidebar-view-toggle-source').length) {
         // Eventuelle alte Reste entfernen
         $('#scnd-nav .sidebar-view-mode-title, #scnd-nav .sidebar-view-mode-item, #scnd-nav .sidebar-sort-title, #scnd-nav .sidebar-sort-item').remove();
-        // Klonen und als HTML anhängen
-        var clonedToggle = $('#sidebar-view-toggle-source').contents().clone();
-        clonedToggle.appendTo('#scnd-nav');
+        // Elemente aus der Quelle direkt in die Sidebar verschieben
+        $('#sidebar-view-toggle-source').contents().appendTo('#scnd-nav');
     }
 
     // 2. Event-Handler für View-Toggle (Delegiert, da in Sidebar dynamisch eingefügt)

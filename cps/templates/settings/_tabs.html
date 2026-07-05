@@ -1,0 +1,25 @@
+<div class="settings-nav">
+  <a href="{{ url_for('web.profile') }}" class="settings-tab-link{% if active_tab == 'konto' or not active_tab %} active{% endif %}">
+    <span class="glyphicon glyphicon-user"></span> {{ _("My Account") }}
+  </a>
+  {% if current_user.role_admin() %}
+    <a href="{{ url_for('settings.tab', active_tab='bibliothek') }}" class="settings-tab-link{% if active_tab == 'bibliothek' %} active{% endif %}">
+      <span class="glyphicon glyphicon-book"></span> {{ _("Library") }}
+    </a>
+    <a href="{{ url_for('settings.tab', active_tab='kobo') }}" class="settings-tab-link{% if active_tab == 'kobo' %} active{% endif %}">
+      <span class="glyphicon glyphicon-phone"></span> {{ _("Kobo") }}
+    </a>
+    <a href="{{ url_for('settings.tab', active_tab='automatisierung') }}" class="settings-tab-link{% if active_tab == 'automatisierung' %} active{% endif %}">
+      <span class="glyphicon glyphicon-cog"></span> {{ _("Automation") }}
+    </a>
+    <a href="{{ url_for('settings.tab', active_tab='email') }}" class="settings-tab-link{% if active_tab == 'email' %} active{% endif %}">
+      <span class="glyphicon glyphicon-envelope"></span> {{ _("Email") }}
+    </a>
+    <a href="{{ url_for('settings.tab', active_tab='wartung') }}" class="settings-tab-link{% if active_tab == 'wartung' %} active{% endif %}">
+      <span class="glyphicon glyphicon-wrench"></span> {{ _("Maintenance") }}
+    </a>
+    <a href="{{ url_for('settings.tab', active_tab='experten') }}" class="settings-tab-link{% if active_tab == 'experten' %} active{% endif %}">
+      <span class="glyphicon glyphicon-tasks"></span> {{ _("Experts") }}
+    </a>
+  {% endif %}
+</div>

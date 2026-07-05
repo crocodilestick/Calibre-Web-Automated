@@ -1,0 +1,324 @@
+/* Consolidierte Einstellungen Styling (Roadmap-Punkt 2) */
+
+.settings-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1.5rem;
+}
+
+.settings-header {
+    margin-bottom: 2.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 1.5rem;
+}
+
+.settings-header h1 {
+    font-size: 2.25rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #f8f9fa;
+    background: linear-gradient(135deg, #f8f9fa 0%, #adb5bd 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.settings-header p {
+    color: #6c757d;
+    font-size: 1rem;
+}
+
+/* Nav Tabs styling */
+.settings-nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding-bottom: 0.75rem;
+}
+
+.settings-tab-link {
+    color: #868e96;
+    padding: 0.75rem 1.25rem;
+    border-radius: 6px;
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    background: transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.settings-tab-link:hover {
+    color: #f8f9fa;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.settings-tab-link.active {
+    color: #228be6;
+    background: rgba(34, 139, 230, 0.08);
+    box-shadow: inset 0 0 0 1px rgba(34, 139, 230, 0.2);
+}
+
+/* Settings Form/Card styling */
+.settings-card {
+    background: rgba(26, 27, 30, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.settings-card-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #f8f9fa;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    padding-bottom: 0.75rem;
+}
+
+/* Form Groups and Inputs */
+.settings-form-group {
+    margin-bottom: 1.5rem;
+}
+
+.settings-label {
+    display: block;
+    color: #dee2e6;
+    font-size: 0.9rem;
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.settings-input {
+    width: 100%;
+    background: rgba(20, 21, 23, 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+    color: #f8f9fa;
+    padding: 0.65rem 0.85rem;
+    font-size: 0.95rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.settings-input:focus {
+    outline: none;
+    border-color: #228be6;
+    box-shadow: 0 0 0 3px rgba(34, 139, 230, 0.15);
+}
+
+.settings-input:disabled {
+    background: rgba(30, 31, 34, 0.5);
+    color: #5c5f66;
+    cursor: not-allowed;
+}
+
+.settings-help {
+    color: #909296;
+    font-size: 0.8rem;
+    margin-top: 0.35rem;
+}
+
+/* Switch container for styled checkboxes */
+.settings-switch-group {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.settings-switch-group:last-child {
+    border-bottom: none;
+}
+
+.settings-switch-label-block {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    max-width: 80%;
+}
+
+.settings-switch-title {
+    color: #dee2e6;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.settings-switch-desc {
+    color: #909296;
+    font-size: 0.8rem;
+}
+
+/* Custom CSS Switch Toggle */
+.settings-switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 24px;
+}
+
+.settings-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.settings-slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 24px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.settings-slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 2px;
+    bottom: 2px;
+    background-color: #adb5bd;
+    transition: .3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 50%;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.settings-switch input:checked + .settings-slider {
+    background-color: #228be6;
+    border-color: rgba(34, 139, 230, 0.3);
+}
+
+.settings-switch input:checked + .settings-slider:before {
+    transform: translateX(22px);
+    background-color: #ffffff;
+}
+
+.settings-switch input:focus + .settings-slider {
+    box-shadow: 0 0 0 2px rgba(34, 139, 230, 0.25);
+}
+
+/* Collapsible sections */
+.collapsible-trigger {
+    background: transparent;
+    border: none;
+    color: #228be6;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0;
+    margin-top: 1rem;
+    transition: color 0.2s ease;
+}
+
+.collapsible-trigger:hover {
+    color: #1c7ed6;
+    text-decoration: underline;
+}
+
+.collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-top: 0;
+}
+
+.collapsible-content.expanded {
+    max-height: 2000px;
+    margin-top: 1.5rem;
+}
+
+/* Settings Actions Block */
+.settings-actions {
+    position: sticky;
+    bottom: 0;
+    background: rgba(20, 21, 23, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1.25rem 2rem;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 3rem;
+    border-radius: 8px 8px 0 0;
+    z-index: 100;
+}
+
+.settings-btn {
+    padding: 0.6rem 1.5rem;
+    font-weight: 500;
+    border-radius: 6px;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    font-size: 0.95rem;
+}
+
+.settings-btn-primary {
+    background: #228be6;
+    color: #ffffff;
+    border: none;
+}
+
+.settings-btn-primary:hover {
+    background: #1c7ed6;
+    box-shadow: 0 4px 12px rgba(34, 139, 230, 0.25);
+}
+
+.settings-btn-secondary {
+    background: transparent;
+    color: #adb5bd;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.settings-btn-secondary:hover {
+    color: #f8f9fa;
+    background: rgba(255, 255, 255, 0.04);
+}
+
+/* Alert notifications within settings */
+.settings-alert {
+    padding: 1rem 1.25rem;
+    border-radius: 8px;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.9rem;
+}
+
+.settings-alert-info {
+    background: rgba(34, 139, 230, 0.1);
+    border: 1px solid rgba(34, 139, 230, 0.2);
+    color: #a5d8ff;
+}
+
+.settings-alert-warning {
+    background: rgba(240, 140, 0, 0.1);
+    border: 1px solid rgba(240, 140, 0, 0.2);
+    color: #ffd8a8;
+}
+
+.settings-alert-success {
+    background: rgba(47, 158, 68, 0.1);
+    border: 1px solid rgba(47, 158, 68, 0.2);
+    color: #b2f2bb;
+}

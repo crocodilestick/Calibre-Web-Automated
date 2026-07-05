@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block header %}
+<link href="{{ url_for('static', filename='css/settings.css') }}" rel="stylesheet" media="screen">
 <style>
   /* Hide the original :before pseudo-elements for user_edit template */
   body.me > div.container-fluid > div.row-fluid > div.col-sm-10:before {
@@ -162,7 +163,7 @@
 {% endblock %}
 {% block body %}
 <div name="profile-page" class="discover" style="padding-top: 0px !important;">
-  <h2>{{title}}</h2>
+  {% include "settings/_tabs.html" %}
   <!-- Profile Header with Picture and Title -->
   <div class="profile-header-container">
     <div class="profile-picture" id="user-profile-picture">

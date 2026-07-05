@@ -21,6 +21,7 @@ def main():
 
     from .cwa_functions import switch_theme, library_refresh, convert_library, epub_fixer, cwa_stats, cwa_check_status, cwa_settings, cwa_logs, profile_pictures, cwa_internal
     from .web import web
+    from .settings_ui import settings
     from .opds import opds
     from .admin import admi
     from .gdrive import gdrive
@@ -71,6 +72,7 @@ def main():
     app.register_blueprint(search)
     app.register_blueprint(tasks)
     app.register_blueprint(web)
+    app.register_blueprint(settings)
     app.register_blueprint(opds)
     limiter.limit("3/minute", key_func=request_username)(opds)
     app.register_blueprint(jinjia)

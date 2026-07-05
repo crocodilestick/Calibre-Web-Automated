@@ -1,0 +1,20 @@
+{% extends "layout.html" %}
+
+{% block header %}
+<link href="{{ url_for('static', filename='css/settings.css') }}" rel="stylesheet" media="screen">
+{% endblock %}
+
+{% block body %}
+<div class="settings-container">
+  <div class="settings-header">
+    <h1>{{ _("Settings") }}</h1>
+    <p>{{ _("Configure and consolidate your Calibre-Web Alexandria instance.") }}</p>
+  </div>
+
+  {% include "settings/_tabs.html" %}
+
+  <div class="settings-content-wrapper">
+    {% block settings_content %}{% endblock %}
+  </div>
+</div>
+{% endblock %}

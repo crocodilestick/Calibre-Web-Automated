@@ -1,0 +1,20 @@
+{# Macros for consolidated settings (Roadmap-Punkt 2) #}
+
+{% macro spiegel_inputs(endpoint_fields, visible_fields, source_data, BOOLEAN_SETTINGS) %}
+  {% for field in endpoint_fields %}
+    {% if field not in visible_fields %}
+      {# Determine if field is a boolean/checkbox #}
+      {% if field in BOOLEAN_SETTINGS %}
+        {# Checkbox mirroring: only render value="on" if value is truthy/1/True/on #}
+        {% set val = source_data.get(field) if hasattr(source_data, 'get') else getattr(source_data, field, None) %}
+        {% if val and (val == True or val == 1 or val == 'on' or val == 'True') %}
+          <input type="hidden" name="{{ field }}" value="on">
+        {% endif %}
+      {% else %}
+        {# Text/Integer/JSON mirroring #}
+        {% set val = source_data.get(field) if hasattr(source_data, 'get') else getattr(source_data, field, None) %}
+        <input type="hidden" name="{{ field }}" value="{% if val != None %}{{ val }}{% endif %}">
+      {% endif %}
+    {% endif %}
+  {% endfor %}
+{% endmacro %}

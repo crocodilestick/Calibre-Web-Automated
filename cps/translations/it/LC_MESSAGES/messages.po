@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-07-05 14:45+0200\n"
+"POT-Creation-Date: 2026-07-05 13:13+0000\n"
 "PO-Revision-Date: 2025-11-24 17:12+0100\n"
 "Last-Translator: Massimo Pissarello <mapi68@gmail.com>\n"
 "Language-Team: Italian\n"
@@ -398,8 +398,8 @@ msgid "Success! Gmail Account Verified."
 msgstr "Tutto OK! Account Gmail verificato."
 
 #: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
-#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1039
-#: cps/editbooks.py:1823 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1046
+#: cps/editbooks.py:1830 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2678
 #, python-format
@@ -1219,21 +1219,21 @@ msgstr "Libro accodato correttamente per essere convertito in %(book_format)s"
 msgid "There was an error converting this book: %(res)s"
 msgstr "Si è verificato un errore durante la conversione del libro: %(res)s"
 
-#: cps/editbooks.py:367 cps/editbooks.py:1242 cps/editbooks.py:1769
+#: cps/editbooks.py:367 cps/editbooks.py:1249 cps/editbooks.py:1776
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Non è consentito caricare questo tipo di file su questo server"
 
-#: cps/editbooks.py:372 cps/editbooks.py:1248 cps/editbooks.py:1780
+#: cps/editbooks.py:372 cps/editbooks.py:1255 cps/editbooks.py:1787
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr ""
 "Non è consentito caricare l'estensione del file '%(ext)s' su questo server"
 
-#: cps/editbooks.py:376 cps/editbooks.py:1252 cps/editbooks.py:1785
+#: cps/editbooks.py:376 cps/editbooks.py:1259 cps/editbooks.py:1792
 msgid "File to be uploaded must have an extension"
 msgstr "Il file da caricare deve avere un'estensione"
 
-#: cps/editbooks.py:844 cps/editbooks.py:1446 cps/web.py:612 cps/web.py:2790
+#: cps/editbooks.py:845 cps/editbooks.py:1453 cps/web.py:612 cps/web.py:2790
 #: cps/web.py:2881 cps/web.py:2966
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
@@ -1241,36 +1241,36 @@ msgstr ""
 "Il libro selezionato non è disponibile. Il file non esiste o non è "
 "accessibile"
 
-#: cps/editbooks.py:876 cps/editbooks.py:1853
+#: cps/editbooks.py:877 cps/editbooks.py:1860
 msgid "User has no rights to upload cover"
 msgstr "L'utente non ha i permessi per caricare le copertine"
 
-#: cps/editbooks.py:899 cps/editbooks.py:1230
+#: cps/editbooks.py:899 cps/editbooks.py:1237
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 "Gli identificatori non fanno distinzione tra maiuscole e minuscole e "
 "sovrascrivono il vecchio identificatore"
 
-#: cps/editbooks.py:911 cps/editbooks.py:1204 cps/editbooks.py:1580
+#: cps/editbooks.py:911 cps/editbooks.py:1211 cps/editbooks.py:1587
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s non è una lingua valida"
 
-#: cps/editbooks.py:1024
+#: cps/editbooks.py:1031
 msgid "Metadata successfully updated"
 msgstr "Metadati aggiornati correttamente"
 
-#: cps/editbooks.py:1044
+#: cps/editbooks.py:1051
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "Errore nella modifica del libro: {}"
 
-#: cps/editbooks.py:1099 cps/editbooks.py:1144 cps/editbooks.py:1871
+#: cps/editbooks.py:1106 cps/editbooks.py:1151 cps/editbooks.py:1878
 #: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Sconosciuto"
 
-#: cps/editbooks.py:1148
+#: cps/editbooks.py:1155
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1278,52 +1278,52 @@ msgstr ""
 "Probabilmente il libro caricato esiste già nella biblioteca, cambialo prima "
 "di caricarlo di nuovo: "
 
-#: cps/editbooks.py:1260
+#: cps/editbooks.py:1267
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "Il file %(filename)s non può essere salvato nella cartella temporanea"
 
-#: cps/editbooks.py:1280
+#: cps/editbooks.py:1287
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Impossibile spostare il file della copertina %(file)s: %(error)s"
 
-#: cps/editbooks.py:1338 cps/editbooks.py:1340
+#: cps/editbooks.py:1345 cps/editbooks.py:1347
 msgid "Book Format Successfully Deleted"
 msgstr "Il formato del libro è stato eliminato correttamente"
 
-#: cps/editbooks.py:1347 cps/editbooks.py:1349
+#: cps/editbooks.py:1354 cps/editbooks.py:1356
 msgid "Book Successfully Deleted"
 msgstr "Il libro è stato eliminato correttamente"
 
-#: cps/editbooks.py:1431
+#: cps/editbooks.py:1438
 msgid "You are missing permissions to delete books"
 msgstr "Ti mancano le autorizzazioni per eliminare i libri"
 
-#: cps/editbooks.py:1485
+#: cps/editbooks.py:1492
 msgid "edit metadata"
 msgstr "modifica i metadati"
 
-#: cps/editbooks.py:1539
+#: cps/editbooks.py:1546
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "Indice serie: %(seriesindex)s non è un numero valido, lo salto"
 
-#: cps/editbooks.py:1774
+#: cps/editbooks.py:1781
 msgid "User has no rights to upload additional file formats"
 msgstr "L'utente non ha i permessi per caricare formati di file aggiuntivi"
 
-#: cps/editbooks.py:1798
+#: cps/editbooks.py:1805
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Impossibile creare il percorso %(path)s (autorizzazione negata)."
 
-#: cps/editbooks.py:1805
+#: cps/editbooks.py:1812
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Impossibile archiviare il file %(file)s."
 
-#: cps/editbooks.py:1830
+#: cps/editbooks.py:1837
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Formato file %(ext)s aggiunto a %(book)s"
@@ -1523,7 +1523,7 @@ msgstr "Contenuto del file di copertina non valido"
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Solo i file jpg/jpeg sono supportati come file di copertina"
 
-#: cps/helper.py:1318 cps/helper.py:1549
+#: cps/helper.py:1318 cps/helper.py:1557
 msgid "Cover"
 msgstr "Copertina"
 
@@ -1568,7 +1568,7 @@ msgstr "Permessi di esecuzione mancanti: %(missing)s"
 msgid "Error executing Calibre"
 msgstr "Errore durante l'esecuzione di Calibre"
 
-#: cps/helper.py:1551 cps/templates/admin.html:240
+#: cps/helper.py:1559 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr "Metti in coda tutti i libri per il backup dei metadati"
 
@@ -2666,22 +2666,22 @@ msgstr ""
 msgid "EPUB Fixer"
 msgstr ""
 
-#: cps/tasks/thumbnail.py:86
+#: cps/tasks/thumbnail.py:96
 #, python-format
 msgid "Generated %(count)s cover thumbnails"
 msgstr "Sono state generate %(count)s miniature delle copertine"
 
-#: cps/tasks/thumbnail.py:295 cps/tasks/thumbnail.py:513
-#: cps/tasks/thumbnail.py:581
+#: cps/tasks/thumbnail.py:316 cps/tasks/thumbnail.py:534
+#: cps/tasks/thumbnail.py:602
 msgid "Cover Thumbnails"
 msgstr "Miniature delle copertine"
 
-#: cps/tasks/thumbnail.py:354
+#: cps/tasks/thumbnail.py:375
 #, python-brace-format
 msgid "Generated {0} series thumbnails"
 msgstr "Sono state generate {0} miniature delle serie"
 
-#: cps/tasks/thumbnail.py:524
+#: cps/tasks/thumbnail.py:545
 msgid "Clearing cover thumbnail cache"
 msgstr "Cancellazione della cache delle miniature delle copertine"
 
@@ -3472,9 +3472,8 @@ msgid ""
 "        <a href=\"https://github.com/crocodilestick/Calibre-Web-Automated/"
 "wiki/Configuration#database-configuration\">see here</a>!"
 msgstr ""
-"CWA è configurato in modo tale che il database Calibre (file "
-"<code>metadata.db</code>) sia sempre presente in <code>/calibre-library</"
-"code>.\n"
+"CWA è configurato in modo tale che il database Calibre (file <code>metadata."
+"db</code>) sia sempre presente in <code>/calibre-library</code>.\n"
 "All'avvio, CWA cerca automaticamente in qualsiasi directory associata a "
 "<code>/calibre-library</code> nel file docker-compose i file Calibre "
 "Libraries/metadata.db esistenti.\n"

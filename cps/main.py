@@ -91,5 +91,9 @@ def main():
         app.register_blueprint(readingservices_userstorage)
     if oauth_available:
         app.register_blueprint(oauth)
+
+    from .spa import spa_before_request
+    app.before_request(spa_before_request)
+
     success = web_server.start()
     sys.exit(0 if success else 1)

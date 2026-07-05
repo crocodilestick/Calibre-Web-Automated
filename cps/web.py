@@ -880,6 +880,12 @@ def render_archived_books(page, sort_param):
                                  title=name, page=page_name, order=sort_param[1])
 
 
+@web.route("/magicshelves")
+@login_required_if_no_ano
+def magic_shelf_list():
+    return render_title_template('magic_shelf_list.html', title=_("Magic Shelves"), page="magicshelflist")
+
+
 @web.route("/magicshelf/<int:shelf_id>", defaults={"sort_param": "stored", 'page': 1})
 @web.route("/magicshelf/<int:shelf_id>/<sort_param>", defaults={'page': 1})
 @web.route("/magicshelf/<int:shelf_id>/<sort_param>/<int:page>")
@@ -962,7 +968,7 @@ def render_magic_shelf(shelf_id, sort_param, page):
     return render_title_template('index.html', 
                                  entries=entries, 
                                  pagination=pagination,
-                                 title=_("Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s", icon=shelf.icon, name=shelf.name), 
+                                 title=_("Magic Shelf — %(icon)s %(name)s", icon=shelf.icon, name=shelf.name), 
                                  page="magicshelf",
                                  shelf=shelf,
                                  is_hidden_shelf=is_hidden,
@@ -1017,6 +1023,7 @@ def index(page):
     return render_books_list("newest", sort_param, 1, page)
 
 
+@web.route('/<data>', defaults={'sort_param': 'stored', 'page': 1, 'book_id': 1})
 @web.route('/<data>/<sort_param>', defaults={'page': 1, 'book_id': 1})
 @web.route('/<data>/<sort_param>/', defaults={'page': 1, 'book_id': 1})
 @web.route('/<data>/<sort_param>/<book_id>', defaults={'page': 1})
@@ -2432,6 +2439,7 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
         current_user.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
         current_user.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
         current_user.allow_additional_ereader_emails = to_save.get("allow_additional_ereader_emails") == "on"
+        current_user.auto_load_more = to_save.get("auto_load_more") == "on"
         
         # Handle hidden magic shelf templates and custom shelves
         from . import magic_shelf
@@ -2954,7 +2962,6 @@ def show_book(book_id):
         return render_title_template('detail.html',
                                      entry=entry,
                                      cc=cc,
-                                     is_xhr=request.headers.get('X-Requested-With') == 'XMLHttpRequest',
                                      title=entry.title,
                                      books_shelfs=book_in_shelves,
                                      cwa_settings=cwa_settings,

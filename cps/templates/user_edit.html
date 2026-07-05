@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends parent_template|default("layout.html") %}
 {% block header %}
 <style>
   /* Hide the original :before pseudo-elements for user_edit template */
@@ -273,6 +273,12 @@
         <select name="theme" id="theme" class="form-control">
           <option value="1" selected>caliBlur (Dark)</option>
         </select>
+      </div>
+
+      <div style="margin-top: 20px;">
+        <input type="checkbox" id="auto_load_more" name="auto_load_more" {% if content.auto_load_more %}checked{% endif %} style="accent-color: var(--color-secondary);">
+        <label for="auto_load_more">{{_('Automatically load more books while scrolling')}}</label>
+        <p class="cwa-settings-tip">{{_('When enabled, the next page of books is loaded automatically as you scroll near the end of the list. When disabled, you can still click the Load More tile to load the next page.')}}</p>
       </div>
     </div>
     {% else %}
@@ -552,7 +558,7 @@
     <div style="margin-bottom: 4rem; display: flex; flex-direction: column; gap: 0.5rem;">
       <div id="user_submit" class="btn btn-default" style="width: -webkit-fill-available;">{{_('Save')}}</div>
       {% if not profile %}
-        <div class="btn btn-default" data-back="{{ url_for('admin.admin') }}" id="back" style="width: -webkit-fill-available;">{{_('Cancel')}}</div>
+        <div class="btn btn-default" id="back" style="width: -webkit-fill-available;">{{_('Cancel')}}</div>
       {% endif %}
       {% if current_user and current_user.role_admin() and not profile and not new_user and not content.role_anonymous() %}
         <div class="btn btn-danger" id="btndeluser" data-value="{{ content.id }}" data-remote="false" style="width: -webkit-fill-available;">{{_('Delete User')}}</div>

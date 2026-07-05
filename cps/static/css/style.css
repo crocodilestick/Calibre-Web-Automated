@@ -783,3 +783,110 @@ select.cwa-settings-select {
   width: -webkit-fill-available;
   justify-content: space-evenly;
 }
+
+/* ---- Shelf section collapse (sidebar) ---- */
+.nav-head.shelf-section-header {
+  display: flex !important;
+  align-items: center;
+  padding-left: 0 !important;
+}
+
+.shelf-section-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  padding: 0 6px 0 20px;
+  font-size: 9px;
+  line-height: inherit;
+  flex-shrink: 0;
+  outline: none;
+  opacity: 0.7;
+}
+
+.shelf-section-btn:hover {
+  opacity: 1;
+}
+
+.nav-head.shelf-section-header > a {
+  flex: 1;
+  color: inherit;
+  text-decoration: none;
+  background: none !important;
+  padding: 0 !important;
+  height: auto !important;
+  line-height: inherit;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-head.shelf-section-header > a:hover {
+  background: none !important;
+  text-decoration: underline;
+}
+
+#scnd-nav li.nav-head.shelf-section-header.active > a,
+.navigation li.nav-head.shelf-section-header.active > a {
+  color: var(--color-primary, #45b29d);
+}
+
+/* ---- Shelf / Magic-Shelf list page ---- */
+.shelf-list-grid {
+  column-gap: 0.5rem;
+  padding: 0.5rem 0 1rem;
+}
+
+.shelf-list-item {
+  break-inside: avoid;
+  page-break-inside: avoid;
+  margin-bottom: 1px;
+}
+
+.shelf-list-item a {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  padding: 5px 10px;
+  overflow: hidden;
+  text-decoration: none;
+  border-radius: 4px;
+  width: max-content;
+  max-width: 100%;
+}
+
+.shelf-list-item a:hover {
+  background: rgba(153, 153, 153, 0.2);
+  text-decoration: none;
+}
+
+.shelf-list-icon {
+  flex-shrink: 0;
+  margin-right: 6px;
+}
+
+.shelf-list-emoji {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.shelf-list-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+  flex-shrink: 1;
+}
+
+.shelf-list-public {
+  font-size: 85%;
+  opacity: 0.7;
+}
+
+.shelf-list-count {
+  font-size: 80%;
+  opacity: 0.6;
+  flex-shrink: 0;
+  white-space: nowrap;
+  margin-left: 15px;
+}

@@ -2186,7 +2186,7 @@ msgstr "Kesalahan menghapus Rak"
 
 #: cps/web.py:965
 #, python-format
-msgid "Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s"
+msgid "Magic Shelf — %(icon)s %(name)s"
 msgstr ""
 
 #: cps/web.py:1038

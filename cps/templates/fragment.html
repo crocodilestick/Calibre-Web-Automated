@@ -1,5 +1,64 @@
+{% from 'modal_dialogs.html' import restrict_modal, delete_book, filechooser_modal, delete_confirm_modal, change_confirm_modal %}
 {% import 'image.html' as image %}
-<div class="container-fluid">
-  {% block body %}{% endblock %}
-</div>
+{% if page %}<meta name="x-cwa-page" content="{{ page }}">{% endif %}
+<meta name="x-cwa-body-class" content="{{ page or '' }} {{ bodyClass or '' }}">
+{% if title %}<meta name="x-cwa-title" content="{{ instance }} | {{ title }}">{% endif %}
+{# Templates often place <style>/<meta> tags in {% block header %}. layout.html
+   renders that into <head>; for fragment swaps we render it inline so the
+   page-specific CSS still applies. #}
+{% block header %}{% endblock %}
+{# Mirror layout.html's flash rendering so SPA navigations (which never
+   re-render the shell) still show flash messages from action redirects. #}
+{% for message in get_flashed_messages(with_categories=True) %}
+  {%if message[0] == "error" %}<div class="row-fluid text-center"><div id="flash_danger" class="alert alert-danger">{{ message[1] }}</div></div>{%endif%}
+  {%if message[0] == "info" %}<div class="row-fluid text-center"><div id="flash_info" class="alert alert-info">{{ message[1] }}</div></div>{%endif%}
+  {%if message[0] == "cwa_update" %}<div class="row-fluid text-center"><div id="flash_info" class="alert alert-info alert-cwa">{{ message[1] }} <a href="https://github.com/crocodilestick/Calibre-Web-Automated/releases">{{ _('See Changelog') }}</a><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div></div>{%endif%}
+  {%if message[0] == "cwa_arch_warning" %}<div class="row-fluid text-center"><div id="flash_danger" class="alert alert-danger alert-cwa">{{ message[1] }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div></div>{%endif%}
+  {%if message[0] == "translation_missing" %}<div class="row-fluid text-center"><div id="flash_info" class="alert alert-info alert-cwa">{{ message[1] }} <a href="https://github.com/crocodilestick/Calibre-Web-Automated/wiki/Contributing-Translations">{{ _('Contribute here!') }}</a><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div></div>{%endif%}
+  {%if message[0] == "theme_migration" %}<div class="row-fluid text-center"><div id="flash_info" class="alert alert-info alert-cwa">{{ message[1] }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div></div>{%endif%}
+  {%if message[0] == "cwa_refresh" %}<div class="row-fluid text-center"><div id="flash_success" class="alert alert-info refresh-cwa">{{ message[1] }}<button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div></div>{%endif%}
+  {%if message[0] == "warning" %}<div class="row-fluid text-center"><div id="flash_warning" class="alert alert-warning">{{ message[1] }}</div></div>{%endif%}
+  {%if message[0] == "success" %}<div class="row-fluid text-center"><div id="flash_success" class="alert alert-success">{{ message[1] }}</div></div>{%endif%}
+{% endfor %}
+{# Some templates (config_edit, cwa_settings, etc.) place top-of-page UI
+   (spinners, form rows) in {% block flash %} — layout.html renders it just
+   above #main-content; mirror that here so it isn't silently dropped. #}
+{% block flash %}{% endblock %}
+{# layout.html already wraps {% block body %} in
+   <div class="container-fluid"><div class="row-fluid"><div class="col-sm-10" id="main-content">.
+   partial-nav.js injects this fragment INTO that #main-content, so we must
+   render the body block directly — adding another wrapper here breaks the
+   `body > div.container-fluid > div > div.col-sm-10 > div.discover > h2`
+   child-selectors in caliBlur.css. #}
+{% block body %}{% endblock %}
+{# Pagination is rendered by layout.html *outside* {% block body %} (but
+   still inside #main-content). Mirror that here so book-list SPA swaps
+   keep their page-number controls in the top-right. #}
+{% if pagination and (pagination.has_next or pagination.has_prev) %}
+  <div class="pagination">
+    {% if pagination.has_prev %}
+    <li class="page-item page-previous"><a class="page-link" aria-label="next page" href="{{ (pagination.page - 1)|url_for_other_page
+      }}">&laquo; {{_('Previous')}}</a></li>
+    {% endif %}
+  {% for page in pagination.iter_pages() %}
+    {% if page %}
+      {% if page != pagination.page %}
+        <li class="page-item"><a class="page-link" aria-label="to page {{ page }}" href="{{ (page)|url_for_other_page }}">{{ page }}</a></li>
+      {% else %}
+        <li class="page-item active"><a class="page-link" aria-label="to page {{ page }}" href="{{ (page)|url_for_other_page }}">{{ page }}</a></li>
+      {% endif %}
+    {% else %}
+      <li class="page-item page-last-separator disabled"><a class="page-link" aria-label="">…</a></li>
+    {% endif %}
+  {% endfor %}
+  {% if pagination.has_next %}
+    <li class="page-item page-next"><a class="page-link next" aria-label="next page" href="{{ (pagination.page + 1)|url_for_other_page
+      }}">{{_('Next')}} &raquo;</a></li>
+  {% endif %}
+  </div>
+{% endif %}
+{# Templates such as shelf.html declare modals (e.g. #GeneralDeleteModal)
+   in {% block modal %}; layout.html renders that block, so we must too
+   or the shelf-delete confirm dialog never enters the DOM on SPA loads. #}
+{% block modal %}{% endblock %}
 {% block js %}{% endblock %}

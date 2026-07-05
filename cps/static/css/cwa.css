@@ -45,3 +45,148 @@ body.modal-open #remove-from-shelves + .tags {
 #exclude_tag + .btn-group .dropdown-menu {
     max-width: 40vw;
 }
+
+/* ------------------------------------------------------------------ */
+/* Partial navigation overlay + spinner                                 */
+/* ------------------------------------------------------------------ */
+
+#cwa-nav-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 9998;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+}
+
+#cwa-nav-overlay.cwa-loading {
+    pointer-events: all;
+    opacity: 1;
+}
+
+body:not(.blur) #cwa-nav-overlay {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+body.blur #cwa-nav-overlay {
+    background: rgba(0, 0, 0, 0.3);
+}
+
+#cwa-nav-spinner {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    animation: cwa-spin 0.75s linear infinite;
+}
+
+body:not(.blur) #cwa-nav-spinner {
+    border-top-color: #337ab7;
+    border-right-color: rgba(51, 122, 183, 0.25);
+}
+
+body.blur #cwa-nav-spinner {
+    border-top-color: #e5a00d;
+    border-right-color: rgba(229, 160, 13, 0.25);
+}
+
+@keyframes cwa-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Modal restart spinner */
+.cwa-modal-spinner {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    animation: cwa-spin 0.75s linear infinite;
+    margin: 0 auto;
+}
+
+body:not(.blur) .cwa-modal-spinner {
+    border-top-color: #337ab7;
+    border-right-color: rgba(51, 122, 183, 0.25);
+}
+
+body.blur .cwa-modal-spinner {
+    border-top-color: #e5a00d;
+    border-right-color: rgba(229, 160, 13, 0.25);
+}
+
+/* RestartDialog: suppress the non-clickable caliBlur pseudo-element ×,
+   add a real close button, and remove the slide-in animation. */
+#RestartDialog:before {
+    display: none !important;
+}
+
+#RestartDialog > .modal-dialog {
+    -webkit-transform: none !important;
+    transform: none !important;
+    -webkit-transition: none !important;
+    transition: none !important;
+}
+
+#RestartDialog .modal-header .close {
+    float: right;
+    color: #eee;
+    opacity: 0.6;
+    text-shadow: none;
+    font-size: 22px;
+    line-height: 1;
+    margin: -2px -4px 0 0;
+}
+
+#RestartDialog .modal-header .close:hover {
+    color: #fff;
+    opacity: 1;
+}
+
+/* Sidebar resize — desktop only (≥768px) */
+#sidebar-resize-handle {
+    display: none; /* hidden by default; desktop rule below shows it */
+}
+@media (min-width: 768px) {
+    .sidebar-resizable {
+        display: flex !important;
+        align-items: flex-start;
+    }
+    .sidebar-resizable > #sidebar-col {
+        float: none !important;
+        flex: 0 0 auto;
+    }
+    .sidebar-resizable > #main-content {
+        float: none !important;
+        flex: 1 1 auto;
+        width: auto !important;
+        min-width: 0;
+    }
+    #sidebar-resize-handle {
+        display: block;
+        flex: 0 0 5px;
+        width: 5px;
+        min-height: 100%;
+        cursor: col-resize;
+        background: transparent;
+        position: relative;
+        user-select: none;
+        -webkit-user-select: none;
+        z-index: 10;
+        transition: background 0.15s;
+    }
+    #sidebar-resize-handle::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -4px;
+        right: -4px;
+        bottom: 0;
+    }
+    #sidebar-resize-handle:hover,
+    #sidebar-resize-handle.is-dragging {
+        background: rgba(128, 128, 128, 0.25);
+    }
+}

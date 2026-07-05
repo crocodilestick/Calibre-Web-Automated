@@ -51,6 +51,90 @@ input.datepicker {color: transparent}
 input.datepicker:focus {color: transparent}
 input.datepicker:focus + input {color: #555}
 
+@media (min-width: 768px) {
+    /* Sidebar resize: all elements that visually belong to the sidebar
+       column read from --sidebar-width so JS only needs to set one variable. */
+
+    body.blur > div.container-fluid > div.row-fluid > div.col-sm-2 {
+        width: var(--sidebar-width, 240px);
+    }
+
+    /* Pseudo-element that fills the gap bar above the main content area */
+    body.blur > div.container-fluid > div.row-fluid > div.col-sm-2::after {
+        left: var(--sidebar-width, 240px);
+    }
+
+    /* Library name in the navbar header — visually a header for the sidebar.
+       Excluded on login, where caliBlur centers the brand with width: 100vw. */
+    body.blur:not(.login) > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
+        width: var(--sidebar-width, 240px);
+        /* caliBlur sets `a { transition: all .2s }`, so the brand's width would
+           animate while the search form's margin-left (which compensates for it)
+           updates instantly — desyncing them mid-drag. Make width instant so the
+           two track together; keep the other transitions for hover effects. */
+        transition: all .2s ease-in-out, width 0s;
+    }
+
+    /* The search form sits at (brand-width − 140px) due to margin-left: -140px.
+       Compensate so it stays anchored at 100px regardless of sidebar width. */
+    body.blur > div.navbar.navbar-default.navbar-static-top > div > form {
+        margin-left: calc(100px - var(--sidebar-width, 240px));
+    }
+
+    /* Main content fills the remaining width */
+    body.blur:not(.login) > div.container-fluid > div.row-fluid > div.col-sm-10 {
+        width: calc(100vw - var(--sidebar-width, 240px));
+    }
+
+    /* Page title bar — position:fixed at left:240px in caliBlur.css, must follow sidebar */
+    body.blur:not(.login) .well > h2,
+    body.blur:not(.login):not(.admin) > div.container-fluid > div > div.col-sm-10 > div.discover:only-of-type > h2 {
+        left: var(--sidebar-width, 240px) !important;
+        width: calc(100vw - var(--sidebar-width, 240px)) !important;
+        max-width: calc(100vw - var(--sidebar-width, 240px) - 310px) !important;
+    }
+
+    body.blur:not(.admin) > div.container-fluid > div > div.col-sm-10 > div.discover > h1,
+    body.blur:not(.admin) > div.container-fluid > div > div.col-sm-10 > div.discover > h2,
+    body.blur > div.container-fluid > div > div.col-sm-10 > div.col-sm-6.col-lg-6.col-xs-6 > h2,
+    body.blur > div.container-fluid > div > div.col-sm-10 > h1 {
+        left: var(--sidebar-width, 240px);
+        width: calc(100vw - var(--sidebar-width, 240px));
+    }
+
+    /* Admin pages render their fixed title bar as an h2/h1 ::before pseudo-element
+       ("Admin Settings", "User Settings", "New User") pinned at left: 240px in
+       caliBlur.css. Pseudo-elements can't be set inline, so track the sidebar here. */
+    body.blur.admin > div.container-fluid > div > div.col-sm-10 > div.container-fluid > div.row:first-of-type > div.col > h2:before,
+    body.blur.admin > div.container-fluid > div > div.col-sm-10 > div.discover > h2:first-of-type:before,
+    body.blur.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1:before,
+    body.blur.newuser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.discover > h1:before {
+        left: var(--sidebar-width, 240px);
+        width: calc(100vw - var(--sidebar-width, 240px));
+    }
+
+    /* Book detail toolbar — position:fixed, must shrink with main content */
+    body.blur .col-sm-10 .book-meta > div.btn-toolbar {
+        width: calc(100vw - var(--sidebar-width, 240px));
+    }
+
+    /* Resize handle sits at the sidebar's right edge */
+    body.blur #sidebar-resize-handle {
+        position: absolute;
+        top: 60px;
+        left: var(--sidebar-width, 240px);
+        height: calc(100% - 60px);
+        z-index: 50;
+    }
+
+    /* .discover and .single have hardcoded calc(100vw - 257/254px) widths in caliBlur.css;
+       override to fill col-sm-10 which already tracks --sidebar-width */
+    body.blur > div.container-fluid > div > div.col-sm-10 > div.discover,
+    body.blur > div.container-fluid > div > div.col-sm-10 > div.single {
+        width: 100%;
+    }
+}
+
 @media only screen and (max-width: 767px) {
         .row-fluid > .col-sm-2 {
         visibility: hidden;
@@ -106,6 +190,12 @@ div#Downloads_list {
     .btn-group {
         height: 30px;
         min-width: max-content;
+    }
+    /* Drop the discover grid's horizontal padding so a 360px viewport still
+       fits two 180px book tiles side-by-side. */
+    body > div.container-fluid > div > div.col-sm-10 > div.discover.load-more {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
     }
 }
 
@@ -224,4 +314,80 @@ a#advanced_search > span.hidden-sm {
     border-radius: 0.25rem;
     margin-bottom: 2rem;
     padding-left: 2rem;
+}
+
+/* Keep usertable header selects dark-themed whether disabled or enabled */
+.header_select,
+.header_select:disabled {
+    color: #e9e9e9;
+    background-color: #151e2680;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+/* ------------------------------------------------------------------ */
+/* Load More tile — end-of-grid tile styled to match a book cover      */
+/* ------------------------------------------------------------------ */
+.load-more-tile .cover {
+    position: relative;
+}
+
+.load-more-tile .load-more-link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.load-more-tile .load-more-img {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 150px;
+    height: 225px;
+    background-color: rgba(0, 0, 0, 0.45);
+    box-shadow: 0 0 2px rgba(0, 0, 0, .35);
+    transition: background-color .15s ease;
+}
+
+.load-more-tile .load-more-link:hover .load-more-img,
+.load-more-tile .load-more-link:focus .load-more-img {
+    background-color: rgba(0, 0, 0, 0.6);
+}
+
+.load-more-tile .load-more-arrow {
+    color: #fff;
+    font-size: 56px;
+    line-height: 1;
+    opacity: 0.85;
+}
+
+.load-more-tile .meta .title {
+    color: #fff;
+    text-align: center;
+}
+
+/* Suppress caliBlur's circular play-glyph hover overlay on book covers. */
+.load-more-tile .cover > a:before,
+.load-more-tile .cover > a:after {
+    content: none !important;
+    display: none !important;
+}
+
+/* Fetching state: swap the arrow for an in-tile spinner styled like
+   #cwa-nav-spinner so it reads as the same loading affordance. */
+.load-more-tile.is-loading .load-more-link {
+    pointer-events: none;
+}
+.load-more-tile.is-loading .load-more-arrow {
+    display: none;
+}
+.load-more-tile.is-loading .load-more-img::after {
+    content: "";
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 4px solid transparent;
+    border-top-color: #e5a00d;
+    border-right-color: rgba(229, 160, 13, 0.25);
+    animation: cwa-spin 0.75s linear infinite;
 }

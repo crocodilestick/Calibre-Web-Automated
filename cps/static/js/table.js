@@ -24,6 +24,372 @@ var reload = false;
 var lastBooksTableIndex = null;
 // No row-based shift logic; we handle shift ranges on checkbox clicks only to avoid conflicts
 
+// Module-level helpers (used by the books-table init + repeat handlers).
+// Defined outside $(function) so the SPA-rerunnable cwaInit.booksTable hook
+// can reach them without depending on $(function)'s closure.
+function applyBooksTableCheckboxTooltips() {
+    var $checks = $('#books-table tbody td.bs-checkbox input[type="checkbox"]');
+    if (!$checks.length) return;
+    $checks.attr('title', 'Shift-click to select a range');
+    $checks.attr('aria-label', 'Select row (Shift-click to select a range)');
+    if ($.fn.tooltip) {
+        try {
+            $checks.tooltip('destroy');
+        } catch (__) { /* ignore if not initialized */ }
+        $checks.tooltip({ container: 'body', placement: 'right' });
+    }
+}
+
+function moveBooksToolbarButtons() {
+    var $table = $('#books-table');
+    if (!$table.length) return;
+    var $toolbarRight = $table.closest('.bootstrap-table').find('.fixed-table-toolbar .columns.columns-right.btn-group.pull-right');
+    if (!$toolbarRight.length) return;
+
+    var $selectAll = $('#select_all');
+    var $unselectAll = $('#unselect_all');
+    if (!$selectAll.length && !$unselectAll.length) return;
+
+    var $columnsBtn = $toolbarRight.find('button.dropdown-toggle').first();
+
+    if ($selectAll.length && !$selectAll.data('moved-to-columns')) {
+        if ($columnsBtn.length) {
+            $selectAll.insertBefore($columnsBtn);
+        } else {
+            $toolbarRight.append($selectAll);
+        }
+        $selectAll.data('moved-to-columns', true);
+    }
+    if ($unselectAll.length && !$unselectAll.data('moved-to-columns')) {
+        if ($columnsBtn.length) {
+            $unselectAll.insertBefore($columnsBtn);
+        } else {
+            $toolbarRight.append($unselectAll);
+        }
+        $unselectAll.data('moved-to-columns', true);
+    }
+}
+
+// Books-table init wrapped as a re-runnable cwaInit hook. The SPA caches
+// table.js after first load, so $(function) doesn't fire again on later
+// navs — but #books-table is a fresh DOM element each time. Without this
+// hook, navigating away from /table and back leaves an uninitialized table.
+// Idempotent: skips if the current element is already wired up.
+window.cwaInit = window.cwaInit || {};
+window.cwaInit.booksTable = function () {
+    var $table = $('#books-table');
+    if (!$table.length) return;
+    if ($table.data('cwa-books-inited')) return;
+    $table.data('cwa-books-inited', true);
+
+    // Reset shift-click anchor when table view changes
+    $table.on('page-change.bs.table sort.bs.table search.bs.table load-success.bs.table', function () {
+        lastBooksTableIndex = null;
+    });
+
+    // Reapply tooltips + toolbar layout whenever bootstrap-table re-renders
+    $table.on('post-body.bs.table load-success.bs.table page-change.bs.table sort.bs.table search.bs.table', function () {
+        applyBooksTableCheckboxTooltips();
+        moveBooksToolbarButtons();
+    });
+
+    // Track selection state via bootstrap-table check events
+    $table.on('check.bs.table check-all.bs.table uncheck.bs.table uncheck-all.bs.table',
+        function (e, rowsAfter, rowsBefore) {
+            var rows = rowsAfter;
+            if (e.type === "uncheck-all") {
+                selections = [];
+            } else {
+                var ids = $.map(!$.isArray(rows) ? [rows] : rows, function (row) {
+                    return row.id;
+                });
+                var func = $.inArray(e.type, ["check", "check-all"]) > -1 ? "union" : "difference";
+                selections = window._[func](selections, ids);
+            }
+            if (selections.length >= 2) {
+                $("#merge_books").removeClass("disabled").attr("aria-disabled", false);
+            } else {
+                $("#merge_books").addClass("disabled").attr("aria-disabled", true);
+            }
+            if (selections.length >= 1) {
+                $("#delete_selected_books, #archive_selected_books, #unarchive_selected_books, " +
+                  "#read_selected_books, #unread_selected_books, #edit_selected_books, #add_to_shelf_btn")
+                    .removeClass("disabled").attr("aria-disabled", false);
+            } else {
+                $("#delete_selected_books, #archive_selected_books, #unarchive_selected_books, " +
+                  "#read_selected_books, #unread_selected_books, #edit_selected_books, #add_to_shelf_btn")
+                    .addClass("disabled").attr("aria-disabled", true);
+            }
+            if (selections.length < 1) {
+                $("#delete_selection, #table_xchange").addClass("disabled").attr("aria-disabled", true);
+            } else {
+                $("#delete_selection, #table_xchange").removeClass("disabled").attr("aria-disabled", false);
+            }
+        });
+
+    // Direct .click() handlers on /table buttons that get replaced by SPA swaps
+    $("#delete_selection").click(function() {
+        $("#books-table").bootstrapTable("uncheckAll");
+    });
+
+    $("#merge_confirm").click(function() {
+        $.ajax({
+            method:"post",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            url: window.location.pathname + "/../ajax/mergebooks",
+            data: JSON.stringify({"Merge_books":selections}),
+            success: function success() {
+                $("#books-table").bootstrapTable("refresh");
+                $("#books-table").bootstrapTable("uncheckAll");
+            }
+        });
+    });
+
+    $("#merge_books").click(function(event) {
+        if ($(this).hasClass("disabled")) {
+            event.stopPropagation();
+        } else {
+            $('#mergeModal').modal("show");
+        }
+        $.ajax({
+            method:"post",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            url: window.location.pathname + "/../ajax/simulatemerge",
+            data: JSON.stringify({"Merge_books":selections}),
+            success: function success(booTitles) {
+                $('#merge_from').empty();
+                $.each(booTitles.from, function(i, item) {
+                    $("<span>- " + item + "</span><p></p>").appendTo("#merge_from");
+                });
+                $("#merge_to").text("- " + booTitles.to);
+            }
+        });
+    });
+
+    $("#edit_selected_books").click(function(event) {
+        if ($(this).hasClass("disabled")) {
+            event.stopPropagation();
+        } else {
+            $('#edit_selected_modal').modal("show");
+        }
+    });
+
+    $("#edit_selected_confirm").click(function(event) {
+        $.ajax({
+            method:"post",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            url: window.location.pathname + "/../ajax/editselectedbooks",
+            data: JSON.stringify({
+                "selections": selections,
+                "title": $("#title_input").val(),
+                "title_sort": $("#title_sort_input").val(),
+                "author_sort": $("#author_sort_input").val(),
+                "authors": $("#authors_input").val(),
+                "categories": $("#categories_input").val(),
+                "series": $("#series_input").val(),
+                "languages": $("#languages_input").val(),
+                "publishers": $("#publishers_input").val(),
+                "comments": $("#comments_input").val().toString(),
+                "checkA": $("#autoupdate_authorsort").prop('checked').toString()
+            }),
+            success: function success(booTitles) {
+                $("#books-table").bootstrapTable("refresh");
+                $("#books-table").bootstrapTable("uncheckAll");
+                $("#title_input, #title_sort_input, #author_sort_input, #authors_input, " +
+                  "#categories_input, #series_input, #languages_input, #publishers_input, #comments_input").val("");
+            }
+        });
+    });
+
+    // Initialize author/title sort input state from autoupdate checkboxes
+    var checkA = $('#autoupdate_authorsort').prop('checked');
+    $('#author_sort_input').prop('disabled', checkA);
+    var checkT = $('#autoupdate_titlesort').prop('checked');
+    $('#title_sort_input').prop('disabled', checkT);
+
+    $("#autoupdate_authorsort").on('change', function() {
+        $('#author_sort_input').prop('disabled', $('#autoupdate_authorsort').prop('checked'));
+    });
+    $("#autoupdate_titlesort").on('change', function() {
+        $('#title_sort_input').prop('disabled', $('#autoupdate_titlesort').prop('checked'));
+    });
+
+    // Build column config from thead
+    var column = [];
+    $("#books-table > thead > tr > th").each(function () {
+        var element = {};
+        if ($(this).attr("data-edit")) {
+            element = {
+                editable: {
+                    mode: "inline",
+                    emptytext: "<span class='glyphicon glyphicon-plus'></span>",
+                    success: function (response, __) {
+                        if (!response.success) return response.msg;
+                        return { newValue: response.newValue };
+                    },
+                    params: function (params) {
+                        params.checkA = $('#autoupdate_authorsort').prop('checked');
+                        params.checkT = $('#autoupdate_titlesort').prop('checked');
+                        return params;
+                    }
+                }
+            };
+            if ($(this).attr("data-editable-type") == "wysihtml5") {
+                element.editable.display = shorten_html;
+            }
+            var validateText = $(this).attr("data-edit-validate");
+            if (validateText) {
+                element.editable.validate = function (value) {
+                    if ($.trim(value) === "") return validateText;
+                };
+            }
+        }
+        column.push(element);
+    });
+
+    $table.bootstrapTable({
+        sidePagination: "server",
+        pageList: "[10, 25, 50, 100]",
+        queryParams: queryParams,
+        pagination: true,
+        paginationLoop: false,
+        paginationDetailHAlign: "right",
+        paginationHAlign: "left",
+        idField: "id",
+        uniqueId: "id",
+        search: true,
+        showColumns: true,
+        searchAlign: "left",
+        showSearchButton: true,
+        searchOnEnterKey: true,
+        checkboxHeader: false,
+        maintainMetaData: true,
+        clickToSelect: true,
+        responseHandler: responseHandler,
+        columns: column,
+        formatNoMatches: function () { return ""; },
+        // eslint-disable-next-line no-unused-vars
+        onEditableSave: function (field, row, oldvalue, $el) {
+            if ($.inArray(field, ["title", "sort"]) !== -1 && $('#autoupdate_titlesort').prop('checked')
+                || $.inArray(field, ["authors", "author_sort"]) !== -1 && $('#autoupdate_authorsort').prop('checked')) {
+                $.ajax({
+                    method: "get",
+                    dataType: "json",
+                    url: window.location.pathname + "/../ajax/sort_value/" + field + "/" + row.id,
+                    success: function success(data) {
+                        var key = Object.keys(data)[0];
+                        $("#books-table").bootstrapTable("updateCellByUniqueId", {
+                            id: row.id, field: key, value: data[key]
+                        });
+                    }
+                });
+            }
+        },
+        // eslint-disable-next-line no-unused-vars
+        onColumnSwitch: function (field, checked) {
+            var visible = $("#books-table").bootstrapTable("getVisibleColumns");
+            var hidden = $("#books-table").bootstrapTable("getHiddenColumns");
+            var st = "";
+            visible.forEach(function (item) { st += "\"" + item.field + "\":\"" + "true" + "\","; });
+            hidden.forEach(function (item) { st += "\"" + item.field + "\":\"" + "false" + "\","; });
+            st = st.slice(0, -1);
+            $.ajax({
+                method: "post",
+                contentType: "application/json; charset=utf-8",
+                dataType: "json",
+                url: window.location.pathname + "/../ajax/table_settings",
+                data: "{" + st + "}"
+            });
+        }
+    });
+
+    // Toolbar buttons that only exist on /table
+    $("#table_xchange").click(function () {
+        $.ajax({
+            method: "post",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            url: window.location.pathname + "/../ajax/xchange",
+            data: JSON.stringify({ "xchange": selections }),
+            success: function () {
+                $("#books-table").bootstrapTable("refresh");
+                $("#books-table").bootstrapTable("uncheckAll");
+            }
+        });
+    });
+
+    $("#add_to_shelf_btn").click(function (event) {
+        if ($(this).hasClass("disabled")) {
+            event.stopPropagation();
+        } else {
+            $('#shelf_selection_dropdown').val('');
+            $('#addToShelfModal .modal-body .alert-danger').remove();
+            $('#addToShelfModal').modal("show");
+        }
+    });
+
+    $("#confirm_add_to_shelf_btn").click(function () {
+        var selectedShelfId = $("#shelf_selection_dropdown").val();
+        var bookIds = selections;
+        $('#addToShelfModal .modal-body .alert-danger').remove();
+        if (!selectedShelfId) {
+            $('#shelf_selection_dropdown').after('<div class="alert alert-danger" style="margin-top:10px;">Please select a shelf.</div>');
+            return;
+        }
+        if (bookIds.length === 0) {
+            $('#shelf_selection_dropdown').after('<div class="alert alert-danger" style="margin-top:10px;">No books selected.</div>');
+            return;
+        }
+        var csrfToken = $('input[name="csrf_token"]').val();
+        $.ajax({
+            method: "POST",
+            url: getPath() + "/shelf/add_selected_to_shelf",
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            data: JSON.stringify({ "shelf_id": parseInt(selectedShelfId), "book_ids": bookIds }),
+            headers: { 'X-CSRFToken': csrfToken },
+            success: function (response) {
+                $('#addToShelfModal').modal("hide");
+                var messages = [];
+                if (response.status === 'success' || (response.status === 'partial_success' && response.added_count > 0)) {
+                    messages.push({ type: "success", message: response.message || ('Successfully added ' + response.added_count + ' books.') });
+                }
+                if (response.errors && response.errors.length > 0) {
+                    messages.push({ type: "warning", message: "Some books could not be added: " + response.errors.join(", ") });
+                }
+                if (messages.length > 0) handleListServerResponse(messages);
+                $("#books-table").bootstrapTable("uncheckAll");
+            },
+            error: function (xhr) {
+                $('#addToShelfModal .modal-body .alert-danger').remove();
+                var errorMsg = "Error adding books to shelf.";
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    errorMsg = xhr.responseJSON.message;
+                } else if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.length > 0) {
+                    errorMsg = xhr.responseJSON.errors.join("<br>");
+                } else if (xhr.responseText) {
+                    try {
+                        var errResponse = JSON.parse(xhr.responseText);
+                        errorMsg = errResponse.message || errResponse.error || errorMsg;
+                    } catch (e) {
+                        errorMsg = xhr.responseText.substring(0, 200);
+                    }
+                }
+                $('#shelf_selection_dropdown').after('<div class="alert alert-danger" style="margin-top:10px;">' + errorMsg + '</div>');
+            }
+        });
+    });
+
+    // Initial tooltip/toolbar pass — bootstrap-table will fire its events
+    // for subsequent renders, but the very first post-body may already
+    // have happened by the time we get here on a re-run.
+    applyBooksTableCheckboxTooltips();
+    moveBooksToolbarButtons();
+};
+
 $(function() {
     $('#tasktable').bootstrapTable({
         formatNoMatches: function () {
@@ -124,67 +490,11 @@ $(function() {
         }, true); // capture phase
     })();
 
-    // Reset the anchor when table view changes (pagination, sorting, searching, reload)
-    $('#books-table').on('page-change.bs.table sort.bs.table search.bs.table load-success.bs.table', function () {
-        lastBooksTableIndex = null;
-    });
-
-    // Add tooltip to row-select checkboxes (and reapply on table updates)
-    function applyBooksTableCheckboxTooltips() {
-        var $checks = $('#books-table tbody td.bs-checkbox input[type="checkbox"]');
-        if (!$checks.length) return;
-        $checks.attr('title', 'Shift-click to select a range');
-        $checks.attr('aria-label', 'Select row (Shift-click to select a range)');
-        if ($.fn.tooltip) {
-            try {
-                $checks.tooltip('destroy');
-            } catch (__) { /* ignore if not initialized */ }
-            $checks.tooltip({ container: 'body', placement: 'right' });
-        }
+    // Books-table init lives in window.cwaInit.booksTable so SPA navs can
+    // re-run it on the freshly-injected #books-table element.
+    if (window.cwaInit && typeof window.cwaInit.booksTable === 'function') {
+        window.cwaInit.booksTable();
     }
-
-    // Move Select/Clear buttons into the columns-right toolbar group
-    function moveBooksToolbarButtons() {
-        var $table = $('#books-table');
-        if (!$table.length) return;
-        var $toolbarRight = $table.closest('.bootstrap-table').find('.fixed-table-toolbar .columns.columns-right.btn-group.pull-right');
-        if (!$toolbarRight.length) return;
-
-        var $selectAll = $('#select_all');
-        var $unselectAll = $('#unselect_all');
-        if (!$selectAll.length && !$unselectAll.length) return;
-
-        // Place before the columns dropdown toggle if present; otherwise append at end
-        var $columnsBtn = $toolbarRight.find('button.dropdown-toggle').first();
-
-        if ($selectAll.length && !$selectAll.data('moved-to-columns')) {
-            if ($columnsBtn.length) {
-                $selectAll.insertBefore($columnsBtn);
-            } else {
-                $toolbarRight.append($selectAll);
-            }
-            $selectAll.data('moved-to-columns', true);
-        }
-        if ($unselectAll.length && !$unselectAll.data('moved-to-columns')) {
-            if ($columnsBtn.length) {
-                $unselectAll.insertBefore($columnsBtn);
-            } else {
-                $toolbarRight.append($unselectAll);
-            }
-            $unselectAll.data('moved-to-columns', true);
-        }
-    }
-
-    // Apply on initial render and on table updates
-    $('#books-table')
-        .on('post-body.bs.table load-success.bs.table page-change.bs.table sort.bs.table search.bs.table', function () {
-            applyBooksTableCheckboxTooltips();
-            moveBooksToolbarButtons();
-        });
-    // Also try once after DOM ready in case table is already present
-    applyBooksTableCheckboxTooltips();
-    moveBooksToolbarButtons();
-
 
     $("#cancel_task_confirm").click(function() {
         //get data-id attribute of the clicked element
@@ -202,190 +512,6 @@ $(function() {
         //get data-id attribute of the clicked element and store in button
         var taskId = $(e.relatedTarget).data("task-id");
         $(e.currentTarget).find("#cancel_task_confirm").data("task-id", taskId);
-    });
-
-    $("#books-table").on("check.bs.table check-all.bs.table uncheck.bs.table uncheck-all.bs.table",
-        function (e, rowsAfter, rowsBefore) {
-            var rows = rowsAfter;
-
-            if (e.type === "uncheck-all") {
-                selections = [];
-            } else {
-                var ids = $.map(!$.isArray(rows) ? [rows] : rows, function (row) {
-                    return row.id;
-                });
-
-                var func = $.inArray(e.type, ["check", "check-all"]) > -1 ? "union" : "difference";
-                selections = window._[func](selections, ids);
-            }
-            if (selections.length >= 2) {
-                $("#merge_books").removeClass("disabled");
-                $("#merge_books").attr("aria-disabled", false);
-            } else {
-                $("#merge_books").addClass("disabled");
-                $("#merge_books").attr("aria-disabled", true);
-            }
-            if (selections.length >= 1) {
-                $("#delete_selected_books").removeClass("disabled");
-                $("#delete_selected_books").attr("aria-disabled", false);
-
-                $("#archive_selected_books").removeClass("disabled");
-                $("#archive_selected_books").attr("aria-disabled", false);
-
-                $("#unarchive_selected_books").removeClass("disabled");
-                $("#unarchive_selected_books").attr("aria-disabled", false);
-
-                $("#read_selected_books").removeClass("disabled");
-                $("#read_selected_books").attr("aria-disabled", false);
-
-                $("#unread_selected_books").removeClass("disabled");
-                $("#unread_selected_books").attr("aria-disabled", false);
-
-                $("#edit_selected_books").removeClass("disabled");
-                $("#edit_selected_books").attr("aria-disabled", false);
-                $("#add_to_shelf_btn").removeClass("disabled");
-                $("#add_to_shelf_btn").attr("aria-disabled", false);
-            } else {
-                $("#delete_selected_books").addClass("disabled");
-                $("#delete_selected_books").attr("aria-disabled", true);
-
-                $("#archive_selected_books").addClass("disabled");
-                $("#archive_selected_books").attr("aria-disabled", true);
-
-                $("#unarchive_selected_books").addClass("disabled");
-                $("#unarchive_selected_books").attr("aria-disabled", true);
-
-                $("#read_selected_books").addClass("disabled");
-                $("#read_selected_books").attr("aria-disabled", true);
-
-                $("#unread_selected_books").addClass("disabled");
-                $("#unread_selected_books").attr("aria-disabled", true);
-
-                $("#edit_selected_books").addClass("disabled");
-                $("#edit_selected_books").attr("aria-disabled", true);
-                $("#add_to_shelf_btn").addClass("disabled");
-                $("#add_to_shelf_btn").attr("aria-disabled", true);
-            }
-            if (selections.length < 1) {
-                $("#delete_selection").addClass("disabled");
-                $("#delete_selection").attr("aria-disabled", true);
-                $("#table_xchange").addClass("disabled");
-                $("#table_xchange").attr("aria-disabled", true);
-            } else {
-                $("#delete_selection").removeClass("disabled");
-                $("#delete_selection").attr("aria-disabled", false);
-                $("#table_xchange").removeClass("disabled");
-                $("#table_xchange").attr("aria-disabled", false);
-
-            }
-
-        });
-
-    // Small block to initialize the state of the author/title sort inputs in metadata form
-    {
-        let checkA = $('#autoupdate_authorsort').prop('checked');
-        $('#author_sort_input').prop('disabled', checkA);
-        let checkT = $('#autoupdate_titlesort').prop('checked');
-        $('#title_sort_input').prop('disabled', checkT);
-    }
-
-    // Disable/enable author and title sort input in respect to auto-update title/author sort being checked on or not
-    $("#autoupdate_authorsort").on('change', function(event) {
-            let checkA = $('#autoupdate_authorsort').prop('checked');
-            $('#author_sort_input').prop('disabled', checkA);
-    })
-
-    $("#autoupdate_titlesort").on('change', function(event) {
-            let checkT = $('#autoupdate_titlesort').prop('checked');
-            $('#title_sort_input').prop('disabled', checkT);
-    })
-    /////
-
-    $("#delete_selection").click(function() {
-        $("#books-table").bootstrapTable("uncheckAll");
-    });
-
-    $("#merge_confirm").click(function() {
-        $.ajax({
-            method:"post",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            url: window.location.pathname + "/../ajax/mergebooks",
-            data: JSON.stringify({"Merge_books":selections}),
-            success: function success() {
-                $("#books-table").bootstrapTable("refresh");
-                $("#books-table").bootstrapTable("uncheckAll");
-            }
-        });
-    });
-
-    $("#merge_books").click(function(event) {
-        if ($(this).hasClass("disabled")) {
-            event.stopPropagation()
-        } else {
-            $('#mergeModal').modal("show");
-        }
-        $.ajax({
-            method:"post",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            url: window.location.pathname + "/../ajax/simulatemerge",
-            data: JSON.stringify({"Merge_books":selections}),
-            success: function success(booTitles) {
-                $('#merge_from').empty();
-                $.each(booTitles.from, function(i, item) {
-                    $("<span>- " + item + "</span><p></p>").appendTo("#merge_from");
-                });
-                $("#merge_to").text("- " + booTitles.to);
-
-            }
-        });
-    });
-
-    $("#edit_selected_books").click(function(event) {
-        if ($(this).hasClass("disabled")) {
-            event.stopPropagation()
-        } else {
-            $('#edit_selected_modal').modal("show");
-        }
-    });
-
-    $("#edit_selected_confirm").click(function(event) {
-        $.ajax({
-            method:"post",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            url: window.location.pathname + "/../ajax/editselectedbooks",
-            data: JSON.stringify({
-                "selections": selections,
-                "title": $("#title_input").val(),
-                "title_sort": $("#title_sort_input").val(),
-                "author_sort": $("#author_sort_input").val(),
-                "authors": $("#authors_input").val(),
-                "categories": $("#categories_input").val(),
-                "series": $("#series_input").val(),
-                "languages": $("#languages_input").val(),
-                "publishers": $("#publishers_input").val(),
-                "comments": $("#comments_input").val().toString(),
-                "checkA": $("#autoupdate_authorsort").prop('checked').toString()
-            }),
-            success: function success(booTitles) {
-                $("#books-table").bootstrapTable("refresh");
-                $("#books-table").bootstrapTable("uncheckAll");
-
-                $("#title_input").val("");
-                $("#title_sort_input").val("");
-                $("#author_sort_input").val("");
-                $("#authors_input").val("");
-                $("#categories_input").val("");
-                $("#series_input").val("");
-                $("#languages_input").val("");
-                $("#publishers_input").val("");
-                $("#comments_input").val("");
-
-                handleListServerResponse;
-            }
-        });
     });
 
     $(document).on('click', '#archive_selected_books', function(event) {
@@ -568,118 +694,6 @@ $(function() {
         });
     });
 
-
-    $("#table_xchange").click(function() {
-        $.ajax({
-            method:"post",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            url: window.location.pathname + "/../ajax/xchange",
-            data: JSON.stringify({"xchange":selections}),
-            success: function success() {
-                $("#books-table").bootstrapTable("refresh");
-                $("#books-table").bootstrapTable("uncheckAll");
-            }
-        });
-    });
-
-    var column = [];
-    $("#books-table > thead > tr > th").each(function() {
-        var element = {};
-        if ($(this).attr("data-edit")) {
-            element = {
-                editable: {
-                    mode: "inline",
-                    emptytext: "<span class='glyphicon glyphicon-plus'></span>",
-                    success: function (response, __) {
-                        if (!response.success) return response.msg;
-                        return {newValue: response.newValue};
-                    },
-                    params: function (params) {
-                        params.checkA = $('#autoupdate_authorsort').prop('checked');
-                        params.checkT = $('#autoupdate_titlesort').prop('checked');
-                        return params
-                    }
-                }
-            };
-            if ($(this).attr("data-editable-type") == "wysihtml5") {
-                //if (this.id == "comments") {
-                element.editable.display = shorten_html;
-            }
-            var validateText = $(this).attr("data-edit-validate");
-            if (validateText) {
-                element.editable.validate = function (value) {
-                    if ($.trim(value) === "") return validateText;
-                };
-            }
-        }
-        column.push(element);
-    });
-    // $.fn.editable.defaults.display = comment_display;
-
-    $("#books-table").bootstrapTable({
-        sidePagination: "server",
-        pageList: "[10, 25, 50, 100]",
-        queryParams: queryParams,
-        pagination: true,
-        paginationLoop: false,
-        paginationDetailHAlign: "right",
-        paginationHAlign: "left",
-        idField: "id",
-        uniqueId: "id",
-        search: true,
-        showColumns: true,
-        searchAlign: "left",
-        showSearchButton : true,
-        searchOnEnterKey: true,
-    checkboxHeader: false,
-        maintainMetaData: true,
-    clickToSelect: true,
-        responseHandler: responseHandler,
-        columns: column,
-        formatNoMatches: function () {
-            return "";
-        },
-        // eslint-disable-next-line no-unused-vars
-        onEditableSave: function (field, row, oldvalue, $el) {
-            if ($.inArray(field, [ "title", "sort" ]) !== -1 && $('#autoupdate_titlesort').prop('checked')
-                || $.inArray(field, [ "authors", "author_sort" ]) !== -1 && $('#autoupdate_authorsort').prop('checked')) {
-                $.ajax({
-                    method:"get",
-                    dataType: "json",
-                    url: window.location.pathname + "/../ajax/sort_value/" + field + "/" + row.id,
-                    success: function success(data) {
-                        var key = Object.keys(data)[0];
-                        $("#books-table").bootstrapTable("updateCellByUniqueId", {
-                            id: row.id,
-                            field: key,
-                            value: data[key]
-                        });
-                    }
-                });
-            }
-        },
-        // eslint-disable-next-line no-unused-vars
-        onColumnSwitch: function (field, checked) {
-            var visible = $("#books-table").bootstrapTable("getVisibleColumns");
-            var hidden  = $("#books-table").bootstrapTable("getHiddenColumns");
-            var st = "";
-            visible.forEach(function(item) {
-                st += "\"" + item.field + "\":\"" + "true" + "\",";
-            });
-            hidden.forEach(function(item) {
-                st += "\"" + item.field + "\":\"" + "false" + "\",";
-            });
-            st = st.slice(0, -1);
-            $.ajax({
-                method:"post",
-                contentType: "application/json; charset=utf-8",
-                dataType: "json",
-                url: window.location.pathname + "/../ajax/table_settings",
-                data: "{" + st + "}",
-            });
-        },
-    });
 
     $("#domain_allow_submit").click(function(event) {
         event.preventDefault();
@@ -1376,78 +1390,3 @@ function shorten_html(value, response) {
     }
 }
 
-    $("#add_to_shelf_btn").click(function(event) {
-        if ($(this).hasClass("disabled")) {
-            event.stopPropagation();
-        } else {
-            // Clear previous selections in dropdown and any error messages
-            $('#shelf_selection_dropdown').val('');
-            $('#addToShelfModal .modal-body .alert-danger').remove();
-            $('#addToShelfModal').modal("show");
-        }
-    });
-
-    $("#confirm_add_to_shelf_btn").click(function() {
-        var selectedShelfId = $("#shelf_selection_dropdown").val();
-        var bookIds = selections; // 'selections' is already maintained globally
-
-        // Clear previous error messages
-        $('#addToShelfModal .modal-body .alert-danger').remove();
-
-        if (!selectedShelfId) {
-            $('#shelf_selection_dropdown').after('<div class="alert alert-danger" style="margin-top:10px;">Please select a shelf.</div>');
-            return;
-        }
-        if (bookIds.length === 0) {
-            $('#shelf_selection_dropdown').after('<div class="alert alert-danger" style="margin-top:10px;">No books selected.</div>');
-            return;
-        }
-
-        var csrfToken = $('input[name="csrf_token"]').val();
-
-        $.ajax({
-            method: "POST",
-            url: getPath() + "/shelf/add_selected_to_shelf",
-            contentType: "application/json; charset=utf-8",
-            dataType: "json",
-            data: JSON.stringify({
-                "shelf_id": parseInt(selectedShelfId),
-                "book_ids": bookIds
-            }),
-            headers: {
-                'X-CSRFToken': csrfToken
-            },
-            success: function(response) {
-                $('#addToShelfModal').modal("hide");
-                var messages = [];
-                if (response.status === 'success' || (response.status === 'partial_success' && response.added_count > 0)) {
-                    messages.push({type: "success", message: response.message || `Successfully added ${response.added_count} books.`});
-                }
-                if (response.errors && response.errors.length > 0) {
-                    messages.push({type: "warning", message: "Some books could not be added: " + response.errors.join(", ")});
-                }
-                if (messages.length >0) {
-                    handleListServerResponse(messages);
-                }
-                $("#books-table").bootstrapTable("uncheckAll");
-            },
-            error: function(xhr, status, error) {
-                $('#addToShelfModal .modal-body .alert-danger').remove(); // Remove old errors just in case
-                var errorMsg = "Error adding books to shelf.";
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMsg = xhr.responseJSON.message;
-                } else if (xhr.responseJSON && xhr.responseJSON.errors && xhr.responseJSON.errors.length > 0) {
-                    errorMsg = xhr.responseJSON.errors.join("<br>");
-                } else if (xhr.responseText) {
-                    try {
-                        var errResponse = JSON.parse(xhr.responseText);
-                        errorMsg = errResponse.message || errResponse.error || errorMsg;
-                    } catch (e) {
-                        // xhr.responseText might not be JSON
-                        errorMsg = xhr.responseText.substring(0,200); // Show a snippet
-                    }
-                }
-                $('#shelf_selection_dropdown').after('<div class="alert alert-danger" style="margin-top:10px;">' + errorMsg + '</div>');
-            }
-        });
-    });

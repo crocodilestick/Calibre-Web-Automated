@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends parent_template|default("layout.html") %}
 {% block body %}
 <div class="discover">
   <h1>{{title}}</h1>

@@ -2635,6 +2635,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
     # Auto-send and metadata fetch settings
     content.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
     content.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
+    content.auto_load_more = to_save.get("auto_load_more") == "on"
 
     # OPDS root order
     opds_order_raw = to_save.get("opds_root_order", "").strip()
@@ -2789,6 +2790,10 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
             content.allow_additional_ereader_emails = to_save.get("allow_additional_ereader_emails") == "on"
         else:
             content.allow_additional_ereader_emails = False
+        if "auto_load_more" in to_save:
+            content.auto_load_more = to_save.get("auto_load_more") == "on"
+        else:
+            content.auto_load_more = False
         if to_save.get("kindle_mail") != content.kindle_mail:
             content.kindle_mail = valid_email(to_save["kindle_mail"]) if to_save["kindle_mail"] else ""
         if to_save.get("kindle_mail_subject") is not None:

@@ -6,8 +6,9 @@
 
 import json
 from datetime import datetime
+from urllib.parse import quote_plus
 
-from flask import Blueprint, request, redirect, url_for, flash
+from flask import Blueprint, request, redirect, flash
 from flask import session as flask_session
 from .cw_login import current_user
 from flask_babel import format_date
@@ -45,7 +46,10 @@ def simple_search():
                 )
             except Exception as e:
                 log.debug(f"Failed to log search activity: {e}")
-        return redirect(url_for('web.books_list', data="search", sort_param='stored', query=term.strip()))
+        # Hardcoded path: url_for() collapses sort_param='stored' into the
+        # books_list catch-all default and yields '/search', which re-enters
+        # this handler (redirect loop).
+        return redirect('/search/stored/?query=' + quote_plus(term.strip()))
     else:
         return render_title_template('search.html',
                                      searchterm="",
@@ -63,7 +67,7 @@ def advanced_search():
     for param in params:
         values[param] = list(request.form.getlist(param))
     flask_session['query'] = json.dumps(values)
-    return redirect(url_for('web.books_list', data="advsearch", sort_param='stored', query=""))
+    return redirect('/advsearch/stored/')
 
 
 @search.route("/advsearch", methods=['GET'])
@@ -353,7 +357,11 @@ def render_adv_search_results(term, offset=None, order=None, limit=None):
             log.debug_or_exception(ex)
             flash(_("Error on search for custom columns, please restart Calibre-Web"), category="error")
 
-    q = q.order_by(*sort)
+    # Collapse duplicate rows produced by the series/shelf outerjoins (a book in
+    # multiple series or on multiple shelves yields one row per link). Without this,
+    # the SQL LIMIT below counts duplicate rows, so a full page of 60 rows collapses
+    # to fewer distinct books after the ORM dedupes by primary key.
+    q = q.group_by(db.Books.id).order_by(*sort)
     flask_session['query'] = json.dumps(term)
 
     # Perform a count query for pagination, which is much faster than fetching all results.
@@ -437,7 +445,7 @@ def render_search_results(term, offset=None, order=None, limit=None):
                                  adv_searchterm=term,
                                  entries=entries,
                                  result_count=result_count,
-                                 title=_("Search"),
+                                 title=(_("Search") + ": " + term) if term else _("Search"),
                                  page="search",
                                  order=order[1])
 

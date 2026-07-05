@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+{% block body %}{% endblock %}
+{% block js %}
+<script>
+window.__cwaInitialPath = {{ (request.path + ('?' + request.query_string.decode() if request.query_string else ''))|tojson }};
+</script>
+{% endblock %}

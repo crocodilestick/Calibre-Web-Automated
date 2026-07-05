@@ -1,5 +1,5 @@
 {% import 'image.html' as image %}
-{% extends "layout.html" %}
+{% extends parent_template|default("layout.html") %}
 {% block body %}
 <h1 class="{{page}}">{{_(title)}}</h1>
 

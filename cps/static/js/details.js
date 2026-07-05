@@ -22,18 +22,11 @@ function handleResponse (data) {
     $("#flash_danger").remove();
     $("#flash_success").remove();
     if (!jQuery.isEmptyObject(data)) {
-        if($("#bookDetailsModal").is(":visible")) {
-            data.forEach(function (item) {
-                $(".modal-header").after('<div id="flash_' + item.type +
-                    '" class="text-center alert alert-' + item.type + '">' + item.message + '</div>');
-            });
-        } else {
-            data.forEach(function (item) {
-                $(".navbar").after('<div class="row-fluid text-center">' +
-                    '<div id="flash_' + item.type + '" class="alert alert-' + item.type + '">' + item.message + '</div>' +
-                    '</div>');
-            });
-        }
+        data.forEach(function (item) {
+            $(".navbar").after('<div class="row-fluid text-center">' +
+                '<div id="flash_' + item.type + '" class="alert alert-' + item.type + '">' + item.message + '</div>' +
+                '</div>');
+        });
     }
 }
 $(".sendbtn-form").click(function() {
@@ -63,19 +56,11 @@ $("#have_read_cb").on("change", function() {
             $(".row-fluid.text-center").remove();
             if (!jQuery.isEmptyObject(data)) {
                 $("#have_read_cb").prop("checked", !$("#have_read_cb").prop("checked"));
-                if($("#bookDetailsModal").is(":visible")) {
-                    data.forEach(function (item) {
-                        $(".modal-header").after('<div id="flash_' + item.type +
-                            '" class="text-center alert alert-' + item.type + '">' + item.message + '</div>');
-                    });
-                } else
-                {
-                    data.forEach(function (item) {
-                        $(".navbar").after('<div class="row-fluid text-center" >' +
-                            '<div id="flash_' + item.type + '" class="alert alert-' + item.type + '">' + item.message + '</div>' +
-                            '</div>');
-                    });
-                }
+                data.forEach(function (item) {
+                    $(".navbar").after('<div class="row-fluid text-center" >' +
+                        '<div id="flash_' + item.type + '" class="alert alert-' + item.type + '">' + item.message + '</div>' +
+                        '</div>');
+                });
             }
         }
     });

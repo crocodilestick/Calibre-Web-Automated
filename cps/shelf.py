@@ -279,6 +279,12 @@ def delete_shelf(shelf_id):
     return redirect(url_for('web.index'))
 
 
+@shelf.route("/shelves")
+@login_required_if_no_ano
+def shelf_list():
+    return render_title_template('shelf_list.html', title=_("Shelves"), page="shelflist")
+
+
 @shelf.route("/simpleshelf/<int:shelf_id>")
 @login_required_if_no_ano
 def show_simpleshelf(shelf_id):

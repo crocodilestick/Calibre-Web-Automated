@@ -176,24 +176,8 @@ $(document).ready(function() {
     }
 });
 
-$(".session").click(function() {
-    window.sessionStorage.setItem("back", window.location.pathname);
-    window.sessionStorage.setItem("search", window.location.search);
-});
-
 $("#back").click(function() {
-   var loc = sessionStorage.getItem("back");
-   var param = sessionStorage.getItem("search");
-   if (!loc) {
-       loc = $(this).data("back");
-   }
-   sessionStorage.removeItem("back");
-   sessionStorage.removeItem("search");
-   if (param === null) {
-       param = "";
-   }
-   window.location.href = loc + param;
-
+    history.back();
 });
 
 function confirmDialog(id, dialogid, dataValue, yesFn, noFn) {
@@ -220,7 +204,7 @@ function confirmDialog(id, dialogid, dataValue, yesFn, noFn) {
     $confirm.modal('show');
 }
 
-$("#delete_confirm").click(function(event) {
+$(document).on("click", "#delete_confirm", function(event) {
     //get data-id attribute of the clicked element
     var deleteId = $(this).data("delete-id");
     var bookFormat = $(this).data("delete-format");
@@ -249,12 +233,7 @@ $("#delete_confirm").click(function(event) {
                 }
             });
         } else {
-            var loc = sessionStorage.getItem("back");
-            if (!loc) {
-                loc = $(this).data("back");
-            }
-            sessionStorage.removeItem("back");
-            postButton(event, getPath() + "/delete/" + deleteId, location=loc);
+            postButton(event, getPath() + "/delete/" + deleteId);
         }
     }
 });
@@ -295,10 +274,15 @@ $(function() {
         }
     });
 
-    function restartTimer() {
-        $("#spinner").addClass("hidden");
-        $("#RestartDialog").modal("hide");
+    function restartReset() {
+        $("#restart-spinner-container").hide();
+        $("#restart-status-text").hide().text("");
+        $("#restart-confirm-text").show();
+        $("#restart").show();
+        $("#restart-cancel").show().text("Cancel");
     }
+
+    $(document).on("hidden.bs.modal", "#RestartDialog", restartReset);
 
     function cleanUp() {
         clearInterval(updateTimerID);
@@ -382,42 +366,48 @@ $(function() {
         });
     }
 
-    let selectedLayoutMode;
+    window.cwaInit = window.cwaInit || {};
 
-    if ($("body").hasClass("blur")) {
-        selectedLayoutMode = "fitRowsCentered";
-    } else {
-        selectedLayoutMode = "fitRows";
-    }
-
-    $(".discover .row").filter(function() {
-        return $(this).find(".book").length > 0;
-    }).isotope({
-        // options
-        itemSelector : ".book",
-        layoutMode : selectedLayoutMode
-    });
-
-    // Only initialize Infinite Scroll if pagination is NOT present
-    if ($(".load-more").length && $(".next").length && $(".pagination").length === 0) {
-        var $loadMore = $(".load-more .row").infiniteScroll({
-            debug: false,
-            // selector for the paged navigation (it will be hidden)
-            path : ".next",
-            // selector for the NEXT link (to page 2)
-            append : ".load-more .book"
-            //animate      : true, # ToDo: Reenable function
-            //extraScrollPx: 300
+    window.cwaInit.isotope = function () {
+        var selectedLayoutMode = $("body").hasClass("blur") ? "fitRowsCentered" : "fitRows";
+        $(".discover .row").filter(function () {
+            return $(this).find(".book").length > 0;
+        }).each(function () {
+            var $row = $(this);
+            if ($row.data("isotope")) {
+                $row.isotope("reloadItems").isotope("layout");
+            } else {
+                $row.isotope({ itemSelector: ".book", layoutMode: selectedLayoutMode });
+            }
+            // Covers load after layout runs; without this the grid is laid out
+            // against collapsed image heights and only corrects on a later
+            // relayout (e.g. SPA nav). Relayout as each cover finishes loading.
+            if ($.fn.imagesLoaded) {
+                $row.imagesLoaded().progress(function () {
+                    $row.isotope("layout");
+                });
+            }
         });
-        $loadMore.on( "append.infiniteScroll", function( event, response, path, data ) {
+    };
+
+    window.cwaInit.infiniteScroll = function () {
+        // Only initialize Infinite Scroll if pagination is NOT present
+        if (!($(".load-more").length && $(".next").length && $(".pagination").length === 0)) return;
+        var $target = $(".load-more .row");
+        if (!$target.length || $target.data("infiniteScroll")) return;
+
+        var $loadMore = $target.infiniteScroll({
+            debug: false,
+            path: ".next",
+            append: ".load-more .book"
+        });
+        $loadMore.on("append.infiniteScroll", function (event, response, path, data) {
             $(".pagination").addClass("hidden").html(() => $(response).find(".pagination").html());
             if ($("body").hasClass("blur")) {
-                $(" a:not(.dropdown-toggle) ")
-                  .removeAttr("data-toggle");
+                $(" a:not(.dropdown-toggle) ").removeAttr("data-toggle");
             }
-            $(".load-more .row").isotope( "appended", $(data), null );
+            $(".load-more .row").isotope("appended", $(data), null);
 
-            // Disable infinite scroll if no .next link exists (last page)
             if (!$(response).find(".next").length) {
                 $loadMore.infiniteScroll('destroy');
             }
@@ -425,32 +415,194 @@ $(function() {
 
         // fix for infinite scroll on CaliBlur Theme (#981)
         if ($("body").hasClass("blur")) {
-            $(".col-sm-10").bind("scroll", function () {
-                if (
-                    $(this).scrollTop() + $(this).innerHeight() >=
-                    $(this)[0].scrollHeight
-                ) {
+            $(".col-sm-10").off("scroll.cwaInfinite").on("scroll.cwaInfinite", function () {
+                if ($(this).scrollTop() + $(this).innerHeight() >= $(this)[0].scrollHeight) {
                     $loadMore.infiniteScroll("loadNextPage");
                     window.history.replaceState({}, null, $loadMore.infiniteScroll("getAbsolutePath"));
                 }
             });
         }
+    };
+
+    // Load-more handler for the .load-more-tile at the end of a books
+    // grid. Triggered by click on the tile or by the tile scrolling into
+    // view (IntersectionObserver). Click is the fallback for keyboard
+    // nav / browsers without IntersectionObserver.
+    window.cwaInit.loadMore = function () {
+        // Hide the bottom pagination — the tile supersedes it.
+        if ($(".load-more-tile").length) {
+            $(".pagination").addClass("hidden");
+        }
+
+        // Direct (not delegated) binding so this runs before
+        // partial-nav.js's document-level click listener; preventDefault
+        // then stops partial-nav from SPA-navigating to the link.
+        $(".load-more-tile .load-more-link").each(function () {
+            var $link = $(this);
+            if ($link.data("cwaLoadMoreBound")) return;
+            $link.data("cwaLoadMoreBound", true);
+            $link.on("click", handleLoadMoreClick);
+        });
+
+        // Auto-fire when the tile enters viewport. Observer is
+        // disconnected after firing once; a fresh one gets attached
+        // to the replacement tile via the recursive cwaInit.loadMore
+        // call after the fetch lands. Gated by per-user opt-out
+        // (default on); click still works either way.
+        var autoLoadMore = document.body.getAttribute("data-auto-load-more") !== "false";
+        if (autoLoadMore && "IntersectionObserver" in window) {
+            $(".load-more-tile").each(function () {
+                var tileEl = this;
+                if (tileEl.__cwaLoadMoreObserver) return;
+                var observer = new IntersectionObserver(function (entries) {
+                    for (var i = 0; i < entries.length; i++) {
+                        if (!entries[i].isIntersecting) continue;
+                        observer.disconnect();
+                        tileEl.__cwaLoadMoreObserver = null;
+                        loadMoreFromTile($(tileEl));
+                        return;
+                    }
+                }, { rootMargin: "-50px" });
+                tileEl.__cwaLoadMoreObserver = observer;
+                observer.observe(tileEl);
+            });
+        }
+    };
+
+    function handleLoadMoreClick(e) {
+        e.preventDefault();
+        loadMoreFromTile($(this).closest(".load-more-tile"));
     }
 
-    $("#restart").click(function() {
+    function loadMoreFromTile($tile) {
+        if (!$tile.length || $tile.hasClass("is-loading")) return;
+        var url = $tile.find(".load-more-link").first().attr("href");
+        if (!url) return;
+
+        // Disconnect the observer if a click beat it so we don't double-fire.
+        var tileEl = $tile[0];
+        if (tileEl.__cwaLoadMoreObserver) {
+            tileEl.__cwaLoadMoreObserver.disconnect();
+            tileEl.__cwaLoadMoreObserver = null;
+        }
+
+        $tile.addClass("is-loading");
+
+        fetch(url, {
+            credentials: "same-origin",
+            headers: {
+                "X-CWA-Fragment": "1",
+                "X-Requested-With": "XMLHttpRequest",
+                "Accept": "text/html"
+            }
+        }).then(function (res) {
+            if (!res.ok) throw new Error("HTTP " + res.status);
+            return res.text();
+        }).then(function (html) {
+            var doc = new DOMParser().parseFromString(html, "text/html");
+            // New books from the next page, including a fresh load-more
+            // tile at the end if more pages remain.
+            var $newBooks = $(doc).find(".discover.load-more > .row > .book");
+            if (!$newBooks.length) {
+                $tile.remove();
+                return;
+            }
+
+            // Insert before the old tile (before() handles cross-doc
+            // adoption from the DOMParser doc), then remove the old.
+            var $row = $tile.parent();
+            var oldTileEl = $tile[0];
+            $tile.before($newBooks);
+            $tile.remove();
+
+            // Re-bind the click handler to the freshly-inserted tile.
+            window.cwaInit.loadMore();
+
+            // Splice the stale tile out of Isotope's items array
+            // manually: isotope("remove") is async and doesn't
+            // re-layout, leaving the slot blank; isotope("reloadItems")
+            // wipes visible items entirely. No imagesLoaded re-layout
+            // either — .book has CSS-fixed dimensions so layout is
+            // correct before covers load, and adding a new .progress
+            // listener over $row on each click stacks them.
+            var iso = $row.data("isotope");
+            if (iso) {
+                $row.isotope("appended", $newBooks);
+                for (var ii = 0; ii < iso.items.length; ii++) {
+                    if (iso.items[ii].element === oldTileEl) {
+                        iso.items.splice(ii, 1);
+                        break;
+                    }
+                }
+                $row.isotope("layout");
+            }
+        }).catch(function (err) {
+            console.error("[cwa-load-more] failed to load", url, err);
+        }).then(function () {
+            $tile.removeClass("is-loading");
+        });
+    }
+
+    window.cwaInit.isotope();
+    window.cwaInit.infiniteScroll();
+    window.cwaInit.loadMore();
+
+    $(document).on("click", "#restart", function() {
+        $("#restart").hide();
+        $("#restart-cancel").hide();
+        $("#restart-confirm-text").hide();
+        $("#restart-spinner-container").show();
+        $("#restart-status-text").show().text("Sending restart command…");
+
         $.ajax({
-            method:"post",
+            method: "post",
             contentType: "application/json; charset=utf-8",
             dataType: "json",
             url: getPath() + "/shutdown",
             data: JSON.stringify({"parameter":0}),
             success: function success() {
-                $("#spinner").show();
-                setTimeout(restartTimer, 3000);
+                $("#restart-status-text").text("Server is restarting…");
+                var phase = "down";
+                var elapsed = 0;
+                var maxElapsed = 60;
+
+                var pollInterval = setInterval(function() {
+                    elapsed++;
+                    if (elapsed > maxElapsed) {
+                        clearInterval(pollInterval);
+                        $("#restart-spinner-container").hide();
+                        $("#restart-status-text").text("Restart timed out. The server may still be coming back up.");
+                        $("#restart-cancel").show().text("Close");
+                        return;
+                    }
+                    $.ajax({
+                        url: getPath() + "/admin/alive",
+                        timeout: 1500,
+                        success: function(d, statusText, xhr) {
+                            if (phase === "up" && xhr.status < 400) {
+                                clearInterval(pollInterval);
+                                window.location.reload();
+                            }
+                        },
+                        error: function() {
+                            if (phase === "down") {
+                                phase = "up";
+                                $("#restart-status-text").text("Waiting for server to come back up…");
+                            }
+                        }
+                    });
+                }, 1000);
+            },
+            error: function() {
+                $("#restart-spinner-container").hide();
+                $("#restart-status-text").text("Failed to send restart command.");
+                $("#restart").show();
+                $("#restart-cancel").show();
+                $("#restart-confirm-text").show();
             }
         });
     });
-    $("#shutdown").click(function() {
+    $(document).on("click", "#shutdown", function() {
         $.ajax({
             method:"post",
             contentType: "application/json; charset=utf-8",
@@ -462,7 +614,7 @@ $(function() {
             }
         });
     });
-    $("#check_for_update").click(function() {
+    $(document).on("click", "#check_for_update", function() {
         var $this = $(this);
         var buttonText = $this.html();
         $this.html("...");
@@ -508,7 +660,7 @@ $(function() {
             }
         });
     });
-    $("#admin_refresh_cover_cache").click(function() {
+    $(document).on("click", "#admin_refresh_cover_cache", function() {
         confirmDialog("admin_refresh_cover_cache", "GeneralChangeModal", 0, function () {
             // Show loading state
             $("#admin_refresh_cover_cache").prop('disabled', true).text('Starting...');
@@ -659,7 +811,7 @@ $(function() {
         }, 600000);
     }
 
-    $("#restart_database").click(function() {
+    $(document).on("click", "#restart_database", function() {
         $("#DialogHeader").addClass("hidden");
         $("#DialogFinished").addClass("hidden");
         $("#DialogContent").html("");
@@ -677,7 +829,7 @@ $(function() {
             }
         });
     });
-    $("#metadata_backup").click(function() {
+    $(document).on("click", "#metadata_backup", function() {
         $("#DialogHeader").addClass("hidden");
         $("#DialogFinished").addClass("hidden");
         $("#DialogContent").html("");
@@ -694,7 +846,7 @@ $(function() {
             }
         });
     });
-    $("#hardcover_auto_fetch").click(function() {
+    $(document).on("click", "#hardcover_auto_fetch", function() {
         $("#DialogHeader").addClass("hidden");
         $("#DialogFinished").addClass("hidden");
         $("#DialogContent").html("");
@@ -720,7 +872,7 @@ $(function() {
             }
         });
     });
-    $("#perform_update").click(function() {
+    $(document).on("click", "#perform_update", function() {
         $("#DialogHeader").removeClass("hidden");
         $("#spinner2").show();
         $.ajax({
@@ -736,36 +888,18 @@ $(function() {
         });
     });
 
-    // Init all data control handlers to default
-    $("input[data-control]").trigger("change");
-    $("select[data-control]").trigger("change");
-    $("select[data-controlall]").trigger("change");
+    // Init all data control handlers to default (also re-runs on each SPA swap).
+    window.cwaInit.dataControls = function() {
+        $("input[data-control]").trigger("change");
+        $("select[data-control]").trigger("change");
+        $("select[data-controlall]").trigger("change");
+    };
+    window.cwaInit.dataControls();
 
-    $("#bookDetailsModal")
-        .on("show.bs.modal", function(e) {
-            $("#flash_danger").remove();
-            $("#flash_success").remove();
-            var $modalBody = $(this).find(".modal-body");
-
-            // Prevent static assets from loading multiple times
-            var useCache = function(options) {
-                options.async = true;
-                options.cache = true;
-            };
-            preFilters.add(useCache);
-
-            $.get(e.relatedTarget.href).done(function(content) {
-                $modalBody.html(content);
-                preFilters.remove(useCache);
-                $("#back").remove();
-            });
-        })
-        .on("hidden.bs.modal", function() {
-            $(this).find(".modal-body").html("...");
-        });
-
-    $("#modal_kobo_token")
-        .on("show.bs.modal", function(e) {
+    // Delegated binding so the handler still fires when #modal_kobo_token
+    // is injected into the DOM via an SPA fragment swap (user_edit.html).
+    $(document)
+        .on("show.bs.modal", "#modal_kobo_token", function(e) {
             $(e.relatedTarget).one('focus', function(e){$(this).blur();});
             var $modalBody = $(this).find(".modal-body");
 
@@ -781,13 +915,13 @@ $(function() {
                 preFilters.remove(useCache);
             });
         })
-        .on("hidden.bs.modal", function() {
+        .on("hidden.bs.modal", "#modal_kobo_token", function() {
             $(this).find(".modal-body").html("...");
             $("#config_delete_kobo_token").show();
             $("#kobo_full_sync").show();
         });
 
-    $("#config_delete_kobo_token").click(function() {
+    $(document).on("click", "#config_delete_kobo_token", function() {
         confirmDialog(
             $(this).attr('id'),
             "GeneralDeleteModal",
@@ -803,7 +937,7 @@ $(function() {
         );
     });
 
-    $("#toggle_order_shelf").click(function() {
+    $(document).on("click", "#toggle_order_shelf", function() {
         $("#toggle_order_shelf").toggleClass("dummy");
         $("#new").toggleClass("disabled");
         $("#old").toggleClass("disabled");
@@ -829,7 +963,7 @@ $(function() {
         });
     });
 
-    $("#btndeluser").click(function() {
+    $(document).on("click", "#btndeluser", function() {
         confirmDialog(
             $(this).attr('id'),
             "GeneralDeleteModal",
@@ -845,7 +979,7 @@ $(function() {
         );
     });
 
-    $("#kobo_full_sync").click(function() {
+    $(document).on("click", "#kobo_full_sync", function() {
         confirmDialog(
            "btnfullsync",
             "GeneralDeleteModal",
@@ -874,7 +1008,7 @@ $(function() {
         );
     });
 
-    $("#user_submit").click(function() {
+    $(document).on("click", "#user_submit", function() {
         this.closest("form").submit();
     });
 
@@ -888,17 +1022,17 @@ $(function() {
         }
     }
 
-    $('.collapse').on('shown.bs.collapse', function(){
+    $(document).on('shown.bs.collapse', '.collapse', function(){
         $(this).parent().find(".glyphicon-plus").removeClass("glyphicon-plus").addClass("glyphicon-minus");
-    }).on('hidden.bs.collapse', function(){
-    $(this).parent().find(".glyphicon-minus").removeClass("glyphicon-minus").addClass("glyphicon-plus");
+    }).on('hidden.bs.collapse', '.collapse', function(){
+        $(this).parent().find(".glyphicon-minus").removeClass("glyphicon-minus").addClass("glyphicon-plus");
     });
 
     function changeDbSettings() {
         $("#db_submit").closest('form').submit();
     }
 
-    $("#db_submit").click(function(e) {
+    $(document).on("click", "#db_submit", function(e) {
         e.preventDefault();
         e.stopPropagation();
         this.blur();
@@ -927,7 +1061,7 @@ $(function() {
         });
     });
 
-    $("#config_submit").click(function(e) {
+    $(document).on("click", "#config_submit", function(e) {
         e.preventDefault();
         e.stopPropagation();
         this.blur();
@@ -960,19 +1094,21 @@ $(function() {
         });
     });
 
-    $("#delete_shelf").click(function(event) {
+    // Delegate so the binding survives SPA fragment swaps — the button
+    // doesn't exist when main.js's DOMContentLoaded handler first runs.
+    $(document).on("click", "#delete_shelf", function(event) {
+        var btn = this;
         confirmDialog(
-            $(this).attr('id'),
+            btn.id,
             "GeneralDeleteModal",
-            $(this).data('value'),
+            $(btn).data('value'),
             function(value){
-                postButton(event, $("#delete_shelf").data("action"));
+                postButton(event, $(btn).data("action"));
             }
         );
-
     });
 
-    $("#fileModal").on("show.bs.modal", function(e) {
+    $(document).on("show.bs.modal", "#fileModal", function(e) {
         var target = $(e.relatedTarget);
         var path = $("#" + target.data("link"))[0].value;
         var folder = target.data("folderonly");
@@ -985,7 +1121,7 @@ $(function() {
         fillFileTable(path,"dir", folder, filter);
     });
 
-    $("#file_confirm").click(function() {
+    $(document).on("click", "#file_confirm", function() {
         $("#" + $(this).data("link"))[0].value = $("#element_selected").text()
     });
 
@@ -1011,7 +1147,7 @@ $(function() {
         }).isotope("layout");
     });
 
-    $("#import_ldap_users").click(function() {
+    $(document).on("click", "#import_ldap_users", function() {
         $("#DialogHeader").addClass("hidden");
         $("#DialogFinished").addClass("hidden");
         $("#DialogContent").html("");
@@ -1029,7 +1165,7 @@ $(function() {
         });
     });
 
-    $(".author-expand").click(function() {
+    $(document).on("click", ".author-expand", function() {
         $(this).parent().find("a.author-name").slice($(this).data("authors-max")).toggle();
         $(this).parent().find("span.author-hidden-divider").toggle();
         $(this).html() === $(this).data("collapse-caption") ? $(this).html("(...)") : $(this).html($(this).data("collapse-caption"));
@@ -1038,7 +1174,7 @@ $(function() {
         }).isotope("layout");
     });
 
-    $(".update-view").click(function(e) {
+    $(document).on("click", ".update-view", function(e) {
         var view = $(this).data("view");
         e.preventDefault();
         e.stopPropagation();

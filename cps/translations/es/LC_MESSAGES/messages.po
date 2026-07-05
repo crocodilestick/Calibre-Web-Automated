@@ -2262,8 +2262,8 @@ msgstr "Error al enviar el correo electrónico"
 
 #: cps/web.py:965
 #, python-format
-msgid "Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s"
-msgstr "Estantería mágica&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s"
+msgid "Magic Shelf — %(icon)s %(name)s"
+msgstr "Estantería mágica — %(icon)s %(name)s"
 
 #: cps/web.py:1038
 msgid "No rules provided"

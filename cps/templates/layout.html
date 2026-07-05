@@ -371,6 +371,16 @@
         </div>
       </div>
     </div>
+    <div class="modal fade" id="previewOverlayModal" tabindex="-1" role="dialog" aria-labelledby="previewOverlayModalLabel">
+      <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content" style="background: var(--cwa-surface-1);">
+          <div class="modal-header" style="border-bottom: none; position: absolute; right: 0; z-index: 10; padding: 0;">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="font-size: 30px; opacity: 0.8; margin: 15px 20px; color: var(--cwa-text-primary);"><span aria-hidden="true">&times;</span></button>
+          </div>
+          <div class="modal-body" style="padding: 0;">...</div>
+        </div>
+      </div>
+    </div>
     {% block modal %}{% endblock %}
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="{{ url_for('static', filename='js/libs/jquery.min.js') }}"></script>

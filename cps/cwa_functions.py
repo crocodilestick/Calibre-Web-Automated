@@ -538,17 +538,17 @@ def cwa_internal_reconnect_db():
 
     Security: Only accepts localhost callers.
     """
-    try:
-        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
-        if remote not in (None, '127.0.0.1', '::1'):
-            abort(403)
+    remote = request.headers.get('X-Forwarded-For', request.remote_addr)
+    if remote not in (None, '127.0.0.1', '::1'):
+        abort(403)
 
+    try:
         task = TaskReconnectDatabase()
         WorkerThread.add(None, task, hidden=True)
         return jsonify({"status": "enqueued"}), 200
     except Exception as e:
-        log.error(f"Internal reconnect-db failed: {e}")
-        return jsonify({"error": str(e)}), 400
+        log.exception("Internal reconnect-db failed")
+        return jsonify({"error": str(e)}), 500
 
 @csrf.exempt
 @cwa_stats.route('/cwa-scheduled/cancel', methods=["POST"])

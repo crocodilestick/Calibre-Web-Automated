@@ -115,7 +115,17 @@ body.cwa-shelf-view-gallery {
 
 /* Navbar as translucent glass over the page */
 body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top {
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.015) 100%), rgba(8, 8, 12, 0.08) !important;
+    background-color: rgba(8, 8, 12, 0.08) !important;
+    background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.015) 100%),
+        radial-gradient(circle at 10% 20%, rgba(20, 32, 65, 0.45) 0%, transparent 60%),
+        radial-gradient(circle at 90% 80%, rgba(55, 18, 38, 0.35) 0%, transparent 70%),
+        linear-gradient(180deg, rgba(12, 10, 12, 0.7) 0%, rgba(12, 10, 12, 0.92) 100%),
+        url('../img/alexandria/wood_dark.jpg') !important;
+    background-size: auto, cover, cover, cover, cover !important;
+    background-position: center, center, center, center, center !important;
+    background-attachment: scroll, fixed, fixed, fixed, fixed !important;
+    background-repeat: no-repeat !important;
     -webkit-backdrop-filter: blur(30px) saturate(1.55);
     backdrop-filter: blur(30px) saturate(1.55);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -149,7 +159,17 @@ body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top div.navb
 
 /* Left sidebar as translucent glass panel */
 body.cwa-shelf-view-gallery .col-sm-2 {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.085) 0%, rgba(255, 255, 255, 0.015) 100%), rgba(8, 8, 12, 0.08) !important;
+    background-color: rgba(8, 8, 12, 0.08) !important;
+    background-image:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.018) 100%),
+        radial-gradient(circle at 10% 20%, rgba(20, 32, 65, 0.45) 0%, transparent 60%),
+        radial-gradient(circle at 90% 80%, rgba(55, 18, 38, 0.35) 0%, transparent 70%),
+        linear-gradient(180deg, rgba(12, 10, 12, 0.7) 0%, rgba(12, 10, 12, 0.92) 100%),
+        url('../img/alexandria/wood_dark.jpg') !important;
+    background-size: auto, cover, cover, cover, cover !important;
+    background-position: center, center, center, center, center !important;
+    background-attachment: scroll, fixed, fixed, fixed, fixed !important;
+    background-repeat: no-repeat !important;
     -webkit-backdrop-filter: blur(30px) saturate(1.55);
     backdrop-filter: blur(30px) saturate(1.55);
     border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
@@ -160,6 +180,8 @@ body.cwa-shelf-view-gallery .col-sm-2 {
 body.cwa-shelf-view-gallery .col-sm-10,
 body.cwa-shelf-view-gallery > .container-fluid,
 body.cwa-shelf-view-gallery > .container-fluid > .row-fluid,
+body.cwa-shelf-view-gallery .navigation,
+body.cwa-shelf-view-gallery #scnd-nav,
 body.cwa-shelf-view-gallery .container-fluid .discover {
     background: transparent !important;
     background-image: none !important;
@@ -750,7 +772,7 @@ body.cwa-shelf-page .shelf-kobo-status .glyphicon {
     align-items: center;
     justify-content: center;
     line-height: 1 !important;
-    transform: translateY(3px);
+    transform: translateY(2px);
 }
 
 /* Alexandria Icon & Text Alignment */

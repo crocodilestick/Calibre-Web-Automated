@@ -31,7 +31,8 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 - [x] **Feinabstimmung des Galerie-Modus:**
   - Subtile Farbtiefe im dunklen Theme durch Überlagerung der Holztextur mit kaum sichtbaren radialen Verläufen in Dunkelblau (oben links) und gedämpftem Pink/Magenta (unten rechts).
   - Deaktivierung der lauten orangefarbenen Bootstrap-Töne; Ersetzung durch Graphitgrau und warmes Messing.
-  - Plastischer Glassmorphismus: Sidebar und Navbar im Galerie-Modus erhielten helle Linear-Gradient-Overlays (Lichtkanten), eine sensible Hintergrund-Deckkraft (0.3), feine helle Innenkanten (Highlight) und dunkle Schattenkanten (inset box-shadows) sowie einen weichen Backdrop-Blur (25px) und Schlagschatten nach rechts.
+  - Plastischer Glassmorphismus: Sidebar und Navbar im Galerie-Modus erhielten helle Linear-Gradient-Overlays (Lichtkanten), eine sensible Hintergrund-Deckkraft, feine helle Innenkanten (Highlight) und dunkle Schattenkanten (inset box-shadows) sowie einen weichen Backdrop-Blur und Schlagschatten nach rechts.
+  - Nach visueller Prüfung verwenden Navbar und Sidebar zusätzlich dieselbe fixierte Holz-/Verlaufsebene wie der Body, damit der Holzgrund trotz caliBlur-/Bootstrap-Zwischenflächen sichtbar durch die Glasoberflächen wirkt.
   - Der aktive Navigationseintrag in der Sidebar wurde optisch beruhigt (thinner 2px border und transluzentes Glas-Hintergrunddesign mit 0.05 opacity und inset box-shadow).
 - [x] **Präzise Icon- und Text-Ausrichtung:**
   - Systematisches Flexbox-Alignment (`display: inline-flex`/`flex`, `align-items: center` und `gap` Definitionen) für alle Sidebar-Navigationslinks, Toolbar-Buttons, View-Mode-Toggles und Dropdowns.
@@ -42,7 +43,7 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 - [x] **UX & Layout-Spacing:**
   - Deutliche Vergrößerung des Desktop-Gutters (Abstand) zwischen linker Sidebar und Hauptinhalt für mehr "Atemraum", voll responsive.
   - Korrektur des Bootstrap-Grid-Overflows: Die symmetrischen Desktop-Abstände liegen nun auf `#shelf-container` statt auf `.col-sm-10`; die Spaltenbreite bleibt stabil, wodurch kein horizontaler Versatz nach rechts entsteht.
-  - Feinjustierung nach visueller Abnahme: Desktop-Gutter wieder auf einen Mittelweg reduziert, der Headerbereich nach oben verdichtet und die Status-Icons optisch tiefer an die Textmitte gesetzt.
+  - Feinjustierung nach visueller Abnahme: Desktop-Gutter wieder auf einen Mittelweg reduziert, der Headerbereich nach oben verdichtet und die Status-Icons optisch an die Textmitte gesetzt.
   - Kobo-Status-Bereich mit eigenen semantischen Statusklassen (`cwa-status-enabled`, `cwa-status-disabled`) ausgestattet. `Kobo Collection: Disabled` und inaktive Zustände wirken nun rot und disabled (Galerie) beziehungsweise dezent verblasst (monochromer Reader).
 - [x] **caliBlur-Zwischenflächen neutralisiert:**
   - Für `.cwa-shelf-view-gallery` werden Navbar-/Sidebar-Untercontainer sowie `.col-sm-10`/`.discover`-Hintergründe und Pseudoelemente gezielt transparent gesetzt, damit Holztextur und Verlauf wirklich durch die Glasflächen scheinen.

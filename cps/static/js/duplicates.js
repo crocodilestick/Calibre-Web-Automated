@@ -231,6 +231,22 @@ $(document).ready(function() {
             },
             success: function(response) {
                 if (response.success) {
+                    // Optimistically decrement the notifier's "last notified
+                    // count" — one merge resolves one duplicate group. When the
+                    // counter hits 0, also flip the "shown" flag so the next
+                    // time duplicates appear the modal pops again. This avoids
+                    // forcing the server to re-run a scan just to learn the
+                    // post-merge count.
+                    var lastCountRaw = sessionStorage.getItem('cwa_duplicates_last_count');
+                    var lastCount = parseInt(lastCountRaw, 10);
+                    if (Number.isFinite(lastCount)) {
+                        var newCount = Math.max(0, lastCount - 1);
+                        sessionStorage.setItem('cwa_duplicates_last_count', String(newCount));
+                        if (newCount === 0) {
+                            sessionStorage.setItem('cwa_duplicates_notification_shown', 'false');
+                        }
+                    }
+
                     // Close the merge confirmation modal
                     $('#merge_selected_modal').modal('hide');
 
@@ -358,6 +374,12 @@ $(document).ready(function() {
                     // Update badge count in real-time
                     if (window.CWADuplicates && window.CWADuplicates.updateBadge) {
                         window.CWADuplicates.updateBadge(response.count);
+                    }
+
+                    // If that was the last duplicate, clear the notifier
+                    // suppression so future re-appearances re-pop the modal.
+                    if (response.count === 0 && window.CWADuplicates && window.CWADuplicates.resetNotificationSuppression) {
+                        window.CWADuplicates.resetNotificationSuppression();
                     }
                     
                     // Show success message (optional)
@@ -649,4 +671,14 @@ $(document).ready(function() {
     // Initialize
     updateSelectionCount();
     updateBookItemVisuals();
-}); 
+
+    // If the duplicates page rendered with no duplicate groups, the user has
+    // resolved them all (via delete/merge/auto-resolve, each of which reloads
+    // back onto this page). Clear notifier suppression so a future scan that
+    // finds new duplicates re-pops the modal.
+    if ($('.duplicate-group').length === 0 &&
+        window.CWADuplicates &&
+        window.CWADuplicates.resetNotificationSuppression) {
+        window.CWADuplicates.resetNotificationSuppression();
+    }
+});

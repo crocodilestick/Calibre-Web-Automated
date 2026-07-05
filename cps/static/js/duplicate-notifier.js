@@ -41,6 +41,17 @@
     }
     
     /**
+     * Clear the per-session suppression so the next time duplicates appear the
+     * modal pops again. Call this after the user has resolved duplicates on the
+     * duplicates page (delete / merge / dismiss / auto-resolve).
+     */
+    function resetNotificationSuppression() {
+        sessionStorage.removeItem(STORAGE_KEY);
+        sessionStorage.removeItem(LAST_COUNT_KEY);
+        lastPreviewSignature = '';
+    }
+
+    /**
      * Update the duplicate count badge in sidebar
      */
     function updateBadge(count) {
@@ -175,26 +186,25 @@
 
         updateBadge(data.count);
 
+        // Server is the source of truth: if it reports zero duplicates, the
+        // user has none outstanding. Clear any lingering session suppression
+        // so a future re-appearance of duplicates re-pops the modal, even if
+        // our optimistic client-side decrement drifted and never reached 0.
+        if (data.count === 0) {
+            resetNotificationSuppression();
+        }
+
         if (data.count > 0 && data.enabled) {
-            stopStatusPolling();
             showNotificationModal(data);
-            if (isModalActive()) {
-                return;
-            }
         }
 
-        if ((data.needs_scan || data.stale) && !isModalActive()) {
+        // Poll only while the server reports a scan is actually running, so we
+        // pick up the result the moment it finishes. The 60-attempt cap inside
+        // startStatusPolling() is a safety net for hung scans.
+        if (data.scan_in_progress) {
             startStatusPolling();
-            return;
-        }
-
-        if (data.count > 0) {
+        } else {
             stopStatusPolling();
-            return;
-        }
-
-        if (data.enabled) {
-            startStatusPolling();
         }
     }
     
@@ -278,8 +288,11 @@
             });
         }
 
+        // One fetch on page load. handleStatusResponse starts polling only if
+        // the server reports a scan is currently in progress; otherwise nothing
+        // further is requested until the page is reloaded or the tab regains
+        // focus (visibilitychange listener below).
         fetchDuplicateStatus().then(handleStatusResponse);
-        startStatusPolling();
 
         document.addEventListener('visibilitychange', function() {
             if (!document.hidden) {
@@ -292,7 +305,8 @@
     window.CWADuplicates = {
         updateBadge: updateBadge,
         fetchStatus: fetchDuplicateStatus,
-        hideModal: hideNotificationModal
+        hideModal: hideNotificationModal,
+        resetNotificationSuppression: resetNotificationSuppression
     };
     
     // Initialize when DOM is ready

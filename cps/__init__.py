@@ -80,7 +80,8 @@ app.config.update(
     REMEMBER_COOKIE_SAMESITE='Strict',
     WTF_CSRF_SSL_STRICT=False,
     SESSION_COOKIE_NAME=os.environ.get('COOKIE_PREFIX', "") + "session",
-    REMEMBER_COOKIE_NAME=os.environ.get('COOKIE_PREFIX', "") + "remember_token"
+    REMEMBER_COOKIE_NAME=os.environ.get('COOKIE_PREFIX', "") + "remember_token",
+    TEMPLATES_AUTO_RELOAD=os.environ.get('DEVELOP_ON', 'False').lower() == 'true',
 )
 
 # Fix for running behind reverse proxy (e.g. nginx, apache, caddy, ...)
@@ -266,7 +267,10 @@ def create_app():
                 # Explicitly set to None to indicate we checked but found nothing
                 g.flask_httpauth_user = None
 
-        if current_user.is_authenticated:
+        _is_not_magic_shelf_dependant = (
+            request.path.startswith(('/duplicates/', '/application/', '/static/', '/cover/'))
+        )
+        if current_user.is_authenticated and not _is_not_magic_shelf_dependant:
             try:
                 # Verify required tables exist before querying
                 from sqlalchemy import inspect
@@ -370,11 +374,18 @@ def create_app():
                 g.magic_shelves_access = []
         else:
             g.magic_shelves_access = []
-        try:
-            calibre_db.ensure_session()
-        except Exception:
-            # Failsafe: let route-level code handle specific DB errors
-            pass
+
+        _is_not_DB_dependant = (
+            request.path.startswith(('/application/', '/static/'))
+        )
+        if current_user.is_authenticated and not _is_not_DB_dependant:
+            try:
+                calibre_db.ensure_session()
+                log.debug(f"DB session check passed for request.path '{request.path}'")
+            except Exception:
+                log.debug("error in DB session check")
+                # Failsafe: let route-level code handle specific DB errors
+                pass
 
     @app.teardown_appcontext
     def shutdown_session(exception=None):

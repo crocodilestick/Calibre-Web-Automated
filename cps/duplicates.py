@@ -17,7 +17,7 @@ import time
 from shutil import copyfile
 
 from . import db, calibre_db, logger, ub, csrf, config, helper
-from .services.worker import WorkerThread, STAT_FINISH_SUCCESS, STAT_FAIL, STAT_ENDED, STAT_CANCELLED
+from .services.worker import WorkerThread, STAT_FINISH_SUCCESS, STAT_FAIL, STAT_ENDED, STAT_CANCELLED, STAT_WAITING, STAT_STARTED
 from .admin import admin_required  
 from .usermanagement import login_required_if_no_ano
 from .render_template import render_title_template
@@ -1004,6 +1004,20 @@ def get_common_filters(user_id=None, allow_show_archived=False, return_all_langu
         return true()
 
 
+def _duplicate_scan_in_progress():
+    """Return True if a TaskDuplicateScan is currently queued or running."""
+    try:
+        from cps.tasks.duplicate_scan import TaskDuplicateScan
+        worker = WorkerThread.get_instance()
+        for entry in worker.tasks:
+            queued_task = entry[3]
+            if isinstance(queued_task, TaskDuplicateScan) and queued_task.stat in (STAT_WAITING, STAT_STARTED):
+                return True
+        return False
+    except Exception:
+        return False
+
+
 @duplicates.route("/duplicates/status")
 @login_required_if_no_ano
 @admin_or_edit_required
@@ -1063,9 +1077,10 @@ def get_duplicate_status():
                 'preview': preview,
                 'cached': True,
                 'stale': bool(cache_data.get('scan_pending')),
-                'needs_scan': bool(cache_data.get('scan_pending'))
+                'needs_scan': bool(cache_data.get('scan_pending')),
+                'scan_in_progress': _duplicate_scan_in_progress()
             })
-        
+
         # Cache is missing - DO NOT trigger scan here!
         # This endpoint is called on every page load via duplicate-notifier.js
         # Scans should ONLY be triggered by:
@@ -1073,14 +1088,15 @@ def get_duplicate_status():
         # 2. After ingest operations (via cache invalidation + manual trigger)
         # 3. Scheduled background scans (Phase 2 - not yet implemented)
         log.debug("[cwa-duplicates] Cache invalid/pending in status check, returning empty (no auto-scan)")
-        
+
         return jsonify({
             'success': True,
             'enabled': bool(notifications_enabled),
             'count': 0,
             'preview': [],
             'cached': False,
-            'needs_scan': True  # Frontend can optionally show "scan needed" message
+            'needs_scan': True,  # Frontend can optionally show "scan needed" message
+            'scan_in_progress': _duplicate_scan_in_progress()
         })
     except Exception as e:
         log.error("[cwa-duplicates] Error getting duplicate status: %s", str(e))

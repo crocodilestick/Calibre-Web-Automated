@@ -679,12 +679,18 @@ body.cwa-shelf-view-reader .dropdown-menu li a.disabled {
 /* ----------------- D) ALEXANDRIA LAYOUT & SEMANTICS ----------------- */
 @media (min-width: 768px) {
     body.cwa-shelf-page .col-sm-10 {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    body.cwa-shelf-page #shelf-container {
         padding-left: 45px !important;
         padding-right: 45px !important;
+        box-sizing: border-box;
+        max-width: 100%;
     }
 }
 @media (min-width: 1200px) {
-    body.cwa-shelf-page .col-sm-10 {
+    body.cwa-shelf-page #shelf-container {
         padding-left: 60px !important;
         padding-right: 60px !important;
     }

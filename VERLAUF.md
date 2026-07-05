@@ -40,7 +40,8 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 - [x] **Unified Reader-Modus:**
   - Die eInk-Papiertextur umspannt das gesamte Layout flach und barrierefrei ohne störende Kontrastbrüche.
 - [x] **UX & Layout-Spacing:**
-  - Deutliche Vergrößerung des Desktop-Gutters (Abstand) zwischen linker Sidebar und Hauptinhalt für mehr "Atemraum" (padding-left 80px auf großen Bildschirmen), voll responsive.
+  - Deutliche Vergrößerung des Desktop-Gutters (Abstand) zwischen linker Sidebar und Hauptinhalt für mehr "Atemraum", voll responsive.
+  - Korrektur des Bootstrap-Grid-Overflows: Die symmetrischen Desktop-Abstände liegen nun auf `#shelf-container` statt auf `.col-sm-10`; die Spaltenbreite bleibt stabil, wodurch kein horizontaler Versatz nach rechts entsteht.
   - Kobo-Status-Bereich mit eigenen semantischen Statusklassen (`cwa-status-enabled`, `cwa-status-disabled`) ausgestattet. `Kobo Collection: Hidden` und inaktive Zustände wirken nun rot und disabled (Galerie) beziehungsweise dezent verblasst (monochromer Reader).
 - [x] **Titel-Bereinigung:**
   - Entfernung des Präfixes `Shelf:` und der Anführungszeichen bei normalen Regalen (nur noch der Regalname wird gerendert). Magic Shelves bleiben sauber getrennt.

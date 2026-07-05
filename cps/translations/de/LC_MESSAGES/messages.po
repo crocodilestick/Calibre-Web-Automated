@@ -7902,3 +7902,219 @@ msgstr "Blockiert / Nicht freigegeben"
 
 msgid "Keine relevanten Bücher im Arbeitsbereich vorhanden."
 msgstr "Keine relevanten Bücher im Arbeitsbereich vorhanden."
+
+msgid "My Account"
+msgstr "Mein Konto"
+
+msgid "Library"
+msgstr "Bibliothek"
+
+msgid "Kobo"
+msgstr "Kobo"
+
+msgid "Automation"
+msgstr "Automatisierung"
+
+msgid "Maintenance"
+msgstr "Wartung"
+
+msgid "Experts"
+msgstr "Experten"
+
+msgid "Restarting Server..."
+msgstr "Server wird neu gestartet..."
+
+msgid "Please wait while the application reboots."
+msgstr "Bitte warten, während die Anwendung neu startet."
+
+msgid "Saving..."
+msgstr "Wird gespeichert..."
+
+msgid "HTTP error! status: "
+msgstr "HTTP-Fehler! Status: "
+
+msgid "Settings saved and server restarted successfully."
+msgstr "Einstellungen erfolgreich gespeichert und Server neu gestartet."
+
+msgid "An error occurred while saving."
+msgstr "Beim Speichern ist ein Fehler aufgetreten."
+
+msgid "Settings saved successfully."
+msgstr "Einstellungen erfolgreich gespeichert."
+
+msgid "Error saving settings: "
+msgstr "Fehler beim Speichern der Einstellungen: "
+
+msgid "Users"
+msgstr "Benutzer"
+
+msgid "Database Setup"
+msgstr "Datenbank-Setup"
+
+msgid "System Status"
+msgstr "Systemstatus"
+
+msgid "Diagnostics & Tools"
+msgstr "Diagnose & Tools"
+
+msgid "Execute maintenance tasks and access server tools."
+msgstr "Wartungsaufgaben ausführen und auf Server-Tools zugreifen."
+
+msgid "View System Log"
+msgstr "Systemprotokoll anzeigen"
+
+msgid "Logging Settings"
+msgstr "Protokoll-Einstellungen"
+
+msgid "Server Log Location"
+msgstr "Ort des Server-Protokolls"
+
+msgid "Log HTTP requests to a separate access log file."
+msgstr "HTTP-Anfragen in einer separaten Logdatei protokollieren."
+
+msgid "Access Log Location"
+msgstr "Ort des Zugriffsprotokolls"
+
+msgid "Save Logging Settings"
+msgstr "Protokoll-Einstellungen speichern"
+
+msgid "Server & Network Settings"
+msgstr "Server- & Netzwerkeinstellungen"
+
+msgid "Enables secure cookie settings (Secure, SameSite=Lax). Enable this ONLY if you are accessing the server via HTTPS."
+msgstr "Aktiviert sichere Cookie-Einstellungen. Aktivieren Sie dies NUR, wenn Sie über HTTPS auf den Server zugreifen."
+
+msgid "Server External Port"
+msgstr "Externer Port des Servers"
+
+msgid "SSL Certfile Path"
+msgstr "Pfad zur SSL-Zertifikatsdatei"
+
+msgid "SSL Keyfile Path"
+msgstr "Pfad zur SSL-Schlüsseldatei"
+
+msgid "Trusted Reverse Proxies"
+msgstr "Vertrauenswürdige Reverse-Proxies"
+
+msgid "Password Policy & Session Security"
+msgstr "Passwortrichtlinie & Sitzungssicherheit"
+
+msgid "Disable Standard Login"
+msgstr "Standard-Anmeldung deaktivieren"
+
+msgid "Disable username/password login. Users must use OAuth or LDAP."
+msgstr "Anmeldung mit Benutzername/Passwort deaktivieren. Benutzer müssen OAuth oder LDAP nutzen."
+
+msgid "OAuth Group-Based Admin Control"
+msgstr "OAuth gruppenbasierte Admin-Steuerung"
+
+msgid "Grant/revoke admin privileges automatically based on OAuth groups."
+msgstr "Admin-Rechte automatisch basierend auf OAuth-Gruppen vergeben/entziehen."
+
+msgid "Check Extensions on Upload"
+msgstr "Dateiendungen beim Upload prüfen"
+
+msgid "Verify if file extension matches actual file content on upload."
+msgstr "Beim Hochladen prüfen, ob die Dateiendung mit dem tatsächlichen Inhalt übereinstimmt."
+
+msgid "Session Protection Strength"
+msgstr "Stärke des Sitzungsschutzes"
+
+msgid "Enable Password Policy"
+msgstr "Passwortrichtlinie aktivieren"
+
+msgid "Enforce complexity requirements for user passwords."
+msgstr "Komplexitätsanforderungen für Benutzerpasswörter erzwingen."
+
+msgid "Minimum Password Length"
+msgstr "Mindestlänge des Passworts"
+
+msgid "Enforce Number"
+msgstr "Zahl erzwingen"
+
+msgid "Password must contain at least one digit."
+msgstr "Das Passwort muss mindestens eine Ziffer enthalten."
+
+msgid "Enforce Lowercase"
+msgstr "Kleinbuchstaben erzwingen"
+
+msgid "Password must contain at least one lowercase letter."
+msgstr "Das Passwort muss mindestens einen Kleinbuchstaben enthalten."
+
+msgid "Enforce Uppercase"
+msgstr "Großbuchstaben erzwingen"
+
+msgid "Password must contain at least one uppercase letter."
+msgstr "Das Passwort muss mindestens einen Großbuchstaben enthalten."
+
+msgid "Enforce Characters"
+msgstr "Buchstaben erzwingen"
+
+msgid "Password must contain letters (needed for CJK inputs)."
+msgstr "Das Passwort muss Buchstaben enthalten (erforderlich für CJK-Eingaben)."
+
+msgid "Enforce Special Character"
+msgstr "Sonderzeichen erzwingen"
+
+msgid "Password must contain at least one special character."
+msgstr "Das Passwort muss mindestens ein Sonderzeichen enthalten."
+
+msgid "Limit Failed Login Attempts"
+msgstr "Fehlgeschlagene Anmeldeversuche begrenzen"
+
+msgid "Block IPs after too many failed attempts."
+msgstr "IPs nach zu vielen fehlgeschlagenen Anmeldeversuchen blockieren."
+
+msgid "Limiter Backend URI"
+msgstr "URI des Limiter-Backends"
+
+msgid "Limiter Options"
+msgstr "Optionen des Limiters"
+
+msgid "Compression & Utilities"
+msgstr "Kompression & Werkzeuge"
+
+msgid "Unrar Executable Location"
+msgstr "Pfad zum unrar-Programm"
+
+msgid "Scanning Schedule Type"
+msgstr "Zeitplan-Typ für Scans"
+
+msgid "Basic (Daily)"
+msgstr "Einfach (Täglich)"
+
+msgid "Advanced (Cron Expression)"
+msgstr "Erweitert (Cron-Ausdruck)"
+
+msgid "Execution Matching Engine"
+msgstr "Ausführung der Abgleich-Engine"
+
+msgid "Hybrid (SQL + Python)"
+msgstr "Hybrid (SQL + Python)"
+
+msgid "Pure Python (Slower)"
+msgstr "Reines Python (Langsamer)"
+
+msgid "Pure SQL (Faster)"
+msgstr "Reines SQL (Schneller)"
+
+msgid "Scan Chunk Size"
+msgstr "Scan-Blockgröße"
+
+msgid "Scan Debounce (Seconds)"
+msgstr "Scan-Verzögerung (Sekunden)"
+
+msgid "Next Run:"
+msgstr "Nächster Durchlauf:"
+
+msgid "Duplicate Format Priorities (Drag to Reorder)"
+msgstr "Duplikat Format-Prioritäten (Ziehen zum Sortieren)"
+
+msgid "Duplicate Detection & Resolution"
+msgstr "Duplikaterkennung & -auflösung"
+
+msgid "Save System Settings"
+msgstr "Systemeinstellungen speichern"
+
+msgid "Save CWA Expert Settings"
+msgstr "CWA-Experteneinstellungen speichern"

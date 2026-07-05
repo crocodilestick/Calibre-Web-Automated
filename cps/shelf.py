@@ -528,7 +528,9 @@ def render_show_shelf(shelf_type, shelf_id, page_no, sort_param):
                                      shelf=shelf,
                                      page="shelf",
                                      status=status,
-                                     order=sort_param)
+                                     order=sort_param,
+                                     id=shelf_id,
+                                     is_hidden_shelf=False)
     else:
         flash(_("Error opening shelf. Shelf does not exist or is not accessible"), category="error")
         return redirect(url_for("web.index"))

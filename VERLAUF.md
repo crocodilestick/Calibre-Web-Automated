@@ -18,6 +18,32 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-05 — Schöne Sammlungsansicht (Phase 1)
+
+- **Feature/Bug:** Schöne Sammlungsansicht (Kachel-/Card-Ansicht für Regale & Magic Shelves, Phase 1 - Buchliste im Regal)
+- **Branch / Worktree:** `feature/beautiful-shelf-view`
+- **Status:** Phase 1 vollständig implementiert, unit-getestet (alle relevanten Tests bestanden), formale Code-Hygiene (`git diff --check`) durchgeführt und bereit zur Abnahme.
+
+### Erledigt
+- [x] **Backend-Konsolidierung (`web.py` & `shelf.py`):**
+  - Magic-Shelf Route (`render_magic_shelf`) von `index.html` auf `shelf.html` umgeleitet.
+  - Sichergestellt, dass alle Template-Variablen (`shelf`, `id`, `is_hidden_shelf`, `order`) übergeben werden.
+- [x] **Template-Migration & Logik (`shelf.html`):**
+  - Alle Magic-Shelf-Aktionsbuttons (Refresh, Edit, Hide/Show) inklusive AJAX-jQuery-Logik vollständig aus `index.html` in das gemeinsame Template `shelf.html` migriert.
+  - Umschalter für Galerie- und Reader-Modus oben rechts integriert.
+  - Flackerfreies Inline-Skript zur Auswertung des `localStorage` per `classList` eingebunden.
+  - Stabile Dezimal-Formatierungslogik für den Serien-Index implementiert (Int-Vergleich zur Entfernung von Nachkommastellen bei Ganzzahlen, z.B. `3.00` zu `3`).
+  - Kobo-Status (`kobo_sync`, `kobo_display`) dezent im Header visualisiert.
+- [x] **Styling (`cwa.css`):**
+  - Flexibles CSS-Grid-Layout (`repeat(auto-fill, minmax(150px, 1fr))`) für `.shelf-books-grid` implementiert.
+  - **Galerie-Modus (`.shelf-view-gallery`):** Moderne Buch-Karten mit dezenten Schatten und weicher Hover-Transformation ( translateY(-4px) ). Titel, Autor und Reihe stehen fest unter dem Cover und sind immer lesbar.
+  - **Reader-Modus (`.shelf-view-reader`):** Minimalistische, papierähnliche Darstellung ohne Schatten und Hover-Effekte, optimiert für Touch-Geräte durch vergrößerte Abstände und größere Trefferflächen.
+  - Volle Unterstützung für Dark-Theme (caliBlur) und Light-Theme (Standard) integriert.
+
+### Belege
+- Unit-Tests: `.venv/bin/pytest tests/unit/test_magic_shelf_rules.py` und `test_kobo_decoupling.py` laufen fehlerfrei durch (10 bzw. 17 Tests passed).
+- Code-Hygiene: `git diff --check` läuft komplett sauber ohne Whitespace-Fehler.
+
 ## 2026-07-05 — Einstellungen zusammenführen und beruhigen
 
 - **Feature/Bug:** Einstellungen zusammenführen und beruhigen (Roadmap-Punkt 2 - Finaler Abschluss & Politur)

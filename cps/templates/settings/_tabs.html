@@ -1,25 +1,40 @@
-<div class="settings-nav">
-  <a href="{{ url_for('web.profile') }}" class="settings-tab-link{% if active_tab == 'konto' or not active_tab %} active{% endif %}">
-    <span class="glyphicon glyphicon-user"></span> {{ _("My Account") }}
-  </a>
+<div class="settings-nav" style="display: flex; justify-content: space-between; align-items: center; width: 100%; flex-wrap: wrap; gap: 1rem; border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding-bottom: 0.75rem;">
+  <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+    <a href="{{ url_for('web.profile') }}" class="settings-tab-link{% if active_tab == 'konto' or not active_tab %} active{% endif %}">
+      <span class="glyphicon glyphicon-user"></span> {{ _("My Account") }}
+    </a>
+    {% if current_user.role_admin() %}
+      <a href="{{ url_for('settings.tab', active_tab='bibliothek') }}" class="settings-tab-link{% if active_tab == 'bibliothek' %} active{% endif %}">
+        <span class="glyphicon glyphicon-book"></span> {{ _("Library") }}
+      </a>
+      <a href="{{ url_for('settings.tab', active_tab='kobo') }}" class="settings-tab-link{% if active_tab == 'kobo' %} active{% endif %}">
+        <span class="glyphicon glyphicon-phone"></span> {{ _("Kobo") }}
+      </a>
+      <a href="{{ url_for('settings.tab', active_tab='automatisierung') }}" class="settings-tab-link{% if active_tab == 'automatisierung' %} active{% endif %}">
+        <span class="glyphicon glyphicon-cog"></span> {{ _("Automation") }}
+      </a>
+      <a href="{{ url_for('settings.tab', active_tab='email') }}" class="settings-tab-link{% if active_tab == 'email' %} active{% endif %}">
+        <span class="glyphicon glyphicon-envelope"></span> {{ _("Email") }}
+      </a>
+      <a href="{{ url_for('settings.tab', active_tab='wartung') }}" class="settings-tab-link{% if active_tab == 'wartung' %} active{% endif %}">
+        <span class="glyphicon glyphicon-wrench"></span> {{ _("Maintenance") }}
+      </a>
+      <a href="{{ url_for('settings.tab', active_tab='experten') }}" class="settings-tab-link{% if active_tab == 'experten' %} active{% endif %}">
+        <span class="glyphicon glyphicon-tasks"></span> {{ _("Experts") }}
+      </a>
+    {% endif %}
+  </div>
   {% if current_user.role_admin() %}
-    <a href="{{ url_for('settings.tab', active_tab='bibliothek') }}" class="settings-tab-link{% if active_tab == 'bibliothek' %} active{% endif %}">
-      <span class="glyphicon glyphicon-book"></span> {{ _("Library") }}
-    </a>
-    <a href="{{ url_for('settings.tab', active_tab='kobo') }}" class="settings-tab-link{% if active_tab == 'kobo' %} active{% endif %}">
-      <span class="glyphicon glyphicon-phone"></span> {{ _("Kobo") }}
-    </a>
-    <a href="{{ url_for('settings.tab', active_tab='automatisierung') }}" class="settings-tab-link{% if active_tab == 'automatisierung' %} active{% endif %}">
-      <span class="glyphicon glyphicon-cog"></span> {{ _("Automation") }}
-    </a>
-    <a href="{{ url_for('settings.tab', active_tab='email') }}" class="settings-tab-link{% if active_tab == 'email' %} active{% endif %}">
-      <span class="glyphicon glyphicon-envelope"></span> {{ _("Email") }}
-    </a>
-    <a href="{{ url_for('settings.tab', active_tab='wartung') }}" class="settings-tab-link{% if active_tab == 'wartung' %} active{% endif %}">
-      <span class="glyphicon glyphicon-wrench"></span> {{ _("Maintenance") }}
-    </a>
-    <a href="{{ url_for('settings.tab', active_tab='experten') }}" class="settings-tab-link{% if active_tab == 'experten' %} active{% endif %}">
-      <span class="glyphicon glyphicon-tasks"></span> {{ _("Experts") }}
-    </a>
+    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+      <a href="{{ url_for('admin.edit_user_table') }}" class="settings-tab-link" style="border: 1px solid rgba(255,193,7,0.2); color: #ffe066;">
+        <span class="glyphicon glyphicon-user"></span> {{ _("Users") }}
+      </a>
+      <a href="{{ url_for('admin.db_configuration') }}" class="settings-tab-link" style="border: 1px solid rgba(76,175,80,0.2); color: #8ce99a;">
+        <span class="glyphicon glyphicon-hdd"></span> {{ _("Database Setup") }}
+      </a>
+      <a href="{{ url_for('admin.system_status') }}" class="settings-tab-link" style="border: 1px solid rgba(34,139,230,0.2); color: #74c0fc;">
+        <span class="glyphicon glyphicon-info-sign"></span> {{ _("System Status") }}
+      </a>
+    </div>
   {% endif %}
 </div>

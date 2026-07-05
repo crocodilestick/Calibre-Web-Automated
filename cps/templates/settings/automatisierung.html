@@ -73,10 +73,6 @@
     border-radius: 4px;
     flex-basis: calc(50% - 6px);
   }
-
-  .format-priority-item {
-    list-style: none;
-  }
 </style>
 {% endblock %}
 
@@ -86,27 +82,19 @@
     'auto_backup_imports', 'auto_backup_conversions', 'auto_zip_backups',
     'cwa_update_notifications', 'contribute_translations_notifications',
     'auto_convert', 'auto_convert_target_format', 'auto_ingest_automerge',
-    'ingest_timeout_minutes', 'ingest_stale_temp_minutes', 'ingest_stale_temp_interval',
     'auto_metadata_enforcement', 'kindle_epub_fixer', 'kindle_epub_fixer_aggressive',
     'auto_backup_epub_fixes', 'auto_metadata_fetch_enabled', 'auto_metadata_smart_application',
     'auto_metadata_update_title', 'auto_metadata_update_authors', 'auto_metadata_update_description',
     'auto_metadata_update_publisher', 'auto_metadata_update_tags', 'auto_metadata_update_series',
     'auto_metadata_update_rating', 'auto_metadata_update_published_date', 'auto_metadata_update_identifiers',
     'auto_metadata_update_cover', 'cover_download_max_mb', 'metadata_provider_hierarchy',
-    'metadata_providers_enabled', 'auto_send_delay_minutes', 'duplicate_detection_title',
-    'duplicate_detection_author', 'duplicate_detection_language', 'duplicate_detection_series',
-    'duplicate_detection_publisher', 'duplicate_detection_format', 'duplicate_detection_enabled',
-    'duplicate_notifications_enabled', 'duplicate_auto_resolve_enabled', 'duplicate_auto_resolve_strategy',
-    'duplicate_auto_resolve_cooldown_minutes', 'duplicate_format_priority', 'duplicate_detection_use_sql',
-    'duplicate_scan_method', 'duplicate_scan_enabled', 'duplicate_scan_frequency',
-    'duplicate_scan_cron', 'duplicate_scan_hour', 'duplicate_scan_chunk_size',
-    'duplicate_scan_debounce_seconds'
+    'metadata_providers_enabled', 'auto_send_delay_minutes', 'duplicate_detection_enabled'
   ] %}
   <form id="automatisierung-form" role="form" method="POST" action="{{ url_for('cwa_settings.set_cwa_settings') }}" autocomplete="off">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <input type="hidden" name="submit_button" value="Submit">
 
-    {# Mirror remaining CWA fields (Kobo and Wartung) #}
+    {# Mirror remaining CWA fields (Kobo and Wartung and Duplicate Details) #}
     {{ spiegel_inputs(CWA_FIELDS, visible_cwa_fields, cwa_settings, BOOLEAN_SETTINGS) }}
 
     <div class="col-md-12 col-lg-6">
@@ -240,7 +228,9 @@
           <input type="number" min="0" max="60" class="settings-input" name="auto_send_delay_minutes" id="auto_send_delay_minutes" value="{{ cwa_settings.auto_send_delay_minutes or 0 }}">
         </div>
       </div>
+    </div>
 
+    <div class="col-md-12 col-lg-6">
       <!-- Card 3: Auto-Metadaten & Cover-Enforcement -->
       <div class="settings-card">
         <div class="settings-card-title">
@@ -305,7 +295,7 @@
               <div id="metadata_provider_list_outer">
                 <div id="metadata_provider_list"></div>
               </div>
-              <input type="hidden" name="metadata_provider_hierarchy" id="metadata_provider_hierarchy_hidden" value="">
+              <input type="hidden" name="metadata_provider_hierarchy" id="metadata_provider_hierarchy_hidden" value="{{ cwa_settings.get('metadata_provider_hierarchy', '[]') }}">
             </div>
           </div>
 
@@ -313,155 +303,30 @@
             <label class="settings-label">{{ _("Enabled Metadata Providers") }}</label>
             <div id="metadata_provider_enabled_container" style="margin-top: 0.5rem;">
               <div id="metadata_provider_enabled_list"></div>
-              <input type="hidden" name="metadata_providers_enabled" id="metadata_providers_enabled_hidden" value="{}">
+              <input type="hidden" name="metadata_providers_enabled" id="metadata_providers_enabled_hidden" value="{{ cwa_settings.get('metadata_providers_enabled', '{}') }}">
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="col-md-12 col-lg-6">
-      <!-- Card 4: Duplikaterkennung & Formate -->
+      <!-- Card 4: Duplikaterkennung -->
       <div class="settings-card">
         <div class="settings-card-title">
-          <span class="glyphicon glyphicon-duplicate"></span> {{ _("Duplicate Detection & Resolution") }}
+          <span class="glyphicon glyphicon-duplicate"></span> {{ _("Duplicate Detection") }}
         </div>
 
-        <div class="settings-switch-group">
+        <div class="settings-switch-group" style="margin-bottom: 1.5rem;">
           <div class="settings-switch-label-block">
             <span class="settings-switch-title">{{ _("Duplicate Detection") }}</span>
             <span class="settings-switch-desc">{{ _("Scan for duplicate books in the library.") }}</span>
           </div>
           <label class="settings-switch">
-            <input type="checkbox" id="duplicate_detection_enabled" name="duplicate_detection_enabled" data-control="duplicate-settings" {% if cwa_settings.duplicate_detection_enabled %}checked{% endif %}>
+            <input type="checkbox" id="duplicate_detection_enabled" name="duplicate_detection_enabled" {% if cwa_settings.duplicate_detection_enabled %}checked{% endif %}>
             <span class="settings-slider"></span>
           </label>
         </div>
 
-        <div data-related="duplicate-settings" style="{% if not cwa_settings.duplicate_detection_enabled %}display: none;{% endif %}">
-          <div class="settings-switch-group">
-            <div class="settings-switch-label-block">
-              <span class="settings-switch-title">{{ _("Auto-Resolve Duplicates") }}</span>
-              <span class="settings-switch-desc">{{ _("Automatically resolve duplicates based on selected strategy.") }}</span>
-            </div>
-            <label class="settings-switch">
-              <input type="checkbox" id="duplicate_auto_resolve_enabled" name="duplicate_auto_resolve_enabled" data-control="resolve-settings" {% if cwa_settings.duplicate_auto_resolve_enabled %}checked{% endif %}>
-              <span class="settings-slider"></span>
-            </label>
-          </div>
-
-          <div data-related="resolve-settings" style="{% if not cwa_settings.duplicate_auto_resolve_enabled %}display: none;{% endif %}">
-            <div class="settings-form-group">
-              <label class="settings-label" for="duplicate_auto_resolve_strategy">{{ _("Auto-Resolution Strategy") }}</label>
-              <select name="duplicate_auto_resolve_strategy" id="duplicate_auto_resolve_strategy" class="settings-input">
-                <option value="keep_highest_quality" {% if cwa_settings.duplicate_auto_resolve_strategy == 'keep_highest_quality' %}selected{% endif %}>{{ _("Keep Highest Quality") }}</option>
-                <option value="keep_first" {% if cwa_settings.duplicate_auto_resolve_strategy == 'keep_first' %}selected{% endif %}>{{ _("Keep First Created") }}</option>
-                <option value="keep_last" {% if cwa_settings.duplicate_auto_resolve_strategy == 'keep_last' %}selected{% endif %}>{{ _("Keep Last Created") }}</option>
-              </select>
-            </div>
-
-            <div class="settings-form-group">
-              <label class="settings-label" for="duplicate_auto_resolve_cooldown_minutes">{{ _("Auto-Resolve Cooldown (Minutes)") }}</label>
-              <input type="number" min="1" max="1440" class="settings-input" name="duplicate_auto_resolve_cooldown_minutes" id="duplicate_auto_resolve_cooldown_minutes" value="{{ cwa_settings.duplicate_auto_resolve_cooldown_minutes or 60 }}">
-            </div>
-          </div>
-
-          <div class="settings-switch-group">
-            <div class="settings-switch-label-block">
-              <span class="settings-switch-title">{{ _("Send Notifications") }}</span>
-              <span class="settings-switch-desc">{{ _("Notify admins when duplicates are detected.") }}</span>
-            </div>
-            <label class="settings-switch">
-              <input type="checkbox" id="duplicate_notifications_enabled" name="duplicate_notifications_enabled" {% if cwa_settings.duplicate_notifications_enabled %}checked{% endif %}>
-              <span class="settings-slider"></span>
-            </label>
-          </div>
-
-          <div class="settings-switch-group">
-            <div class="settings-switch-label-block">
-              <span class="settings-switch-title">{{ _("Database Index Matching") }}</span>
-              <span class="settings-switch-desc">{{ _("Use strict database index matching instead of full title regex.") }}</span>
-            </div>
-            <label class="settings-switch">
-              <input type="checkbox" id="duplicate_detection_use_sql" name="duplicate_detection_use_sql" {% if cwa_settings.duplicate_detection_use_sql %}checked{% endif %}>
-              <span class="settings-slider"></span>
-            </label>
-          </div>
-
-          <div style="margin-top: 1.5rem; margin-bottom: 1rem;">
-            <span class="settings-label" style="font-weight: 600;">{{ _("Duplicate Criteria Fields") }}</span>
-          </div>
-          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 2rem;">
-            {% for field in ['title', 'author', 'language', 'series', 'publisher', 'format'] %}
-              <label style="display: flex; gap: 0.5rem; align-items: center; color: #c1c2c5; font-weight: normal; cursor: pointer;">
-                <input type="checkbox" name="duplicate_detection_{{ field }}" {% if cwa_settings['duplicate_detection_' ~ field] %}checked{% endif %}>
-                {{ field|capitalize }}
-              </label>
-            {% endfor %}
-          </div>
-
-          <!-- Format Priority (Drag & Drop) -->
-          <div class="settings-form-group">
-            <label class="settings-label">{{ _("Format Quality Priority (Drag to Reorder)") }}</label>
-            <div style="margin-top: 0.5rem;">
-              <ul id="format_priority_list" style="padding-left: 0;"></ul>
-              <input type="hidden" name="duplicate_format_priority" id="duplicate_format_priority" value="{{ cwa_settings.duplicate_format_priority or '{}' }}">
-            </div>
-          </div>
-
-          <!-- Scan Scheduling -->
-          <div class="settings-switch-group">
-            <div class="settings-switch-label-block">
-              <span class="settings-switch-title">{{ _("Scheduled Duplicate Scan") }}</span>
-              <span class="settings-switch-desc">{{ _("Run duplicate detection scans on a schedule.") }}</span>
-            </div>
-            <label class="settings-switch">
-              <input type="checkbox" id="duplicate_scan_enabled" name="duplicate_scan_enabled" data-control="scan-settings" {% if cwa_settings.duplicate_scan_enabled %}checked{% endif %}>
-              <span class="settings-slider"></span>
-            </label>
-          </div>
-
-          <div data-related="scan-settings" style="{% if not cwa_settings.duplicate_scan_enabled %}display: none;{% endif %}">
-            <div class="settings-form-group">
-              <label class="settings-label" for="duplicate_scan_method">{{ _("Scan Method") }}</label>
-              <select name="duplicate_scan_method" id="duplicate_scan_method" class="settings-input" data-control="scan-method">
-                <option value="basic" {% if cwa_settings.duplicate_scan_method == 'basic' %}selected{% endif %}>{{ _("Basic Interval") }}</option>
-                <option value="cron" {% if cwa_settings.duplicate_scan_method == 'cron' %}selected{% endif %}>{{ _("Cron Expression") }}</option>
-              </select>
-            </div>
-
-            <div data-related="scan-method-basic" style="{% if cwa_settings.duplicate_scan_method == 'cron' %}display: none;{% endif %}">
-              <div class="settings-form-group">
-                <label class="settings-label" for="duplicate_scan_hour">{{ _("Scan Hour") }}</label>
-                <select name="duplicate_scan_hour" id="duplicate_scan_hour" class="settings-input">
-                  {% for h in range(24) %}
-                    <option value="{{ h }}" {% if cwa_settings.duplicate_scan_hour|int == h %}selected{% endif %}>{{ "%02d:00"|format(h) }}</option>
-                  {% endfor %}
-                </select>
-              </div>
-            </div>
-
-            <div data-related="scan-method-cron" style="{% if cwa_settings.duplicate_scan_method != 'cron' %}display: none;{% endif %}">
-              <div class="settings-form-group">
-                <label class="settings-label" for="duplicate_scan_cron">{{ _("Cron Expression") }}</label>
-                <input type="text" class="settings-input" name="duplicate_scan_cron" id="duplicate_scan_cron" value="{{ cwa_settings.duplicate_scan_cron or '' }}" placeholder="0 3 * * *">
-                <small class="form-text text-muted" style="margin-top: 0.25rem; display: block;">{{ _("Next Run:") }} <strong style="color: #4CAF50;">{{ next_duplicate_scan_run }}</strong></small>
-              </div>
-            </div>
-
-            <div class="settings-form-group">
-              <label class="settings-label" for="duplicate_scan_chunk_size">{{ _("Scan Chunk Size") }}</label>
-              <input type="number" min="50" max="5000" class="settings-input" name="duplicate_scan_chunk_size" id="duplicate_scan_chunk_size" value="{{ cwa_settings.duplicate_scan_chunk_size or 500 }}">
-            </div>
-
-            <div class="settings-form-group">
-              <label class="settings-label" for="duplicate_scan_debounce_seconds">{{ _("Debounce Time (Seconds)") }}</label>
-              <input type="number" min="5" max="3600" class="settings-input" name="duplicate_scan_debounce_seconds" id="duplicate_scan_debounce_seconds" value="{{ cwa_settings.duplicate_scan_debounce_seconds or 30 }}">
-            </div>
-          </div>
-        </div>
-
-        <div style="margin-top: 1.5rem; text-align: right;">
+        <div style="text-align: right; margin-top: 1.5rem;">
           <button type="submit" class="settings-btn settings-btn-primary">{{ _("Save Automation Settings") }}</button>
         </div>
       </div>
@@ -474,19 +339,23 @@
 {{ super() }}
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  // Toggle basic vs cron view for duplicate scanning
-  $('#duplicate_scan_method').change(function() {
-    var val = $(this).val();
-    if (val === 'cron') {
-      $('[data-related="scan-method-cron"]').slideDown(200);
-      $('[data-related="scan-method-basic"]').slideUp(200);
-    } else {
-      $('[data-related="scan-method-basic"]').slideDown(200);
-      $('[data-related="scan-method-cron"]').slideUp(200);
-    }
+  // Toggle sections based on controller switches
+  $('[data-control]').each(function() {
+    var $el = $(this);
+    var target = $el.data('control');
+    $el.change(function() {
+      var $target = $('[data-related="' + target + '"]');
+      if ($el.is(':checkbox')) {
+        if ($el.is(':checked')) {
+          $target.slideDown(200);
+        } else {
+          $target.slideUp(200);
+        }
+      }
+    });
   });
 
-  // Get current hierarchy from CWA settings
+  // Metadata Provider Ranking System
   const currentHierarchyStr = {{ cwa_settings.get("metadata_provider_hierarchy", '["ibdb","google","dnb"]') | tojson }};
   let providerHierarchy = [];
   const currentEnabledStr = {{ cwa_settings.get("metadata_providers_enabled", '{}') | tojson }};
@@ -523,8 +392,10 @@ document.addEventListener('DOMContentLoaded', function() {
   fetch('{{ url_for("metadata.metadata_provider") }}')
     .then(response => response.json())
     .then(providers => {
-      populateProviderList(providers, providerHierarchy);
-      populateEnabledToggles(providers, globalEnabledMap);
+      // Filter out hardcover provider from UI list
+      const filteredProviders = providers.filter(p => p.id !== 'hardcover');
+      populateProviderList(filteredProviders, providerHierarchy);
+      populateEnabledToggles(filteredProviders, globalEnabledMap);
       setupDragAndDrop();
     })
     .catch(error => {
@@ -596,6 +467,12 @@ document.addEventListener('DOMContentLoaded', function() {
       toggles.forEach(t => {
         map[t.dataset.providerId] = !!t.checked;
       });
+      // Preserve unrendered provider entries (e.g. hardcover)
+      Object.keys(globalEnabledMap).forEach(key => {
+        if (!map.hasOwnProperty(key)) {
+          map[key] = globalEnabledMap[key];
+        }
+      });
       hidden.value = JSON.stringify(map);
     }
 
@@ -659,138 +536,23 @@ document.addEventListener('DOMContentLoaded', function() {
     }, { offset: Number.NEGATIVE_INFINITY }).element;
   }
 
+  // Pre-populate hidden inputs and ensure proper update
   function updateHiddenInput() {
     const container = document.getElementById('metadata_provider_list');
     const hiddenInput = document.getElementById('metadata_provider_hierarchy_hidden');
     if (!container || !hiddenInput) return;
     const items = container.querySelectorAll('.metadata-provider-item');
     const hierarchy = Array.from(items).map(item => item.dataset.providerId);
+    // Preserve unrendered provider entries (e.g. hardcover)
+    providerHierarchy.forEach(pId => {
+      if (!hierarchy.includes(pId)) {
+        hierarchy.push(pId);
+      }
+    });
     hiddenInput.value = JSON.stringify(hierarchy);
   }
 
   updateHiddenInput();
-
-  // Format Priority Ranking System
-  function initializeFormatPriorityList() {
-    const hiddenInput = document.getElementById('duplicate_format_priority');
-    const container = document.getElementById('format_priority_list');
-    if (!hiddenInput || !container) return;
-
-    try {
-      const rawValue = hiddenInput.value || '{}';
-      const decodedValue = rawValue.replace(/&quot;/g, '"').replace(/&#34;/g, '"');
-      const formatPriority = JSON.parse(decodedValue);
-      const formatArray = Object.entries(formatPriority).map(([format, priority]) => ({
-        format: format,
-        priority: priority
-      }));
-      formatArray.sort((a, b) => b.priority - a.priority);
-
-      if (formatArray.length === 0) {
-        container.innerHTML = '<li style="color: #e03131; padding: 12px;">No format data available. Please save settings to initialize.</li>';
-        return;
-      }
-
-      container.innerHTML = '';
-      formatArray.forEach(item => {
-        const li = document.createElement('li');
-        li.className = 'format-priority-item';
-        li.dataset.format = item.format;
-        li.dataset.priority = item.priority;
-        li.innerHTML = `
-          <div style="display: flex; align-items: center; padding: 8px 12px; margin-bottom: 8px; background: #2a3441; border: 1px solid #555; border-radius: 6px; cursor: move; transition: all 0.2s;">
-            <span style="color: #ffc200; margin-right: 15px; font-size: 16px; font-weight: 900;">⋮⋮</span>
-            <span style="flex: 1; color: white; font-weight: 500;">${item.format.toUpperCase()}</span>
-            <span style="color: #4CAF50; font-size: 11px; padding: 4px 8px; background: rgba(76, 160, 80, 0.1); border-radius: 4px;" class="priority-badge">Priority: ${item.priority}</span>
-          </div>
-        `;
-        container.appendChild(li);
-      });
-
-      setupFormatPriorityDragDrop();
-    } catch (e) {
-      console.error('Error initializing format priority list:', e);
-      container.innerHTML = '<li style="color: #e03131; padding: 12px;">Error loading format priority.</li>';
-    }
-  }
-
-  function setupFormatPriorityDragDrop() {
-    const container = document.getElementById('format_priority_list');
-    let draggedFormatElement = null;
-    let isDraggingFormat = false;
-
-    container.addEventListener('mousedown', function(e) {
-      const item = e.target.closest('.format-priority-item');
-      if (!item) return;
-
-      isDraggingFormat = true;
-      draggedFormatElement = item;
-      item.style.opacity = '0.5';
-      document.body.style.userSelect = 'none';
-      e.preventDefault();
-    });
-
-    document.addEventListener('mousemove', function(e) {
-      if (!isDraggingFormat || !draggedFormatElement) return;
-      const afterElement = getFormatAfterElement(container, e.clientY);
-      if (afterElement == null) {
-        container.appendChild(draggedFormatElement);
-      } else {
-        container.insertBefore(draggedFormatElement, afterElement);
-      }
-    });
-
-    document.addEventListener('mouseup', function() {
-      if (!isDraggingFormat) return;
-      isDraggingFormat = false;
-      if (draggedFormatElement) {
-        draggedFormatElement.style.opacity = '1';
-        draggedFormatElement = null;
-      }
-      document.body.style.userSelect = '';
-      updateFormatPriorityHiddenInput();
-    });
-  }
-
-  function getFormatAfterElement(container, y) {
-    const draggableElements = [...container.querySelectorAll('.format-priority-item')].filter(el => el.style.opacity !== '0.5');
-    return draggableElements.reduce((closest, child) => {
-      const box = child.getBoundingClientRect();
-      const offset = y - box.top - box.height / 2;
-      if (offset < 0 && offset > closest.offset) {
-        return { offset: offset, element: child };
-      } else {
-        return closest;
-      }
-    }, { offset: Number.NEGATIVE_INFINITY }).element;
-  }
-
-  function updateFormatPriorityHiddenInput() {
-    const container = document.getElementById('format_priority_list');
-    const hiddenInput = document.getElementById('duplicate_format_priority');
-    if (!container || !hiddenInput) return;
-    const items = container.querySelectorAll('.format-priority-item');
-    const formatPriority = {};
-    const totalItems = items.length;
-
-    items.forEach((item, index) => {
-      const format = item.dataset.format;
-      const priority = 100 - (index * Math.floor(100 / totalItems));
-      formatPriority[format] = priority;
-    });
-
-    hiddenInput.value = JSON.stringify(formatPriority);
-
-    items.forEach(item => {
-      const format = item.dataset.format;
-      const priorityBadge = item.querySelector('.priority-badge');
-      if (priorityBadge) {
-        priorityBadge.textContent = `Priority: ${formatPriority[format]}`;
-      }
-    });
-  }
-
-  initializeFormatPriorityList();
 });
 </script>
 {% endblock %}

@@ -20,5 +20,17 @@
 {% endblock %}
 
 {% block js %}
+<script>
+  window.settingsTranslations = {
+    'Restarting Server...': '{{ _("Restarting Server...") }}',
+    'Please wait while the application reboots.': '{{ _("Please wait while the application reboots.") }}',
+    'Saving...': '{{ _("Saving...") }}',
+    'HTTP error! status: ': '{{ _("HTTP error! status: ") }}',
+    'Settings saved and server restarted successfully.': '{{ _("Settings saved and server restarted successfully.") }}',
+    'An error occurred while saving.': '{{ _("An error occurred while saving.") }}',
+    'Settings saved successfully.': '{{ _("Settings saved successfully.") }}',
+    'Error saving settings: ': '{{ _("Error saving settings: ") }}'
+  };
+</script>
 <script src="{{ url_for('static', filename='js/settings.js') }}"></script>
 {% endblock %}

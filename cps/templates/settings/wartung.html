@@ -9,7 +9,7 @@
     <form id="scheduled-tasks-form" role="form" method="POST" action="{{ url_for('admin.update_scheduledtasks') }}" autocomplete="off" style="margin-bottom: 2rem;">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
-      {# Mirror remaining scheduledtasks settings (like schedule_generate_series_covers) #}
+      {# Mirror remaining scheduledtasks settings #}
       {% set visible_scheduled_fields = [
         'schedule_start_time', 'schedule_duration', 'schedule_generate_book_covers',
         'schedule_reconnect', 'schedule_metadata_backup'
@@ -73,40 +73,60 @@
         </div>
 
         <div style="margin-top: 1.5rem; text-align: right;">
-          <button type="submit" name="submit" value="submit" class="settings-btn settings-btn-primary">{{ _("Save Tasks") }}</button>
+          <button type="submit" class="settings-btn settings-btn-primary">{{ _("Save Tasks") }}</button>
         </div>
       </div>
     </form>
 
-    <!-- Manual Actions Card -->
-    <div class="settings-card">
-      <div class="settings-card-title">
-        <span class="glyphicon glyphicon-play"></span> {{ _("Manual Actions") }}
-      </div>
-      <p style="color: #909296; font-size: 0.85rem; margin-bottom: 1.5rem;">{{ _("Execute maintenance tasks immediately.") }}</p>
+    <!-- Logging Config Form (ajaxconfig) -->
+    {% set visible_logging_fields = ['config_log_level', 'config_logfile', 'config_access_log', 'config_access_logfile'] %}
+    <form id="logging-config-form" role="form" method="POST" action="{{ url_for('admin.ajax_config') }}" autocomplete="off" style="margin-bottom: 2rem;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {{ spiegel_inputs(AJAXCONFIG_FIELDS, visible_logging_fields, config, BOOLEAN_SETTINGS) }}
 
-      <div style="display: flex; flex-direction: column; gap: 1rem;">
-        <button type="button" class="settings-btn settings-btn-secondary text-left" id="admin_refresh_cover_cache" style="text-align: left; display: flex; align-items: center; gap: 0.75rem;">
-          <span class="glyphicon glyphicon-refresh"></span> {{ _("Refresh Thumbnail Cache") }}
-        </button>
-        <button type="button" class="settings-btn settings-btn-secondary" id="restart_database" data-toggle="modal" data-target="#StatusDialog" style="text-align: left; display: flex; align-items: center; gap: 0.75rem;">
-          <span class="glyphicon glyphicon-link"></span> {{ _("Reconnect Calibre Database") }}
-        </button>
-        {% if config.schedule_metadata_backup %}
-          <button type="button" class="settings-btn settings-btn-secondary" id="metadata_backup" data-toggle="modal" data-target="#StatusDialog" style="text-align: left; display: flex; align-items: center; gap: 0.75rem;">
-            <span class="glyphicon glyphicon-floppy-save"></span> {{ _("Queue all books for metadata backup") }}
-          </button>
-        {% endif %}
-        <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
-          <button type="button" class="settings-btn settings-btn-secondary" id="admin_restart" data-toggle="modal" data-target="#RestartDialog" style="flex-grow: 1; border-color: rgba(34, 139, 230, 0.3); color: #a5d8ff;">
-            <span class="glyphicon glyphicon-repeat"></span> {{ _("Restart Application") }}
-          </button>
-          <button type="button" class="settings-btn settings-btn-secondary" id="admin_stop" data-toggle="modal" data-target="#ShutdownDialog" style="flex-grow: 1; border-color: rgba(224, 49, 49, 0.3); color: #ffc9c9;">
-            <span class="glyphicon glyphicon-off"></span> {{ _("Shutdown") }}
-          </button>
+      <div class="settings-card">
+        <div class="settings-card-title">
+          <span class="glyphicon glyphicon-list-alt"></span> {{ _("Logging Settings") }}
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_log_level">{{ _("Log Level") }}</label>
+          <select name="config_log_level" id="config_log_level" class="settings-input">
+            <option value="10" {% if config.config_log_level == 10 %}selected{% endif %}>DEBUG</option>
+            <option value="20" {% if config.config_log_level == 20 or config.config_log_level == None %}selected{% endif %}>INFO</option>
+            <option value="30" {% if config.config_log_level == 30 %}selected{% endif %}>WARNING</option>
+            <option value="40" {% if config.config_log_level == 40 %}selected{% endif %}>ERROR</option>
+          </select>
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_logfile">{{ _("Server Log Location") }}</label>
+          <input type="text" class="settings-input" name="config_logfile" id="config_logfile" value="{{ config.config_logfile or '' }}" placeholder="calibre-web.log">
+        </div>
+
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Enable Access Log") }}</span>
+            <span class="settings-switch-desc">{{ _("Log HTTP requests to a separate access log file.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_access_log" name="config_access_log" data-control="access-log-settings" {% if config.config_access_log %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div data-related="access-log-settings" style="{% if not config.config_access_log %}display: none;{% endif %}">
+          <div class="settings-form-group">
+            <label class="settings-label" for="config_access_logfile">{{ _("Access Log Location") }}</label>
+            <input type="text" class="settings-input" name="config_access_logfile" id="config_access_logfile" value="{{ config.config_access_logfile or '' }}" placeholder="access.log">
+          </div>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: right;">
+          <button type="submit" class="settings-btn settings-btn-primary">{{ _("Save Logging Settings") }}</button>
         </div>
       </div>
-    </div>
+    </form>
   </div>
 
   <div class="col-md-12 col-lg-6">
@@ -115,11 +135,11 @@
       'archived_cleanup_enabled', 'archived_cleanup_schedule',
       'archived_cleanup_schedule_day', 'archived_cleanup_schedule_hour'
     ] %}
-    <form id="cleanup-form" role="form" method="POST" action="{{ url_for('cwa_settings.set_cwa_settings') }}" autocomplete="off">
+    <form id="cleanup-form" role="form" method="POST" action="{{ url_for('cwa_settings.set_cwa_settings') }}" autocomplete="off" style="margin-bottom: 2rem;">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       <input type="hidden" name="submit_button" value="Submit">
 
-      {# Mirror remaining CWA settings to prevent checkbox-reset bug #}
+      {# Mirror remaining CWA settings #}
       {{ spiegel_inputs(CWA_FIELDS, visible_cwa_fields, cwa_settings, BOOLEAN_SETTINGS) }}
 
       <div class="settings-card">
@@ -172,6 +192,52 @@
         </div>
       </div>
     </form>
+
+    <!-- Manual Actions & Diagnostic Tools Card -->
+    <div class="settings-card">
+      <div class="settings-card-title">
+        <span class="glyphicon glyphicon-play"></span> {{ _("Diagnostics & Tools") }}
+      </div>
+      <p style="color: #909296; font-size: 0.85rem; margin-bottom: 1.5rem;">{{ _("Execute maintenance tasks and access server tools.") }}</p>
+
+      <div style="display: flex; flex-direction: column; gap: 1rem;">
+        <button type="button" class="settings-btn settings-btn-secondary" id="admin_refresh_cover_cache" style="text-align: left; display: flex; align-items: center; gap: 0.75rem;">
+          <span class="glyphicon glyphicon-refresh"></span> {{ _("Refresh Thumbnail Cache") }}
+        </button>
+        <button type="button" class="settings-btn settings-btn-secondary" id="restart_database" data-toggle="modal" data-target="#StatusDialog" style="text-align: left; display: flex; align-items: center; gap: 0.75rem;">
+          <span class="glyphicon glyphicon-link"></span> {{ _("Reconnect Calibre Database") }}
+        </button>
+        {% if config.schedule_metadata_backup %}
+          <button type="button" class="settings-btn settings-btn-secondary" id="metadata_backup" data-toggle="modal" data-target="#StatusDialog" style="text-align: left; display: flex; align-items: center; gap: 0.75rem;">
+            <span class="glyphicon glyphicon-floppy-save"></span> {{ _("Queue all books for metadata backup") }}
+          </button>
+        {% endif %}
+
+        <div style="border-top: 1px solid #444; margin-top: 0.5rem; padding-top: 1rem; display: flex; flex-direction: column; gap: 1rem;">
+          <a href="{{ url_for('admin.view_logfile') }}" class="settings-btn settings-btn-secondary" style="text-align: left; display: flex; align-items: center; gap: 0.75rem;">
+            <span class="glyphicon glyphicon-align-justify"></span> {{ _("View System Log") }}
+          </a>
+          <a href="{{ url_for('admin.download_debug') }}" class="settings-btn settings-btn-secondary" style="text-align: left; display: flex; align-items: center; gap: 0.75rem;">
+            <span class="glyphicon glyphicon-download-alt"></span> {{ _("Download Debug Package") }}
+          </a>
+          <a href="{{ url_for('convert_library.show_convert_library_page') }}" class="settings-btn settings-btn-secondary" style="text-align: left; display: flex; align-items: center; gap: 0.75rem;">
+            <span class="glyphicon glyphicon-transfer"></span> {{ _("CWA Library Conversion Service") }}
+          </a>
+          <a href="{{ url_for('epub_fixer.show_epub_fixer_page') }}" class="settings-btn settings-btn-secondary" style="text-align: left; display: flex; align-items: center; gap: 0.75rem;">
+            <span class="glyphicon glyphicon-ok-sign"></span> {{ _("CWA EPUB Fixer Service") }}
+          </a>
+        </div>
+
+        <div style="display: flex; gap: 1rem; margin-top: 0.5rem;">
+          <button type="button" class="settings-btn settings-btn-secondary" id="admin_restart" data-toggle="modal" data-target="#RestartDialog" style="flex-grow: 1; border-color: rgba(34, 139, 230, 0.3); color: #a5d8ff;">
+            <span class="glyphicon glyphicon-repeat"></span> {{ _("Restart Application") }}
+          </button>
+          <button type="button" class="settings-btn settings-btn-secondary" id="admin_stop" data-toggle="modal" data-target="#ShutdownDialog" style="flex-grow: 1; border-color: rgba(224, 49, 49, 0.3); color: #ffc9c9;">
+            <span class="glyphicon glyphicon-off"></span> {{ _("Shutdown") }}
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </div>
 {% endblock %}
@@ -201,8 +267,11 @@
       <div class="modal-header bg-info" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08);"></div>
       <div class="modal-body text-center">
         <p>{{ _('Are you sure you want to shutdown?') }}</p>
+        <div id="spinner2" class="spinner" style="display:none; margin: 1rem 0;">
+          <img id="img-spinner2" src="{{ url_for('static', filename='css/libs/images/loading-icon.gif') }}"/>
+        </div>
         <div style="display: flex; gap: 0.5rem; justify-content: center; margin-top: 1rem;">
-          <button type="button" class="btn btn-danger" id="shutdown" data-dismiss="modal">{{ _('OK') }}</button>
+          <button type="button" class="btn btn-primary" id="shutdown">{{ _('OK') }}</button>
           <button type="button" class="btn btn-default" data-dismiss="modal">{{ _('Cancel') }}</button>
         </div>
       </div>
@@ -210,48 +279,113 @@
   </div>
 </div>
 
+<!-- Modal for Reconnect Calibre Database / Run Tasks Status -->
 <div id="StatusDialog" class="modal fade" role="dialog">
   <div class="modal-dialog modal-sm">
     <div class="modal-content" style="background: #1a1b1e; border: 1px solid rgba(255, 255, 255, 0.1); color: #f8f9fa;">
-      <div class="modal-header bg-info text-center" style="border-bottom: 1px solid rgba(255, 255, 255, 0.08); padding: 1rem;">
-        <span id="DialogHeader" style="font-weight: 500;">{{ _('Updating, please do not reload this page') }}</span>
-      </div>
       <div class="modal-body text-center">
-        <div id="spinner2" class="spinner2" style="display:none; margin: 1rem 0;">
-          <img id="img-spinner2" src="{{ url_for('static', filename='css/libs/images/loading-icon.gif') }}"/>
+        <p id="status-dialog-message"></p>
+        <div id="spinner3" class="spinner" style="margin: 1rem 0;">
+          <img id="img-spinner3" src="{{ url_for('static', filename='css/libs/images/loading-icon.gif') }}"/>
         </div>
-        <div id="DialogContent" style="margin: 1rem 0;"></div>
-        <button type="button" class="btn btn-default hidden" id="DialogFinished" data-dismiss="modal">{{ _('OK') }}</button>
+        <button type="button" class="btn btn-default" id="status-dialog-close" data-dismiss="modal" style="display:none;">{{ _('Close') }}</button>
       </div>
     </div>
   </div>
 </div>
-
-{{ change_confirm_modal() }}
 {% endblock %}
 
 {% block js %}
 {{ super() }}
 <script>
-  $(document).ready(function() {
-    // Show/hide cleanup frequency settings based on enabled checkbox
-    $('#archived_cleanup_enabled').change(function() {
-      if ($(this).is(':checked')) {
-        $('[data-related="cleanup-settings"]').slideDown(200);
-      } else {
-        $('[data-related="cleanup-settings"]').slideUp(200);
-      }
-    });
+document.addEventListener('DOMContentLoaded', function() {
+  // Manual actions implementation
+  function setupManualAction(buttonId, endpointUrl, spinnerId) {
+    $('#' + buttonId).on('click', function(e) {
+      e.preventDefault();
+      var $btn = $(this);
+      $btn.prop('disabled', true);
+      $('#' + spinnerId).show();
 
-    // Show/hide cleanup day based on frequency
-    $('#archived_cleanup_schedule').change(function() {
-      var val = $(this).val();
-      if (val === 'weekly') {
-        $('[data-related="cleanup-freq-weekly"]').slideDown(200);
-      } else {
-        $('[data-related="cleanup-freq-weekly"]').slideUp(200);
+      $.ajax({
+        url: endpointUrl,
+        type: 'POST',
+        success: function(response) {
+          alert('Task completed successfully!');
+        },
+        error: function() {
+          alert('Error executing task.');
+        },
+        complete: function() {
+          $btn.prop('disabled', false);
+          $('#' + spinnerId).hide();
+        }
+      });
+    });
+  }
+
+  // Bind reconnect database and metadata backup dialogs
+  function setupStatusDialogAction(buttonId, endpointUrl) {
+    $('#' + buttonId).on('click', function() {
+      var msg = 'Running task...';
+      if (buttonId === 'restart_database') msg = 'Reconnecting to Calibre database...';
+      if (buttonId === 'metadata_backup') msg = 'Queueing all books for metadata backup...';
+
+      $('#status-dialog-message').text(msg);
+      $('#spinner3').show();
+      $('#status-dialog-close').hide();
+
+      $.ajax({
+        url: endpointUrl,
+        type: 'POST',
+        success: function(response) {
+          $('#status-dialog-message').text('Task completed successfully.');
+          $('#spinner3').hide();
+          $('#status-dialog-close').show();
+        },
+        error: function() {
+          $('#status-dialog-message').text('Error executing task.');
+          $('#spinner3').hide();
+          $('#status-dialog-close').show();
+        }
+      });
+    });
+  }
+
+  setupManualAction('admin_refresh_cover_cache', '{{ url_for("admin.refresh_cover_cache") }}', 'spinner3');
+  setupStatusDialogAction('restart_database', '{{ url_for("admin.reconnect_db") }}');
+  {% if config.schedule_metadata_backup %}
+    setupStatusDialogAction('metadata_backup', '{{ url_for("admin.metadata_backup") }}');
+  {% endif %}
+
+  // Restart / Shutdown endpoints
+  $('#restart').on('click', function() {
+    $('#spinner').show();
+    $.ajax({
+      url: '{{ url_for("admin.restart") }}',
+      type: 'POST',
+      success: function() {
+        alert('Server is restarting...');
+      },
+      error: function() {
+        alert('Error initiating restart.');
       }
     });
   });
+
+  $('#shutdown').on('click', function() {
+    $('#spinner2').show();
+    $.ajax({
+      url: '{{ url_for("admin.shutdown") }}',
+      type: 'POST',
+      success: function() {
+        alert('Server shutting down.');
+      },
+      error: function() {
+        alert('Error initiating shutdown.');
+      }
+    });
+  });
+});
 </script>
 {% endblock %}

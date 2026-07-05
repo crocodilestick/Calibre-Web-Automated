@@ -6,7 +6,7 @@
   <div class="col-md-12 col-lg-6">
     <!-- Card 1: Kobo eReader Integration (ajaxconfig) -->
     {% set visible_ajax_fields = ['config_kobo_sync', 'config_kobo_proxy'] %}
-    <form id="kobo-config-form" role="form" method="POST" action="{{ url_for('admin.update_ajaxconfig') }}" autocomplete="off" style="margin-bottom: 2rem;">
+    <form id="kobo-config-form" role="form" method="POST" action="{{ url_for('admin.ajax_config') }}" autocomplete="off" style="margin-bottom: 2rem;">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
       {# Mirror remaining ajaxconfig fields #}
@@ -67,7 +67,7 @@
             <span class="settings-switch-desc">{{ _("Synchronize dynamic/automatic shelves (Magic Shelves) to the Kobo eReader.") }}</span>
           </div>
           <label class="settings-switch">
-            <input type="checkbox" id="config_kobo_sync_magic_shelves" name="config_kobo_sync_magic_shelves" {% if cwa_settings.config_kobo_sync_magic_shelves %}checked{% endif %}>
+            <input type="checkbox" id="config_kobo_sync_magic_shelves" name="config_kobo_sync_magic_shelves" {% if config.config_kobo_sync_magic_shelves %}checked{% endif %}>
             <span class="settings-slider"></span>
           </label>
         </div>

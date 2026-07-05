@@ -17,7 +17,7 @@
       'config_embed_metadata', 'config_upload_formats', 'config_binariesdir',
       'config_kepubifypath', 'config_converterpath', 'config_rarfile_location'
     ] %}
-    <form id="library-config-form" role="form" method="POST" action="{{ url_for('admin.update_ajaxconfig') }}" autocomplete="off" style="margin-bottom: 2rem;">
+    <form id="library-config-form" role="form" method="POST" action="{{ url_for('admin.ajax_config') }}" autocomplete="off" style="margin-bottom: 2rem;">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
       {# Mirror remaining ajaxconfig fields #}

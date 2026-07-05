@@ -1,6 +1,20 @@
 // Consolidated Settings UI Actions (Roadmap-Punkt 2)
 
+// Scoped translator helper to avoid conflict with Underscore.js
+function _(text) {
+    if (window.settingsTranslations && window.settingsTranslations[text]) {
+        return window.settingsTranslations[text];
+    }
+    return text;
+}
+
 $(document).ready(function() {
+    // Helper to get root path prefix from current path
+    function getPath() {
+        var base = window.location.pathname.split('/settings')[0];
+        return base || '';
+    }
+
     // Helper to show/hide dynamic success alerts
     function showSuccessAlert($form, message) {
         var alertHtml = '<div class="settings-alert settings-alert-success">' +
@@ -72,6 +86,14 @@ $(document).ready(function() {
 
         // Serialize data
         var formData = new FormData($form[0]);
+
+        // Capture and append the clicked button name/value
+        if (e.originalEvent && e.originalEvent.submitter) {
+            var submitter = e.originalEvent.submitter;
+            if (submitter.name) {
+                formData.append(submitter.name, submitter.value || 'submit');
+            }
+        }
 
         // Submit via Fetch
         fetch(actionUrl, {
@@ -153,18 +175,42 @@ $(document).ready(function() {
         });
     });
 
-    // Toggle description helper blocks
-    $('.settings-switch input').change(function() {
-        var isChecked = $(this).is(':checked');
-        var controlId = $(this).attr('data-control');
-        if (controlId) {
-            if (isChecked) {
-                $('[data-related="' + controlId + '"]').slideDown(200);
-            } else {
-                $('[data-related="' + controlId + '"]').slideUp(200);
+    // Universal controller switch toggling (supports checkboxes and select inputs)
+    function initializeControlToggles() {
+        $('[data-control]').each(function() {
+            var $el = $(this);
+            var target = $el.data('control');
+
+            function updateVisibility() {
+                if ($el.is(':checkbox')) {
+                    var isChecked = $el.is(':checked');
+                    $('[data-related^="' + target + '"]').each(function() {
+                        var rel = $(this).data('related');
+                        if (rel === target) {
+                            if (isChecked) $(this).slideDown(200);
+                            else $(this).slideUp(200);
+                        }
+                    });
+                } else if ($el.is('select')) {
+                    var selectedVal = $el.val();
+                    $('[data-related^="' + target + '-"]').each(function() {
+                        var rel = $(this).data('related');
+                        var suffix = rel.replace(target + '-', '');
+                        if (suffix === selectedVal) {
+                            $(this).slideDown(200);
+                        } else {
+                            $(this).slideUp(200);
+                        }
+                    });
+                }
             }
-        }
-    });
+
+            $el.off('change.control').on('change.control', updateVisibility);
+            updateVisibility();
+        });
+    }
+
+    initializeControlToggles();
 
     // Collapsible sections
     $('.collapsible-trigger').click(function() {

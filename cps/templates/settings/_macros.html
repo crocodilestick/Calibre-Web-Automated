@@ -2,7 +2,7 @@
 
 {% macro spiegel_inputs(endpoint_fields, visible_fields, source_data, BOOLEAN_SETTINGS, provider=None) %}
   {% for field in endpoint_fields %}
-    {% if field not in visible_fields %}
+    {% if field not in visible_fields and field != 'config_ldap_serv_password_e' and field != 'mail_password_e' %}
       {# Special case 1: CWA Ignored/Retained Formats mirroring #}
       {% if field.startswith('ignore_convert_') %}
         {% set fmt = field.replace('ignore_convert_', '') %}
@@ -19,7 +19,12 @@
         {% if source_data['auto_convert_retained_formats'] is defined and fmt in source_data['auto_convert_retained_formats'] %}
           <input type="hidden" name="{{ field }}" value="{{ fmt }}">
         {% endif %}
-      {# Special case 2: OAuth fields need lookup in provider blueprints list rather than config #}
+      {# Special case 2: config_kobo_sync_magic_shelves stored in config, but mirrored in CWA fields #}
+      {% elif field == 'config_kobo_sync_magic_shelves' %}
+        {% if config.config_kobo_sync_magic_shelves %}
+          <input type="hidden" name="{{ field }}" value="on">
+        {% endif %}
+      {# Special case 3: OAuth fields need lookup in provider blueprints list rather than config #}
       {% elif field.startswith('config_generic_oauth_') or (field.startswith('config_') and field.split('_')|length >= 4 and field.split('_')[0] == 'config' and field.split('_')[2] == 'oauth' and field.split('_')[1]|int(-1) >= 0) %}
         {% set ns = namespace(oauth_val=None) %}
         {% if provider %}

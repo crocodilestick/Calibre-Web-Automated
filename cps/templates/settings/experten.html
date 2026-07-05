@@ -7,10 +7,10 @@
     'config_public_reg', 'config_login_type',
     'config_anonbrowse', 'config_allow_reverse_proxy_header_login',
     'config_reverse_proxy_login_header_name', 'config_reverse_proxy_auto_create_users',
-    'config_remote_login', 'config_use_ldap',
+    'config_remote_login',
     'config_ldap_provider_url', 'config_ldap_port', 'config_ldap_encryption',
     'config_ldap_cacert_path', 'config_ldap_cert_path', 'config_ldap_key_path',
-    'config_ldap_dn', 'config_ldap_password', 'config_ldap_user_object',
+    'config_ldap_dn', 'config_ldap_user_object',
     'config_ldap_openldap', 'config_ldap_auto_create_users', 'config_ldap_group_object_filter',
     'config_ldap_group_name', 'config_ldap_group_members_field', 'config_ldap_member_user_object',
     'config_ldap_authentication', 'config_ldap_serv_username', 'config_ldap_serv_password_e',
@@ -20,7 +20,14 @@
     'config_generic_oauth_auth_url', 'config_generic_oauth_token_url',
     'config_generic_oauth_userinfo_url', 'config_generic_oauth_scope',
     'config_generic_oauth_username_mapper', 'config_generic_oauth_email_mapper',
-    'config_generic_oauth_login_button', 'config_generic_oauth_admin_group'
+    'config_generic_oauth_login_button', 'config_generic_oauth_admin_group',
+    'config_use_https', 'config_external_port', 'config_certfile', 'config_keyfile',
+    'config_trustedhosts', 'config_updatechannel', 'config_disable_standard_login',
+    'config_enable_oauth_group_admin_management', 'config_check_extensions', 'config_session',
+    'config_password_policy', 'config_password_min_length', 'config_password_number',
+    'config_password_lower', 'config_password_upper', 'config_password_character',
+    'config_password_special', 'config_ratelimiter', 'config_limiter_uri',
+    'config_limiter_options', 'config_rarfile_location'
   ] %}
 
   {# Add dynamic OAuth provider client ID/secrets to visible fields so they don't get mirrored as empty #}
@@ -31,11 +38,18 @@
 
   {% set visible_cwa_fields = [
     'enable_mobile_blur', 'ingest_timeout_minutes',
-    'ingest_stale_temp_minutes', 'ingest_stale_temp_interval'
+    'ingest_stale_temp_minutes', 'ingest_stale_temp_interval',
+    'duplicate_detection_enabled', 'duplicate_notifications_enabled', 'duplicate_auto_resolve_enabled',
+    'duplicate_auto_resolve_strategy', 'duplicate_auto_resolve_cooldown_minutes',
+    'duplicate_format_priority', 'duplicate_detection_use_sql', 'duplicate_scan_method',
+    'duplicate_scan_enabled', 'duplicate_scan_frequency', 'duplicate_scan_cron',
+    'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds',
+    'duplicate_detection_title', 'duplicate_detection_author', 'duplicate_detection_language',
+    'duplicate_detection_series', 'duplicate_detection_publisher', 'duplicate_detection_format'
   ] %}
 
   <div class="col-md-12 col-lg-6">
-    <form id="expert-ajaxconfig-form" role="form" method="POST" action="{{ url_for('admin.update_ajaxconfig') }}" autocomplete="off" style="margin-bottom: 2rem;">
+    <form id="expert-ajaxconfig-form" role="form" method="POST" action="{{ url_for('admin.ajax_config') }}" autocomplete="off" style="margin-bottom: 2rem;">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
       {# Mirror remaining ajaxconfig fields #}
@@ -78,7 +92,7 @@
 
         <div class="settings-form-group">
           <label class="settings-label" for="config_login_type">{{ _("Primary Login Method") }}</label>
-          <select name="config_login_type" id="config_login_type" class="settings-input">
+          <select name="config_login_type" id="config_login_type" class="settings-input" data-control="login-settings">
             <option value="0" {% if config.config_login_type == 0 %}selected{% endif %}>{{ _("Database Authentication") }}</option>
             <option value="1" {% if config.config_login_type == 1 %}selected{% endif %}>{{ _("LDAP Authentication") }}</option>
             <option value="2" {% if config.config_login_type == 2 %}selected{% endif %}>{{ _("OAuth/OIDC Authentication") }}</option>
@@ -126,8 +140,8 @@
         </div>
       </div>
 
-      <!-- Card 3: LDAP-Konfiguration (collapsible) -->
-      <div class="settings-card">
+      <!-- Card 3: LDAP-Konfiguration (collapsible, related to login-settings-1) -->
+      <div class="settings-card" data-related="login-settings-1" style="{% if config.config_login_type != 1 %}display: none;{% endif %}">
         <div class="settings-card-title collapsible-trigger" data-target="ldap-settings-content" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
           <span><span class="glyphicon glyphicon-tasks"></span> {{ _("LDAP Server Settings") }}</span>
           <span class="glyphicon glyphicon-chevron-right"></span>
@@ -155,32 +169,28 @@
             </div>
 
             <div class="settings-form-group">
+              <label class="settings-label" for="config_ldap_cacert_path">{{ _("LDAP CACertificate Path") }}</label>
+              <input type="text" class="settings-input" name="config_ldap_cacert_path" id="config_ldap_cacert_path" value="{{ config.config_ldap_cacert_path or '' }}" placeholder="/path/to/cacert.pem">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_ldap_cert_path">{{ _("LDAP Certificate Path") }}</label>
+              <input type="text" class="settings-input" name="config_ldap_cert_path" id="config_ldap_cert_path" value="{{ config.config_ldap_cert_path or '' }}" placeholder="/path/to/cert.pem">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_ldap_key_path">{{ _("LDAP Keyfile Path") }}</label>
+              <input type="text" class="settings-input" name="config_ldap_key_path" id="config_ldap_key_path" value="{{ config.config_ldap_key_path or '' }}" placeholder="/path/to/key.pem">
+            </div>
+
+            <div class="settings-form-group">
               <label class="settings-label" for="config_ldap_dn">{{ _("LDAP Distinguished Name (DN)") }}</label>
-              <input type="text" class="settings-input" name="config_ldap_dn" id="config_ldap_dn" value="{{ config.config_ldap_dn or '' }}" placeholder="cn=admin,dc=example,dc=com">
-            </div>
-
-            <div class="settings-form-group">
-              <label class="settings-label" for="config_ldap_authentication">{{ _("LDAP Authentication Type") }}</label>
-              <select name="config_ldap_authentication" id="config_ldap_authentication" class="settings-input">
-                <option value="0" {% if config.config_ldap_authentication == 0 %}selected{% endif %}>{{ _("Anonymous") }}</option>
-                <option value="1" {% if config.config_ldap_authentication == 1 %}selected{% endif %}>{{ _("Unauthenticated") }}</option>
-                <option value="2" {% if config.config_ldap_authentication == 2 %}selected{% endif %}>{{ _("Simple") }}</option>
-              </select>
-            </div>
-
-            <div class="settings-form-group">
-              <label class="settings-label" for="config_ldap_serv_username">{{ _("LDAP Administrator Username") }}</label>
-              <input type="text" class="settings-input" name="config_ldap_serv_username" id="config_ldap_serv_username" value="{{ config.config_ldap_serv_username or '' }}">
-            </div>
-
-            <div class="settings-form-group">
-              <label class="settings-label" for="config_ldap_serv_password_e">{{ _("LDAP Administrator Password") }}</label>
-              <input type="password" class="settings-input" name="config_ldap_serv_password_e" id="config_ldap_serv_password_e" value="" placeholder="••••••••">
+              <input type="text" class="settings-input" name="config_ldap_dn" id="config_ldap_dn" value="{{ config.config_ldap_dn or '' }}" placeholder="distinguishedName">
             </div>
 
             <div class="settings-form-group">
               <label class="settings-label" for="config_ldap_user_object">{{ _("LDAP User Object Filter") }}</label>
-              <input type="text" class="settings-input" name="config_ldap_user_object" id="config_ldap_user_object" value="{{ config.config_ldap_user_object or '(objectClass=person)' }}">
+              <input type="text" class="settings-input" name="config_ldap_user_object" id="config_ldap_user_object" value="{{ config.config_ldap_user_object or '' }}" placeholder="(&(objectClass=person)(sAMAccountName=%s))">
             </div>
 
             <div class="settings-switch-group">
@@ -207,151 +217,343 @@
 
             <div class="settings-form-group">
               <label class="settings-label" for="config_ldap_group_name">{{ _("LDAP Group Name") }}</label>
-              <input type="text" class="settings-input" name="config_ldap_group_name" id="config_ldap_group_name" value="{{ config.config_ldap_group_name or '' }}">
+              <input type="text" class="settings-input" name="config_ldap_group_name" id="config_ldap_group_name" value="{{ config.config_ldap_group_name or '' }}" placeholder="calibre_users">
             </div>
 
             <div class="settings-form-group">
               <label class="settings-label" for="config_ldap_group_object_filter">{{ _("LDAP Group Object Filter") }}</label>
-              <input type="text" class="settings-input" name="config_ldap_group_object_filter" id="config_ldap_group_object_filter" value="{{ config.config_ldap_group_object_filter or '' }}">
+              <input type="text" class="settings-input" name="config_ldap_group_object_filter" id="config_ldap_group_object_filter" value="{{ config.config_ldap_group_object_filter or '' }}" placeholder="(&(objectClass=group)(cn=%s))">
             </div>
 
             <div class="settings-form-group">
               <label class="settings-label" for="config_ldap_group_members_field">{{ _("LDAP Group Members Field") }}</label>
-              <input type="text" class="settings-input" name="config_ldap_group_members_field" id="config_ldap_group_members_field" value="{{ config.config_ldap_group_members_field or '' }}">
+              <input type="text" class="settings-input" name="config_ldap_group_members_field" id="config_ldap_group_members_field" value="{{ config.config_ldap_group_members_field or '' }}" placeholder="member">
             </div>
 
             <div class="settings-form-group">
               <label class="settings-label" for="config_ldap_member_user_object">{{ _("LDAP Member User Filter") }}</label>
-              <input type="text" class="settings-input" name="config_ldap_member_user_object" id="config_ldap_member_user_object" value="{{ config.config_ldap_member_user_object or '' }}">
+              <input type="text" class="settings-input" name="config_ldap_member_user_object" id="config_ldap_member_user_object" value="{{ config.config_ldap_member_user_object or '' }}" placeholder="distinguishedName">
             </div>
 
             <div class="settings-form-group">
-              <label class="settings-label" for="config_ldap_cacert_path">{{ _("LDAP CACertificate Path") }}</label>
-              <input type="text" class="settings-input" name="config_ldap_cacert_path" id="config_ldap_cacert_path" value="{{ config.config_ldap_cacert_path or '' }}">
+              <label class="settings-label" for="config_ldap_authentication">{{ _("LDAP Authentication Type") }}</label>
+              <select name="config_ldap_authentication" id="config_ldap_authentication" class="settings-input">
+                <option value="0" {% if config.config_ldap_authentication == 0 %}selected{% endif %}>{{ _("Anonymous") }}</option>
+                <option value="1" {% if config.config_ldap_authentication == 1 %}selected{% endif %}>{{ _("Unauthenticated") }}</option>
+                <option value="2" {% if config.config_ldap_authentication == 2 %}selected{% endif %}>{{ _("Simple") }}</option>
+              </select>
             </div>
 
             <div class="settings-form-group">
-              <label class="settings-label" for="config_ldap_cert_path">{{ _("LDAP Certificate Path") }}</label>
-              <input type="text" class="settings-input" name="config_ldap_cert_path" id="config_ldap_cert_path" value="{{ config.config_ldap_cert_path or '' }}">
+              <label class="settings-label" for="config_ldap_serv_username">{{ _("LDAP Administrator Username") }}</label>
+              <input type="text" class="settings-input" name="config_ldap_serv_username" id="config_ldap_serv_username" value="{{ config.config_ldap_serv_username or '' }}" placeholder="cn=admin,dc=example,dc=com">
             </div>
 
             <div class="settings-form-group">
-              <label class="settings-label" for="config_ldap_key_path">{{ _("LDAP Keyfile Path") }}</label>
-              <input type="text" class="settings-input" name="config_ldap_key_path" id="config_ldap_key_path" value="{{ config.config_ldap_key_path or '' }}">
+              <label class="settings-label" for="config_ldap_serv_password_e">{{ _("LDAP Administrator Password") }}</label>
+              <input type="password" class="settings-input" name="config_ldap_serv_password_e" id="config_ldap_serv_password_e" value="" placeholder="••••••••" autocomplete="new-password">
             </div>
           </div>
         </div>
       </div>
 
-      <!-- Card 4: OAuth / OpenID Connect (collapsible) -->
-      <div class="settings-card">
+      <!-- Card 4: OAuth-Konfiguration (collapsible, related to login-settings-2) -->
+      <div class="settings-card" data-related="login-settings-2" style="{% if config.config_login_type != 2 %}display: none;{% endif %}">
         <div class="settings-card-title collapsible-trigger" data-target="oauth-settings-content" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
-          <span><span class="glyphicon glyphicon-cloud"></span> {{ _("OAuth / OIDC Server Settings") }}</span>
+          <span><span class="glyphicon glyphicon-link"></span> {{ _("OAuth / OIDC Server Settings") }}</span>
           <span class="glyphicon glyphicon-chevron-right"></span>
         </div>
 
         <div id="oauth-settings-content" class="collapsible-content" style="max-height: 0px; overflow: hidden; transition: max-height 0.3s ease-out;">
           <div style="padding-top: 1rem;">
-            <!-- OAuth Redirect Host -->
             <div class="settings-form-group">
               <label class="settings-label" for="config_oauth_redirect_host">{{ _("OAuth Redirect Host") }}</label>
-              <input type="text" class="settings-input" name="config_oauth_redirect_host" id="config_oauth_redirect_host" value="{{ config.config_oauth_redirect_host or '' }}" placeholder="https://your-domain.com">
-              <small class="form-text text-muted" style="margin-top: 0.25rem; display: block;">{{ _("Include protocol (https://). Leave empty to use auto-detection.") }}</small>
+              <input type="text" class="settings-input" name="config_oauth_redirect_host" id="config_oauth_redirect_host" value="{{ config.config_oauth_redirect_host or '' }}" placeholder="https://calibre.example.com">
+              <small style="color: #868e96;">{{ _("Include protocol (https://). Leave empty to use auto-detection.") }}</small>
             </div>
 
-            <!-- Generic OIDC Provider -->
-            <div style="border-top: 1px solid #444; margin-top: 1.5rem; padding-top: 1rem;">
-              <span class="settings-label" style="font-weight: 600; display: block; margin-bottom: 1rem;">{{ _("Generic OpenID Connect Provider") }}</span>
+            <!-- Generic OIDC Section -->
+            <div style="margin-top: 2rem; border-top: 1px solid #444; padding-top: 1.5rem;">
+              <span class="settings-label" style="font-weight: 600;">{{ _("Generic OpenID Connect Provider") }}</span>
+            </div>
 
-              <div class="settings-form-group">
-                <label class="settings-label" for="config_generic_oauth_metadata_url">{{ _("Metadata URL") }}</label>
-                <div style="display: flex; gap: 0.5rem;">
-                  <input type="text" style="flex: 1;" class="settings-input" name="config_generic_oauth_metadata_url" id="config_generic_oauth_metadata_url" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.metadata_url or '' }}{% endfor %}" placeholder="https://your-provider.com/.well-known/openid-configuration">
-                  <button type="button" class="settings-btn settings-btn-secondary" id="test_metadata_url" style="padding: 0 12px;">{{ _("Test") }}</button>
-                </div>
-              </div>
-
-              <div class="settings-form-group">
-                <label class="settings-label" for="config_generic_oauth_client_id">{{ _("OAuth Client ID") }}</label>
-                <input type="text" class="settings-input" name="config_generic_oauth_client_id" id="config_generic_oauth_client_id" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_client_id or '' }}{% endfor %}">
-              </div>
-
-              <div class="settings-form-group">
-                <label class="settings-label" for="config_generic_oauth_client_secret">{{ _("OAuth Client Secret") }}</label>
-                <input type="password" class="settings-input" name="config_generic_oauth_client_secret" id="config_generic_oauth_client_secret" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_client_secret or '' }}{% endfor %}">
-              </div>
-
-              <div class="settings-form-group">
-                <label class="settings-label" for="config_generic_oauth_server_url">{{ _("OAuth Base URL") }}</label>
-                <input type="text" class="settings-input" name="config_generic_oauth_server_url" id="config_generic_oauth_server_url" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_base_url or '' }}{% endfor %}">
-              </div>
-
-              <div class="settings-form-group">
-                <label class="settings-label" for="config_generic_oauth_auth_url">{{ _("Authorization Endpoint") }}</label>
-                <input type="text" class="settings-input" name="config_generic_oauth_auth_url" id="config_generic_oauth_auth_url" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_authorize_url or '' }}{% endfor %}">
-              </div>
-
-              <div class="settings-form-group">
-                <label class="settings-label" for="config_generic_oauth_token_url">{{ _("Token Endpoint") }}</label>
-                <input type="text" class="settings-input" name="config_generic_oauth_token_url" id="config_generic_oauth_token_url" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_token_url or '' }}{% endfor %}">
-              </div>
-
-              <div class="settings-form-group">
-                <label class="settings-label" for="config_generic_oauth_userinfo_url">{{ _("UserInfo Endpoint") }}</label>
-                <input type="text" class="settings-input" name="config_generic_oauth_userinfo_url" id="config_generic_oauth_userinfo_url" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_userinfo_url or '' }}{% endfor %}">
-              </div>
-
-              <div class="settings-form-group">
-                <label class="settings-label" for="config_generic_oauth_scope">{{ _("OAuth Scopes") }}</label>
-                <input type="text" class="settings-input" name="config_generic_oauth_scope" id="config_generic_oauth_scope" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.scope or '' }}{% endfor %}" placeholder="openid profile email">
-              </div>
-
-              <div class="settings-form-group">
-                <label class="settings-label" for="config_generic_oauth_username_mapper">{{ _("Username JWT Field") }}</label>
-                <input type="text" class="settings-input" name="config_generic_oauth_username_mapper" id="config_generic_oauth_username_mapper" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.username_mapper or '' }}{% endfor %}" placeholder="preferred_username">
-              </div>
-
-              <div class="settings-form-group">
-                <label class="settings-label" for="config_generic_oauth_email_mapper">{{ _("Email JWT Field") }}</label>
-                <input type="text" class="settings-input" name="config_generic_oauth_email_mapper" id="config_generic_oauth_email_mapper" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.email_mapper or '' }}{% endfor %}" placeholder="email">
-              </div>
-
-              <div class="settings-form-group">
-                <label class="settings-label" for="config_generic_oauth_admin_group">{{ _("Admin Group Mapper") }}</label>
-                <input type="text" class="settings-input" name="config_generic_oauth_admin_group" id="config_generic_oauth_admin_group" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_admin_group or '' }}{% endfor %}">
-              </div>
-
-              <div class="settings-form-group">
-                <label class="settings-label" for="config_generic_oauth_login_button">{{ _("Login Button Text") }}</label>
-                <input type="text" class="settings-input" name="config_generic_oauth_login_button" id="config_generic_oauth_login_button" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.login_button or '' }}{% endfor %}" placeholder="OpenID Connect">
-              </div>
-
-              <div style="margin-top: 1rem;">
-                <div style="display: flex; gap: 0.5rem; align-items: center;">
-                  <input type="text" style="flex: 1;" class="settings-input" id="config_generic_oauth_server_url_test" readonly placeholder="Enter base URL above to test">
-                  <button type="button" class="settings-btn settings-btn-secondary" id="test_oidc_connection">{{ _("Test Connection") }}</button>
-                </div>
-                <span id="oidc_test_result" style="display: block; margin-top: 0.5rem; font-size: 0.9rem;"></span>
+            <div class="settings-form-group" style="margin-top: 1rem;">
+              <label class="settings-label" for="config_generic_oauth_metadata_url">{{ _("Metadata URL") }}</label>
+              <div style="display: flex; gap: 0.5rem;">
+                <input type="text" class="settings-input" name="config_generic_oauth_metadata_url" id="config_generic_oauth_metadata_url" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.metadata_url or '' }}{% endfor %}" placeholder="https://keycloak.test/realms/master/.well-known/openid-configuration" style="flex-grow: 1;">
+                <button type="button" id="test_metadata_url" class="settings-btn settings-btn-secondary">{{ _("Test Connection") }}</button>
               </div>
             </div>
 
-            <!-- Built-in OAuth Providers -->
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_generic_oauth_client_id">{{ _("OAuth Client ID") }}</label>
+              <input type="text" class="settings-input" name="config_generic_oauth_client_id" id="config_generic_oauth_client_id" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_client_id or '' }}{% endfor %}">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_generic_oauth_client_secret">{{ _("OAuth Client Secret") }}</label>
+              <input type="password" class="settings-input" name="config_generic_oauth_client_secret" id="config_generic_oauth_client_secret" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_client_secret or '' }}{% endfor %}" placeholder="••••••••" autocomplete="new-password">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_generic_oauth_server_url">{{ _("OAuth Base URL") }}</label>
+              <input type="text" class="settings-input" name="config_generic_oauth_server_url" id="config_generic_oauth_server_url" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_base_url or '' }}{% endfor %}">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_generic_oauth_auth_url">{{ _("Authorization Endpoint") }}</label>
+              <input type="text" class="settings-input" name="config_generic_oauth_auth_url" id="config_generic_oauth_auth_url" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_authorize_url or '' }}{% endfor %}">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_generic_oauth_token_url">{{ _("Token Endpoint") }}</label>
+              <input type="text" class="settings-input" name="config_generic_oauth_token_url" id="config_generic_oauth_token_url" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_token_url or '' }}{% endfor %}">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_generic_oauth_userinfo_url">{{ _("UserInfo Endpoint") }}</label>
+              <input type="text" class="settings-input" name="config_generic_oauth_userinfo_url" id="config_generic_oauth_userinfo_url" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_userinfo_url or '' }}{% endfor %}">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_generic_oauth_scope">{{ _("OAuth Scopes") }}</label>
+              <input type="text" class="settings-input" name="config_generic_oauth_scope" id="config_generic_oauth_scope" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.scope or '' }}{% endfor %}" placeholder="openid email profile">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_generic_oauth_username_mapper">{{ _("Username JWT Field") }}</label>
+              <input type="text" class="settings-input" name="config_generic_oauth_username_mapper" id="config_generic_oauth_username_mapper" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.username_mapper or '' }}{% endfor %}" placeholder="preferred_username">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_generic_oauth_email_mapper">{{ _("Email JWT Field") }}</label>
+              <input type="text" class="settings-input" name="config_generic_oauth_email_mapper" id="config_generic_oauth_email_mapper" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.email_mapper or '' }}{% endfor %}" placeholder="email">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_generic_oauth_admin_group">{{ _("Admin Group Mapper") }}</label>
+              <input type="text" class="settings-input" name="config_generic_oauth_admin_group" id="config_generic_oauth_admin_group" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_admin_group or '' }}{% endfor %}" placeholder="admin_role_group">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_generic_oauth_login_button">{{ _("Login Button Text") }}</label>
+              <input type="text" class="settings-input" name="config_generic_oauth_login_button" id="config_generic_oauth_login_button" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.login_button or '' }}{% endfor %}" placeholder="Log in with OIDC">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_generic_oauth_server_url_test">{{ _("Test Connection Endpoint") }}</label>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <input type="text" class="settings-input" id="config_generic_oauth_server_url_test" value="" placeholder="Enter base URL above to test" style="flex-grow: 1;">
+                <button type="button" id="test_oidc_connection" class="settings-btn settings-btn-secondary">{{ _("Test Connection") }}</button>
+              </div>
+              <span id="oidc_test_result" style="display: block; margin-top: 0.5rem; font-size: 13px;"></span>
+            </div>
+
+            <!-- Dynamic OAuth Providers (Google, GitHub, etc.) -->
             {% for prov in provider if prov['provider_name'] != "generic" %}
-              <div style="border-top: 1px solid #444; margin-top: 1.5rem; padding-top: 1rem;">
-                <span class="settings-label" style="font-weight: 600; display: block; margin-bottom: 1rem;">{{ prov['provider_name']|capitalize }} {{ _("OAuth Settings") }}</span>
-
+              <div style="margin-top: 2rem; border-top: 1px solid #444; padding-top: 1.5rem;">
+                <span class="settings-label" style="font-weight: 600;">{{ prov['provider_name']|capitalize }} {{ _("OAuth Settings") }}</span>
+              </div>
+              <div style="margin-top: 1rem;">
                 <div class="settings-form-group">
                   <label class="settings-label" for="config_{{ prov['id'] }}_oauth_client_id">{{ _("Client ID") }}</label>
                   <input type="text" class="settings-input" name="config_{{ prov['id'] }}_oauth_client_id" id="config_{{ prov['id'] }}_oauth_client_id" value="{{ prov['oauth_client_id'] or '' }}">
                 </div>
-
                 <div class="settings-form-group">
                   <label class="settings-label" for="config_{{ prov['id'] }}_oauth_client_secret">{{ _("Client Secret") }}</label>
-                  <input type="password" class="settings-input" name="config_{{ prov['id'] }}_oauth_client_secret" id="config_{{ prov['id'] }}_oauth_client_secret" value="{{ prov['oauth_client_secret'] or '' }}">
+                  <input type="password" class="settings-input" name="config_{{ prov['id'] }}_oauth_client_secret" id="config_{{ prov['id'] }}_oauth_client_secret" value="{{ prov['oauth_client_secret'] or '' }}" placeholder="••••••••" autocomplete="new-password">
                 </div>
               </div>
             {% endfor %}
           </div>
+        </div>
+      </div>
+
+      <!-- Card 5: Server & SSL Settings -->
+      <div class="settings-card">
+        <div class="settings-card-title">
+          <span class="glyphicon glyphicon-globe"></span> {{ _("Server & Network Settings") }}
+        </div>
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Use via HTTPS") }}</span>
+            <span class="settings-switch-desc">{{ _("Enables secure cookie settings (Secure, SameSite=Lax). Enable this ONLY if you are accessing the server via HTTPS.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_use_https" name="config_use_https" {% if config.config_use_https %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_external_port">{{ _("Server External Port") }}</label>
+          <input type="number" min="1" max="65535" class="settings-input" name="config_external_port" id="config_external_port" value="{% if config.config_external_port != None %}{{ config.config_external_port }}{% endif %}">
+        </div>
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_certfile">{{ _("SSL Certfile Path") }}</label>
+          <input type="text" class="settings-input" name="config_certfile" id="config_certfile" value="{{ config.config_certfile or '' }}" placeholder="/path/to/cert.pem">
+        </div>
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_keyfile">{{ _("SSL Keyfile Path") }}</label>
+          <input type="text" class="settings-input" name="config_keyfile" id="config_keyfile" value="{{ config.config_keyfile or '' }}" placeholder="/path/to/key.pem">
+        </div>
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_trustedhosts">{{ _("Trusted Reverse Proxies") }}</label>
+          <input type="text" class="settings-input" name="config_trustedhosts" id="config_trustedhosts" value="{{ config.config_trustedhosts or '' }}" placeholder="127.0.0.1, 10.0.0.0/8">
+        </div>
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_updatechannel">{{ _("Update Channel") }}</label>
+          <select name="config_updatechannel" id="config_updatechannel" class="settings-input">
+            <option value="0" {% if config.config_updatechannel == 0 %}selected{% endif %}>Stable</option>
+            <option value="1" {% if config.config_updatechannel == 1 %}selected{% endif %}>Beta</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Card 6: Password Policy & Session Security -->
+      <div class="settings-card">
+        <div class="settings-card-title">
+          <span class="glyphicon glyphicon-certificate"></span> {{ _("Password Policy & Session Security") }}
+        </div>
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Disable Standard Login") }}</span>
+            <span class="settings-switch-desc">{{ _("Disable username/password login. Users must use OAuth or LDAP.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_disable_standard_login" name="config_disable_standard_login" {% if config.config_disable_standard_login %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("OAuth Group-Based Admin Control") }}</span>
+            <span class="settings-switch-desc">{{ _("Grant/revoke admin privileges automatically based on OAuth groups.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_enable_oauth_group_admin_management" name="config_enable_oauth_group_admin_management" {% if config.config_enable_oauth_group_admin_management %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Check Extensions on Upload") }}</span>
+            <span class="settings-switch-desc">{{ _("Verify if file extension matches actual file content on upload.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_check_extensions" name="config_check_extensions" {% if config.config_check_extensions %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_session">{{ _("Session Protection Strength") }}</label>
+          <select name="config_session" id="config_session" class="settings-input">
+            <option value="0" {% if config.config_session == 0 %}selected{% endif %}>{{ _("Basic") }}</option>
+            <option value="1" {% if config.config_session == 1 %}selected{% endif %}>{{ _("Strong") }}</option>
+          </select>
+        </div>
+        <div class="settings-switch-group" style="margin-top: 1.5rem;">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Enable Password Policy") }}</span>
+            <span class="settings-switch-desc">{{ _("Enforce complexity requirements for user passwords.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_password_policy" name="config_password_policy" data-control="password-policy-settings" {% if config.config_password_policy %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+        <div data-related="password-policy-settings" style="{% if not config.config_password_policy %}display: none;{% endif %}">
+          <div class="settings-form-group">
+            <label class="settings-label" for="config_password_min_length">{{ _("Minimum Password Length") }}</label>
+            <input type="number" min="1" max="40" class="settings-input" name="config_password_min_length" id="config_password_min_length" value="{{ config.config_password_min_length or 8 }}">
+          </div>
+          <div class="settings-switch-group">
+            <div class="settings-switch-label-block">
+              <span class="settings-switch-title">{{ _("Enforce Number") }}</span>
+              <span class="settings-switch-desc">{{ _("Password must contain at least one digit.") }}</span>
+            </div>
+            <label class="settings-switch">
+              <input type="checkbox" id="config_password_number" name="config_password_number" {% if config.config_password_number %}checked{% endif %}>
+              <span class="settings-slider"></span>
+            </label>
+          </div>
+          <div class="settings-switch-group">
+            <div class="settings-switch-label-block">
+              <span class="settings-switch-title">{{ _("Enforce Lowercase") }}</span>
+              <span class="settings-switch-desc">{{ _("Password must contain at least one lowercase letter.") }}</span>
+            </div>
+            <label class="settings-switch">
+              <input type="checkbox" id="config_password_lower" name="config_password_lower" {% if config.config_password_lower %}checked{% endif %}>
+              <span class="settings-slider"></span>
+            </label>
+          </div>
+          <div class="settings-switch-group">
+            <div class="settings-switch-label-block">
+              <span class="settings-switch-title">{{ _("Enforce Uppercase") }}</span>
+              <span class="settings-switch-desc">{{ _("Password must contain at least one uppercase letter.") }}</span>
+            </div>
+            <label class="settings-switch">
+              <input type="checkbox" id="config_password_upper" name="config_password_upper" {% if config.config_password_upper %}checked{% endif %}>
+              <span class="settings-slider"></span>
+            </label>
+          </div>
+          <div class="settings-switch-group">
+            <div class="settings-switch-label-block">
+              <span class="settings-switch-title">{{ _("Enforce Characters") }}</span>
+              <span class="settings-switch-desc">{{ _("Password must contain letters (needed for CJK inputs).") }}</span>
+            </div>
+            <label class="settings-switch">
+              <input type="checkbox" id="config_password_character" name="config_password_character" {% if config.config_password_character %}checked{% endif %}>
+              <span class="settings-slider"></span>
+            </label>
+          </div>
+          <div class="settings-switch-group">
+            <div class="settings-switch-label-block">
+              <span class="settings-switch-title">{{ _("Enforce Special Character") }}</span>
+              <span class="settings-switch-desc">{{ _("Password must contain at least one special character.") }}</span>
+            </div>
+            <label class="settings-switch">
+              <input type="checkbox" id="config_password_special" name="config_password_special" {% if config.config_password_special %}checked{% endif %}>
+              <span class="settings-slider"></span>
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 7: Rate Limiting -->
+      <div class="settings-card">
+        <div class="settings-card-title">
+          <span class="glyphicon glyphicon-ban-circle"></span> {{ _("Rate Limiting") }}
+        </div>
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Limit Failed Login Attempts") }}</span>
+            <span class="settings-switch-desc">{{ _("Block IPs after too many failed attempts.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_ratelimiter" name="config_ratelimiter" data-control="ratelimiter-settings" {% if config.config_ratelimiter %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+        <div data-related="ratelimiter-settings" style="{% if not config.config_ratelimiter %}display: none;{% endif %}">
+          <div class="settings-form-group">
+            <label class="settings-label" for="config_limiter_uri">{{ _("Limiter Backend URI") }}</label>
+            <input type="text" class="settings-input" id="config_limiter_uri" name="config_limiter_uri" value="{{ config.config_limiter_uri or '' }}" placeholder="memory://">
+          </div>
+          <div class="settings-form-group">
+            <label class="settings-label" for="config_limiter_options">{{ _("Limiter Options") }}</label>
+            <input type="text" class="settings-input" id="config_limiter_options" name="config_limiter_options" value="{{ config.config_limiter_options or '' }}">
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 8: Compression & Utilities -->
+      <div class="settings-card">
+        <div class="settings-card-title">
+          <span class="glyphicon glyphicon-folder-open"></span> {{ _("Compression & Utilities") }}
+        </div>
+        <div class="settings-form-group" style="margin-bottom: 1.5rem;">
+          <label class="settings-label" for="config_rarfile_location">{{ _("Unrar Executable Location") }}</label>
+          <input type="text" class="settings-input" name="config_rarfile_location" id="config_rarfile_location" value="{{ config.config_rarfile_location or '' }}" placeholder="/usr/bin/unrar">
         </div>
       </div>
 
@@ -369,7 +571,7 @@
       {# Mirror remaining CWA fields #}
       {{ spiegel_inputs(CWA_FIELDS, visible_cwa_fields, cwa_settings, BOOLEAN_SETTINGS) }}
 
-      <!-- Card 5: CWA Experten-Einstellungen -->
+      <!-- Card 9: CWA Expert Settings -->
       <div class="settings-card">
         <div class="settings-card-title">
           <span class="glyphicon glyphicon-cog"></span> {{ _("CWA Expert Settings") }}
@@ -399,6 +601,164 @@
         <div class="settings-form-group">
           <label class="settings-label" for="ingest_stale_temp_interval">{{ _("Ingest Stale Check Interval (Minutes)") }}</label>
           <input type="number" min="1" max="1440" class="settings-input" name="ingest_stale_temp_interval" id="ingest_stale_temp_interval" value="{{ cwa_settings.ingest_stale_temp_interval or 30 }}">
+        </div>
+      </div>
+
+      <!-- Card 10: Duplicate Detection & Resolution -->
+      <div class="settings-card">
+        <div class="settings-card-title">
+          <span class="glyphicon glyphicon-duplicate"></span> {{ _("Duplicate Detection & Resolution") }}
+        </div>
+
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Duplicate Detection") }}</span>
+            <span class="settings-switch-desc">{{ _("Scan for duplicate books in the library.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="duplicate_detection_enabled" name="duplicate_detection_enabled" data-control="duplicate-settings" {% if cwa_settings.duplicate_detection_enabled %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div data-related="duplicate-settings" style="{% if not cwa_settings.duplicate_detection_enabled %}display: none;{% endif %}">
+          <div class="settings-switch-group">
+            <div class="settings-switch-label-block">
+              <span class="settings-switch-title">{{ _("Auto-Resolve Duplicates") }}</span>
+              <span class="settings-switch-desc">{{ _("Automatically resolve duplicates based on selected strategy.") }}</span>
+            </div>
+            <label class="settings-switch">
+              <input type="checkbox" id="duplicate_auto_resolve_enabled" name="duplicate_auto_resolve_enabled" data-control="duplicate-resolve-settings" {% if cwa_settings.duplicate_auto_resolve_enabled %}checked{% endif %}>
+              <span class="settings-slider"></span>
+            </label>
+          </div>
+
+          <div data-related="duplicate-resolve-settings" style="{% if not cwa_settings.duplicate_auto_resolve_enabled %}display: none;{% endif %}">
+            <div class="settings-form-group">
+              <label class="settings-label" for="duplicate_auto_resolve_strategy">{{ _("Auto-Resolve Strategy") }}</label>
+              <select name="duplicate_auto_resolve_strategy" id="duplicate_auto_resolve_strategy" class="settings-input">
+                <option value="newest" {% if cwa_settings.duplicate_auto_resolve_strategy == 'newest' %}selected{% endif %}>{{ _("Keep Newest") }}</option>
+                <option value="oldest" {% if cwa_settings.duplicate_auto_resolve_strategy == 'oldest' %}selected{% endif %}>{{ _("Keep Oldest") }}</option>
+                <option value="merge" {% if cwa_settings.duplicate_auto_resolve_strategy == 'merge' %}selected{% endif %}>{{ _("Merge Metadata") }}</option>
+                <option value="highest_quality_format" {% if cwa_settings.duplicate_auto_resolve_strategy == 'highest_quality_format' %}selected{% endif %}>{{ _("Highest Quality Format") }}</option>
+                <option value="most_metadata" {% if cwa_settings.duplicate_auto_resolve_strategy == 'most_metadata' %}selected{% endif %}>{{ _("Most Metadata") }}</option>
+                <option value="largest_file_size" {% if cwa_settings.duplicate_auto_resolve_strategy == 'largest_file_size' %}selected{% endif %}>{{ _("Largest File Size") }}</option>
+              </select>
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="duplicate_auto_resolve_cooldown_minutes">{{ _("Auto-Resolve Cooldown (Minutes)") }}</label>
+              <input type="number" min="0" class="settings-input" name="duplicate_auto_resolve_cooldown_minutes" id="duplicate_auto_resolve_cooldown_minutes" value="{{ cwa_settings.duplicate_auto_resolve_cooldown_minutes or 60 }}">
+            </div>
+          </div>
+
+          <div class="settings-switch-group">
+            <div class="settings-switch-label-block">
+              <span class="settings-switch-title">{{ _("Duplicate Notifications") }}</span>
+              <span class="settings-switch-desc">{{ _("Receive notifications for newly detected duplicates.") }}</span>
+            </div>
+            <label class="settings-switch">
+              <input type="checkbox" id="duplicate_notifications_enabled" name="duplicate_notifications_enabled" {% if cwa_settings.duplicate_notifications_enabled %}checked{% endif %}>
+              <span class="settings-slider"></span>
+            </label>
+          </div>
+
+          <div class="settings-switch-group">
+            <div class="settings-switch-label-block">
+              <span class="settings-switch-title">{{ _("Use SQL Matching") }}</span>
+              <span class="settings-switch-desc">{{ _("Perform duplicate checks directly via SQL queries (faster, standard).") }}</span>
+            </div>
+            <label class="settings-switch">
+              <input type="checkbox" id="duplicate_detection_use_sql" name="duplicate_detection_use_sql" {% if cwa_settings.duplicate_detection_use_sql %}checked{% endif %}>
+              <span class="settings-slider"></span>
+            </label>
+          </div>
+
+          <div style="margin-top: 1.5rem; margin-bottom: 1rem;">
+            <span class="settings-label" style="font-weight: 600;">{{ _("Matching Criteria") }}</span>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; margin-bottom: 1.5rem;">
+            {% for criterion in ['title', 'author', 'series', 'publisher', 'language', 'format'] %}
+              <label style="display: flex; gap: 0.5rem; align-items: center; color: #c1c2c5; font-weight: normal; cursor: pointer;">
+                <input type="checkbox" name="duplicate_detection_{{ criterion }}" {% if cwa_settings['duplicate_detection_' ~ criterion] %}checked{% endif %}>
+                {{ criterion|capitalize }}
+              </label>
+            {% endfor %}
+          </div>
+
+          <div class="settings-switch-group">
+            <div class="settings-switch-label-block">
+              <span class="settings-switch-title">{{ _("Scheduled Duplicate Scan") }}</span>
+              <span class="settings-switch-desc">{{ _("Automatically scan for duplicates on a schedule.") }}</span>
+            </div>
+            <label class="settings-switch">
+              <input type="checkbox" id="duplicate_scan_enabled" name="duplicate_scan_enabled" data-control="duplicate-scan-schedule" {% if cwa_settings.duplicate_scan_enabled %}checked{% endif %}>
+              <span class="settings-slider"></span>
+            </label>
+          </div>
+
+          <div data-related="duplicate-scan-schedule-basic" style="{% if cwa_settings.duplicate_scan_cron %}display: none;{% endif %}">
+            <div class="settings-form-group">
+              <label class="settings-label" for="duplicate_scan_hour">{{ _("Scheduled Scan Hour (UTC Daily)") }}</label>
+              <select name="duplicate_scan_hour" id="duplicate_scan_hour" class="settings-input">
+                {% for h in range(24) %}
+                  <option value="{{ h }}" {% if cwa_settings.duplicate_scan_hour == h %}selected{% endif %}>{{ "%02d:00" | format(h) }}</option>
+                {% endfor %}
+              </select>
+            </div>
+          </div>
+
+          <div data-related="duplicate-scan-schedule-cron" style="{% if not cwa_settings.duplicate_scan_cron %}display: none;{% endif %}">
+            <div class="settings-form-group">
+              <label class="settings-label" for="duplicate_scan_cron">{{ _("Scan Cron Expression") }}</label>
+              <input type="text" class="settings-input" name="duplicate_scan_cron" id="duplicate_scan_cron" value="{{ cwa_settings.duplicate_scan_cron or '0 3 * * *' }}" placeholder="0 3 * * *">
+            </div>
+          </div>
+
+          <div data-related="duplicate-settings" style="{% if not cwa_settings.duplicate_detection_enabled %}display: none;{% endif %}">
+            <div class="settings-form-group" style="margin-top: 1rem;">
+              <label class="settings-label" for="duplicate_scan_schedule_type">{{ _("Scanning Schedule Type") }}</label>
+              <select id="duplicate_scan_schedule_type" class="settings-input" data-control="duplicate-scan-schedule">
+                <option value="basic" {% if not cwa_settings.duplicate_scan_cron %}selected{% endif %}>{{ _("Basic (Daily)") }}</option>
+                <option value="cron" {% if cwa_settings.duplicate_scan_cron %}selected{% endif %}>{{ _("Advanced (Cron Expression)") }}</option>
+              </select>
+            </div>
+
+            <!-- This is the real matching engine field sent to the backend -->
+            <input type="hidden" name="duplicate_scan_method" id="duplicate_scan_method_hidden" value="{{ cwa_settings.duplicate_scan_method or 'hybrid' }}">
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="duplicate_scan_method_selector">{{ _("Execution Matching Engine") }}</label>
+              <select id="duplicate_scan_method_selector" class="settings-input">
+                <option value="hybrid" {% if cwa_settings.duplicate_scan_method == 'hybrid' or not cwa_settings.duplicate_scan_method %}selected{% endif %}>{{ _("Hybrid (SQL + Python)") }}</option>
+                <option value="python" {% if cwa_settings.duplicate_scan_method == 'python' %}selected{% endif %}>{{ _("Pure Python (Slower)") }}</option>
+                <option value="sql" {% if cwa_settings.duplicate_scan_method == 'sql' %}selected{% endif %}>{{ _("Pure SQL (Faster)") }}</option>
+              </select>
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="duplicate_scan_chunk_size">{{ _("Scan Chunk Size") }}</label>
+              <input type="number" min="10" max="5000" class="settings-input" name="duplicate_scan_chunk_size" id="duplicate_scan_chunk_size" value="{{ cwa_settings.duplicate_scan_chunk_size or 500 }}">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="duplicate_scan_debounce_seconds">{{ _("Scan Debounce (Seconds)") }}</label>
+              <input type="number" min="0" class="settings-input" name="duplicate_scan_debounce_seconds" id="duplicate_scan_debounce_seconds" value="{{ cwa_settings.duplicate_scan_debounce_seconds or 5 }}">
+            </div>
+
+            <div style="margin-top: 1rem; margin-bottom: 1rem; color: #868e96; font-size: 13px;">
+              <span>{{ _("Next Run:") }} <strong>{{ next_duplicate_scan_run }}</strong></span>
+            </div>
+          </div>
+
+          <!-- Format priorities drag-and-drop -->
+          <div class="settings-form-group" style="margin-top: 1.5rem;">
+            <label class="settings-label">{{ _("Duplicate Format Priorities (Drag to Reorder)") }}</label>
+            <div id="duplicate_format_priority_container" style="margin-top: 0.5rem;">
+              <ul id="format_priority_list" style="padding-left: 0; margin-bottom: 0;"></ul>
+              <input type="hidden" name="duplicate_format_priority" id="duplicate_format_priority" value="{{ cwa_settings.duplicate_format_priority or '[]' }}">
+            </div>
+          </div>
         </div>
 
         <div style="text-align: right; margin-top: 1.5rem;">
@@ -488,6 +848,148 @@ $(document).ready(function() {
       }
     });
   });
+
+  // Duplicate scan method update
+  $('#duplicate_scan_method_selector').change(function() {
+    $('#duplicate_scan_method_hidden').val($(this).val());
+  });
+
+  // Handle schedule type umschalter cron clearance
+  $('#duplicate_scan_schedule_type').change(function() {
+    var type = $(this).val();
+    if (type === 'basic') {
+      $('#duplicate_scan_cron').val('');
+    } else {
+      if (!$('#duplicate_scan_cron').val()) {
+        $('#duplicate_scan_cron').val('0 3 * * *');
+      }
+    }
+  });
+
+  // Format Priority Ranking System
+  function initializeFormatPriorityList() {
+    const hiddenInput = document.getElementById('duplicate_format_priority');
+    const container = document.getElementById('format_priority_list');
+    if (!hiddenInput || !container) return;
+
+    try {
+      const rawValue = hiddenInput.value || '{}';
+      const decodedValue = rawValue.replace(/&quot;/g, '"').replace(/&#34;/g, '"');
+      const formatPriority = JSON.parse(decodedValue);
+      const formatArray = Object.entries(formatPriority).map(([format, priority]) => ({
+        format: format,
+        priority: priority
+      }));
+      formatArray.sort((a, b) => b.priority - a.priority);
+
+      if (formatArray.length === 0) {
+        // Fallback standard formats
+        const standards = ['epub', 'azw3', 'kepub', 'mobi', 'pdf'];
+        standards.forEach((fmt, i) => {
+          formatArray.push({format: fmt, priority: 100 - (i * 20)});
+        });
+      }
+
+      container.innerHTML = '';
+      formatArray.forEach(item => {
+        const li = document.createElement('li');
+        li.className = 'format-priority-item';
+        li.dataset.format = item.format;
+        li.dataset.priority = item.priority;
+        li.innerHTML = `
+          <div style="display: flex; align-items: center; padding: 8px 12px; margin-bottom: 8px; background: #2a3441; border: 1px solid #555; border-radius: 6px; cursor: move; transition: all 0.2s;">
+            <span style="color: #ffc200; margin-right: 15px; font-size: 16px; font-weight: 900;">⋮⋮</span>
+            <span style="flex: 1; color: white; font-weight: 500;">${item.format.toUpperCase()}</span>
+            <span style="color: #4CAF50; font-size: 11px; padding: 4px 8px; background: rgba(76, 160, 80, 0.1); border-radius: 4px;" class="priority-badge">Priority: ${item.priority}</span>
+          </div>
+        `;
+        container.appendChild(li);
+      });
+
+      setupFormatPriorityDragDrop();
+    } catch (e) {
+      console.error('Error initializing format priority list:', e);
+      container.innerHTML = '<li style="color: #e03131; padding: 12px;">Error loading format priority.</li>';
+    }
+  }
+
+  function setupFormatPriorityDragDrop() {
+    const container = document.getElementById('format_priority_list');
+    let draggedFormatElement = null;
+    let isDraggingFormat = false;
+
+    container.addEventListener('mousedown', function(e) {
+      const item = e.target.closest('.format-priority-item');
+      if (!item) return;
+
+      isDraggingFormat = true;
+      draggedFormatElement = item;
+      item.style.opacity = '0.5';
+      document.body.style.userSelect = 'none';
+      e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', function(e) {
+      if (!isDraggingFormat || !draggedFormatElement) return;
+      const afterElement = getFormatAfterElement(container, e.clientY);
+      if (afterElement == null) {
+        container.appendChild(draggedFormatElement);
+      } else {
+        container.insertBefore(draggedFormatElement, afterElement);
+      }
+    });
+
+    document.addEventListener('mouseup', function() {
+      if (!isDraggingFormat) return;
+      isDraggingFormat = false;
+      if (draggedFormatElement) {
+        draggedFormatElement.style.opacity = '1';
+        draggedFormatElement = null;
+      }
+      document.body.style.userSelect = '';
+      updateFormatPriorityHiddenInput();
+    });
+  }
+
+  function getFormatAfterElement(container, y) {
+    const draggableElements = [...container.querySelectorAll('.format-priority-item')].filter(el => el.style.opacity !== '0.5');
+    return draggableElements.reduce((closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+
+  function updateFormatPriorityHiddenInput() {
+    const container = document.getElementById('format_priority_list');
+    const hiddenInput = document.getElementById('duplicate_format_priority');
+    if (!container || !hiddenInput) return;
+    const items = container.querySelectorAll('.format-priority-item');
+    const formatPriority = {};
+    const totalItems = items.length;
+
+    items.forEach((item, index) => {
+      const format = item.dataset.format;
+      const priority = 100 - (index * Math.floor(100 / totalItems));
+      formatPriority[format] = priority;
+    });
+
+    hiddenInput.value = JSON.stringify(formatPriority);
+
+    items.forEach(item => {
+      const format = item.dataset.format;
+      const priorityBadge = item.querySelector('.priority-badge');
+      if (priorityBadge) {
+        priorityBadge.textContent = `Priority: ${formatPriority[format]}`;
+      }
+    });
+  }
+
+  initializeFormatPriorityList();
 });
 </script>
 {% endblock %}

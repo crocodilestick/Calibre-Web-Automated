@@ -18,6 +18,18 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-05 — Kobo-Dashboard: kompakte Begründungs-Badges im Arbeitsbereich
+
+- **Feature/Bug:** Kobo-Dashboard: kompakte Begründungs-Badges im Arbeitsbereich
+- **Branch / Worktree:** `feature/kobo-workspace-reason-badges`
+- **Status:** Erledigt. Erfolgreich implementiert, getestet und lokal committet.
+
+### Erledigt
+- **Backend-Datenanpassung**: `release_sources` und `blocker_reasons` in `cps/kobo_dashboard.py` an das `workspace_books`-Array angehängt.
+- **Template-Integration**: Jinja-Markup in `cps/templates/kobo_dashboard.html` eingebettet, um die Begründungs-Badges unter dem Buchtitel anzuzeigen. Text für Archiviert zu „Ist im Archiv“ präzisiert, `no_source` als „Keine Kobo-Freigabe“ benannt. Priorisierung (`never_override` > `archived` > `no_source`) implementiert.
+- **AJAX-Aktualisierung**: jQuery-Handler erweitert, um bei Einstellungs-Dropdown-Änderung die Badges live zu aktualisieren. AJAX-Fallback bei `error_generating_explanation` abgesichert (Badges stabil halten).
+- **Verifikation**: Zusätzliche Test-Assertions im Template-Smoke-Test und neuer Unit-Test `test_get_kobo_dashboard_data_reasons_and_sources_passed_to_workspace` hinzugefügt. Alle Tests grün (68 passed).
+
 ## 2026-07-05 — Kobo-Reader-Modell Phase 4: Overrides direkt im Dashboard-Arbeitsbereich editieren
 
 - **Feature/Bug:** Kobo-Reader-Modell Phase 4 (Dashboard Workspace Aktionen: Overrides direkt im Dashboard-Arbeitsbereich editieren - UX-Politur)

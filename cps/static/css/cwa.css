@@ -50,11 +50,10 @@ body.modal-open #remove-from-shelves + .tags {
  *
  * Two visual systems, both scoped to shelf pages only via the body classes
  * `cwa-shelf-view-gallery` / `cwa-shelf-view-reader` (set by shelf.html):
- *   A) Gallery = "dark library": wood texture across the whole page,
- *      glass navbar/sidebar, bronze accents, shelf-board under each cover.
+ *   A) Gallery = "cinematic dark" (Netflix-style): flat near-black page,
+ *      clean cover rows with zoom-on-hover, white/graphite controls.
  *   B) Reader  = "unified eInk": flat paper surface across the whole page,
- *      thin grey lines, black/white controls, no shadows.
- * Shared typography: serif display stack for headings and book titles.
+ *      thin grey lines, black/white controls, serif titles, muted covers.
  */
 
 /* Base grid layout (both modes) */
@@ -97,28 +96,24 @@ body.modal-open #remove-from-shelves + .tags {
     color: #fff !important;
 }
 
-/* ----------------- A) GALLERY VIEW (DARK LIBRARY) ----------------- */
+/* ----------------- A) GALLERY VIEW (CINEMATIC DARK) ----------------- */
 
-/* Full-page wood background (body does not scroll in caliBlur, so the
-   texture stays put without background-attachment tricks) */
+/* Full-page flat near-black background with a subtle vertical gradient,
+   modelled on streaming UIs (Netflix-style) */
 body.cwa-shelf-view-gallery {
-    background-color: #1e1b18 !important;
-    background-image:
-      radial-gradient(ellipse at 50% 20%, rgba(0, 0, 0, 0.35) 0%, rgba(0, 0, 0, 0.75) 100%),
-      url('../img/alexandria/wood_dark.jpg') !important;
-    background-size: cover !important;
-    background-position: center !important;
+    background-color: #141414 !important;
+    background-image: linear-gradient(180deg, #1c1c1c 0%, #141414 320px) !important;
     background-repeat: no-repeat !important;
 }
 
-/* Navbar as dark matte glass over the wood */
+/* Navbar as a slightly translucent black bar */
 body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top {
-    background: rgba(14, 10, 6, 0.55) !important;
+    background: rgba(20, 20, 20, 0.85) !important;
     background-image: none !important;
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35) !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4) !important;
 }
 
 /* Navbar sub-elements (brand block, collapse bar) keep their own caliBlur
@@ -130,37 +125,38 @@ body.cwa-shelf-view-gallery .navbar .navbar-collapse {
     box-shadow: none !important;
 }
 body.cwa-shelf-view-gallery .navbar .navbar-brand {
-    color: #e8ddcc !important;
+    color: #ffffff !important;
 }
 /* caliBlur styles the brand link with a very specific selector; match it */
 body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top div.navbar-header > a.navbar-brand {
-    color: #e8ddcc !important;
+    color: #ffffff !important;
     background: transparent !important;
-    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
+    font-weight: 700;
+    letter-spacing: 0.02em;
 }
 
-/* Left sidebar as matching glass panel */
+/* Left sidebar as a matching dark panel */
 body.cwa-shelf-view-gallery .col-sm-2 {
-    background: rgba(14, 10, 6, 0.4) !important;
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    background: rgba(0, 0, 0, 0.35) !important;
     border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
     min-height: 100vh;
 }
 
 body.cwa-shelf-view-gallery .navigation li a {
-    color: #d9cdbb !important;
+    color: #b3b3b3 !important;
 }
 body.cwa-shelf-view-gallery .navigation li a:hover {
-    background-color: rgba(163, 112, 76, 0.18) !important;
-    color: #f3ead9 !important;
-}
-body.cwa-shelf-view-gallery .navigation li.active a {
-    background-color: rgba(163, 112, 76, 0.28) !important;
+    background-color: rgba(255, 255, 255, 0.08) !important;
     color: #ffffff !important;
 }
+body.cwa-shelf-view-gallery .navigation li.active a {
+    background-color: rgba(255, 255, 255, 0.06) !important;
+    border-left: 3px solid #e50914;
+    color: #ffffff !important;
+    font-weight: 600;
+}
 body.cwa-shelf-view-gallery .navigation .nav-head {
-    color: #b08968 !important;
+    color: #808080 !important;
 }
 
 /* The shelf container itself becomes transparent: the wood is the page */
@@ -173,21 +169,20 @@ body.cwa-shelf-view-gallery .navigation .nav-head {
     padding: 20px 10px 60px !important;
 }
 
-/* Display typography: classic serif for the page heading */
+/* Display typography: big, bold, clean heading */
 body.cwa-shelf-view-gallery .shelf-header-wrapper h2 {
-    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
-    color: #f3ead9 !important;
+    color: #ffffff !important;
+    font-weight: 700;
     letter-spacing: 0.01em;
-    text-shadow: 1px 2px 4px rgba(0, 0, 0, 0.7);
 }
 body.cwa-shelf-view-gallery .shelf-header-wrapper {
-    border-bottom-color: rgba(255, 255, 255, 0.12) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Larger covers, extra row spacing for the shelf boards */
+/* Large covers in clean rows */
 #shelf-container.shelf-view-gallery .shelf-books-grid {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
-    gap: 50px 30px !important;
+    gap: 40px 24px !important;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card {
@@ -200,19 +195,18 @@ body.cwa-shelf-view-gallery .shelf-header-wrapper {
     box-shadow: none !important;
 }
 
-/* Cover block: keeps its footprint, the inner .img span is what lifts on
-   hover so the shelf board (a ::after on .cover) stays fixed in place */
+/* Cover block: the inner .img span zooms on hover, streaming-tile style */
 #shelf-container.shelf-view-gallery .shelf-book-card .cover {
     position: relative;
     overflow: visible;
     aspect-ratio: 2 / 3;
     /* style.css forces a fixed 225px height on .book .cover which would
-       override the aspect-ratio and detach covers from their shelf board */
+       override the aspect-ratio and distort the grid rows */
     height: auto !important;
     width: 100%;
-    margin-bottom: 26px;
+    margin-bottom: 12px;
     background: transparent;
-    border-radius: 0;
+    border-radius: 4px;
     box-shadow: none;
 }
 
@@ -222,14 +216,16 @@ body.cwa-shelf-view-gallery .shelf-header-wrapper {
     bottom: auto;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.3);
-    box-shadow: 5px 8px 16px rgba(0, 0, 0, 0.6), 0 0 2px rgba(255, 255, 255, 0.1);
-    transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    background: #1f1f1f;
+    border-radius: 4px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card:hover .cover .img {
-    transform: translateY(-7px) scale(1.02);
-    box-shadow: 8px 16px 26px rgba(0, 0, 0, 0.75);
+    transform: scale(1.05) translateY(-4px);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.8);
+    z-index: 5;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .cover img {
@@ -241,22 +237,7 @@ body.cwa-shelf-view-gallery .shelf-header-wrapper {
     position: relative;
     z-index: 1 !important;
     object-fit: cover;
-    border-radius: 2px 2px 0 0;
-}
-
-/* Shelf board: a wooden plank directly under the cover. It extends by half
-   the column gap (15px) on both sides so the planks of one row visually
-   connect into a continuous board. */
-#shelf-container.shelf-view-gallery .shelf-book-card .cover::after {
-    content: "";
-    position: absolute;
-    top: 100%;
-    left: -15px;
-    right: -15px;
-    height: 14px;
-    background: linear-gradient(180deg, #7a5233 0%, #5b3b22 40%, #33210f 100%);
-    border-top: 1px solid rgba(255, 226, 189, 0.25);
-    box-shadow: 0 8px 14px rgba(0, 0, 0, 0.5);
+    border-radius: 4px;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta {
@@ -268,13 +249,11 @@ body.cwa-shelf-view-gallery .shelf-header-wrapper {
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .title {
-    font-family: "Iowan Old Style", "Palatino Linotype", Palatino, Georgia, "Times New Roman", serif;
     font-weight: 600;
-    font-size: 1.08em;
+    font-size: 1.05em;
     line-height: 1.3;
     margin: 0 0 2px 0;
-    color: #f5efe6 !important;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.8);
+    color: #ffffff !important;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -285,8 +264,7 @@ body.cwa-shelf-view-gallery .shelf-header-wrapper {
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .author {
     font-size: 0.9em;
-    color: #e5e7eb !important;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    color: #b3b3b3 !important;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -296,8 +274,7 @@ body.cwa-shelf-view-gallery .shelf-header-wrapper {
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .series-meta {
     font-size: 0.82em;
-    color: #b3a893 !important;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+    color: #8c8c8c !important;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
@@ -314,50 +291,54 @@ body.cwa-shelf-view-gallery .shelf-header-wrapper {
 
 /* caliBlur colours the links inside the meta lines, not the paragraphs */
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .author a {
-    color: #e5e7eb !important;
+    color: #b3b3b3 !important;
 }
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .series-meta a {
-    color: #b3a893 !important;
+    color: #8c8c8c !important;
 }
 
-/* Bronze/graphite controls: no loud Bootstrap orange or blue on this page */
+/* Graphite/white controls: no loud Bootstrap orange or blue on this page */
 body.cwa-shelf-view-gallery .shelf-toolbar .btn-default,
 body.cwa-shelf-view-gallery .sidebar-sort-item .btn-default,
 body.cwa-shelf-view-gallery .sidebar-view-mode-item .btn-default {
-    background: rgba(255, 255, 255, 0.07) !important;
-    border: 1px solid rgba(255, 255, 255, 0.18) !important;
-    color: #e8ddcc !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #e5e5e5 !important;
     box-shadow: none !important;
+    border-radius: 4px;
 }
 body.cwa-shelf-view-gallery .shelf-toolbar .btn-default:hover,
 body.cwa-shelf-view-gallery .sidebar-sort-item .btn-default:hover,
 body.cwa-shelf-view-gallery .sidebar-view-mode-item .btn-default:hover {
-    background: rgba(163, 112, 76, 0.25) !important;
-    border-color: rgba(191, 138, 95, 0.6) !important;
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
     color: #ffffff !important;
 }
 
 body.cwa-shelf-view-gallery .dropdown-menu {
-    background: rgba(30, 21, 13, 0.96) !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6) !important;
+    background: #1f1f1f !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 4px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
 }
 body.cwa-shelf-view-gallery .dropdown-menu li a {
-    color: #e8ddcc !important;
+    color: #d6d6d6 !important;
 }
 body.cwa-shelf-view-gallery .dropdown-menu li a:hover {
-    background-color: rgba(163, 112, 76, 0.25) !important;
+    background-color: rgba(255, 255, 255, 0.1) !important;
     color: #ffffff !important;
 }
 body.cwa-shelf-view-gallery .dropdown-menu li.active a {
-    background-color: #a3704c !important;
+    background-color: rgba(255, 255, 255, 0.15) !important;
     color: #ffffff !important;
+    font-weight: 600;
 }
 
+/* Active toggle: white pill with dark text (streaming-UI CTA style) */
 body.cwa-shelf-view-gallery .view-mode-toggle button.active {
-    background: #a3704c !important;
-    border-color: #8a5a3b !important;
-    color: #ffffff !important;
+    background: #ffffff !important;
+    border-color: #ffffff !important;
+    color: #141414 !important;
 }
 
 /* Neutralise caliBlur's orange on primary buttons (e.g. modal dialogs) */
@@ -366,12 +347,12 @@ body.cwa-shelf-view-gallery .btn-primary:active,
 body.cwa-shelf-view-gallery .btn-primary:focus,
 body.cwa-shelf-view-gallery .btn-primary:hover,
 body.cwa-shelf-view-gallery .open .dropdown-toggle.btn-primary {
-    background-color: #a3704c !important;
-    border-color: #8a5a3b !important;
-    color: #ffffff !important;
+    background-color: #ffffff !important;
+    border-color: #ffffff !important;
+    color: #141414 !important;
 }
 body.cwa-shelf-view-gallery input[type=checkbox] {
-    accent-color: #a3704c;
+    accent-color: #e50914;
 }
 
 /* ----------------- B) READER VIEW (UNIFIED EINK) ----------------- */
@@ -514,8 +495,8 @@ body.cwa-shelf-view-reader .shelf-kobo-status .text-warning {
     position: relative;
     z-index: 1 !important;
     object-fit: cover;
-    /* eInk displays are monochrome; covers render in greyscale */
-    filter: grayscale(100%) contrast(1.05);
+    /* colour eInk look: keep the colours but noticeably muted */
+    filter: saturate(0.6) contrast(0.92) brightness(1.03);
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .meta {
@@ -679,11 +660,7 @@ body.cwa-shelf-view-reader .dropdown-menu li a.disabled {
 /* Narrow screens: tighter grid so the shelf still fits a phone */
 @media (max-width: 767px) {
     #shelf-container.shelf-view-gallery .shelf-books-grid {
-        grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)) !important;
-        gap: 40px 20px !important;
-    }
-    #shelf-container.shelf-view-gallery .shelf-book-card .cover::after {
-        left: -10px;
-        right: -10px;
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+        gap: 28px 16px !important;
     }
 }

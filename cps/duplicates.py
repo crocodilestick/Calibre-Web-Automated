@@ -1167,7 +1167,7 @@ def get_duplicate_status():
 def dismiss_duplicate_scan_setup_notice():
     """Remember that the current duplicate-index setup notice was dismissed."""
     try:
-        notice_file = f"/app/cwa_duplicate_index_setup_notice_{getattr(current_user, 'id', 'unknown')}"
+        notice_file = f"/config/cwa_duplicate_index_setup_notice_{getattr(current_user, 'id', 'unknown')}"
         with open(notice_file, 'w') as f:
             f.write("dismissed\n")
         return jsonify({"success": True})

@@ -29,12 +29,12 @@ log = logger.create()
 
 
 def _duplicate_setup_notice_dismissed():
-    notice_file = f"/app/cwa_duplicate_index_setup_notice_{getattr(current_user, 'id', 'unknown')}"
+    notice_file = f"/config/cwa_duplicate_index_setup_notice_{getattr(current_user, 'id', 'unknown')}"
     return os.path.isfile(notice_file)
 
 
 def duplicate_index_setup_notification(settings, cwa_db=None):
-    notice_file = f"/app/cwa_duplicate_index_setup_notice_{getattr(current_user, 'id', 'unknown')}"
+    notice_file = f"/config/cwa_duplicate_index_setup_notice_{getattr(current_user, 'id', 'unknown')}"
     if os.path.isfile(notice_file):
         return False
 

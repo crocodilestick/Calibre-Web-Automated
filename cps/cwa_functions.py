@@ -70,13 +70,11 @@ _duplicate_scan_book_ids = set()
 
 
 def _duplicate_full_scan_running():
-    terminal_stats = {STAT_FINISH_SUCCESS, STAT_FAIL, STAT_ENDED, STAT_CANCELLED}
     try:
-        for __, __, __, task, __ in WorkerThread.get_instance().tasks:
-            if getattr(task, "stat", None) in terminal_stats:
-                continue
-            if task.__class__.__name__ == "TaskDuplicateScan" and getattr(task, "full_scan", False):
-                return True
+        return WorkerThread.get_instance().has_active_task_of_type(
+            "TaskDuplicateScan",
+            extra_check=lambda task: getattr(task, "full_scan", False),
+        )
     except Exception as ex:
         log.debug("[cwa-duplicates] Could not check duplicate full-scan worker state: %s", str(ex))
     return False

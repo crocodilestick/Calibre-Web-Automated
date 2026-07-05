@@ -181,6 +181,17 @@
             <span class="settings-slider"></span>
           </label>
         </div>
+
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Translation Contribution Notifications") }}</span>
+            <span class="settings-switch-desc">{{ _("Receive notifications for contributing translations.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="contribute_translations_notifications" name="contribute_translations_notifications" {% if cwa_settings.contribute_translations_notifications %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
       </div>
 
       <!-- Card 2: E-Book-Korrekturen (Kindle EPUB Fixer) -->

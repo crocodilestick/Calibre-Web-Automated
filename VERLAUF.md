@@ -18,23 +18,28 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
-## 2026-07-05 — Schöne Sammlungsansicht (Phase 2)
+## 2026-07-05 — Schöne Sammlungsansicht (Phase 2 & Visuelle Nachrunde)
 
 - **Feature/Bug:** Schöne Sammlungsansicht (Kachel-/Card-Ansicht für Regale & Magic Shelves, Phase 2 - UI-Slice für `/shelf/<id>` und `/magicshelf/<id>`).
 - **Branch / Worktree:** `feature/beautiful-shelf-view-phase-2`
-- **Status:** Phase 2 vollständig implementiert, unit-getestet (pytest grün), formale Code-Hygiene (`git diff --check`) durchgeführt und bereit zur Abnahme.
+- **Status:** Phase 2 inklusive der visuellen Nachrunde vollständig implementiert, unit-getestet (pytest grün), formale Code-Hygiene (`git diff --check`) durchgeführt und bereit zur Abnahme.
 
 ### Erledigt
+- [x] **Integration web-optimierter Design-Assets:**
+  - `wood_dark.jpg` (dunkle Holztextur, ca. 525 KB), `wood_light.jpg` (ca. 605 KB) und `reader_paper.jpg` (ca. 259 KB) per `sips` komprimiert und in `cps/static/img/alexandria/` abgelegt.
+- [x] **Zusammenhängender Papier-Look im Reader-Modus:**
+  - Der gesamte Hintergrund (Navbar, linke Sidebar, Hauptbereich und Cards) verwendet einheitlich die `reader_paper.jpg`-Textur auf cremeweißem Grund. Harte weiße Kartenboxen, Schatten und Rundungen wurden durch flache eInk-Linien ersetzt.
+- [x] **Cover-First Galerie-Modus mit Holztextur:**
+  - Die dunkle Holztextur wird mit einem radialen Vignetten-Overlay dargestellt. Buchcover sind um 20% vergrößert (`minmax(180px, 1fr)`). Kacheln haben keine Boxen-Rahmen mehr (Bücher stehen frei). Verspieltes Goldleuchten entfernt (Schlagschatten, Hover-Anhebung und Cover-Skalierung).
+- [x] **Sortierung in der linken Seitenleiste:**
+  - Das Sortier-Dropdown wurde aus dem Hauptbereich entfernt und in die linke Sidebar unter den View-Toggle verschoben. Kompatibilität für das Ausgrauen bei manueller Sortierung im JS gewahrt.
 - [x] **Theme-Warnmeldung entfernt:**
-  - Die tägliche caliBlur-Warnmeldung („Ihr Theme wurde auf caliBlur (Dunkel) aktualisiert...“) in `cps/render_template.py` gezielt deaktiviert, ohne andere Flash-Kategorien zu stören.
-- [x] **UI-Bereinigung und Dropdowns in der Regalansicht (`shelf.html`):**
-  - Alle Aktionen für Regale und Magic-Shelves in einem Dropdown-Menü „Regal verwalten“ gebündelt (inklusive Erhalt aller JS-IDs für Lösch- und Sortier-Funktionalität).
-  - Hässliche Icon-Sortierleiste durch ein Bootstrap-Dropdown „Sortieren“ ersetzt, das den Namen des aktiven Sortierschlüssels anzeigt und inaktive Optionen korrekt ausgraut.
-  - Galerie-/Reader-Umschalter per JavaScript dynamisch und flackerfrei in die linke Sidebar (`#scnd-nav`) eingehängt, indem der Quell-Container sauber geklont wird.
-- [x] **CSS-Styles für Galerie- und Reader-Modus (`cwa.css`):**
-  - Galerie-Modus mit einem tiefen, edlen Bibliotheks- und Nischen-Look versehen, inklusive realistischen Cover-Schatten und Hover-Effekten (translateY, Cover-Skalierung, Gold-Akzentränder).
-  - Reader-Modus mit einem hellen Papier-/E-Ink-Look versehen, inklusive einer dezenten CSS-Papierstruktur, schlichten Kacheln, hoher Lesbarkeit und deaktivierten Animationen.
-  - Sidebar-Hintergrund im Reader-Modus farblich an den Papier-Hintergrund angepasst (`#fcfcf9`) und die Linkfarben korrigiert.
+  - Die tägliche caliBlur-Warnmeldung in `cps/render_template.py` gezielt deaktiviert, ohne andere Flash-Kategorien zu stören.
+- [x] **Review-Nacharbeiten:**
+  - URL-Sprünge bei `#toggle_order_shelf` und `#delete_shelf` durch `href="javascript:void(0);"` behoben.
+  - Sortier-HTML-IDs im Macro mit den JS-Erwartungen in `main.js` harmonisiert.
+- [x] **Planung Phase 3:**
+  - Buchdetail-Modal als eigenen, separaten Slice (Phase 3) ausgeplant.
 
 ### Belege
 - Unit-Tests: `.venv/bin/pytest tests/unit/test_magic_shelf_rules.py tests/unit/test_kobo_decoupling.py` laufen fehlerfrei durch (27 passed).

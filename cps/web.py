@@ -959,7 +959,7 @@ def render_magic_shelf(shelf_id, sort_param, page):
             ub.HiddenMagicShelfTemplate.shelf_id == shelf_id
         ).first() is not None
     
-    return render_title_template('index.html', 
+    return render_title_template('shelf.html',
                                  entries=entries, 
                                  pagination=pagination,
                                  title=_("Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s", icon=shelf.icon, name=shelf.name), 

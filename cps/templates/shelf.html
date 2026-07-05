@@ -1,51 +1,182 @@
 {% import 'image.html' as image %}
 {% extends "layout.html" %}
+
+{% macro sort_link(param, title_text, icon_classes) %}
+  {% if page == 'magicshelf' %}
+    {% set href = url_for('web.render_magic_shelf', shelf_id=shelf.id, sort_param=param) %}
+  {% else %}
+    {% set href = url_for('shelf.show_shelf', shelf_id=shelf.id, sort_param=param) %}
+  {% endif %}
+  <a data-toggle="tooltip" title="{{ title_text }}" id="{{ param }}" class="btn btn-primary {% if order == param %} active{% endif %}{% if status == 'on' %} disabled{% endif %}" href="{{ href }}">
+    {% for icon in icon_classes %}
+      <span class="glyphicon {{ icon }}"></span>
+    {% endfor %}
+  </a>
+{% endmacro %}
+
 {% block body %}
-<div class="discover">
-  <h2>{{title}}</h2>
-      <!--form  method="post"--->
-  {% if current_user.role_download() %}
-  <a id="shelf_down" href="{{ url_for('shelf.show_simpleshelf', shelf_id=shelf.id) }}" class="btn btn-primary">{{ _('Download') }} </a>
-      {% endif %}
-  {% if current_user.is_authenticated %}
+<div id="shelf-container" class="discover">
+  <script>
+    (function() {
+      var urlParams = new URLSearchParams(window.location.search);
+      var viewMode = urlParams.get('view');
+      if (viewMode === 'gallery' || viewMode === 'reader') {
+        localStorage.setItem('cwa_shelf_view', viewMode);
+      } else {
+        viewMode = localStorage.getItem('cwa_shelf_view') || 'gallery';
+      }
+      var container = document.getElementById('shelf-container');
+      if (container) {
+        container.classList.add('shelf-view-' + viewMode);
+      }
+    })();
+  </script>
+
+  <div class="shelf-header-wrapper" style="margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+    <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 15px;">
+      <div>
+        <h2 style="margin: 0 0 10px 0; font-weight: 700;">
+          {% if page == 'magicshelf' %}
+            {{ _('Magic Shelf') }}&nbsp;&nbsp;&nbsp;—&nbsp;&nbsp;&nbsp;<span style="font-size: 1.1em;">{{ shelf.icon }}</span> {{ shelf.name }}
+          {% else %}
+            {{ _('Shelf:') }} '{{ shelf.name }}'
+          {% endif %}
+        </h2>
+
+        {# Kobo-Synchronisationsstatus dezent im Header visualisieren #}
+        {% if shelf and config.config_kobo_sync %}
+          <div class="shelf-kobo-status text-muted" style="font-size: 0.9em; display: flex; gap: 15px; flex-wrap: wrap; margin-top: 5px;">
+            <span>
+              <strong>{{ _('Kobo Sync:') }}</strong>
+              {% if shelf.kobo_sync %}
+                <span class="text-success"><span class="glyphicon glyphicon-ok"></span> {{ _('Enabled') }}</span>
+              {% else %}
+                <span class="text-warning"><span class="glyphicon glyphicon-remove"></span> {{ _('Disabled') }}</span>
+              {% endif %}
+            </span>
+            <span>
+              <strong>{{ _('Kobo Collection:') }}</strong>
+              {% if shelf.kobo_display %}
+                <span class="text-success"><span class="glyphicon glyphicon-ok"></span> {{ _('Shown as Collection') }}</span>
+              {% else %}
+                <span class="text-warning"><span class="glyphicon glyphicon-remove"></span> {{ _('Hidden') }}</span>
+              {% endif %}
+            </span>
+          </div>
+        {% endif %}
+      </div>
+
+      {# Umschalter für Galerie-/Reader-Modus #}
+      <div class="view-mode-toggle btn-group" style="align-self: center;">
+        <button id="view-mode-gallery" class="btn btn-default" data-view="gallery" title="{{ _('Gallery View') }}">
+          <span class="glyphicon glyphicon-th"></span> <span class="hidden-xs">{{ _('Gallery') }}</span>
+        </button>
+        <button id="view-mode-reader" class="btn btn-default" data-view="reader" title="{{ _('Reader View') }}">
+          <span class="glyphicon glyphicon-align-justify"></span> <span class="hidden-xs">{{ _('Reader') }}</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  {# Magic Shelf Aktionsbuttons #}
+  {% if page == 'magicshelf' %}
+  <div class="shelf-actions" style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; flex-wrap: wrap; background: rgba(32, 44, 53, 0.4); padding: 1.5rem; border-radius: 4px;">
+    <div class="magic-shelf-buttons" style="display: flex; gap: 10px;">
+        <a href="{{url_for('web.render_magic_shelf', shelf_id=id, sort_param=order, page=1, refresh=1)}}"
+           class="btn btn-default"
+           style="display: flex; align-items: center; gap: 0.5rem;"
+           data-toggle="tooltip"
+           title="{{_('Refresh shelf to update with latest changes')}}">
+          <span class="glyphicon glyphicon-refresh"></span> {{_('Refresh')}}
+        </a>
+        {% if shelf.user_id == current_user.id or current_user.role_admin() %}
+        <a href="{{url_for('web.edit_magic_shelf', shelf_id=id)}}"
+           class="btn btn-default"
+           style="display: flex; align-items: center; gap: 0.5rem;"
+           data-toggle="tooltip"
+           title="{{_('Edit shelf rules')}}">
+          <span class="glyphicon glyphicon-edit"></span> {{_('Edit')}}
+        </a>
+        {% endif %}
+        {% if shelf.user_id != current_user.id %}
+        <button id="toggle-hide-shelf"
+                 class="btn btn-{% if is_hidden_shelf %}success{% else %}warning{% endif %}"
+                 data-shelf-id="{{ id }}"
+                 data-is-hidden="{{ 'true' if is_hidden_shelf else 'false' }}"
+                 style="display: flex; align-items: center; gap: 0.5rem;"
+                 data-toggle="tooltip"
+                 title="{{_('Hide this shelf from your sidebar') if not is_hidden_shelf else _('Show this shelf in your sidebar')}}">
+           <span class="glyphicon glyphicon-{% if is_hidden_shelf %}eye-open{% else %}eye-close{% endif %}"></span>
+           <span class="hide-text">{% if is_hidden_shelf %}{{_('Show Shelf')}}{% else %}{{_('Hide Shelf')}}{% endif %}</span>
+        </button>
+        {% endif %}
+    </div>
+
+    {# Sortierung für Magic Shelves #}
+    <div class="filterheader hidden-xs" style="margin-left: auto;">
+      {{ sort_link('new', _('Sort according to book date, newest first'), ['glyphicon-book', 'glyphicon-calendar', 'glyphicon-sort-by-order']) }}
+      {{ sort_link('old', _('Sort according to book date, oldest first'), ['glyphicon-book', 'glyphicon-calendar', 'glyphicon-sort-by-order-alt']) }}
+      {{ sort_link('abc', _('Sort title in alphabetical order'), ['glyphicon-font', 'glyphicon-sort-by-alphabet']) }}
+      {{ sort_link('zyx', _('Sort title in reverse alphabetical order'), ['glyphicon-font', 'glyphicon-sort-by-alphabet-alt']) }}
+      {{ sort_link('authaz', _('Sort authors in alphabetical order'), ['glyphicon-user', 'glyphicon-sort-by-alphabet']) }}
+      {{ sort_link('authza', _('Sort authors in reverse alphabetical order'), ['glyphicon-user', 'glyphicon-sort-by-alphabet-alt']) }}
+      {{ sort_link('pubnew', _('Sort according to publishing date, newest first'), ['glyphicon-calendar', 'glyphicon-sort-by-order']) }}
+      {{ sort_link('pubold', _('Sort according to publishing date, oldest first'), ['glyphicon-calendar', 'glyphicon-sort-by-order-alt']) }}
+    </div>
+  </div>
+  {% endif %}
+
+  {# Normale Regal Aktionsbuttons #}
+  {% if page != 'magicshelf' and current_user.is_authenticated %}
     {% if (current_user.role_edit_shelfs() and shelf.is_public ) or not shelf.is_public  %}
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div style="display: flex; gap: 10px; margin-bottom: 20px; align-items: center; flex-wrap: wrap;">
+        {% if current_user.role_download() %}
+          <a id="shelf_down" href="{{ url_for('shelf.show_simpleshelf', shelf_id=shelf.id) }}" class="btn btn-primary">{{ _('Download') }}</a>
+        {% endif %}
         <div class="btn btn-danger" data-action="{{url_for('shelf.delete_shelf', shelf_id=shelf.id)}}" id="delete_shelf" data-value="{{ shelf.id }}">{{ _('Delete this Shelf') }}</div>
-      <a id="edit_shelf" href="{{ url_for('shelf.edit_shelf', shelf_id=shelf.id) }}" class="btn btn-primary">{{ _('Edit Shelf Properties') }} </a>
-      </form>
-      {% if entries.__len__() %}
-      <a id="order_shelf" href="{{ url_for('shelf.order_shelf', shelf_id=shelf.id) }}" class="btn btn-primary">{{ _('Arrange books manually') }} </a>
-      <button id="toggle_order_shelf" data-alt-text="{% if status == "on" %}{{_('Disable Change order')}}{% else %}{{_('Enable Change order')}}{% endif %}" data-view="shelf" class="btn btn-primary{% if status == 'on' %} dummy">{{ _('Enable Change order') }}{% else%}">{{ _('Disable Change order') }}{% endif %}</button>
-        <div class="filterheader hidden-xs">
-          <a data-toggle="tooltip" title="{{_('Sort according to book date, newest first')}}" id="new" class="btn btn-primary {% if order == "new" %} active{% endif %}{% if status == "on" %} disabled{% endif %}" href="{{url_for('shelf.show_shelf', shelf_id=shelf.id, sort_param='new')}}"><span class="glyphicon glyphicon-book"></span> <span class="glyphicon glyphicon-calendar"></span><span class="glyphicon glyphicon-sort-by-order"></span></a>
-          <a data-toggle="tooltip" title="{{_('Sort according to book date, oldest first')}}" id="old" class="btn btn-primary {% if order == 'old' %} active{% endif %}{% if status == 'on' %} disabled{% endif %}" href="{{url_for('shelf.show_shelf', shelf_id=shelf.id, sort_param='old')}}"><span class="glyphicon glyphicon-book"></span> <span class="glyphicon glyphicon-calendar"></span><span class="glyphicon glyphicon-sort-by-order-alt"></span></a>
-          <a data-toggle="tooltip" title="{{_('Sort title in alphabetical order')}}" id="asc" class="btn btn-primary {% if order == 'abc' %} active{% endif %}{% if status == 'on' %} disabled{% endif %}" href="{{url_for('shelf.show_shelf', shelf_id=shelf.id, sort_param='abc')}}"><span class="glyphicon glyphicon-font"></span><span class="glyphicon glyphicon-sort-by-alphabet"></span></a>
-          <a data-toggle="tooltip" title="{{_('Sort title in reverse alphabetical order')}}" id="desc" class="btn btn-primary {% if order == 'zyx' %} active{% endif %}{% if status == 'on' %} disabled{% endif %}" href="{{url_for('shelf.show_shelf', shelf_id=shelf.id, sort_param='zyx')}}"><span class="glyphicon glyphicon-font"></span><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span></a>
-          <a data-toggle="tooltip" title="{{_('Sort authors in alphabetical order')}}" id="auth_az" class="btn btn-primary {% if order == 'authaz' %} active{% endif %}{% if status == 'on' %} disabled{% endif %}" href="{{url_for('shelf.show_shelf', shelf_id=shelf.id, sort_param='authaz')}}"><span class="glyphicon glyphicon-user"></span><span class="glyphicon glyphicon-sort-by-alphabet"></span></a>
-          <a data-toggle="tooltip" title="{{_('Sort authors in reverse alphabetical order')}}" id="auth_za" class="btn btn-primary {% if order == 'authza' %} active{% endif %}{% if status == 'on' %} disabled{% endif %}" href="{{url_for('shelf.show_shelf', shelf_id=shelf.id, sort_param='authza')}}"><span class="glyphicon glyphicon-user"></span><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span></a>
-          <a data-toggle="tooltip" title="{{_('Sort according to publishing date, newest first')}}" id="pub_new" class="btn btn-primary {% if order == 'pubnew' %} active{% endif %}{% if status == 'on' %} disabled{% endif %}" href="{{url_for('shelf.show_shelf', shelf_id=shelf.id, sort_param='pubnew')}}"><span class="glyphicon glyphicon-calendar"></span><span class="glyphicon glyphicon-sort-by-order"></span></a>
-          <a data-toggle="tooltip" title="{{_('Sort according to publishing date, oldest first')}}" id="pub_old" class="btn btn-primary {% if order == 'pubold' %} active{% endif %}{% if status == 'on' %} disabled{% endif %}" href="{{url_for('shelf.show_shelf', shelf_id=shelf.id, sort_param='pubold')}}"><span class="glyphicon glyphicon-calendar"></span><span class="glyphicon glyphicon-sort-by-order-alt"></span></a>
-          <a data-toggle="tooltip" title="{{_('Sort according to book added to shelf, newest first')}}" id="shelf_new" class="btn btn-primary {% if order == 'shelfnew' %} active{% endif %}{% if status == 'on' %} disabled{% endif %}" href="{{url_for('shelf.show_shelf', shelf_id=shelf.id, sort_param='shelfnew')}}"><span class="glyphicon glyphicon-list"></span><span class="glyphicon glyphicon-sort-by-order"></span></a>
-          <a data-toggle="tooltip" title="{{_('Sort according to book added to shelf, oldest first')}}" id="shelf_old" class="btn btn-primary {% if order == 'shelfold' %} active{% endif %}{% if status == 'on' %} disabled{% endif %}" href="{{url_for('shelf.show_shelf', shelf_id=shelf.id, sort_param='shelfold')}}"><span class="glyphicon glyphicon-list"></span><span class="glyphicon glyphicon-sort-by-order-alt"></span></a
-          >
-        </div>
-      {% endif %}
+        <a id="edit_shelf" href="{{ url_for('shelf.edit_shelf', shelf_id=shelf.id) }}" class="btn btn-primary">{{ _('Edit Shelf Properties') }}</a>
+
+        {% if entries.__len__() %}
+          <a id="order_shelf" href="{{ url_for('shelf.order_shelf', shelf_id=shelf.id) }}" class="btn btn-primary">{{ _('Arrange books manually') }}</a>
+          <button id="toggle_order_shelf" data-alt-text="{% if status == 'on' %}{{_('Disable Change order')}}{% else %}{{_('Enable Change order')}}{% endif %}" data-view="shelf" class="btn btn-primary{% if status == 'on' %} dummy{% endif %}">
+            {% if status == 'on' %}{{ _('Enable Change order') }}{% else %}{{ _('Disable Change order') }}{% endif %}
+          </button>
+        {% endif %}
+
+        {# Sortierung für normale Regale #}
+        {% if entries.__len__() %}
+          <div class="filterheader hidden-xs" style="margin-left: auto; display: inline-flex; gap: 4px;">
+            {{ sort_link('new', _('Sort according to book date, newest first'), ['glyphicon-book', 'glyphicon-calendar', 'glyphicon-sort-by-order']) }}
+            {{ sort_link('old', _('Sort according to book date, oldest first'), ['glyphicon-book', 'glyphicon-calendar', 'glyphicon-sort-by-order-alt']) }}
+            {{ sort_link('abc', _('Sort title in alphabetical order'), ['glyphicon-font', 'glyphicon-sort-by-alphabet']) }}
+            {{ sort_link('zyx', _('Sort title in reverse alphabetical order'), ['glyphicon-font', 'glyphicon-sort-by-alphabet-alt']) }}
+            {{ sort_link('authaz', _('Sort authors in alphabetical order'), ['glyphicon-user', 'glyphicon-sort-by-alphabet']) }}
+            {{ sort_link('authza', _('Sort authors in reverse alphabetical order'), ['glyphicon-user', 'glyphicon-sort-by-alphabet-alt']) }}
+            {{ sort_link('pubnew', _('Sort according to publishing date, newest first'), ['glyphicon-calendar', 'glyphicon-sort-by-order']) }}
+            {{ sort_link('pubold', _('Sort according to publishing date, oldest first'), ['glyphicon-calendar', 'glyphicon-sort-by-order-alt']) }}
+            {{ sort_link('shelfnew', _('Sort according to book added to shelf, newest first'), ['glyphicon-list', 'glyphicon-sort-by-order']) }}
+            {{ sort_link('shelfold', _('Sort according to book added to shelf, oldest first'), ['glyphicon-list', 'glyphicon-sort-by-order-alt']) }}
+          </div>
+        {% endif %}
+      </div>
     {% endif %}
   {% endif %}
-  <div class="row display-flex">
+
+  {# Das Buch-Grid #}
+  <div class="row display-flex shelf-books-grid">
     {% for entry in entries %}
-    <div class="col-sm-3 col-lg-2 col-xs-6 book isotope-item session">
+    <div class="col-sm-3 col-lg-2 col-xs-6 book isotope-item session shelf-book-card">
       <div class="cover">
-            <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" 
-               {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
-               data-book-id="{{ entry.Books.id }}"
-               data-book-formats="{% for format in entry.Books.data %}{{ format.format.lower() }}{% if not loop.last %},{% endif %}{% endfor %}"
-               class="book-cover-link">
-              <span class="img" title="{{entry.Books.title}}" >
-                {{ image.book_cover(entry.Books) }}
-                {% if entry[2] == True %}<span class="badge read glyphicon glyphicon-ok"></span>{% endif %}
-              </span>
-            </a>
+        <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}"
+           {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
+           data-book-id="{{ entry.Books.id }}"
+           data-book-formats="{% for format in entry.Books.data %}{{ format.format.lower() }}{% if not loop.last %},{% endif %}{% endfor %}"
+           class="book-cover-link">
+          <span class="img" title="{{entry.Books.title}}">
+            {{ image.book_cover(entry.Books) }}
+            {% if entry[2] == True %}<span class="badge read glyphicon glyphicon-ok"></span>{% endif %}
+          </span>
+        </a>
       </div>
       <div class="meta">
         <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}>
@@ -56,8 +187,8 @@
             {% if loop.index > g.config_authors_max and g.config_authors_max != 0 %}
               {% if not loop.first %}
                 <span class="author-hidden-divider">&amp;</span>
-			  {% endif %}
-              <a class="author-name author-hidden" href="{{url_for('web.books_list',  data='author', sort_param='stored', book_id=author.id) }}">{{author.name.replace('|',',')|shortentitle(30)}}</a>
+              {% endif %}
+              <a class="author-name author-hidden" href="{{url_for('web.books_list', data='author', sort_param='stored', book_id=author.id) }}">{{author.name.replace('|',',')|shortentitle(30)}}</a>
               {% if loop.last %}
                 <a href="#" class="author-expand" data-authors-max="{{g.config_authors_max}}" data-collapse-caption="({{_('reduce')}})">(...)</a>
               {% endif %}
@@ -65,18 +196,36 @@
               {% if not loop.first %}
                 <span>&amp;</span>
               {% endif %}
-              <a class="author-name" href="{{url_for('web.books_list',  data='author', sort_param='stored', book_id=author.id) }}">{{author.name.replace('|',',')|shortentitle(30)}}</a>
+              <a class="author-name" href="{{url_for('web.books_list', data='author', sort_param='stored', book_id=author.id) }}">{{author.name.replace('|',',')|shortentitle(30)}}</a>
             {% endif %}
           {% endfor %}
         </p>
+
+        {# Stabile Reihen-Formatierung (Int-Vergleich zur Entfernung von Dezimalstellen bei Ganzzahlen) #}
         {% if entry.Books.series.__len__() > 0 %}
-        <p class="series">
-          <a href="{{url_for('web.books_list', data='series', sort_param='stored', book_id=entry.Books.series[0].id )}}">
-            {{entry.Books.series[0].name}}
+        <p class="series-meta">
+          <a class="text-muted" href="{{url_for('web.books_list', data='series', sort_param='stored', book_id=entry.Books.series[0].id )}}">
+            {% set idx = entry.Books.series_index %}
+            {% if idx is not none %}
+              {% if idx == idx | int %}
+                {{ _('Buch %(num)d der Reihe %(name)s', num=idx|int, name=entry.Books.series[0].name) }}
+              {% else %}
+                {{ _('Buch %(num)s der Reihe %(name)s', num=idx|float, name=entry.Books.series[0].name) }}
+              {% endif %}
+            {% else %}
+              {{ entry.Books.series[0].name }}
+            {% endif %}
           </a>
-          ({{entry.Books.series_index|formatfloat(2)}})
         </p>
         {% endif %}
+
+        {# Universum Platzhalter (Phase 1: Wird nur gerendert, falls vorhanden) #}
+        {% if entry.Books.universe %}
+        <p class="universe-meta text-muted" style="font-size: 0.85em; font-style: italic;">
+          {{ _('Universum: %(name)s', name=entry.Books.universe) }}
+        </p>
+        {% endif %}
+
         {% if entry.Books.ratings.__len__() > 0 %}
         <div class="rating">
           {% for number in range((entry.Books.ratings[0].rating/2)|int(2)) %}
@@ -95,6 +244,67 @@
   </div>
 </div>
 {% endblock %}
+
 {% block modal %}
 {{ delete_confirm_modal() }}
+{% endblock %}
+
+{% block js %}
+{{ super() }}
+<script>
+$(document).ready(function() {
+    // View mode toggle handler
+    $('.view-mode-toggle button').on('click', function() {
+        var viewMode = $(this).data('view');
+        var container = $('#shelf-container');
+        if (container.length) {
+            container.removeClass('shelf-view-gallery shelf-view-reader');
+            container.addClass('shelf-view-' + viewMode);
+        }
+        localStorage.setItem('cwa_shelf_view', viewMode);
+
+        // Active class styling
+        $('.view-mode-toggle button').removeClass('active');
+        $(this).addClass('active');
+    });
+
+    // Set active toggle button on load
+    var urlParams = new URLSearchParams(window.location.search);
+    var activeMode = urlParams.get('view') || localStorage.getItem('cwa_shelf_view') || 'gallery';
+    $('#view-mode-' + activeMode).addClass('active');
+
+    // Handle hide/unhide magic shelf button
+    {% if page == 'magicshelf' %}
+    $('#toggle-hide-shelf').on('click', function() {
+        var $btn = $(this);
+        var shelfId = $btn.data('shelf-id');
+        var isHidden = $btn.data('is-hidden') === 'true';
+        var action = isHidden ? 'unhide' : 'hide';
+
+        $btn.prop('disabled', true);
+
+        $.ajax({
+            url: window.scriptRoot + '/magicshelf/' + shelfId + '/' + action,
+            method: 'POST',
+            success: function(response) {
+                if (response.success) {
+                    location.reload();
+                } else {
+                    alert('Error: ' + (response.message || 'Unknown error'));
+                    $btn.prop('disabled', false);
+                }
+            },
+            error: function(xhr) {
+                var message = 'An unexpected error occurred.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                alert('Error: ' + message);
+                $btn.prop('disabled', false);
+            }
+        });
+    });
+    {% endif %}
+});
+</script>
 {% endblock %}

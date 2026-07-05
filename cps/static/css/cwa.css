@@ -16,7 +16,7 @@ body.admin h2 {
 body.modal-open .book-meta > .author > a:first-of-type:before,
 body.modal-open div.tags > p > span.glyphicon.glyphicon-tags,
 body.modal-open #remove-from-shelves + .identifiers,
-body.modal-open #remove-from-shelves + .languages, 
+body.modal-open #remove-from-shelves + .languages,
 body.modal-open #remove-from-shelves + .publishers,
 body.modal-open #remove-from-shelves + .publishing-date,
 body.modal-open #remove-from-shelves + .tags {
@@ -44,4 +44,242 @@ body.modal-open #remove-from-shelves + .tags {
 #include_tag + .btn-group .dropdown-menu,
 #exclude_tag + .btn-group .dropdown-menu {
     max-width: 40vw;
+}
+
+/* --- Alexandria Beautiful Shelf Views (Roadmap Step 3) --- */
+
+/* Grid Layout */
+#shelf-container .shelf-books-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 25px;
+    margin: 20px 0 0 0 !important;
+    padding: 0 !important;
+}
+#shelf-container .shelf-books-grid::before,
+#shelf-container .shelf-books-grid::after {
+    display: none !important;
+}
+#shelf-container .shelf-book-card {
+    width: auto !important;
+    float: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* View Mode Toggle Styles */
+.view-mode-toggle button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    color: #ccc;
+    transition: all 0.2s ease;
+    padding: 6px 12px;
+}
+.view-mode-toggle button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    color: #fff;
+}
+.view-mode-toggle button.active {
+    background: #337ab7 !important;
+    border-color: #2e6da4 !important;
+    color: #fff !important;
+}
+
+/* Light Theme overrides for Toggle Button */
+body:not(.blur) .view-mode-toggle button {
+    background: #fff;
+    border-color: #ccc;
+    color: #333;
+}
+body:not(.blur) .view-mode-toggle button:hover {
+    background: #f5f5f5;
+}
+body:not(.blur) .view-mode-toggle button.active {
+    background: #337ab7 !important;
+    border-color: #2e6da4 !important;
+    color: #fff !important;
+}
+
+/* ----------------- A) GALLERY VIEW ----------------- */
+#shelf-container.shelf-view-gallery .shelf-book-card {
+    display: flex;
+    flex-direction: column;
+    background: rgba(32, 44, 53, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 12px !important;
+    transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+#shelf-container.shelf-view-gallery .shelf-book-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    border-color: rgba(255, 255, 255, 0.2);
+    background: rgba(32, 44, 53, 0.55);
+}
+
+#shelf-container.shelf-view-gallery .shelf-book-card .cover {
+    margin-bottom: 10px;
+    border-radius: 4px;
+    overflow: hidden;
+    aspect-ratio: 2 / 3;
+    background: rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+#shelf-container.shelf-view-gallery .shelf-book-card .cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#shelf-container.shelf-view-gallery .shelf-book-card .meta {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    padding: 2px 0 0 0;
+}
+
+#shelf-container.shelf-view-gallery .shelf-book-card .meta .title {
+    font-weight: 600;
+    font-size: 1.05em;
+    line-height: 1.3;
+    margin: 0 0 2px 0;
+    color: #fff;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 2.6em;
+}
+
+#shelf-container.shelf-view-gallery .shelf-book-card .meta .author {
+    font-size: 0.9em;
+    color: #bbb;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#shelf-container.shelf-view-gallery .shelf-book-card .meta .series-meta {
+    font-size: 0.82em;
+    color: #888;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#shelf-container.shelf-view-gallery .shelf-book-card .meta .rating {
+    margin-top: 4px;
+}
+
+/* Light Theme overrides for Gallery View */
+body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card {
+    background: #fff;
+    border-color: #e2e8f0;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card:hover {
+    background: #f8fafc;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+    border-color: #cbd5e1;
+}
+body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card .meta .title {
+    color: #1e293b;
+}
+body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card .meta .author {
+    color: #64748b;
+}
+body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card .meta .series-meta {
+    color: #94a3b8;
+}
+
+
+/* ----------------- B) READER VIEW ----------------- */
+#shelf-container.shelf-view-reader .shelf-book-card {
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0;
+    padding: 16px !important;
+    transition: none !important;
+    box-shadow: none !important;
+    transform: none !important;
+}
+
+#shelf-container.shelf-view-reader .shelf-book-card .cover {
+    margin-bottom: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 0;
+    aspect-ratio: 2 / 3;
+    background: rgba(0, 0, 0, 0.3);
+}
+
+#shelf-container.shelf-view-reader .shelf-book-card .cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+#shelf-container.shelf-view-reader .shelf-book-card .meta {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+#shelf-container.shelf-view-reader .shelf-book-card .meta .title {
+    font-weight: 700;
+    font-size: 1.1em;
+    line-height: 1.3;
+    margin: 0;
+    color: #fff;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    height: 2.6em;
+}
+
+#shelf-container.shelf-view-reader .shelf-book-card .meta .author {
+    font-size: 0.95em;
+    color: #ccc;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#shelf-container.shelf-view-reader .shelf-book-card .meta .series-meta {
+    font-size: 0.88em;
+    color: #aaa;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#shelf-container.shelf-view-reader .shelf-book-card .meta .rating {
+    display: none !important; /* Deaktiviert für eInk-Minimalismus */
+}
+
+/* Light Theme overrides for Reader View */
+body:not(.blur) #shelf-container.shelf-view-reader .shelf-book-card {
+    border-color: #334155;
+    background: #fff;
+}
+body:not(.blur) #shelf-container.shelf-view-reader .shelf-book-card .cover {
+    border-color: #0f172a;
+}
+body:not(.blur) #shelf-container.shelf-view-reader .shelf-book-card .meta .title {
+    color: #000;
+}
+body:not(.blur) #shelf-container.shelf-view-reader .shelf-book-card .meta .author {
+    color: #334155;
+}
+body:not(.blur) #shelf-container.shelf-view-reader .shelf-book-card .meta .series-meta {
+    color: #475569;
 }

@@ -31,7 +31,7 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 - [x] Phase 3: Spiegel-Infrastruktur + Bibliothek + Kobo (Spiegel-Makros, Kobo-Tab, Restriktionen)
 - [x] Phase 4: Automatisierung + Experten (Format-Grids, Drag&Drop, Experten-Tab cwa)
 - [x] Phase 5: Experten Server/Login-Formular + Feinschliff (Babel, Doku, Diffs)
-- [x] Blocker 1: Form-Aktionen in `bibliothek.html` und `kobo.html` auf `admin.ajax_config` korrigiert. Link "System Status" in `_tabs.html` auf funktionierenden `admin.admin` Endpoint korrigiert.
+- [x] Blocker 1: Form-Aktionen in `bibliothek.html` und `kobo.html` auf `admin.ajax_config` korrigiert. Link "System Status" in `_tabs.html` auf funktionierenden `admin.admin` Endpoint korrigiert und Linktext semantisch passend in "Admin page" geändert.
 - [x] Blocker 2: `config_kobo_sync_magic_shelves` Wert-Erhalt in `_macros.html` über direktes config-Lookups gelöst.
 - [x] Blocker 3: Optionen für `duplicate_auto_resolve_strategy` korrigiert und echte `duplicate_scan_method` Dropdown-Steuerung in `experten.html` integriert.
 - [x] Blocker 4: Hardcover/Unrendered-Metadata-Provider beim JS-Submit in `experten.html` und `automatisierung.html` erhalten.

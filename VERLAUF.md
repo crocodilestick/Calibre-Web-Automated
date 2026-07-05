@@ -20,9 +20,9 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 
 ## 2026-07-05 — Einstellungen zusammenführen und beruhigen
 
-- **Feature/Bug:** Einstellungen zusammenführen und beruhigen (Roadmap-Punkt 2)
+- **Feature/Bug:** Einstellungen zusammenführen und beruhigen (Roadmap-Punkt 2 - Finaler Abschluss & Politur)
 - **Branch / Worktree:** `feature/alexandria-settings-consolidation`
-- **Status:** Konsolidierung der Einstellungen erfolgreich abgeschlossen und verifiziert
+- **Status:** Alle Phasen und Blocker behoben, Passwörter geschützt, Duplikaterkennung integriert, deutsche L10n abgeschlossen, drift-unit-tested und abnahmebereit.
 
 ### Erledigt
 - [x] Phase 0: Feldinventar und Drift-Test
@@ -31,14 +31,24 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 - [x] Phase 3: Spiegel-Infrastruktur + Bibliothek + Kobo (Spiegel-Makros, Kobo-Tab, Restriktionen)
 - [x] Phase 4: Automatisierung + Experten (Format-Grids, Drag&Drop, Experten-Tab cwa)
 - [x] Phase 5: Experten Server/Login-Formular + Feinschliff (Babel, Doku, Diffs)
+- [x] Blocker 1: Form-Aktionen in `experten.html` auf `admin.ajax_config` korrigiert.
+- [x] Blocker 2: `config_kobo_sync_magic_shelves` Wert-Erhalt in `_macros.html` über direktes config-Lookups gelöst.
+- [x] Blocker 3: Optionen für `duplicate_auto_resolve_strategy` korrigiert und echte `duplicate_scan_method` Dropdown-Steuerung in `experten.html` integriert.
+- [x] Blocker 4: Hardcover/Unrendered-Metadata-Provider beim JS-Submit in `experten.html` und `automatisierung.html` erhalten.
+- [x] Sollte 5: LDAP- und SMTP-Passwortklartextlecks beim Spiegeln in `_macros.html` behoben.
+- [x] Sollte 6: Submitter-Button-Erkennung in `settings.js` integriert, um Test- und OAuth-Buttons funktionstüchtig zu machen.
+- [x] Sollte 7: Local `_()` Übersetzungssystem in `settings.js` über `window.settingsTranslations` in `_shell.html` repariert.
+- [x] Sollte 8: Duplikat-Erkennung Detailoptionen vollständig in `experten.html` gruppiert.
+- [x] Sollte 9: Logging-Konfiguration und Admin-Utilities in `wartung.html` und `_tabs.html` integriert.
+- [x] Sollte 10: `user_edit.html` mit Profil-Guard abgesichert, um Admin-User-Edit-Pages nicht zu beschädigen.
+- [x] Sollte 11: 72 neue deutsche Übersetzungseinträge in `messages.po` eingepflegt und `de` Catalog kompiliert.
+- [x] Sollte 12: Drift-Tests um Datenbank-Modelleigenschafts-Check (`test_model_properties_existence`) erweitert und alle Testfälle erfolgreich verifiziert.
 
 ### Belege
-- Drift-Unit-Test mit dynamic mapping & integer check erfolgreich ausgeführt:
-  `../../../.venv/bin/pytest -v tests/test_settings_drift.py` -> 4 passed in 0.80s
-- Syntax-Validierung:
-  `python -m py_compile cps/settings_ui.py tests/test_settings_drift.py` -> OK
-- Whitespace-Validierung:
-  `git diff --check` -> 0 Fehler / Keine Ausgaben
+- pytest drift tests: `../../../.venv/bin/pytest -v tests/test_settings_drift.py` -> `5 passed in 0.74s`
+- pybabel compile: `../../../.venv/bin/pybabel compile -d cps/translations -l de` -> Erfolgreich kompiliert.
+- Syntax & lint check: `node --check cps/static/js/settings.js` & `python -m py_compile cps/settings_ui.py` -> OK.
+- Working directory sauber: `git status --short` -> Nur untracked `scratch/`.
 
 ## 2026-07-05 — Kobo-Begriffe und UX-Texte glätten
 

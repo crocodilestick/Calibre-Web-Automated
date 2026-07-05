@@ -456,8 +456,12 @@ class TestKoboDashboard:
 
         assert "{{ _('Für Kobo ausgewählt') }}" in template
         assert "{{ _('Nicht auf Kobo') }}" in template
-        assert "{{ _('Manuell für den Kobo blockiert („Nicht auf Kobo“).') }}" in template
+        assert "{{ _('Dieses Buch wurde manuell für den Kobo blockiert („Nicht auf Kobo“).') }}" in template
         assert "Kobo: Ausgeschlossen" not in template
+        assert "exclusion_shelf" not in template
+        assert "Freigegeben, aber archiviert" not in template
+        assert "{{ _('Dieses Buch ist im Archiv') }}" in template
+        assert "{{ _('Dieses Buch ist in keinem Regal enthalten, welches mit dem Kobo gesynct wird') }}" in template
         assert "{{ _('System-Check & Hinweise') }}" in template
         assert "{{ _('Hinweis:') }}" in template
         assert "{{ _('Warnung:') }}" not in template

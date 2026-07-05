@@ -23,7 +23,7 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 - **Feature/Bug:** Kobo-Reader-Modell Phase 4 (Dashboard Workspace Aktionen: Overrides direkt im Dashboard-Arbeitsbereich editieren - UX-Politur)
 - **Branch / Worktree:** `feature/kobo-reader-dashboard-override-edit`
 - **Status:** Phase 4 vollständig implementiert, durch Alex freigegeben, nach `main` gemerged.
-  
+
 ### Erledigt
 
 - **Backend-Entkopplung & Fehler-Härtung**: Die Route `/kobo_auth/book/<book_id>/override` in `cps/kobo_auth.py` committet die DB-Änderung isoliert. Post-commit-Erklärungsfehler werden abgefangen und durch `None`-Werte für `is_allowed_on_device` und `is_synced` im Fallback-JSON signalisiert.

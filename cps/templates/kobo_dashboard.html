@@ -588,11 +588,11 @@ $(document).ready(function() {
         html += '  <ul style="padding-left: 20px; color: #a94442;">';
         data.blocker_reasons.forEach(function(reason) {
           if (reason === 'archived') {
-            html += '    <li>{{ _('Dieses Buch ist in Calibre archiviert.') }}</li>';
+            html += '    <li>{{ _('Dieses Buch ist im Archiv') }}</li>';
           } else if (reason === 'never_override') {
-            html += '    <li>{{ _('Manuell für den Kobo blockiert („Nicht auf Kobo“).') }}</li>';
+            html += '    <li>{{ _('Dieses Buch wurde manuell für den Kobo blockiert („Nicht auf Kobo“).') }}</li>';
           } else if (reason === 'no_source') {
-            html += '    <li>{{ _('Dieses Buch ist in keinem aktiven Kobo-Auswahlregal enthalten.') }}</li>';
+            html += '    <li>{{ _('Dieses Buch ist in keinem Regal enthalten, welches mit dem Kobo gesynct wird') }}</li>';
           } else {
             html += '    <li>' + escapeHtml(reason) + '</li>';
           }
@@ -686,19 +686,25 @@ $(document).ready(function() {
           var statusHtml = '';
 
           if (exp.is_visible_on_device) {
-            statusHtml = '<span class="text-success"><span class="glyphicon glyphicon-ok-sign"></span> {{ _('Auf Kobo verfügbar') }}</span>';
+            statusHtml = '<span class="label label-success">{{ _('Auf Kobo verfügbar') }}</span>';
           } else if (exp.is_allowed_on_device && exp.is_archived) {
-            statusHtml = '<span class="text-warning"><span class="glyphicon glyphicon-exclamation-sign"></span> {{ _('Freigegeben, aber archiviert') }}</span>';
+            statusHtml = '<span class="label label-warning">{{ _('Dieses Buch ist im Archiv') }}</span>';
           } else {
             var reasonStr = '{{ _('Nicht für Kobo ausgewählt') }}';
+            var statusLabelClass = 'label-danger';
             if (exp.blocker_reasons && exp.blocker_reasons.length > 0) {
-              if (exp.blocker_reasons.indexOf('exclusion_shelf') !== -1) {
-                reasonStr = '{{ _('Nicht auf Kobo (Ausschlussregal)') }}';
+              if (exp.blocker_reasons.indexOf('never_override') !== -1) {
+                reasonStr = '{{ _('Dieses Buch wurde manuell für den Kobo blockiert („Nicht auf Kobo“).') }}';
+                statusLabelClass = 'label-danger';
               } else if (exp.blocker_reasons.indexOf('archived') !== -1) {
-                reasonStr = '{{ _('In Calibre archiviert') }}';
+                reasonStr = '{{ _('Dieses Buch ist im Archiv') }}';
+                statusLabelClass = 'label-warning';
+              } else if (exp.blocker_reasons.indexOf('no_source') !== -1) {
+                reasonStr = '{{ _('Dieses Buch ist in keinem Regal enthalten, welches mit dem Kobo gesynct wird') }}';
+                statusLabelClass = 'label-default';
               }
             }
-            statusHtml = '<span class="text-danger"><span class="glyphicon glyphicon-remove-sign"></span> ' + escapeHtml(reasonStr) + '</span>';
+            statusHtml = '<span class="label ' + statusLabelClass + '">' + escapeHtml(reasonStr) + '</span>';
           }
 
           html += '        <td>' + statusHtml + '</td>';

@@ -133,6 +133,10 @@ body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top {
     z-index: 10 !important;
 }
 
+body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top > .container-fluid {
+    position: relative;
+}
+
 /* Navbar sub-elements (brand block, collapse bar) keep their own caliBlur
    backgrounds; flatten them so the glass navbar is one surface */
 body.cwa-shelf-view-gallery .navbar .navbar-header,
@@ -170,7 +174,7 @@ body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top div.navb
 }
 
 body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top > .container-fluid > form.navbar-form {
-    margin-left: 292px !important;
+    display: none !important;
 }
 
 body.cwa-shelf-view-gallery #advanced_search {
@@ -181,14 +185,14 @@ body.cwa-shelf-view-gallery #advanced_search {
 body.cwa-shelf-view-gallery #advanced_search .glyphicon-search {
     padding-left: 0 !important;
     padding-right: 0 !important;
-    margin-right: 16px !important;
+    margin-right: 8px !important;
     width: 24px;
     flex: 0 0 24px;
 }
 body.cwa-shelf-view-gallery #advanced_search .hidden-sm {
     display: inline-block !important;
     margin-left: 0 !important;
-    padding-left: 6px !important;
+    padding-left: 0 !important;
 }
 body.cwa-shelf-view-gallery #main-nav > li > a {
     display: inline-flex !important;
@@ -220,9 +224,9 @@ body.cwa-shelf-view-gallery .col-sm-2 {
     border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
     box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.12), inset -1px 0 0 rgba(0, 0, 0, 0.4), 4px 0 24px rgba(0, 0, 0, 0.4);
     border-radius: 0 14px 14px 0;
-    height: calc(100vh - 104px) !important;
+    height: calc(100vh - 96px) !important;
     min-height: 0;
-    top: 82px !important;
+    top: 64px !important;
 }
 
 body.cwa-shelf-view-gallery .col-sm-10,

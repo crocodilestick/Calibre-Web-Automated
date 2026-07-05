@@ -50,6 +50,7 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
   - Spätere visuelle Feinschleife: Regalüberschrift übernimmt den warmen Brand-Farbton von `CWA Alexandria`; `Regal verwalten` sitzt visuell beim Regal-Header, während die Sortierung direkt oberhalb der Buchkacheln steht.
   - Sidebar wieder stärker auf Navigation reduziert: Der View-Mode-Umschalter bleibt links, der Sortier-Dropdown wurde aus der Sidebar entfernt, ohne doppelte DOM-IDs für die historischen Sortier-Selektoren zu erzeugen.
   - Topbar weiter entzerrt: Brand, Suchfeld und Advanced-Search-Link erhalten explizitere Abstände, damit Lupe und Text nicht mehr optisch kleben oder in den Brand laufen.
+  - Abschließender Navbar-Feinschliff: Advanced-Search-Abstand wieder an den Profil-Link angeglichen, das einfache Suchformular in der Galerie-Regalansicht ausgeblendet und der Abstand zwischen Navbar und Sidebar reduziert.
 - [x] **caliBlur-Zwischenflächen neutralisiert:**
   - Für `.cwa-shelf-view-gallery` werden Navbar-/Sidebar-Untercontainer sowie `.col-sm-10`/`.discover`-Hintergründe und Pseudoelemente gezielt transparent gesetzt, damit Holztextur und Verlauf wirklich durch die Glasflächen scheinen.
 - [x] **Titel-Bereinigung:**

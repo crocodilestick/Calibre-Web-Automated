@@ -115,12 +115,12 @@ body.cwa-shelf-view-gallery {
 
 /* Navbar as translucent glass over the page */
 body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top {
-    background-color: rgba(8, 8, 12, 0.08) !important;
+    background-color: rgba(8, 8, 12, 0.035) !important;
     background-image:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.11) 0%, rgba(255, 255, 255, 0.015) 100%),
+        linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.01) 100%),
         radial-gradient(circle at 10% 20%, rgba(20, 32, 65, 0.45) 0%, transparent 60%),
         radial-gradient(circle at 90% 80%, rgba(55, 18, 38, 0.35) 0%, transparent 70%),
-        linear-gradient(180deg, rgba(12, 10, 12, 0.7) 0%, rgba(12, 10, 12, 0.92) 100%),
+        linear-gradient(180deg, rgba(12, 10, 12, 0.5) 0%, rgba(12, 10, 12, 0.78) 100%),
         url('../img/alexandria/wood_dark.jpg') !important;
     background-size: auto, cover, cover, cover, cover !important;
     background-position: center, center, center, center, center !important;
@@ -151,20 +151,49 @@ body.cwa-shelf-view-gallery .navbar .navbar-brand {
 }
 /* caliBlur styles the brand link with a very specific selector; match it */
 body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top div.navbar-header > a.navbar-brand {
-    color: #ffffff !important;
-    background: transparent !important;
+    color: #f2d8a8 !important;
+    background-color: rgba(8, 8, 12, 0.035) !important;
+    background-image:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.012) 100%),
+        radial-gradient(circle at 10% 20%, rgba(20, 32, 65, 0.45) 0%, transparent 60%),
+        radial-gradient(circle at 90% 80%, rgba(55, 18, 38, 0.35) 0%, transparent 70%),
+        linear-gradient(180deg, rgba(12, 10, 12, 0.5) 0%, rgba(12, 10, 12, 0.78) 100%),
+        url('../img/alexandria/wood_dark.jpg') !important;
+    background-size: auto, cover, cover, cover, cover !important;
+    background-position: center, center, center, center, center !important;
+    background-attachment: scroll, fixed, fixed, fixed, fixed !important;
+    background-repeat: no-repeat !important;
+    border-right: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 0 10px 0 0;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.12), 4px 0 18px rgba(0, 0, 0, 0.28);
     font-weight: 700;
     letter-spacing: 0.02em;
+    text-shadow: 0 1px 14px rgba(242, 216, 168, 0.16);
+}
+
+body.cwa-shelf-view-gallery #advanced_search {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 12px;
+}
+body.cwa-shelf-view-gallery #advanced_search .glyphicon-search {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-right: 0 !important;
+}
+body.cwa-shelf-view-gallery #advanced_search .hidden-sm {
+    margin-left: 0 !important;
 }
 
 /* Left sidebar as translucent glass panel */
 body.cwa-shelf-view-gallery .col-sm-2 {
-    background-color: rgba(8, 8, 12, 0.08) !important;
+    background-color: rgba(8, 8, 12, 0.035) !important;
     background-image:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.018) 100%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.17) 0%, rgba(255, 255, 255, 0.015) 100%),
         radial-gradient(circle at 10% 20%, rgba(20, 32, 65, 0.45) 0%, transparent 60%),
         radial-gradient(circle at 90% 80%, rgba(55, 18, 38, 0.35) 0%, transparent 70%),
-        linear-gradient(180deg, rgba(12, 10, 12, 0.7) 0%, rgba(12, 10, 12, 0.92) 100%),
+        linear-gradient(180deg, rgba(12, 10, 12, 0.5) 0%, rgba(12, 10, 12, 0.78) 100%),
         url('../img/alexandria/wood_dark.jpg') !important;
     background-size: auto, cover, cover, cover, cover !important;
     background-position: center, center, center, center, center !important;
@@ -174,6 +203,7 @@ body.cwa-shelf-view-gallery .col-sm-2 {
     backdrop-filter: blur(30px) saturate(1.55);
     border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
     box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.12), inset -1px 0 0 rgba(0, 0, 0, 0.4), 4px 0 24px rgba(0, 0, 0, 0.4);
+    border-radius: 0 0 12px 0;
     min-height: 100vh;
 }
 

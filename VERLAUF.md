@@ -18,6 +18,29 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-05 — Schöne Sammlungsansicht (Phase 2)
+
+- **Feature/Bug:** Schöne Sammlungsansicht (Kachel-/Card-Ansicht für Regale & Magic Shelves, Phase 2 - UI-Slice für `/shelf/<id>` und `/magicshelf/<id>`).
+- **Branch / Worktree:** `feature/beautiful-shelf-view-phase-2`
+- **Status:** Phase 2 vollständig implementiert, unit-getestet (pytest grün), formale Code-Hygiene (`git diff --check`) durchgeführt und bereit zur Abnahme.
+
+### Erledigt
+- [x] **Theme-Warnmeldung entfernt:**
+  - Die tägliche caliBlur-Warnmeldung („Ihr Theme wurde auf caliBlur (Dunkel) aktualisiert...“) in `cps/render_template.py` gezielt deaktiviert, ohne andere Flash-Kategorien zu stören.
+- [x] **UI-Bereinigung und Dropdowns in der Regalansicht (`shelf.html`):**
+  - Alle Aktionen für Regale und Magic-Shelves in einem Dropdown-Menü „Regal verwalten“ gebündelt (inklusive Erhalt aller JS-IDs für Lösch- und Sortier-Funktionalität).
+  - Hässliche Icon-Sortierleiste durch ein Bootstrap-Dropdown „Sortieren“ ersetzt, das den Namen des aktiven Sortierschlüssels anzeigt und inaktive Optionen korrekt ausgraut.
+  - Galerie-/Reader-Umschalter per JavaScript dynamisch und flackerfrei in die linke Sidebar (`#scnd-nav`) eingehängt, indem der Quell-Container sauber geklont wird.
+- [x] **CSS-Styles für Galerie- und Reader-Modus (`cwa.css`):**
+  - Galerie-Modus mit einem tiefen, edlen Bibliotheks- und Nischen-Look versehen, inklusive realistischen Cover-Schatten und Hover-Effekten (translateY, Cover-Skalierung, Gold-Akzentränder).
+  - Reader-Modus mit einem hellen Papier-/E-Ink-Look versehen, inklusive einer dezenten CSS-Papierstruktur, schlichten Kacheln, hoher Lesbarkeit und deaktivierten Animationen.
+  - Sidebar-Hintergrund im Reader-Modus farblich an den Papier-Hintergrund angepasst (`#fcfcf9`) und die Linkfarben korrigiert.
+
+### Belege
+- Unit-Tests: `.venv/bin/pytest tests/unit/test_magic_shelf_rules.py tests/unit/test_kobo_decoupling.py` laufen fehlerfrei durch (27 passed).
+- Compile-Check: `py_compile` für alle betroffenen Python-Dateien ist erfolgreich.
+- Code-Hygiene: `git diff --check` läuft komplett sauber ohne Whitespace-Fehler.
+
 ## 2026-07-05 — Schöne Sammlungsansicht (Phase 1)
 
 - **Feature/Bug:** Schöne Sammlungsansicht (Kachel-/Card-Ansicht für Regale & Magic Shelves, Phase 1 - Buchliste im Regal)

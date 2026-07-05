@@ -166,29 +166,10 @@ def cwa_update_notification() -> None:
 
 # Notify users once about theme migration to caliBlur
 def theme_migration_notification() -> None:
-    notice_file = '/app/theme_migration_notice'
-    current_date = datetime.now().strftime("%Y-%m-%d")
-    
-    # Check if notification already shown today
-    if os.path.isfile(notice_file):
-        try:
-            with open(notice_file, 'r') as f:
-                last_notification = f.read().strip()
-                if last_notification == current_date:
-                    return
-        except Exception:
-            pass
-    
-    # Show notification
-    message = _("ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is temporarily disabled while we develop a new frontend for v5.0.0.")
-    flash(message, category="theme_migration")
-    
-    # Mark as shown today
-    try:
-        with open(notice_file, 'w') as f:
-            f.write(current_date)
-    except Exception as e:
-        print(f"[theme-migration-notification] Error writing notice file: {e}", flush=True)
+    # CWA Alexandria: Disable only the caliBlur theme migration warning.
+    # Other notifications (CWA update notifications, missing translations, duplicates etc.)
+    # are handled in separate functions in this file and remain fully active.
+    return
 
 
 # Checks if translations are missing for the current language

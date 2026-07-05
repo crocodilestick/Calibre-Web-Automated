@@ -104,19 +104,19 @@ body:not(.blur) .view-mode-toggle button.active {
 #shelf-container.shelf-view-gallery .shelf-book-card {
     display: flex;
     flex-direction: column;
-    background: rgba(32, 44, 53, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(24, 20, 18, 0.7);
+    border: 1px solid rgba(190, 130, 80, 0.15);
     border-radius: 6px;
     padding: 12px !important;
-    transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.25s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.25s ease, background-color 0.25s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(32, 44, 53, 0.55);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    border-color: rgba(190, 130, 80, 0.35);
+    background: rgba(34, 28, 25, 0.85);
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .cover {
@@ -125,7 +125,12 @@ body:not(.blur) .view-mode-toggle button.active {
     overflow: hidden;
     aspect-ratio: 2 / 3;
     background: rgba(0, 0, 0, 0.2);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    box-shadow: 3px 3px 8px rgba(0, 0, 0, 0.5);
+    transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+#shelf-container.shelf-view-gallery .shelf-book-card:hover .cover {
+    transform: scale(1.02);
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .cover img {
@@ -139,6 +144,7 @@ body:not(.blur) .view-mode-toggle button.active {
     flex-direction: column;
     gap: 3px;
     padding: 2px 0 0 0;
+    text-transform: none !important;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .title {
@@ -152,31 +158,34 @@ body:not(.blur) .view-mode-toggle button.active {
     -webkit-box-orient: vertical;
     overflow: hidden;
     height: 2.6em;
+    text-transform: none !important;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .author {
     font-size: 0.9em;
-    color: #bbb;
+    color: #d1d5db;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-transform: none !important;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .series-meta {
     font-size: 0.82em;
-    color: #888;
+    color: #9ca3af;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-transform: none !important;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .rating {
     margin-top: 4px;
 }
 
-/* Light Theme overrides for Gallery View */
+/* Light Theme overrides for Gallery View (Ausweich-Theme falls caliBlur inaktiv) */
 body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card {
     background: #fff;
     border-color: #e2e8f0;
@@ -199,13 +208,26 @@ body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card .meta .seri
 
 
 /* ----------------- B) READER VIEW ----------------- */
+#shelf-container.shelf-view-reader {
+    background-color: #fcfcf9 !important;
+    background-image:
+      radial-gradient(rgba(0,0,0,0.015) 1px, transparent 0),
+      radial-gradient(rgba(0,0,0,0.02) 1px, transparent 0) !important;
+    background-size: 8px 8px !important;
+    background-position: 0 0, 4px 4px !important;
+    padding: 25px !important;
+    border-radius: 6px;
+    border: 1px solid #e4e4e7;
+    box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+}
+
 #shelf-container.shelf-view-reader .shelf-book-card {
     display: flex;
     flex-direction: column;
     background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    border: 1px solid #d4d4d8;
     border-radius: 0;
-    padding: 16px !important;
+    padding: 14px !important;
     transition: none !important;
     box-shadow: none !important;
     transform: none !important;
@@ -213,10 +235,17 @@ body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card .meta .seri
 
 #shelf-container.shelf-view-reader .shelf-book-card .cover {
     margin-bottom: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid #71717a;
     border-radius: 0;
     aspect-ratio: 2 / 3;
-    background: rgba(0, 0, 0, 0.3);
+    background: #e4e4e7;
+    box-shadow: none !important;
+    transition: none !important;
+    transform: none !important;
+}
+
+#shelf-container.shelf-view-reader .shelf-book-card:hover .cover {
+    transform: none !important;
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .cover img {
@@ -229,6 +258,7 @@ body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card .meta .seri
     display: flex;
     flex-direction: column;
     gap: 4px;
+    text-transform: none !important;
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .meta .title {
@@ -236,50 +266,122 @@ body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card .meta .seri
     font-size: 1.1em;
     line-height: 1.3;
     margin: 0;
-    color: #fff;
+    color: #000000 !important;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
     overflow: hidden;
     height: 2.6em;
+    text-transform: none !important;
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .meta .author {
     font-size: 0.95em;
-    color: #ccc;
+    color: #27272a !important;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-transform: none !important;
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .meta .series-meta {
     font-size: 0.88em;
-    color: #aaa;
+    color: #52525b !important;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-transform: none !important;
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .meta .rating {
     display: none !important; /* Deaktiviert für eInk-Minimalismus */
 }
 
-/* Light Theme overrides for Reader View */
+/* Light Theme overrides for Reader View (bleibt papierartig) */
 body:not(.blur) #shelf-container.shelf-view-reader .shelf-book-card {
-    border-color: #334155;
-    background: #fff;
+    border-color: #cbd5e1;
+    background: transparent;
 }
 body:not(.blur) #shelf-container.shelf-view-reader .shelf-book-card .cover {
-    border-color: #0f172a;
+    border-color: #475569;
 }
-body:not(.blur) #shelf-container.shelf-view-reader .shelf-book-card .meta .title {
-    color: #000;
+
+
+/* ----------------- C) SIDEBAR MATCH IN READER MODE ----------------- */
+body.cwa-shelf-view-reader .navigation {
+    background-color: #fcfcf9 !important;
+    background-image:
+      radial-gradient(rgba(0,0,0,0.015) 1px, transparent 0),
+      radial-gradient(rgba(0,0,0,0.02) 1px, transparent 0) !important;
+    background-size: 8px 8px !important;
+    background-position: 0 0, 4px 4px !important;
+    border-right: 1px solid #d4d4d8 !important;
+    box-shadow: inset -3px 0 6px rgba(0, 0, 0, 0.02) !important;
+    padding: 15px 5px !important;
 }
-body:not(.blur) #shelf-container.shelf-view-reader .shelf-book-card .meta .author {
-    color: #334155;
+
+body.cwa-shelf-view-reader .navigation li a {
+    color: #27272a !important;
+    font-weight: 500;
 }
-body:not(.blur) #shelf-container.shelf-view-reader .shelf-book-card .meta .series-meta {
-    color: #475569;
+
+body.cwa-shelf-view-reader .navigation li a:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+    color: #000000 !important;
+}
+
+body.cwa-shelf-view-reader .navigation li.active a {
+    background-color: rgba(0, 0, 0, 0.08) !important;
+    color: #000000 !important;
+    font-weight: 700;
+}
+
+body.cwa-shelf-view-reader .navigation .nav-head {
+    color: #71717a !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+    font-weight: 700;
+    margin-top: 15px;
+}
+
+
+/* ----------------- D) TOOLBAR & CONTROL STYLINGS ----------------- */
+.shelf-toolbar {
+    margin-top: 5px;
+}
+
+.shelf-toolbar .btn,
+.shelf-toolbar .dropdown-menu a,
+.view-mode-toggle button {
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+/* Deaktivierte Sortier-Links ausgrauen und blockieren */
+.dropdown-menu li a.disabled {
+    color: #9ca3af !important;
+    pointer-events: none;
+    cursor: not-allowed;
+    background: transparent !important;
+    opacity: 0.5;
+}
+
+/* View Mode Toggle in der Sidebar */
+.sidebar-view-mode-item .btn-group {
+    display: flex;
+    width: 100%;
+}
+.sidebar-view-mode-item .btn-group .btn {
+    flex: 1;
+    float: none;
+    text-align: center;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    border-radius: 4px;
+}
+.sidebar-view-mode-item .btn-group .btn.active {
+    background-color: #337ab7 !important;
+    color: #ffffff !important;
+    border-color: #2e6da4 !important;
 }

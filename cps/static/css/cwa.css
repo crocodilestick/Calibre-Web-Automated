@@ -106,14 +106,14 @@ body.cwa-shelf-view-gallery {
     background-repeat: no-repeat !important;
 }
 
-/* Navbar as a slightly translucent black bar */
+/* Navbar as translucent glass over the page */
 body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top {
-    background: rgba(20, 20, 20, 0.85) !important;
+    background: rgba(20, 20, 20, 0.45) !important;
     background-image: none !important;
-    -webkit-backdrop-filter: blur(10px);
-    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
     border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4) !important;
+    box-shadow: none !important;
 }
 
 /* Navbar sub-elements (brand block, collapse bar) keep their own caliBlur
@@ -135,9 +135,11 @@ body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top div.navb
     letter-spacing: 0.02em;
 }
 
-/* Left sidebar as a matching dark panel */
+/* Left sidebar as translucent glass panel */
 body.cwa-shelf-view-gallery .col-sm-2 {
-    background: rgba(0, 0, 0, 0.35) !important;
+    background: rgba(20, 20, 20, 0.35) !important;
+    -webkit-backdrop-filter: blur(14px) saturate(1.2);
+    backdrop-filter: blur(14px) saturate(1.2);
     border-right: 1px solid rgba(255, 255, 255, 0.06) !important;
     min-height: 100vh;
 }
@@ -179,10 +181,10 @@ body.cwa-shelf-view-gallery .shelf-header-wrapper {
     border-bottom-color: rgba(255, 255, 255, 0.1) !important;
 }
 
-/* Large covers in clean rows */
+/* Compact covers in clean rows: more books per row */
 #shelf-container.shelf-view-gallery .shelf-books-grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)) !important;
-    gap: 40px 24px !important;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+    gap: 32px 20px !important;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card {

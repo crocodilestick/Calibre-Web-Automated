@@ -18,6 +18,45 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-05 — Kobo-Begriffe und UX-Texte glätten
+
+- **Feature/Bug:** Kobo-Begriffe und UX-Texte zwischen Dashboard und Buchdetailseite glätten.
+- **Branch / Worktree:** `feature/kobo-ux-smoothing`
+- **Status:** Erfolgreich implementiert, unit-getestet (71/71 Tests bestanden) und manuell sowie per `git diff --check` verifiziert.
+
+### Erledigt
+
+- **Detailseite (`detail.html`)**:
+  - `Aktueller Sync-Zustand (Ist auf Reader):` -> `Aktueller Sync-Zustand (Ist auf dem Reader):`
+  - `Kobo-Sammlungen:` -> `Reader-Sammlungen:`
+  - Tooltip für `no_source` -> `Keine Reader-Freigabe durch ein Regal` (statt `In keinem Kobo-Synchronisations-Regal`)
+- **Dashboard (`kobo_dashboard.html`)**:
+  - Panel-Überschrift `Kobo-Sammlungen` -> `Reader-Sammlungen`
+  - Spaltentitel `Kobo-Sync` -> `Bücher übertragen`
+  - Spaltentitel `Sync-berechtigt` -> `Darf auf den Reader`
+  - Status `Display-Only` -> `Nur Sammlung anzeigen`
+  - Beschreibung Zwei-Säulen-Sync: `Nur Bücher in Regalen mit Kobo-Sync-Häkchen werden übertragen.` -> `Nur Bücher in Regalen mit aktivierter "Bücher übertragen"-Option werden auf das Gerät geladen.`
+  - Beschreibung "Nicht auf Kobo": `Diese Bücher bleiben in Alexandria, werden aber beim Kobo-Sync ausgelassen.` -> `Diese Bücher bleiben in Alexandria, werden aber bei der Kobo-Übertragung ausgelassen.`
+  - Statusmeldung: `Deine Kobo-Synchronisation läuft sauber!` -> `Deine Kobo-Übertragung läuft sauber!`
+  - Empty State `Magic Shelves` / `Kobo-Display` -> `Keine Regale oder automatischen Sammlungen sind für die Kobo-Anzeige konfiguriert.`
+  - Filter-Button `In keiner Sammlung` -> `In keiner Reader-Sammlung (verwaist)`
+  - Spaltentitel `Kobo-Sammlungen` -> `Reader-Sammlungen`
+  - Tooltip für `no_source` -> `Keine Reader-Freigabe durch ein Regal`
+  - Dropdown-Optionen `Immer auf Reader` / `Nie auf Reader` -> `Immer auf dem Reader` / `Nie auf dem Reader`
+  - Statusspalte & AJAX `Auf Reader` / `Auf Reader (nicht mehr freigegeben)` -> `Auf dem Reader` / `Auf dem Reader (nicht mehr freigegeben)`
+  - AJAX-Detail-Modal Texte zu Kobo-Sammlungen überall zu `Reader-Sammlungen` geglättet.
+  - AJAX-Detail-Modal Fehlertext `Nicht im Kobo-Sync erlaubt (keine Kobo-Auswahltabelle...)` -> `Nicht für den Reader freigegeben (in keinem Regal mit Übertragungs-Freigabe enthalten)`
+- **Unit-Tests (`test_kobo_detail_override.py`)**:
+  - Assertion an das neue Label `Reader-Sammlungen:` angepasst.
+- **Nachkontrolle**:
+  - `git diff --check` fehlerfrei ausgeführt.
+  - `grep_search` auf alte UI-Strings im geänderten Template-Scope ohne Treffer abgeschlossen.
+
+### Belege
+
+- Unit-Tests bestanden: `.venv/bin/pytest tests/unit/test_kobo_detail_override.py tests/unit/test_kobo_dashboard.py tests/unit/test_kobo_explanation.py tests/unit/test_kobo_decoupling.py` (71 passed in 1.09s).
+- `git diff --check` sauber.
+
 ## 2026-07-05 — Kobo-Transparenz auf der Buchdetailseite angleichen
 
 - **Feature/Bug:** Kobo-Transparenz auf der Buchdetailseite an das Dashboard angleichen.

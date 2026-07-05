@@ -887,7 +887,7 @@
                                             {% endif %}
                                         </div>
                                         <div style="margin-bottom: 6px;">
-                                            <strong>{{ _('Aktueller Sync-Zustand (Ist auf Reader):') }}</strong>
+                                            <strong>{{ _('Aktueller Sync-Zustand (Ist auf dem Reader):') }}</strong>
                                             {% if kobo_explanation.is_synced %}
                                                 <span class="label label-success" style="font-size: 0.9em; padding: 0.3em 0.6em; border-radius: 4px;">{{ _('Auf dem Reader vorhanden') }}</span>
                                             {% elif kobo_explanation.is_visible_on_device %}
@@ -898,7 +898,7 @@
                                         </div>
 
                                         <div style="margin-bottom: 6px;">
-                                            <strong>{{ _('Kobo-Sammlungen:') }}</strong>
+                                            <strong>{{ _('Reader-Sammlungen:') }}</strong>
                                             {% if kobo_explanation.kobo_actual_collections %}
                                                 {% for col in kobo_explanation.kobo_actual_collections %}
                                                     <span class="label label-default" style="font-size: 0.9em; padding: 0.3em 0.6em; border-radius: 4px; display: inline-block; margin-right: 2px; margin-bottom: 2px;">{{ col.name }}</span>
@@ -930,7 +930,7 @@
                                                     {% elif 'archived' in kobo_explanation.blocker_reasons %}
                                                         <span class="label label-warning kobo-reason-badge" title="{{ _('Dieses Buch ist im Archiv') }}"><span class="glyphicon glyphicon-compressed"></span> {{ _('Ist im Archiv') }}</span>
                                                     {% elif 'no_source' in kobo_explanation.blocker_reasons %}
-                                                        <span class="label label-default kobo-reason-badge" style="background-color: #abb7b7 !important;" title="{{ _('In keinem Kobo-Synchronisations-Regal') }}"><span class="glyphicon glyphicon-minus-sign"></span> {{ _('Keine Kobo-Freigabe') }}</span>
+                                                        <span class="label label-default kobo-reason-badge" style="background-color: #abb7b7 !important;" title="{{ _('Keine Reader-Freigabe durch ein Regal') }}"><span class="glyphicon glyphicon-minus-sign"></span> {{ _('Keine Kobo-Freigabe') }}</span>
                                                     {% endif %}
                                                 {% endif %}
                                                 {% if kobo_explanation.is_allowed_on_device and not kobo_explanation.kobo_actual_collections %}

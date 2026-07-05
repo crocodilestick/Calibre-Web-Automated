@@ -707,7 +707,7 @@ class TestKoboDetailOverride:
             assert "class=\"label label-default kobo-reason-badge\"" in html
             assert "title=\"Regal: Sci-Fi\"" in html
             assert "Sci-Fi" in html
-            assert "Kobo-Sammlungen:" in html
+            assert "Reader-Sammlungen:" in html
             assert "Sci-Fi Shelf" in html
 
         # Scenario 2: Never override ("Manuell blockiert")

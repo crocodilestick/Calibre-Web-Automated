@@ -31,6 +31,11 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 - [x] **Feinabstimmung des Galerie-Modus:**
   - Subtile Farbtiefe im dunklen Theme durch Überlagerung der Holztextur mit kaum sichtbaren radialen Verläufen in Dunkelblau (oben links) und gedämpftem Pink/Magenta (unten rechts).
   - Deaktivierung der lauten orangefarbenen Bootstrap-Töne; Ersetzung durch Graphitgrau und warmes Messing.
+  - Politur der Glasoberflächen: Sidebar und Navbar im Galerie-Modus erhielten eine reduzierte Hintergrund-Deckkraft (0.18), feine helle Innenkanten (Highlight) und dunkle Schattenkanten (inset box-shadows) sowie einen feinen Blur (25px).
+  - Der aktive Navigationseintrag in der Sidebar wurde optisch beruhigt (thinner 2px border und transluzentes Glas-Hintergrunddesign mit 0.03 opacity).
+- [x] **Präzise Icon- und Text-Ausrichtung:**
+  - Systematisches Flexbox-Alignment (`display: inline-flex`/`flex`, `align-items: center` und `gap` Definitionen) für alle Sidebar-Navigationslinks, Toolbar-Buttons, View-Mode-Toggles und Dropdowns.
+  - Text und Icons stehen in allen Steuerelementen exakt auf einer horizontalen und vertikalen Mittellinie.
 - [x] **Unified Reader-Modus:**
   - Die eInk-Papiertextur umspannt das gesamte Layout flach und barrierefrei ohne störende Kontrastbrüche.
 - [x] **UX & Layout-Spacing:**

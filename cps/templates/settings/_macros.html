@@ -4,7 +4,8 @@
   {% for field in endpoint_fields %}
     {% if field not in visible_fields %}
       {# Special case: OAuth fields need lookup in provider blueprints list rather than config #}
-      {% if field.startswith('config_') and 'oauth_' in field %}
+      {% set parts = field.split('_') %}
+      {% if field.startswith('config_generic_oauth_') or (parts|length >= 4 and parts[0] == 'config' and parts[2] == 'oauth' and parts[1]|int(-1) >= 0) %}
         {% set ns = namespace(oauth_val=None) %}
         {% if provider %}
           {% if 'generic_oauth_' in field %}
@@ -31,16 +32,13 @@
             {% endfor %}
           {% else %}
             {# Field format: config_<pid>_oauth_<type> #}
-            {% set parts = field.split('_') %}
-            {% if parts|length >= 4 %}
-              {% set pid = parts[1] %}
-              {% set type_suffix = parts[3:]|join('_') %}
-              {% for bp in provider %}
-                {% if bp.id|string == pid|string %}
-                  {% set ns.oauth_val = bp['oauth_' ~ type_suffix] %}
-                {% endif %}
-              {% endfor %}
-            {% endif %}
+            {% set pid = parts[1] %}
+            {% set type_suffix = parts[3:]|join('_') %}
+            {% for bp in provider %}
+              {% if bp.id|string == pid|string %}
+                {% set ns.oauth_val = bp['oauth_' ~ type_suffix] %}
+              {% endif %}
+            {% endfor %}
           {% endif %}
         {% endif %}
         <input type="hidden" name="{{ field }}" value="{% if ns.oauth_val is defined and ns.oauth_val is not none %}{{ ns.oauth_val }}{% endif %}">

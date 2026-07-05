@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-03-11 17:35+0000\n"
+"POT-Creation-Date: 2026-07-05 11:36+0000\n"
 "PO-Revision-Date: 2020-09-27 22:18+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -371,8 +371,8 @@ msgid "Success! Gmail Account Verified."
 msgstr ""
 
 #: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
-#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1042
-#: cps/editbooks.py:1808 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1049
+#: cps/editbooks.py:1815 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2678
 #, python-format
@@ -1170,105 +1170,105 @@ msgstr "書籍已經被成功加入到 %(book_format)s 格式轉換隊列"
 msgid "There was an error converting this book: %(res)s"
 msgstr "轉換此書籍時出現錯誤： %(res)s"
 
-#: cps/editbooks.py:367 cps/editbooks.py:1245 cps/editbooks.py:1754
+#: cps/editbooks.py:367 cps/editbooks.py:1252 cps/editbooks.py:1761
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "不能上傳文件附檔名為“%(ext)s”的文件到此服務器"
 
-#: cps/editbooks.py:372 cps/editbooks.py:1251 cps/editbooks.py:1765
+#: cps/editbooks.py:372 cps/editbooks.py:1258 cps/editbooks.py:1772
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "不能上傳文件附檔名為“%(ext)s”的文件到此服務器"
 
-#: cps/editbooks.py:376 cps/editbooks.py:1255 cps/editbooks.py:1770
+#: cps/editbooks.py:376 cps/editbooks.py:1262 cps/editbooks.py:1777
 msgid "File to be uploaded must have an extension"
 msgstr "要上傳的文件必須具有附檔名"
 
-#: cps/editbooks.py:849 cps/editbooks.py:1431 cps/web.py:612 cps/web.py:2790
+#: cps/editbooks.py:850 cps/editbooks.py:1438 cps/web.py:612 cps/web.py:2790
 #: cps/web.py:2881 cps/web.py:2966
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "糟糕！選擇書名無法打開。文件不存在或者文件不可訪問"
 
-#: cps/editbooks.py:881 cps/editbooks.py:1838
+#: cps/editbooks.py:882 cps/editbooks.py:1845
 msgid "User has no rights to upload cover"
 msgstr ""
 
-#: cps/editbooks.py:904 cps/editbooks.py:1233
+#: cps/editbooks.py:904 cps/editbooks.py:1240
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr "標識符不區分大小寫，覆蓋舊標識符"
 
-#: cps/editbooks.py:916 cps/editbooks.py:1207 cps/editbooks.py:1565
+#: cps/editbooks.py:916 cps/editbooks.py:1214 cps/editbooks.py:1572
 #, fuzzy, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s 不是一種有效語言"
 
-#: cps/editbooks.py:1029
+#: cps/editbooks.py:1036
 msgid "Metadata successfully updated"
 msgstr "已成功更新元數據"
 
-#: cps/editbooks.py:1047
+#: cps/editbooks.py:1054
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr ""
 
-#: cps/editbooks.py:1102 cps/editbooks.py:1147 cps/editbooks.py:1856
+#: cps/editbooks.py:1109 cps/editbooks.py:1154 cps/editbooks.py:1863
 #: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "未知"
 
-#: cps/editbooks.py:1151
+#: cps/editbooks.py:1158
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
 msgstr "上傳的書籍可能已經存在，建議修改後重新上傳： "
 
-#: cps/editbooks.py:1263
+#: cps/editbooks.py:1270
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "文件 %(filename)s 無法保存到臨時目錄"
 
-#: cps/editbooks.py:1283
+#: cps/editbooks.py:1290
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "移動封面文件失敗 %(file)s：%(error)s"
 
-#: cps/editbooks.py:1341 cps/editbooks.py:1343
+#: cps/editbooks.py:1348 cps/editbooks.py:1350
 msgid "Book Format Successfully Deleted"
 msgstr "書籍格式已成功刪除"
 
-#: cps/editbooks.py:1350 cps/editbooks.py:1352
+#: cps/editbooks.py:1357 cps/editbooks.py:1359
 msgid "Book Successfully Deleted"
 msgstr "書籍已成功刪除"
 
-#: cps/editbooks.py:1416
+#: cps/editbooks.py:1423
 msgid "You are missing permissions to delete books"
 msgstr ""
 
-#: cps/editbooks.py:1470
+#: cps/editbooks.py:1477
 msgid "edit metadata"
 msgstr "編輯元數據"
 
-#: cps/editbooks.py:1524
+#: cps/editbooks.py:1531
 #, fuzzy, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "%(seriesindex)s 不是一個有效的數值，忽略"
 
-#: cps/editbooks.py:1759
+#: cps/editbooks.py:1766
 msgid "User has no rights to upload additional file formats"
 msgstr ""
 
-#: cps/editbooks.py:1783
+#: cps/editbooks.py:1790
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "創建路徑 %(path)s 失敗(權限拒絕)。"
 
-#: cps/editbooks.py:1790
+#: cps/editbooks.py:1797
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "保存文件 %(file)s 失敗。"
 
-#: cps/editbooks.py:1815
+#: cps/editbooks.py:1822
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "已添加 %(ext)s 格式到 %(book)s"
@@ -1455,7 +1455,7 @@ msgstr ""
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "僅將jpg、jpeg文件作為封面文件"
 
-#: cps/helper.py:1304 cps/helper.py:1535
+#: cps/helper.py:1304 cps/helper.py:1543
 #, fuzzy
 msgid "Cover"
 msgstr "發現"
@@ -1504,7 +1504,7 @@ msgstr "缺少執行權限"
 msgid "Error executing Calibre"
 msgstr "執行UnRar時出錯"
 
-#: cps/helper.py:1537 cps/templates/admin.html:240
+#: cps/helper.py:1545 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr ""
 
@@ -2567,22 +2567,22 @@ msgstr ""
 msgid "EPUB Fixer"
 msgstr ""
 
-#: cps/tasks/thumbnail.py:86
+#: cps/tasks/thumbnail.py:96
 #, python-format
 msgid "Generated %(count)s cover thumbnails"
 msgstr ""
 
-#: cps/tasks/thumbnail.py:295 cps/tasks/thumbnail.py:513
-#: cps/tasks/thumbnail.py:581
+#: cps/tasks/thumbnail.py:316 cps/tasks/thumbnail.py:534
+#: cps/tasks/thumbnail.py:602
 msgid "Cover Thumbnails"
 msgstr ""
 
-#: cps/tasks/thumbnail.py:354
+#: cps/tasks/thumbnail.py:375
 #, python-brace-format
 msgid "Generated {0} series thumbnails"
 msgstr ""
 
-#: cps/tasks/thumbnail.py:524
+#: cps/tasks/thumbnail.py:545
 msgid "Clearing cover thumbnail cache"
 msgstr ""
 

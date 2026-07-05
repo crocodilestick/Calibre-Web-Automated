@@ -25,7 +25,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-03-11 17:35+0000\n"
+"POT-Creation-Date: 2026-07-05 11:36+0000\n"
 "PO-Revision-Date: 2025-11-17 21:51+0100\n"
 "Last-Translator: Tex <tex@grosist.fr>\n"
 "Language-Team: \n"
@@ -431,8 +431,8 @@ msgid "Success! Gmail Account Verified."
 msgstr "Bravo ! Compte Gmail vérifié."
 
 #: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
-#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1042
-#: cps/editbooks.py:1808 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1049
+#: cps/editbooks.py:1815 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2678
 #, python-format
@@ -1282,22 +1282,22 @@ msgstr ""
 msgid "There was an error converting this book: %(res)s"
 msgstr "Une erreur est survenue au cours de la conversion du livre : %(res)s"
 
-#: cps/editbooks.py:367 cps/editbooks.py:1245 cps/editbooks.py:1754
+#: cps/editbooks.py:367 cps/editbooks.py:1252 cps/editbooks.py:1761
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Ce type de fichier n’est pas autorisé à être déposé sur ce serveur"
 
-#: cps/editbooks.py:372 cps/editbooks.py:1251 cps/editbooks.py:1765
+#: cps/editbooks.py:372 cps/editbooks.py:1258 cps/editbooks.py:1772
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr ""
 "L’extension de fichier '%(ext)s' n’est pas autorisée pour être déposée sur "
 "ce serveur"
 
-#: cps/editbooks.py:376 cps/editbooks.py:1255 cps/editbooks.py:1770
+#: cps/editbooks.py:376 cps/editbooks.py:1262 cps/editbooks.py:1777
 msgid "File to be uploaded must have an extension"
 msgstr "Pour être déposé le fichier doit avoir une extension"
 
-#: cps/editbooks.py:849 cps/editbooks.py:1431 cps/web.py:612 cps/web.py:2790
+#: cps/editbooks.py:850 cps/editbooks.py:1438 cps/web.py:612 cps/web.py:2790
 #: cps/web.py:2881 cps/web.py:2966
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
@@ -1305,36 +1305,36 @@ msgstr ""
 "Erreur d'ouverture du livre numérique. Le fichier n'existe pas ou n'est pas "
 "accessible"
 
-#: cps/editbooks.py:881 cps/editbooks.py:1838
+#: cps/editbooks.py:882 cps/editbooks.py:1845
 msgid "User has no rights to upload cover"
 msgstr "L’utilisateur n’a pas les droits pour envoyer une couverture de livre"
 
-#: cps/editbooks.py:904 cps/editbooks.py:1233
+#: cps/editbooks.py:904 cps/editbooks.py:1240
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 "Les identificateurs ne sont pas sensibles à la casse, écrasant l’ancien "
 "identificateur"
 
-#: cps/editbooks.py:916 cps/editbooks.py:1207 cps/editbooks.py:1565
+#: cps/editbooks.py:916 cps/editbooks.py:1214 cps/editbooks.py:1572
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s n'est pas une langue valide"
 
-#: cps/editbooks.py:1029
+#: cps/editbooks.py:1036
 msgid "Metadata successfully updated"
 msgstr "Les métadonnées ont bien été mises à jour"
 
-#: cps/editbooks.py:1047
+#: cps/editbooks.py:1054
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "Erreur d'édition du livre: {}"
 
-#: cps/editbooks.py:1102 cps/editbooks.py:1147 cps/editbooks.py:1856
+#: cps/editbooks.py:1109 cps/editbooks.py:1154 cps/editbooks.py:1863
 #: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Inconnu"
 
-#: cps/editbooks.py:1151
+#: cps/editbooks.py:1158
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1342,56 +1342,56 @@ msgstr ""
 "Le fichier téléchargé existe probablement dans la librairie, veuillez le "
 "modifier avant de le télécharger de nouveau: "
 
-#: cps/editbooks.py:1263
+#: cps/editbooks.py:1270
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr ""
 "Le fichier %(filename)s ne peut pas être sauvegardé dans le répertoire "
 "temporaire"
 
-#: cps/editbooks.py:1283
+#: cps/editbooks.py:1290
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Impossible de déplacer le fichier de couverture %(file)s: %(error)s"
 
-#: cps/editbooks.py:1341 cps/editbooks.py:1343
+#: cps/editbooks.py:1348 cps/editbooks.py:1350
 msgid "Book Format Successfully Deleted"
 msgstr "Le format du livre a été supprimé avec succès"
 
-#: cps/editbooks.py:1350 cps/editbooks.py:1352
+#: cps/editbooks.py:1357 cps/editbooks.py:1359
 msgid "Book Successfully Deleted"
 msgstr "Le livre a été supprimé avec succès"
 
-#: cps/editbooks.py:1416
+#: cps/editbooks.py:1423
 msgid "You are missing permissions to delete books"
 msgstr "Vous n’avez par les permissions pour supprimer les livres"
 
-#: cps/editbooks.py:1470
+#: cps/editbooks.py:1477
 msgid "edit metadata"
 msgstr "modifier les métadonnées"
 
-#: cps/editbooks.py:1524
+#: cps/editbooks.py:1531
 #, fuzzy, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "Index de série : %(seriesindex)s n'est pas un nombre valide, ignoré"
 
-#: cps/editbooks.py:1759
+#: cps/editbooks.py:1766
 msgid "User has no rights to upload additional file formats"
 msgstr ""
 "L’utilisateur n’a pas le droit de télécharger des formats de fichiers "
 "supplémentaires"
 
-#: cps/editbooks.py:1783
+#: cps/editbooks.py:1790
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Impossible de créer le chemin %(path)s (Permission refusée)."
 
-#: cps/editbooks.py:1790
+#: cps/editbooks.py:1797
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Échec de la sauvegarde du fichier %(file)s."
 
-#: cps/editbooks.py:1815
+#: cps/editbooks.py:1822
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Le format de fichier %(ext)s a été ajouté à %(book)s"
@@ -1596,7 +1596,7 @@ msgstr "Contenu du fichier de couverture invalide"
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Seuls les fichiers jpg/jpeg sont supportés comme fichier de couverture"
 
-#: cps/helper.py:1304 cps/helper.py:1535
+#: cps/helper.py:1304 cps/helper.py:1543
 msgid "Cover"
 msgstr "Couverture"
 
@@ -1643,7 +1643,7 @@ msgstr "Permissions d'exécutions manquantes: %(missing)s"
 msgid "Error executing Calibre"
 msgstr "Erreur lors de l'exécution de Calibre"
 
-#: cps/helper.py:1537 cps/templates/admin.html:240
+#: cps/helper.py:1545 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr ""
 "Mettre en file d’attente tous les livres pour la sauvegarde des métadonnées"
@@ -2730,22 +2730,22 @@ msgstr "EPUB Fixer – exécution complète"
 msgid "EPUB Fixer"
 msgstr "EPUB Fixer"
 
-#: cps/tasks/thumbnail.py:86
+#: cps/tasks/thumbnail.py:96
 #, python-format
 msgid "Generated %(count)s cover thumbnails"
 msgstr "%(count)s vignettes de couverture générées"
 
-#: cps/tasks/thumbnail.py:295 cps/tasks/thumbnail.py:513
-#: cps/tasks/thumbnail.py:581
+#: cps/tasks/thumbnail.py:316 cps/tasks/thumbnail.py:534
+#: cps/tasks/thumbnail.py:602
 msgid "Cover Thumbnails"
 msgstr "Vignettes de couvertures"
 
-#: cps/tasks/thumbnail.py:354
+#: cps/tasks/thumbnail.py:375
 #, python-brace-format
 msgid "Generated {0} series thumbnails"
 msgstr "{0} vignettes de couverture des séries générées"
 
-#: cps/tasks/thumbnail.py:524
+#: cps/tasks/thumbnail.py:545
 msgid "Clearing cover thumbnail cache"
 msgstr "Effacement du cache des vignettes de couverture"
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-03-11 17:35+0000\n"
+"POT-Creation-Date: 2026-07-05 11:36+0000\n"
 "PO-Revision-Date: 2023-01-21 10:00+0700\n"
 "Last-Translator: Arief Hidayat<arihid95@gmail.com>\n"
 "Language-Team: Arief Hidayat <arihid95@gmail.com>\n"
@@ -395,8 +395,8 @@ msgid "Success! Gmail Account Verified."
 msgstr ""
 
 #: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
-#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1042
-#: cps/editbooks.py:1808 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1049
+#: cps/editbooks.py:1815 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2678
 #, python-format
@@ -1195,21 +1195,21 @@ msgstr "Buku berhasil diantrekan untuk dikonversi ke %(book_format)s"
 msgid "There was an error converting this book: %(res)s"
 msgstr "Terjadi kesalahan saat mengonversi buku ini: %(res)s"
 
-#: cps/editbooks.py:367 cps/editbooks.py:1245 cps/editbooks.py:1754
+#: cps/editbooks.py:367 cps/editbooks.py:1252 cps/editbooks.py:1761
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Ekstensi berkas '%(ext)s' tidak diizinkan untuk diunggah ke server ini"
 
-#: cps/editbooks.py:372 cps/editbooks.py:1251 cps/editbooks.py:1765
+#: cps/editbooks.py:372 cps/editbooks.py:1258 cps/editbooks.py:1772
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "Ekstensi berkas '%(ext)s' tidak diizinkan untuk diunggah ke server ini"
 
-#: cps/editbooks.py:376 cps/editbooks.py:1255 cps/editbooks.py:1770
+#: cps/editbooks.py:376 cps/editbooks.py:1262 cps/editbooks.py:1777
 msgid "File to be uploaded must have an extension"
 msgstr "Berkas yang akan diunggah harus memiliki ekstensi"
 
-#: cps/editbooks.py:849 cps/editbooks.py:1431 cps/web.py:612 cps/web.py:2790
+#: cps/editbooks.py:850 cps/editbooks.py:1438 cps/web.py:612 cps/web.py:2790
 #: cps/web.py:2881 cps/web.py:2966
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
@@ -1217,34 +1217,34 @@ msgstr ""
 "Ups! Judul buku yang dipilih tidak tersedia. Berkas tidak ada atau tidak "
 "dapat diakses"
 
-#: cps/editbooks.py:881 cps/editbooks.py:1838
+#: cps/editbooks.py:882 cps/editbooks.py:1845
 msgid "User has no rights to upload cover"
 msgstr "Pengguna tidak berhak mengganti sampul"
 
-#: cps/editbooks.py:904 cps/editbooks.py:1233
+#: cps/editbooks.py:904 cps/editbooks.py:1240
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr "IDは大文字小文字を区別しません。元のIDを上書きします"
 
-#: cps/editbooks.py:916 cps/editbooks.py:1207 cps/editbooks.py:1565
+#: cps/editbooks.py:916 cps/editbooks.py:1214 cps/editbooks.py:1572
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s' bukan bahasa yang valid"
 
-#: cps/editbooks.py:1029
+#: cps/editbooks.py:1036
 msgid "Metadata successfully updated"
 msgstr "Metadata berhasil diperbarui"
 
-#: cps/editbooks.py:1047
+#: cps/editbooks.py:1054
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "Kesalahan pengeditan buku: {}"
 
-#: cps/editbooks.py:1102 cps/editbooks.py:1147 cps/editbooks.py:1856
+#: cps/editbooks.py:1109 cps/editbooks.py:1154 cps/editbooks.py:1863
 #: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Tidak diketahui"
 
-#: cps/editbooks.py:1151
+#: cps/editbooks.py:1158
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1252,52 +1252,52 @@ msgstr ""
 "Buku yang diunggah mungkin ada di perpustakaan, pertimbangkan untuk "
 "mengubahnya sebelum mengunggah yang baru: "
 
-#: cps/editbooks.py:1263
+#: cps/editbooks.py:1270
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "Berkas %(filename)s tidak dapat disimpan ke direktori temp"
 
-#: cps/editbooks.py:1283
+#: cps/editbooks.py:1290
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Gagal Memindahkan Berkas Sampul %(file)s: %(error)s"
 
-#: cps/editbooks.py:1341 cps/editbooks.py:1343
+#: cps/editbooks.py:1348 cps/editbooks.py:1350
 msgid "Book Format Successfully Deleted"
 msgstr "Format Buku Berhasil Dihapus"
 
-#: cps/editbooks.py:1350 cps/editbooks.py:1352
+#: cps/editbooks.py:1357 cps/editbooks.py:1359
 msgid "Book Successfully Deleted"
 msgstr "Buku Berhasil Dihapus"
 
-#: cps/editbooks.py:1416
+#: cps/editbooks.py:1423
 msgid "You are missing permissions to delete books"
 msgstr "Anda tidak memiliki izin untuk menghapus buku"
 
-#: cps/editbooks.py:1470
+#: cps/editbooks.py:1477
 msgid "edit metadata"
 msgstr "edit metadata"
 
-#: cps/editbooks.py:1524
+#: cps/editbooks.py:1531
 #, fuzzy, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "%(seriesindex)s dilewati karena bukan angka yang valid"
 
-#: cps/editbooks.py:1759
+#: cps/editbooks.py:1766
 msgid "User has no rights to upload additional file formats"
 msgstr "Pengguna tidak memiliki izin untuk mengunggah format berkas tambahan"
 
-#: cps/editbooks.py:1783
+#: cps/editbooks.py:1790
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Gagal membuat jalur %(path)s (Izin ditolak)."
 
-#: cps/editbooks.py:1790
+#: cps/editbooks.py:1797
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Gagal menyimpan berkas %(file)s."
 
-#: cps/editbooks.py:1815
+#: cps/editbooks.py:1822
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Format berkas %(ext)s ditambahkan ke %(book)s"
@@ -1500,7 +1500,7 @@ msgstr "Konten berkas sampul tidak valid"
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Hanya berkas jpg/jpeg yang didukung sebagai berkas sampul"
 
-#: cps/helper.py:1304 cps/helper.py:1535
+#: cps/helper.py:1304 cps/helper.py:1543
 #, fuzzy
 msgid "Cover"
 msgstr "Sampul"
@@ -1549,7 +1549,7 @@ msgstr "Izin eksekusi hilang"
 msgid "Error executing Calibre"
 msgstr "Kesalahan saat menjalankan UnRar"
 
-#: cps/helper.py:1537 cps/templates/admin.html:240
+#: cps/helper.py:1545 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr "Antrian semua buku untuk cadangan metadata"
 
@@ -2619,22 +2619,22 @@ msgstr ""
 msgid "EPUB Fixer"
 msgstr ""
 
-#: cps/tasks/thumbnail.py:86
+#: cps/tasks/thumbnail.py:96
 #, python-format
 msgid "Generated %(count)s cover thumbnails"
 msgstr "%(count)s thumbnail sampul dibuat"
 
-#: cps/tasks/thumbnail.py:295 cps/tasks/thumbnail.py:513
-#: cps/tasks/thumbnail.py:581
+#: cps/tasks/thumbnail.py:316 cps/tasks/thumbnail.py:534
+#: cps/tasks/thumbnail.py:602
 msgid "Cover Thumbnails"
 msgstr "Thumbnail Sampul"
 
-#: cps/tasks/thumbnail.py:354
+#: cps/tasks/thumbnail.py:375
 #, python-brace-format
 msgid "Generated {0} series thumbnails"
 msgstr "{0} thumbnail seri dihasilkan"
 
-#: cps/tasks/thumbnail.py:524
+#: cps/tasks/thumbnail.py:545
 msgid "Clearing cover thumbnail cache"
 msgstr "Menghapus cache thumbnail sampul"
 

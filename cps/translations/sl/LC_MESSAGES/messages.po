@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-03-11 17:35+0000\n"
+"POT-Creation-Date: 2026-07-05 11:36+0000\n"
 "PO-Revision-Date: 2025-08-11 07:03+0000\n"
 "Last-Translator: Andrej Kralj\n"
 "Language-Team: Slovenian\n"
@@ -404,8 +404,8 @@ msgid "Success! Gmail Account Verified."
 msgstr "Uspeh! Račun Gmail je potrjen."
 
 #: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
-#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1042
-#: cps/editbooks.py:1808 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1049
+#: cps/editbooks.py:1815 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2678
 #, python-format
@@ -1241,55 +1241,55 @@ msgstr ""
 msgid "There was an error converting this book: %(res)s"
 msgstr "Pri pretvorbi te knjige je prišlo do napake: %(res)s"
 
-#: cps/editbooks.py:367 cps/editbooks.py:1245 cps/editbooks.py:1754
+#: cps/editbooks.py:367 cps/editbooks.py:1252 cps/editbooks.py:1761
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Vrsta datoteke ni dovoljena za nalaganje v ta strežnik"
 
-#: cps/editbooks.py:372 cps/editbooks.py:1251 cps/editbooks.py:1765
+#: cps/editbooks.py:372 cps/editbooks.py:1258 cps/editbooks.py:1772
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "Datoteke s končnico '%(ext)s' ni dovoljeno naložiti na ta strežnik"
 
-#: cps/editbooks.py:376 cps/editbooks.py:1255 cps/editbooks.py:1770
+#: cps/editbooks.py:376 cps/editbooks.py:1262 cps/editbooks.py:1777
 msgid "File to be uploaded must have an extension"
 msgstr "Datoteka, ki jo želite naložiti, mora imeti končnico"
 
-#: cps/editbooks.py:849 cps/editbooks.py:1431 cps/web.py:612 cps/web.py:2790
+#: cps/editbooks.py:850 cps/editbooks.py:1438 cps/web.py:612 cps/web.py:2790
 #: cps/web.py:2881 cps/web.py:2966
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "Ups! Izbrana knjiga ni na voljo. Datoteka ne obstaja ali ni dostopna"
 
-#: cps/editbooks.py:881 cps/editbooks.py:1838
+#: cps/editbooks.py:882 cps/editbooks.py:1845
 msgid "User has no rights to upload cover"
 msgstr "Uporabnik nima pravice do nalaganja naslovnice"
 
-#: cps/editbooks.py:904 cps/editbooks.py:1233
+#: cps/editbooks.py:904 cps/editbooks.py:1240
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 "Identifikatorji niso občutljivi na velikost črk, prepisovanje starega "
 "identifikatorja"
 
-#: cps/editbooks.py:916 cps/editbooks.py:1207 cps/editbooks.py:1565
+#: cps/editbooks.py:916 cps/editbooks.py:1214 cps/editbooks.py:1572
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s' ni veljaven jezik"
 
-#: cps/editbooks.py:1029
+#: cps/editbooks.py:1036
 msgid "Metadata successfully updated"
 msgstr "Metapodatki so bili uspešno posodobljeni"
 
-#: cps/editbooks.py:1047
+#: cps/editbooks.py:1054
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "Napaka pri urejanju knjige: {}"
 
-#: cps/editbooks.py:1102 cps/editbooks.py:1147 cps/editbooks.py:1856
+#: cps/editbooks.py:1109 cps/editbooks.py:1154 cps/editbooks.py:1863
 #: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Neznano"
 
-#: cps/editbooks.py:1151
+#: cps/editbooks.py:1158
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1297,52 +1297,52 @@ msgstr ""
 "Naložena knjiga verjetno obstaja v knjižnici, preden naložite novo, "
 "razmislite o spremembi:"
 
-#: cps/editbooks.py:1263
+#: cps/editbooks.py:1270
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "Datoteke %(filename)s ni bilo mogoče shraniti v začasno mapo"
 
-#: cps/editbooks.py:1283
+#: cps/editbooks.py:1290
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Nisem uspel premakniti naslovne datoteke %(file)s: %(error)s"
 
-#: cps/editbooks.py:1341 cps/editbooks.py:1343
+#: cps/editbooks.py:1348 cps/editbooks.py:1350
 msgid "Book Format Successfully Deleted"
 msgstr "Uspešno izbrisana vrsta knjige"
 
-#: cps/editbooks.py:1350 cps/editbooks.py:1352
+#: cps/editbooks.py:1357 cps/editbooks.py:1359
 msgid "Book Successfully Deleted"
 msgstr "Knjiga je bila uspešno izbrisana"
 
-#: cps/editbooks.py:1416
+#: cps/editbooks.py:1423
 msgid "You are missing permissions to delete books"
 msgstr "Manjkajo vam dovoljenja za brisanje knjig"
 
-#: cps/editbooks.py:1470
+#: cps/editbooks.py:1477
 msgid "edit metadata"
 msgstr "urejanje metapodatkov"
 
-#: cps/editbooks.py:1524
+#: cps/editbooks.py:1531
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "Številka serije: %(seriesindex)s ni veljavno število, preskočim"
 
-#: cps/editbooks.py:1759
+#: cps/editbooks.py:1766
 msgid "User has no rights to upload additional file formats"
 msgstr "Uporabnik nima pravic za nalaganje dodatnih formatov datotek"
 
-#: cps/editbooks.py:1783
+#: cps/editbooks.py:1790
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Nisem uspel ustvariti poti %(path)s (zavrnjeno dovoljenje)."
 
-#: cps/editbooks.py:1790
+#: cps/editbooks.py:1797
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Nisem uspel shraniti datoteke %(file)s."
 
-#: cps/editbooks.py:1815
+#: cps/editbooks.py:1822
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Oblina datotek %(ext)s je dodan v %(book)s"
@@ -1544,7 +1544,7 @@ msgstr "Nepravilna vsebina datoteke z naslovnico"
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Samo datoteke jpg/jpeg so podprte kot datoteke naslovnic"
 
-#: cps/helper.py:1304 cps/helper.py:1535
+#: cps/helper.py:1304 cps/helper.py:1543
 msgid "Cover"
 msgstr "Naslovnica"
 
@@ -1591,7 +1591,7 @@ msgstr "Manjkajoča dovoljenja za izvršilni program: %(missing)s"
 msgid "Error executing Calibre"
 msgstr "Napaka pri izvajanju programa Calibre"
 
-#: cps/helper.py:1537 cps/templates/admin.html:240
+#: cps/helper.py:1545 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr "Vse knjige v vrsti za varnostno kopiranje metapodatkov"
 
@@ -2672,22 +2672,22 @@ msgstr "Popravljalnik EPUB – celoten zagon"
 msgid "EPUB Fixer"
 msgstr "Popravljalnik EPUB"
 
-#: cps/tasks/thumbnail.py:86
+#: cps/tasks/thumbnail.py:96
 #, python-format
 msgid "Generated %(count)s cover thumbnails"
 msgstr "Ustvarjene sličice naslovnic %(count)s"
 
-#: cps/tasks/thumbnail.py:295 cps/tasks/thumbnail.py:513
-#: cps/tasks/thumbnail.py:581
+#: cps/tasks/thumbnail.py:316 cps/tasks/thumbnail.py:534
+#: cps/tasks/thumbnail.py:602
 msgid "Cover Thumbnails"
 msgstr "Sličicah naslovnice"
 
-#: cps/tasks/thumbnail.py:354
+#: cps/tasks/thumbnail.py:375
 #, python-brace-format
 msgid "Generated {0} series thumbnails"
 msgstr "Ustvarjene sličice serije {0}"
 
-#: cps/tasks/thumbnail.py:524
+#: cps/tasks/thumbnail.py:545
 msgid "Clearing cover thumbnail cache"
 msgstr "Čiščenje predpomnilnika sličic naslovnice"
 

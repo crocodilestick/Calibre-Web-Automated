@@ -30,7 +30,6 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
   - Navbar, Sidebar und Hauptbereich verschmelzen farblich in einem geschlossenen Design (Dunkle Glasmorphismus-Bibliothek für Galerie; flaches eInk-Papier für Reader).
 - [x] **Feinabstimmung des Galerie-Modus:**
   - Subtile Farbtiefe im dunklen Theme durch Überlagerung der Holztextur mit kaum sichtbaren radialen Verläufen in Dunkelblau (oben links) und gedämpftem Pink/Magenta (unten rechts).
-  - Physische Holzregalkanten unter den Buchcovern hinzugefügt.
   - Deaktivierung der lauten orangefarbenen Bootstrap-Töne; Ersetzung durch Graphitgrau und warmes Messing.
 - [x] **Unified Reader-Modus:**
   - Die eInk-Papiertextur umspannt das gesamte Layout flach und barrierefrei ohne störende Kontrastbrüche.

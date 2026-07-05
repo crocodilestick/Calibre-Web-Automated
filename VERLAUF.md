@@ -18,6 +18,23 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-05 — Kobo-Reader-Modell Phase 4: Overrides direkt im Dashboard-Arbeitsbereich editieren
+
+- **Feature/Bug:** Kobo-Reader-Modell Phase 4 (Dashboard Workspace Aktionen: Overrides direkt im Dashboard-Arbeitsbereich editieren - UX-Politur)
+- **Branch / Worktree:** `feature/kobo-reader-dashboard-override-edit`
+- **Status:** Phase 4 vollständig implementiert, durch Alex freigegeben, nach `main` gemerged.
+  
+### Erledigt
+
+- **Backend-Entkopplung & Fehler-Härtung**: Die Route `/kobo_auth/book/<book_id>/override` in `cps/kobo_auth.py` committet die DB-Änderung isoliert. Post-commit-Erklärungsfehler werden abgefangen und durch `None`-Werte für `is_allowed_on_device` und `is_synced` im Fallback-JSON signalisiert.
+- **Frontend-UX & Filter-Verfeinerung**: Im AJAX-Erfolgs-Handler (`kobo_dashboard.html`) wird der aktive Filter erneut angewendet. Um zu verhindern, dass bei aktivem Filter „Manuelle Ausnahmen“ die Zeile sofort verschwindet, wenn ein Buch auf `auto` gestellt wird, bleiben Zeilen mit einer aktiven Undo-Aktion (`.kobo-undo-btn`) immer sichtbar. Der Undo-Link bleibt somit klickbar, bis der Benutzer einen anderen Filter wählt oder die Seite aktualisiert.
+- **Erweiterte AJAX-Testabdeckung**: 3 zusätzliche Testmethoden für AJAX in `tests/unit/test_kobo_detail_override.py` implementiert, die unter anderem die Rückgabe von `None` bei post-commit Ausnahmen in der Kobo-Erklärung vollständig abdecken (insgesamt 7 neue Testmethoden).
+- **Formatierungs- & Staging-Disziplin**: Gezielt gestaged, `dirs.json` blieb unstaged.
+
+### Belege
+
+- Unit-Tests bestanden: `.venv/bin/pytest tests/unit/test_kobo_detail_override.py tests/unit/test_kobo_dashboard.py tests/unit/test_kobo_explanation.py tests/unit/test_kobo_decoupling.py` (67 passed in 0.90s)
+
 ## 2026-07-04 — Kobo-Reader-Modell Phase 3: Arbeitsbereich „Bücher auf dem eReader“ (Read-Only)
 
 - **Feature/Bug:** Kobo-Reader-Modell Phase 3: Arbeitsbereich „Bücher auf dem eReader“ (Read-Only)

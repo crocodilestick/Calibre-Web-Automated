@@ -1,14 +1,15 @@
 {% import 'image.html' as image %}
 {% extends "layout.html" %}
 
-{% macro sort_item(param, label_text) %}
+{% macro sort_item(param, label_text, js_id=none) %}
   {% if page == 'magicshelf' %}
     {% set href = url_for('web.render_magic_shelf', shelf_id=shelf.id, sort_param=param) %}
   {% else %}
     {% set href = url_for('shelf.show_shelf', shelf_id=shelf.id, sort_param=param) %}
   {% endif %}
+  {% set final_id = js_id if js_id is not none else param %}
   <li class="{% if order == param %}active{% endif %}">
-    <a id="{{ param }}" class="{% if status == 'on' %}disabled{% endif %}" href="{{ href }}">
+    <a id="{{ final_id }}" class="{% if status == 'on' %}disabled{% endif %}" href="{{ href }}">
       {{ label_text }}
     </a>
   </li>
@@ -130,7 +131,7 @@
                 </a>
               </li>
               <li>
-                <a href="#" id="toggle_order_shelf" data-alt-text="{% if status == 'on' %}{{_('Disable Change order')}}{% else %}{{_('Enable Change order')}}{% endif %}" data-view="shelf" class="{% if status == 'on' %} dummy{% endif %}">
+                <a href="javascript:void(0);" id="toggle_order_shelf" data-alt-text="{% if status == 'on' %}{{_('Disable Change order')}}{% else %}{{_('Enable Change order')}}{% endif %}" data-view="shelf" class="{% if status == 'on' %} dummy{% endif %}">
                   {% if status == 'on' %}{{ _('Enable Change order') }}{% else %}{{ _('Disable Change order') }}{% endif %}
                 </a>
               </li>
@@ -171,17 +172,17 @@
             <span class="caret"></span>
           </button>
           <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">
-            {{ sort_item('abc', _('Title A-Z')) }}
-            {{ sort_item('zyx', _('Title Z-A')) }}
-            {{ sort_item('authaz', _('Author A-Z')) }}
-            {{ sort_item('authza', _('Author Z-A')) }}
-            {{ sort_item('new', _('Date Added (Newest)')) }}
-            {{ sort_item('old', _('Date Added (Oldest)')) }}
-            {{ sort_item('pubnew', _('Publishing Date (Newest)')) }}
-            {{ sort_item('pubold', _('Publishing Date (Oldest)')) }}
+            {{ sort_item('abc', _('Title A-Z'), 'asc') }}
+            {{ sort_item('zyx', _('Title Z-A'), 'desc') }}
+            {{ sort_item('authaz', _('Author A-Z'), 'auth_az') }}
+            {{ sort_item('authza', _('Author Z-A'), 'auth_za') }}
+            {{ sort_item('new', _('Date Added (Newest)'), 'new') }}
+            {{ sort_item('old', _('Date Added (Oldest)'), 'old') }}
+            {{ sort_item('pubnew', _('Publishing Date (Newest)'), 'pub_new') }}
+            {{ sort_item('pubold', _('Publishing Date (Oldest)'), 'pub_old') }}
             {% if page != 'magicshelf' %}
-              {{ sort_item('shelfnew', _('Added to Shelf (Newest)')) }}
-              {{ sort_item('shelfold', _('Added to Shelf (Oldest)')) }}
+              {{ sort_item('shelfnew', _('Added to Shelf (Newest)'), 'shelf_new') }}
+              {{ sort_item('shelfold', _('Added to Shelf (Oldest)'), 'shelf_old') }}
             {% endif %}
           </ul>
         </div>

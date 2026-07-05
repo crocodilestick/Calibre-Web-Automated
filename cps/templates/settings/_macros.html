@@ -5,13 +5,28 @@
     {% if field not in visible_fields %}
       {# Special case: OAuth fields need lookup in provider blueprints list rather than config #}
       {% if field.startswith('config_') and 'oauth_' in field %}
-        {% set oauth_val = None %}
+        {% set ns = namespace(oauth_val=None) %}
         {% if provider %}
           {% if 'generic_oauth_' in field %}
             {% set suffix = field.replace('config_generic_oauth_', '') %}
+            {% set generic_map = {
+              'metadata_url': 'metadata_url',
+              'server_url': 'oauth_base_url',
+              'auth_url': 'oauth_authorize_url',
+              'token_url': 'oauth_token_url',
+              'userinfo_url': 'oauth_userinfo_url',
+              'scope': 'scope',
+              'client_id': 'oauth_client_id',
+              'client_secret': 'oauth_client_secret',
+              'username_mapper': 'username_mapper',
+              'email_mapper': 'email_mapper',
+              'admin_group': 'oauth_admin_group',
+              'login_button': 'login_button'
+            } %}
+            {% set key = generic_map[suffix] %}
             {% for bp in provider %}
               {% if bp.provider_name == 'generic' %}
-                {% set oauth_val = bp['oauth_' ~ suffix] %}
+                {% set ns.oauth_val = bp[key] %}
               {% endif %}
             {% endfor %}
           {% else %}
@@ -22,13 +37,13 @@
               {% set type_suffix = parts[3:]|join('_') %}
               {% for bp in provider %}
                 {% if bp.id|string == pid|string %}
-                  {% set oauth_val = bp['oauth_' ~ type_suffix] %}
+                  {% set ns.oauth_val = bp['oauth_' ~ type_suffix] %}
                 {% endif %}
               {% endfor %}
             {% endif %}
           {% endif %}
         {% endif %}
-        <input type="hidden" name="{{ field }}" value="{% if oauth_val is defined and oauth_val is not none %}{{ oauth_val }}{% endif %}">
+        <input type="hidden" name="{{ field }}" value="{% if ns.oauth_val is defined and ns.oauth_val is not none %}{{ ns.oauth_val }}{% endif %}">
       {# Determine if field is a boolean/checkbox #}
       {% elif field in BOOLEAN_SETTINGS %}
         {# Checkbox mirroring: only render value="on" if value is truthy/1/True/on #}

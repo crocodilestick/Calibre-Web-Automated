@@ -154,3 +154,37 @@ def test_integer_settings_drift():
     # The only expected mismatch is duplicate_auto_resolve_cooldown_minutes
     expected_mismatch = {"duplicate_auto_resolve_cooldown_minutes"}
     assert diff == expected_mismatch, f"Unexpected mismatch in integer_settings: {diff} (expected exactly {expected_mismatch})"
+
+def test_model_properties_existence():
+    """Verifies that all mapped fields in settings_ui.py correspond to actual database/runtime model attributes."""
+    from cps import settings_ui
+    from cps import ub
+    from cps import config_sql
+    
+    settings_cls = config_sql._Settings
+
+    # 1. Verify scheduled tasks fields exist on _Settings class
+    for field in settings_ui.SCHEDULEDTASKS_FIELDS:
+        assert hasattr(settings_cls, field), f"Scheduled task field '{field}' does not exist on _Settings class"
+
+    # 2. Verify viewconfig (roles and show settings) exist on User model or _Settings class
+    for field in settings_ui.VIEWCONFIG_FIELDS:
+        if field.endswith('_role'):
+            if field == 'delete_role':
+                role_attr = 'role_delete_books'
+            elif field == 'edit_shelf_role':
+                role_attr = 'role_edit_shelfs'
+            else:
+                role_attr = 'role_' + field[:-5]
+            assert hasattr(ub.User, role_attr), f"User role attribute '{role_attr}' does not exist on User model"
+        else:
+            # show_X settings correspond to config_default_show in _Settings
+            assert hasattr(settings_cls, 'config_default_show'), "config_default_show does not exist on _Settings class"
+
+    # 3. Verify mail settings fields exist on _Settings class
+    for field in settings_ui.MAILSETTINGS_FIELDS:
+        if field == 'mail_password_e':
+            assert hasattr(settings_cls, 'mail_password'), "mail_password does not exist on _Settings class"
+        else:
+            assert hasattr(settings_cls, field), f"Mail setting '{field}' does not exist on _Settings class"
+

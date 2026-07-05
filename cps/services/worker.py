@@ -195,6 +195,29 @@ class WorkerThread(threading.Thread):
         
         return cancelled_count
 
+    def has_active_task_of_type(self, task_class_name, extra_check=None):
+        """Check if there is an active (non-terminal) task of the given class name.
+
+        Args:
+            task_class_name: The __name__ of the task class to match.
+            extra_check: Optional callable(task) -> bool for additional filtering.
+
+        Returns:
+            bool: True if an active matching task exists.
+        """
+        terminal_stats = {STAT_FINISH_SUCCESS, STAT_FAIL, STAT_ENDED, STAT_CANCELLED}
+        try:
+            for __, __, __, task, __ in self.tasks:
+                if getattr(task, "stat", None) in terminal_stats:
+                    continue
+                if task.__class__.__name__ != task_class_name:
+                    continue
+                if extra_check is None or extra_check(task):
+                    return True
+        except Exception:
+            pass
+        return False
+
 
 class CalibreTask:
     __metaclass__ = abc.ABCMeta

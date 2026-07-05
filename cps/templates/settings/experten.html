@@ -1,10 +1,453 @@
 {% extends "settings/_shell.html" %}
+{% from "settings/_macros.html" import spiegel_inputs %}
 
 {% block settings_content %}
-<div class="settings-card">
-  <div class="settings-card-title">
-    <span class="glyphicon glyphicon-tasks"></span> {{ _("Expert Settings") }}
+<div class="row">
+  {% set visible_ajax_fields = [
+    'config_register_reg', 'config_default_role', 'config_login_type',
+    'config_anonym_mode', 'config_anonym_role', 'config_remote_auth',
+    'config_remote_auth_header', 'config_magic_link_auth', 'config_use_ldap',
+    'config_ldap_provider_url', 'config_ldap_port', 'config_ldap_encryption',
+    'config_ldap_cert_path', 'config_ldap_dn', 'config_ldap_password',
+    'config_ldap_user_object_filter', 'config_ldap_user_name_attr', 'config_ldap_email_attr',
+    'config_ldap_member_user_filter', 'config_ldap_openldap_memberof', 'config_ldap_group_dn',
+    'config_ldap_group_filter', 'config_ldap_group_object_filter', 'config_ldap_group_name_attr',
+    'config_ldap_group_members_attr', 'config_ldap_admin_group', 'config_ldap_user_group',
+    'config_ldap_co_group', 'config_ldap_group_to_role', 'config_ldap_auth_active',
+    'config_ldap_type', 'config_ldap_sync_interval', 'config_ldap_group_sync_interval',
+    'config_ldap_provider', 'config_oauth_redirect_host',
+    'config_generic_oauth_client_id', 'config_generic_oauth_client_secret',
+    'config_generic_oauth_metadata_url', 'config_generic_oauth_server_url',
+    'config_generic_oauth_auth_url', 'config_generic_oauth_token_url',
+    'config_generic_oauth_userinfo_url', 'config_generic_oauth_scope',
+    'config_generic_oauth_username_mapper', 'config_generic_oauth_email_mapper',
+    'config_generic_oauth_login_button', 'config_generic_oauth_admin_group'
+  ] %}
+
+  {# Add dynamic OAuth provider client ID/secrets to visible fields so they don't get mirrored as empty #}
+  {% for prov in provider if prov['provider_name'] != "generic" %}
+    {% set _ = visible_ajax_fields.append('config_' ~ prov['id']|string ~ '_oauth_client_id') %}
+    {% set _ = visible_ajax_fields.append('config_' ~ prov['id']|string ~ '_oauth_client_secret') %}
+  {% endfor %}
+
+  {% set visible_cwa_fields = [
+    'enable_mobile_blur', 'ingest_timeout_minutes',
+    'ingest_stale_temp_minutes', 'ingest_stale_temp_interval'
+  ] %}
+
+  <div class="col-md-12 col-lg-6">
+    <form id="expert-ajaxconfig-form" role="form" method="POST" action="{{ url_for('admin.update_ajaxconfig') }}" autocomplete="off" style="margin-bottom: 2rem;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      {# Mirror remaining ajaxconfig fields #}
+      {{ spiegel_inputs(AJAXCONFIG_FIELDS, visible_ajax_fields, config, BOOLEAN_SETTINGS, provider=provider) }}
+
+      <!-- Card 1: Registrierung & Anonym-Modus -->
+      <div class="settings-card">
+        <div class="settings-card-title">
+          <span class="glyphicon glyphicon-user"></span> {{ _("Registration & Anonymous Access") }}
+        </div>
+
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Allow User Registration") }}</span>
+            <span class="settings-switch-desc">{{ _("Enable public sign-up for new users.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_register_reg" name="config_register_reg" {% if config.config_register_reg %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_default_role">{{ _("Default Role for New Users") }}</label>
+          <select name="config_default_role" id="config_default_role" class="settings-input">
+            {% for role in roles %}
+              <option value="{{ role.id }}" {% if config.config_default_role == role.id %}selected{% endif %}>{{ role.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="settings-switch-group" style="margin-top: 1.5rem;">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Enable Anonymous Login") }}</span>
+            <span class="settings-switch-desc">{{ _("Allow guest access without credentials.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_anonym_mode" name="config_anonym_mode" data-control="anonym-settings" {% if config.config_anonym_mode %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div data-related="anonym-settings" style="{% if not config.config_anonym_mode %}display: none;{% endif %}">
+          <div class="settings-form-group">
+            <label class="settings-label" for="config_anonym_role">{{ _("Anonymous User Role") }}</label>
+            <select name="config_anonym_role" id="config_anonym_role" class="settings-input">
+              {% for role in roles %}
+                <option value="{{ role.id }}" {% if config.config_anonym_role == role.id %}selected{% endif %}>{{ role.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 2: Login- & Authentifizierungs-Methoden -->
+      <div class="settings-card">
+        <div class="settings-card-title">
+          <span class="glyphicon glyphicon-lock"></span> {{ _("Authentication Providers") }}
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_login_type">{{ _("Primary Login Method") }}</label>
+          <select name="config_login_type" id="config_login_type" class="settings-input">
+            <option value="0" {% if config.config_login_type == 0 %}selected{% endif %}>{{ _("Database Authentication") }}</option>
+            <option value="1" {% if config.config_login_type == 1 %}selected{% endif %}>{{ _("LDAP Authentication") }}</option>
+            <option value="2" {% if config.config_login_type == 2 %}selected{% endif %}>{{ _("OAuth/OIDC Authentication") }}</option>
+          </select>
+        </div>
+
+        <div class="settings-switch-group" style="margin-top: 1.5rem;">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Reverse Proxy Header Login") }}</span>
+            <span class="settings-switch-desc">{{ _("Authenticate users using an HTTP header from a reverse proxy.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_remote_auth" name="config_remote_auth" data-control="remote-auth-settings" {% if config.config_remote_auth %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div data-related="remote-auth-settings" style="{% if not config.config_remote_auth %}display: none;{% endif %}">
+          <div class="settings-form-group">
+            <label class="settings-label" for="config_remote_auth_header">{{ _("Proxy Auth Header Name") }}</label>
+            <input type="text" class="settings-input" name="config_remote_auth_header" id="config_remote_auth_header" value="{{ config.config_remote_auth_header or 'X-WEBAUTH-USER' }}">
+          </div>
+        </div>
+
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Enable Magic Link Login") }}</span>
+            <span class="settings-switch-desc">{{ _("Allow users to login via a passwordless email magic link.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_magic_link_auth" name="config_magic_link_auth" {% if config.config_magic_link_auth %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Card 3: LDAP-Konfiguration (collapsible) -->
+      <div class="settings-card">
+        <div class="settings-card-title collapsible-trigger" data-target="ldap-settings-content" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+          <span><span class="glyphicon glyphicon-tasks"></span> {{ _("LDAP Server Settings") }}</span>
+          <span class="glyphicon glyphicon-chevron-right"></span>
+        </div>
+
+        <div id="ldap-settings-content" class="collapsible-content" style="max-height: 0px; overflow: hidden; transition: max-height 0.3s ease-out;">
+          <div style="padding-top: 1rem;">
+            <div class="settings-switch-group">
+              <div class="settings-switch-label-block">
+                <span class="settings-switch-title">{{ _("Enable LDAP Service") }}</span>
+                <span class="settings-switch-desc">{{ _("Activate LDAP module.") }}</span>
+              </div>
+              <label class="settings-switch">
+                <input type="checkbox" id="config_use_ldap" name="config_use_ldap" {% if config.config_use_ldap %}checked{% endif %}>
+                <span class="settings-slider"></span>
+              </label>
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_ldap_provider_url">{{ _("LDAP Server URL") }}</label>
+              <input type="text" class="settings-input" name="config_ldap_provider_url" id="config_ldap_provider_url" value="{{ config.config_ldap_provider_url or '' }}" placeholder="ldap://localhost">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_ldap_port">{{ _("LDAP Port") }}</label>
+              <input type="number" class="settings-input" name="config_ldap_port" id="config_ldap_port" value="{{ config.config_ldap_port or 389 }}">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_ldap_encryption">{{ _("LDAP Encryption") }}</label>
+              <select name="config_ldap_encryption" id="config_ldap_encryption" class="settings-input">
+                <option value="0" {% if config.config_ldap_encryption == 0 %}selected{% endif %}>{{ _("None") }}</option>
+                <option value="1" {% if config.config_ldap_encryption == 1 %}selected{% endif %}>{{ _("STARTTLS") }}</option>
+                <option value="2" {% if config.config_ldap_encryption == 2 %}selected{% endif %}>{{ _("SSL/TLS") }}</option>
+              </select>
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_ldap_dn">{{ _("LDAP Bind DN") }}</label>
+              <input type="text" class="settings-input" name="config_ldap_dn" id="config_ldap_dn" value="{{ config.config_ldap_dn or '' }}" placeholder="cn=admin,dc=example,dc=com">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_ldap_password">{{ _("LDAP Bind Password") }}</label>
+              <input type="password" class="settings-input" name="config_ldap_password" id="config_ldap_password" value="{{ config.config_ldap_password or '' }}">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_ldap_user_object_filter">{{ _("LDAP User Object Filter") }}</label>
+              <input type="text" class="settings-input" name="config_ldap_user_object_filter" id="config_ldap_user_object_filter" value="{{ config.config_ldap_user_object_filter or '(objectClass=person)' }}">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_ldap_user_name_attr">{{ _("LDAP Username Attribute") }}</label>
+              <input type="text" class="settings-input" name="config_ldap_user_name_attr" id="config_ldap_user_name_attr" value="{{ config.config_ldap_user_name_attr or 'uid' }}">
+            </div>
+
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_ldap_email_attr">{{ _("LDAP Email Attribute") }}</label>
+              <input type="text" class="settings-input" name="config_ldap_email_attr" id="config_ldap_email_attr" value="{{ config.config_ldap_email_attr or 'mail' }}">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card 4: OAuth / OpenID Connect (collapsible) -->
+      <div class="settings-card">
+        <div class="settings-card-title collapsible-trigger" data-target="oauth-settings-content" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+          <span><span class="glyphicon glyphicon-cloud"></span> {{ _("OAuth / OIDC Server Settings") }}</span>
+          <span class="glyphicon glyphicon-chevron-right"></span>
+        </div>
+
+        <div id="oauth-settings-content" class="collapsible-content" style="max-height: 0px; overflow: hidden; transition: max-height 0.3s ease-out;">
+          <div style="padding-top: 1rem;">
+            <!-- OAuth Redirect Host -->
+            <div class="settings-form-group">
+              <label class="settings-label" for="config_oauth_redirect_host">{{ _("OAuth Redirect Host") }}</label>
+              <input type="text" class="settings-input" name="config_oauth_redirect_host" id="config_oauth_redirect_host" value="{{ config.config_oauth_redirect_host or '' }}" placeholder="https://your-domain.com">
+              <small class="form-text text-muted" style="margin-top: 0.25rem; display: block;">{{ _("Include protocol (https://). Leave empty to use auto-detection.") }}</small>
+            </div>
+
+            <!-- Generic OIDC Provider -->
+            <div style="border-top: 1px solid #444; margin-top: 1.5rem; padding-top: 1rem;">
+              <span class="settings-label" style="font-weight: 600; display: block; margin-bottom: 1rem;">{{ _("Generic OpenID Connect Provider") }}</span>
+
+              <div class="settings-form-group">
+                <label class="settings-label" for="config_generic_oauth_metadata_url">{{ _("Metadata URL") }}</label>
+                <div style="display: flex; gap: 0.5rem;">
+                  <input type="text" style="flex: 1;" class="settings-input" name="config_generic_oauth_metadata_url" id="config_generic_oauth_metadata_url" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.metadata_url or '' }}{% endfor %}" placeholder="https://your-provider.com/.well-known/openid-configuration">
+                  <button type="button" class="settings-btn settings-btn-secondary" id="test_metadata_url" style="padding: 0 12px;">{{ _("Test") }}</button>
+                </div>
+              </div>
+
+              <div class="settings-form-group">
+                <label class="settings-label" for="config_generic_oauth_client_id">{{ _("OAuth Client ID") }}</label>
+                <input type="text" class="settings-input" name="config_generic_oauth_client_id" id="config_generic_oauth_client_id" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_client_id or '' }}{% endfor %}">
+              </div>
+
+              <div class="settings-form-group">
+                <label class="settings-label" for="config_generic_oauth_client_secret">{{ _("OAuth Client Secret") }}</label>
+                <input type="password" class="settings-input" name="config_generic_oauth_client_secret" id="config_generic_oauth_client_secret" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_client_secret or '' }}{% endfor %}">
+              </div>
+
+              <div class="settings-form-group">
+                <label class="settings-label" for="config_generic_oauth_server_url">{{ _("OAuth Base URL") }}</label>
+                <input type="text" class="settings-input" name="config_generic_oauth_server_url" id="config_generic_oauth_server_url" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_base_url or '' }}{% endfor %}">
+              </div>
+
+              <div class="settings-form-group">
+                <label class="settings-label" for="config_generic_oauth_auth_url">{{ _("Authorization Endpoint") }}</label>
+                <input type="text" class="settings-input" name="config_generic_oauth_auth_url" id="config_generic_oauth_auth_url" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_authorize_url or '' }}{% endfor %}">
+              </div>
+
+              <div class="settings-form-group">
+                <label class="settings-label" for="config_generic_oauth_token_url">{{ _("Token Endpoint") }}</label>
+                <input type="text" class="settings-input" name="config_generic_oauth_token_url" id="config_generic_oauth_token_url" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_token_url or '' }}{% endfor %}">
+              </div>
+
+              <div class="settings-form-group">
+                <label class="settings-label" for="config_generic_oauth_userinfo_url">{{ _("UserInfo Endpoint") }}</label>
+                <input type="text" class="settings-input" name="config_generic_oauth_userinfo_url" id="config_generic_oauth_userinfo_url" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_userinfo_url or '' }}{% endfor %}">
+              </div>
+
+              <div class="settings-form-group">
+                <label class="settings-label" for="config_generic_oauth_scope">{{ _("OAuth Scopes") }}</label>
+                <input type="text" class="settings-input" name="config_generic_oauth_scope" id="config_generic_oauth_scope" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.scope or '' }}{% endfor %}" placeholder="openid profile email">
+              </div>
+
+              <div class="settings-form-group">
+                <label class="settings-label" for="config_generic_oauth_username_mapper">{{ _("Username JWT Field") }}</label>
+                <input type="text" class="settings-input" name="config_generic_oauth_username_mapper" id="config_generic_oauth_username_mapper" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.username_mapper or '' }}{% endfor %}" placeholder="preferred_username">
+              </div>
+
+              <div class="settings-form-group">
+                <label class="settings-label" for="config_generic_oauth_email_mapper">{{ _("Email JWT Field") }}</label>
+                <input type="text" class="settings-input" name="config_generic_oauth_email_mapper" id="config_generic_oauth_email_mapper" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.email_mapper or '' }}{% endfor %}" placeholder="email">
+              </div>
+
+              <div class="settings-form-group">
+                <label class="settings-label" for="config_generic_oauth_admin_group">{{ _("Admin Group Mapper") }}</label>
+                <input type="text" class="settings-input" name="config_generic_oauth_admin_group" id="config_generic_oauth_admin_group" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.oauth_admin_group or '' }}{% endfor %}">
+              </div>
+
+              <div class="settings-form-group">
+                <label class="settings-label" for="config_generic_oauth_login_button">{{ _("Login Button Text") }}</label>
+                <input type="text" class="settings-input" name="config_generic_oauth_login_button" id="config_generic_oauth_login_button" value="{% for bp in provider if bp.provider_name == 'generic' %}{{ bp.login_button or '' }}{% endfor %}" placeholder="OpenID Connect">
+              </div>
+
+              <div style="margin-top: 1rem;">
+                <div style="display: flex; gap: 0.5rem; align-items: center;">
+                  <input type="text" style="flex: 1;" class="settings-input" id="config_generic_oauth_server_url_test" readonly placeholder="Enter base URL above to test">
+                  <button type="button" class="settings-btn settings-btn-secondary" id="test_oidc_connection">{{ _("Test Connection") }}</button>
+                </div>
+                <span id="oidc_test_result" style="display: block; margin-top: 0.5rem; font-size: 0.9rem;"></span>
+              </div>
+            </div>
+
+            <!-- Built-in OAuth Providers -->
+            {% for prov in provider if prov['provider_name'] != "generic" %}
+              <div style="border-top: 1px solid #444; margin-top: 1.5rem; padding-top: 1rem;">
+                <span class="settings-label" style="font-weight: 600; display: block; margin-bottom: 1rem;">{{ prov['provider_name']|capitalize }} {{ _("OAuth Settings") }}</span>
+
+                <div class="settings-form-group">
+                  <label class="settings-label" for="config_{{ prov['id'] }}_oauth_client_id">{{ _("Client ID") }}</label>
+                  <input type="text" class="settings-input" name="config_{{ prov['id'] }}_oauth_client_id" id="config_{{ prov['id'] }}_oauth_client_id" value="{{ prov['oauth_client_id'] or '' }}">
+                </div>
+
+                <div class="settings-form-group">
+                  <label class="settings-label" for="config_{{ prov['id'] }}_oauth_client_secret">{{ _("Client Secret") }}</label>
+                  <input type="password" class="settings-input" name="config_{{ prov['id'] }}_oauth_client_secret" id="config_{{ prov['id'] }}_oauth_client_secret" value="{{ prov['oauth_client_secret'] or '' }}">
+                </div>
+              </div>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+
+      <div style="text-align: right; margin-top: 1.5rem;">
+        <button type="submit" class="settings-btn settings-btn-primary">{{ _("Save System Settings") }}</button>
+      </div>
+    </form>
   </div>
-  <p>{{ _("Placeholder for Expert Settings.") }}</p>
+
+  <div class="col-md-12 col-lg-6">
+    <form id="expert-cwa-form" role="form" method="POST" action="{{ url_for('cwa_settings.set_cwa_settings') }}" autocomplete="off">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="submit_button" value="Submit">
+
+      {# Mirror remaining CWA fields #}
+      {{ spiegel_inputs(CWA_FIELDS, visible_cwa_fields, cwa_settings, BOOLEAN_SETTINGS) }}
+
+      <!-- Card 5: CWA Experten-Einstellungen -->
+      <div class="settings-card">
+        <div class="settings-card-title">
+          <span class="glyphicon glyphicon-cog"></span> {{ _("CWA Expert Settings") }}
+        </div>
+
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Enable Mobile Blur") }}</span>
+            <span class="settings-switch-desc">{{ _("Enable blur backdrop styling on mobile devices.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="enable_mobile_blur" name="enable_mobile_blur" {% if cwa_settings.enable_mobile_blur %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="ingest_timeout_minutes">{{ _("Ingest Timeout (Minutes)") }}</label>
+          <input type="number" min="1" max="120" class="settings-input" name="ingest_timeout_minutes" id="ingest_timeout_minutes" value="{{ cwa_settings.ingest_timeout_minutes or 15 }}">
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="ingest_stale_temp_minutes">{{ _("Ingest Stale Temp (Minutes)") }}</label>
+          <input type="number" min="1" max="1440" class="settings-input" name="ingest_stale_temp_minutes" id="ingest_stale_temp_minutes" value="{{ cwa_settings.ingest_stale_temp_minutes or 120 }}">
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="ingest_stale_temp_interval">{{ _("Ingest Stale Check Interval (Minutes)") }}</label>
+          <input type="number" min="1" max="1440" class="settings-input" name="ingest_stale_temp_interval" id="ingest_stale_temp_interval" value="{{ cwa_settings.ingest_stale_temp_interval or 30 }}">
+        </div>
+
+        <div style="text-align: right; margin-top: 1.5rem;">
+          <button type="submit" class="settings-btn settings-btn-primary">{{ _("Save CWA Expert Settings") }}</button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
+{% endblock %}
+
+{% block js %}
+{{ super() }}
+<script>
+$(document).ready(function() {
+  // Update test URL field when base URL changes
+  $('#config_generic_oauth_server_url').on('input', function() {
+    var baseUrl = $(this).val();
+    var testField = $('#config_generic_oauth_server_url_test');
+    if (baseUrl) {
+      testField.val(baseUrl).attr('placeholder', 'Ready to test: ' + baseUrl);
+    } else {
+      testField.val('').attr('placeholder', 'Enter base URL above to test');
+    }
+  });
+
+  $('#test_metadata_url').on('click', function() {
+    var metadataUrl = $('#config_generic_oauth_metadata_url').val();
+    var button = $(this);
+    var originalText = button.text();
+
+    if (!metadataUrl) {
+      alert('Please enter a metadata URL to test.');
+      return;
+    }
+
+    button.text('Testing...').prop('disabled', true);
+
+    $.ajax({
+      url: '{{ url_for("admin.test_metadata") }}',
+      type: 'POST',
+      data: JSON.stringify({url: metadataUrl}),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function(response) {
+        if (response.success) {
+          alert('✅ ' + response.message);
+        } else {
+          alert('❌ ' + response.message);
+        }
+      },
+      error: function() {
+        alert('❌ An unknown error occurred while testing metadata URL.');
+      },
+      complete: function() {
+        button.text(originalText).prop('disabled', false);
+      }
+    });
+  });
+
+  $('#test_oidc_connection').on('click', function() {
+    var serverUrl = $('#config_generic_oauth_server_url_test').val() || $('#config_generic_oauth_server_url').val();
+    var resultSpan = $('#oidc_test_result');
+
+    if (!serverUrl) {
+      resultSpan.text('Please enter a server URL to test.').addClass('text-danger');
+      return;
+    }
+
+    resultSpan.text('Testing...').removeClass('text-success text-danger');
+
+    $.ajax({
+      url: '{{ url_for("admin.test_oidc") }}',
+      type: 'POST',
+      data: JSON.stringify({url: serverUrl}),
+      contentType: 'application/json; charset=utf-8',
+      dataType: 'json',
+      success: function(response) {
+        if (response.success) {
+          resultSpan.text(response.message).addClass('text-success');
+        } else {
+          resultSpan.text(response.message).addClass('text-danger');
+        }
+      },
+      error: function() {
+        resultSpan.text('An unknown error occurred.').addClass('text-danger');
+      }
+    });
+  });
+});
+</script>
 {% endblock %}

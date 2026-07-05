@@ -33,11 +33,11 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
   - Deaktivierung der lauten orangefarbenen Bootstrap-Töne; Ersetzung durch Graphitgrau und warmes Messing.
   - Plastischer Glassmorphismus: Sidebar und Navbar im Galerie-Modus erhielten helle Linear-Gradient-Overlays (Lichtkanten), eine sensible Hintergrund-Deckkraft, feine helle Innenkanten (Highlight) und dunkle Schattenkanten (inset box-shadows) sowie einen weichen Backdrop-Blur und Schlagschatten nach rechts.
   - Nach visueller Prüfung verwenden Navbar und Sidebar zusätzlich dieselbe fixierte Holz-/Verlaufsebene wie der Body, damit der Holzgrund trotz caliBlur-/Bootstrap-Zwischenflächen sichtbar durch die Glasoberflächen wirkt.
-  - Brand-Zeile `CWA Alexandria` optisch an die Sidebar angebunden (dezente warme Glas-Plakette) und Sidebar mit leichter rechter Rundung harmonisiert.
+  - Brand-Zeile `CWA Alexandria` nach visueller Prüfung wieder in die obere Navbar gezogen; Sidebar stattdessen als eigenständige Badge-Fläche mit oberem/unterem Abstand und abgerundeten rechten Ecken gestaltet.
   - Der aktive Navigationseintrag in der Sidebar wurde optisch beruhigt (thinner 2px border und transluzentes Glas-Hintergrunddesign mit 0.05 opacity und inset box-shadow).
 - [x] **Präzise Icon- und Text-Ausrichtung:**
   - Systematisches Flexbox-Alignment (`display: inline-flex`/`flex`, `align-items: center` und `gap` Definitionen) für alle Sidebar-Navigationslinks, Toolbar-Buttons, View-Mode-Toggles und Dropdowns.
-  - Advanced-Search-Link in der Topbar mit explizitem Flex-Gap versehen, damit Lupe und Text nicht mehr optisch kleben.
+  - Advanced-Search-Link und Profil-Link in der Topbar mit explizitem Flex-Gap versehen, damit Icons und Text nicht mehr optisch kleben; Suche wurde weiter in Richtung Mitte gesetzt.
   - Text und Icons stehen in allen Steuerelementen exakt auf einer horizontalen und vertikalen Mittellinie.
   - Feste Icon-Spalte von 22px in der Sidebar-Navigation zur perfekten vertikalen Ausrichtung der Icons.
 - [x] **Unified Reader-Modus:**

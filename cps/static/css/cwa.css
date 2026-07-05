@@ -152,24 +152,23 @@ body.cwa-shelf-view-gallery .navbar .navbar-brand {
 /* caliBlur styles the brand link with a very specific selector; match it */
 body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top div.navbar-header > a.navbar-brand {
     color: #f2d8a8 !important;
-    background-color: rgba(8, 8, 12, 0.035) !important;
-    background-image:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.13) 0%, rgba(255, 255, 255, 0.012) 100%),
-        radial-gradient(circle at 10% 20%, rgba(20, 32, 65, 0.45) 0%, transparent 60%),
-        radial-gradient(circle at 90% 80%, rgba(55, 18, 38, 0.35) 0%, transparent 70%),
-        linear-gradient(180deg, rgba(12, 10, 12, 0.5) 0%, rgba(12, 10, 12, 0.78) 100%),
-        url('../img/alexandria/wood_dark.jpg') !important;
-    background-size: auto, cover, cover, cover, cover !important;
-    background-position: center, center, center, center, center !important;
-    background-attachment: scroll, fixed, fixed, fixed, fixed !important;
-    background-repeat: no-repeat !important;
-    border-right: 1px solid rgba(255, 255, 255, 0.1);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 0 10px 0 0;
-    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.12), 4px 0 18px rgba(0, 0, 0, 0.28);
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    display: flex !important;
+    align-items: center !important;
+    height: 60px !important;
+    margin: 0 !important;
+    padding: 0 24px !important;
+    width: 240px !important;
     font-weight: 700;
     letter-spacing: 0.02em;
-    text-shadow: 0 1px 14px rgba(242, 216, 168, 0.16);
+    text-shadow: 0 1px 16px rgba(242, 216, 168, 0.18);
+}
+
+body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top > .container-fluid > form.navbar-form {
+    margin-left: 265px !important;
 }
 
 body.cwa-shelf-view-gallery #advanced_search {
@@ -183,6 +182,17 @@ body.cwa-shelf-view-gallery #advanced_search .glyphicon-search {
     margin-right: 0 !important;
 }
 body.cwa-shelf-view-gallery #advanced_search .hidden-sm {
+    margin-left: 0 !important;
+}
+body.cwa-shelf-view-gallery #main-nav > li > a {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px;
+}
+body.cwa-shelf-view-gallery #main-nav > li > a .glyphicon {
+    margin-right: 0 !important;
+}
+body.cwa-shelf-view-gallery #main-nav > li > a .hidden-sm {
     margin-left: 0 !important;
 }
 
@@ -203,8 +213,10 @@ body.cwa-shelf-view-gallery .col-sm-2 {
     backdrop-filter: blur(30px) saturate(1.55);
     border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
     box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.12), inset -1px 0 0 rgba(0, 0, 0, 0.4), 4px 0 24px rgba(0, 0, 0, 0.4);
-    border-radius: 0 0 12px 0;
-    min-height: 100vh;
+    border-radius: 0 14px 14px 0;
+    height: calc(100vh - 104px) !important;
+    min-height: 0;
+    top: 82px !important;
 }
 
 body.cwa-shelf-view-gallery .col-sm-10,

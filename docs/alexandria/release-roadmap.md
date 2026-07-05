@@ -19,14 +19,14 @@ Bisher wurden die Berechnungen (Sync-Erlaubnis, Kobo-Ausschlussregale und Magic 
 
 ---
 
-## 2. Einstellungen zusammenführen und beruhigen
+## 2. Einstellungen zusammenführen und beruhigen [ERLEDIGT]
 
 Aktuell sind Einstellungen in Calibre-Web-Automated über mehrere Bereiche verstreut (globale Administrations-Einstellungen, Benutzereinstellungen, eReader-Einstellungen). Dies erzeugt visuelles Rauschen und macht die Konfiguration unübersichtlich.
 
 ### Ziele
-* **Zentraler Einstellungsbereich:** Zusammenführung aller alexandria-relevanten Einstellungen in einer ruhigeren, logisch gruppierten Oberfläche.
-* **Strukturierung nach Relevanz:** Häufig genutzte Kobo- und Sammlungs-Einstellungen erhalten prominente Plätze; fortgeschrittene oder selten genutzte Optionen (wie LDAP, Mail-Server etc.) werden standardmäßig eingeklappt oder in eine Untersektion verschoben.
-* **Premium-UX/UI:** Das Design der Einstellungsformulare soll modernisiert werden (bessere Abstände, verständliche Hilfstexte, visuelle Gruppierung durch Trennlinien oder Cards statt langer unstrukturierter Listen).
+* **Zentraler Einstellungsbereich [ERLEDIGT]:** Zusammenführung aller alexandria-relevanten Einstellungen in einer ruhigeren, logisch gruppierten Oberfläche.
+* **Strukturierung nach Relevanz [ERLEDIGT]:** Häufig genutzte Kobo- und Sammlungs-Einstellungen erhalten prominente Plätze; fortgeschrittene oder selten genutzte Optionen (wie LDAP, Mail-Server etc.) werden standardmäßig eingeklappt oder in eine Untersektion verschoben.
+* **Premium-UX/UI [ERLEDIGT]:** Das Design der Einstellungsformulare wurde modernisiert (bessere Abstände, verständliche Hilfstexte, visuelle Gruppierung durch Trennlinien oder Cards statt langer unstrukturierter Listen).
 
 ---
 

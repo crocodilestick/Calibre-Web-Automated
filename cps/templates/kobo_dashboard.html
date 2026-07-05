@@ -150,7 +150,7 @@
           </p>
           <p class="text-muted" style="font-size: 90%;">
             {% if is_two_column_sync %}
-              {{ _('Nur Bücher in Regalen mit Kobo-Sync-Häkchen werden übertragen.') }}
+              {{ _('Nur Bücher in Regalen mit aktivierter "Bücher übertragen"-Option werden auf das Gerät geladen.') }}
             {% else %}
               {{ _('Vorsicht: Deine gesamte Calibre-Bibliothek wird auf den Kobo geladen.') }}
             {% endif %}
@@ -211,7 +211,7 @@
     </div>
   {% else %}
     <div class="alert alert-success">
-      <span class="glyphicon glyphicon-ok-sign"></span> {{ _('Keine Probleme gefunden. Deine Kobo-Synchronisation läuft sauber!') }}
+      <span class="glyphicon glyphicon-ok-sign"></span> {{ _('Keine Probleme gefunden. Deine Kobo-Übertragung läuft sauber!') }}
     </div>
   {% endif %}
 
@@ -282,7 +282,7 @@
     </div>
     <div class="panel-body">
       <p class="text-muted" style="font-size: 90%;">
-        {{ _('Diese Bücher bleiben in Alexandria, werden aber beim Kobo-Sync ausgelassen.') }}
+        {{ _('Diese Bücher bleiben in Alexandria, werden aber bei der Kobo-Übertragung ausgelassen.') }}
       </p>
       {% if excluded_books %}
         <div class="table-responsive">
@@ -328,7 +328,7 @@
   <!-- Sammlungen-Übersicht -->
   <div class="panel panel-default" style="margin-top: 2rem;">
     <div class="panel-heading">
-      <h3 class="panel-title">{{ _('Kobo-Sammlungen') }}</h3>
+      <h3 class="panel-title">{{ _('Reader-Sammlungen') }}</h3>
     </div>
     <div class="panel-body">
       {% if collections %}
@@ -338,10 +338,10 @@
               <tr>
                 <th>{{ _('Name') }}</th>
                 <th>{{ _('Typ') }}</th>
-                <th>{{ _('Kobo-Sync') }}</th>
+                <th>{{ _('Bücher übertragen') }}</th>
                 <th class="text-center">{{ _('Bücher lokal') }}</th>
                 <th class="text-center">{{ _('Nicht auf Kobo') }}</th>
-                <th class="text-center">{{ _('Sync-berechtigt') }}</th>
+                <th class="text-center">{{ _('Darf auf den Reader') }}</th>
                 <th class="text-center">{{ _('Synchronisiert') }}</th>
                 <th>{{ _('Aktionen') }}</th>
               </tr>
@@ -363,7 +363,7 @@
                     {% if col.kobo_sync %}
                       <span class="text-success"><span class="glyphicon glyphicon-ok-circle"></span> {{ _('Aktiv') }}</span>
                     {% else %}
-                      <span class="text-muted"><span class="glyphicon glyphicon-ban-circle"></span> {{ _('Display-Only') }}</span>
+                      <span class="text-muted"><span class="glyphicon glyphicon-ban-circle"></span> {{ _('Nur Sammlung anzeigen') }}</span>
                     {% endif %}
                   </td>
                   <td class="text-center">{{ col.total_books }}</td>
@@ -402,7 +402,7 @@
           </table>
         </div>
       {% else %}
-        <p class="text-muted">{{ _('Keine Regale oder Magic Shelves sind für das Kobo-Display konfiguriert.') }}</p>
+        <p class="text-muted">{{ _('Keine Regale oder automatischen Sammlungen sind für die Kobo-Anzeige konfiguriert.') }}</p>
       {% endif %}
     </div>
   </div>
@@ -436,7 +436,7 @@
           {{ _('Alle auf dem Reader') }} <span class="badge" id="kobo-count-all">0</span>
         </button>
         <button type="button" class="btn btn-default kobo-filter-btn" data-filter="orphans">
-          {{ _('In keiner Sammlung (verwaist)') }} <span class="badge" id="kobo-count-orphans">0</span>
+          {{ _('In keiner Reader-Sammlung (verwaist)') }} <span class="badge" id="kobo-count-orphans">0</span>
         </button>
         {% if is_two_column_sync %}
           <button type="button" class="btn btn-default kobo-filter-btn" data-filter="pending">
@@ -454,7 +454,7 @@
             <thead>
               <tr>
                 <th>{{ _('Titel') }}</th>
-                <th>{{ _('Kobo-Sammlungen') }}</th>
+                <th>{{ _('Reader-Sammlungen') }}</th>
                 <th>{{ _('Übertragungsmodus') }}</th>
                 <th>{{ _('Status') }}</th>
               </tr>
@@ -491,7 +491,7 @@
                         {% elif 'archived' in book.blocker_reasons %}
                           <span class="label label-warning kobo-reason-badge" title="{{ _('Dieses Buch ist im Archiv') }}"><span class="glyphicon glyphicon-compressed"></span> {{ _('Ist im Archiv') }}</span>
                         {% elif 'no_source' in book.blocker_reasons %}
-                          <span class="label label-default kobo-reason-badge" style="background-color: #abb7b7 !important;" title="{{ _('In keinem Kobo-Synchronisations-Regal') }}"><span class="glyphicon glyphicon-minus-sign"></span> {{ _('Keine Kobo-Freigabe') }}</span>
+                          <span class="label label-default kobo-reason-badge" style="background-color: #abb7b7 !important;" title="{{ _('Keine Reader-Freigabe durch ein Regal') }}"><span class="glyphicon glyphicon-minus-sign"></span> {{ _('Keine Kobo-Freigabe') }}</span>
                         {% endif %}
                       {% endif %}
                       {% if book.is_allowed and not book.collections %}
@@ -511,16 +511,16 @@
                   <td>
                     <select class="form-control input-sm kobo-override-select" data-book-id="{{ book.id }}" style="display: inline-block; width: auto; max-width: 155px; vertical-align: middle;">
                       <option value="auto" {% if book.reader_override == 'auto' %}selected{% endif %}>{{ _('Automatisch') }}</option>
-                      <option value="always" {% if book.reader_override == 'always' %}selected{% endif %}>{{ _('Immer auf Reader') }}</option>
-                      <option value="never" {% if book.reader_override == 'never' %}selected{% endif %}>{{ _('Nie auf Reader') }}</option>
+                      <option value="always" {% if book.reader_override == 'always' %}selected{% endif %}>{{ _('Immer auf dem Reader') }}</option>
+                      <option value="never" {% if book.reader_override == 'never' %}selected{% endif %}>{{ _('Nie auf dem Reader') }}</option>
                     </select>
                     <span class="kobo-save-status" style="margin-left: 5px; font-size: 90%; vertical-align: middle; white-space: nowrap;"></span>
                   </td>
                   <td class="kobo-status-cell">
                     {% if book.is_synced and book.is_allowed %}
-                      <span class="text-success"><span class="glyphicon glyphicon-ok-sign"></span> <span class="status-text">{{ _('Auf Reader') }}</span></span>
+                      <span class="text-success"><span class="glyphicon glyphicon-ok-sign"></span> <span class="status-text">{{ _('Auf dem Reader') }}</span></span>
                     {% elif book.is_synced and not book.is_allowed %}
-                      <span class="text-warning" title="{{ _('Dieses Buch ist auf dem Reader, aber die Freigabe wurde in Calibre-Web aufgehoben. Es wird beim nächsten Sync entfernt.') }}"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="status-text">{{ _('Auf Reader (nicht mehr freigegeben)') }}</span></span>
+                      <span class="text-warning" title="{{ _('Dieses Buch ist auf dem Reader, aber die Freigabe wurde in Calibre-Web aufgehoben. Es wird beim nächsten Sync entfernt.') }}"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="status-text">{{ _('Auf dem Reader (nicht mehr freigegeben)') }}</span></span>
                     {% elif not book.is_synced and book.is_allowed %}
                       <span class="text-primary" title="{{ _('Dieses Buch wurde freigegeben, wurde aber noch nicht vom Reader abgerufen.') }}"><span class="glyphicon glyphicon-refresh"></span> <span class="status-text">{{ _('Ausstehender Sync') }}</span></span>
                     {% else %}
@@ -642,12 +642,12 @@ $(document).ready(function() {
 
       html += '</div>';
 
-      // Section 2: Kobo-Sammlungen
+      // Section 2: Reader-Sammlungen
       html += '<div>';
-      html += '  <h4 style="border-bottom: 1px solid #d7dde1; padding-bottom: 0.5rem; color: #2f3438;">{{ _('Kobo-Sammlungen') }}</h4>';
+      html += '  <h4 style="border-bottom: 1px solid #d7dde1; padding-bottom: 0.5rem; color: #2f3438;">{{ _('Reader-Sammlungen') }}</h4>';
 
       if (data.kobo_display_collections && data.kobo_display_collections.length > 0) {
-        html += '  <p>{{ _('Dieses Buch soll in folgenden Kobo-Sammlungen angezeigt werden:') }}</p>';
+        html += '  <p>{{ _('Dieses Buch soll in folgenden Reader-Sammlungen angezeigt werden:') }}</p>';
         html += '  <ul style="padding-left: 20px;">';
         data.kobo_display_collections.forEach(function(col) {
           var colName = col.name;
@@ -665,13 +665,13 @@ $(document).ready(function() {
           html += '      <strong>' + escapeHtml(colName) + '</strong> <span class="text-muted" style="font-size: 90%;">(' + colTypeStr + ')</span>';
 
           if (inActual) {
-            html += '      <br><span class="text-success" style="font-size: 90%;"><span class="glyphicon glyphicon-ok"></span> {{ _('erscheint in Kobo-Sammlung') }}</span>';
+            html += '      <br><span class="text-success" style="font-size: 90%;"><span class="glyphicon glyphicon-ok"></span> {{ _('erscheint in Reader-Sammlung') }}</span>';
           } else {
             html += '      <br><span class="text-warning" style="font-size: 90%;"><span class="glyphicon glyphicon-exclamation-sign"></span> ';
             if (col.capped) {
               html += '{{ _('Limit von 1000 Büchern der automatischen Sammlung überschritten') }}';
             } else {
-              html += '{{ _('Nicht im Kobo-Sync erlaubt (keine Kobo-Auswahltabelle hat dieses Buch freigegeben)') }}';
+              html += '{{ _('Nicht für den Reader freigegeben (in keinem Regal mit Übertragungs-Freigabe enthalten)') }}';
             }
             html += '</span>';
           }
@@ -680,7 +680,7 @@ $(document).ready(function() {
         });
         html += '  </ul>';
       } else {
-        html += '  <p class="text-muted">{{ _('Dieses Buch ist keiner als Kobo-Sammlung konfigurierten Kategorie zugeordnet.') }}</p>';
+        html += '  <p class="text-muted">{{ _('Dieses Buch ist keiner als Reader-Sammlung konfigurierten Kategorie zugeordnet.') }}</p>';
       }
 
       html += '</div>';
@@ -919,9 +919,9 @@ $(document).ready(function() {
           var statusCell = $row.find('.kobo-status-cell');
           var statusHtml = '';
           if (exp.is_synced && exp.is_allowed_on_device) {
-            statusHtml = '<span class="text-success"><span class="glyphicon glyphicon-ok-sign"></span> <span class="status-text">' + escapeHtml("{{ _('Auf Reader') }}") + '</span></span>';
+            statusHtml = '<span class="text-success"><span class="glyphicon glyphicon-ok-sign"></span> <span class="status-text">' + escapeHtml("{{ _('Auf dem Reader') }}") + '</span></span>';
           } else if (exp.is_synced && !exp.is_allowed_on_device) {
-            statusHtml = '<span class="text-warning" title="' + escapeHtml("{{ _('Dieses Buch ist auf dem Reader, aber die Freigabe wurde in Calibre-Web aufgehoben. Es wird beim nächsten Sync entfernt.') }}") + '"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="status-text">' + escapeHtml("{{ _('Auf Reader (nicht mehr freigegeben)') }}") + '</span></span>';
+            statusHtml = '<span class="text-warning" title="' + escapeHtml("{{ _('Dieses Buch ist auf dem Reader, aber die Freigabe wurde in Calibre-Web aufgehoben. Es wird beim nächsten Sync entfernt.') }}") + '"><span class="glyphicon glyphicon-exclamation-sign"></span> <span class="status-text">' + escapeHtml("{{ _('Auf dem Reader (nicht mehr freigegeben)') }}") + '</span></span>';
           } else if (!exp.is_synced && exp.is_allowed_on_device) {
             statusHtml = '<span class="text-primary" title="' + escapeHtml("{{ _('Dieses Buch wurde freigegeben, wurde aber noch nicht vom Reader abgerufen.') }}") + '"><span class="glyphicon glyphicon-refresh"></span> <span class="status-text">' + escapeHtml("{{ _('Ausstehender Sync') }}") + '</span></span>';
           } else {
@@ -955,7 +955,7 @@ $(document).ready(function() {
             } else if (exp.blocker_reasons.indexOf('archived') !== -1) {
               reasonsHtml += '<span class="label label-warning kobo-reason-badge" title="' + escapeHtml("{{ _('Dieses Buch ist im Archiv') }}") + '"><span class="glyphicon glyphicon-compressed"></span> ' + escapeHtml("{{ _('Ist im Archiv') }}") + '</span> ';
             } else if (exp.blocker_reasons.indexOf('no_source') !== -1) {
-              reasonsHtml += '<span class="label label-default kobo-reason-badge" style="background-color: #abb7b7 !important;" title="' + escapeHtml("{{ _('In keinem Kobo-Synchronisations-Regal') }}") + '"><span class="glyphicon glyphicon-minus-sign"></span> ' + escapeHtml("{{ _('Keine Kobo-Freigabe') }}") + '</span> ';
+              reasonsHtml += '<span class="label label-default kobo-reason-badge" style="background-color: #abb7b7 !important;" title="' + escapeHtml("{{ _('Keine Reader-Freigabe durch ein Regal') }}") + '"><span class="glyphicon glyphicon-minus-sign"></span> ' + escapeHtml("{{ _('Keine Kobo-Freigabe') }}") + '</span> ';
             }
           }
 

@@ -17,7 +17,19 @@ import fcntl
 import threading
 from pathlib import Path
 
-# Optional: enable GDrive sync and auto-send by importing cps modules when available
+# ── Lazy-initialization sentinels ──────────────────────────────────────────
+# Heavy modules (GDrive sync, auto-send, metadata fetch, audiobook support,
+# EPUB fixing) are NOT imported at module level.  All globals below start as
+# None / empty and are populated by initialize_runtime().  This allows main()
+# to fast-exit on missing/stale ingest targets without importing cps.* (which
+# triggers Flask app init) or creating process-lock files.
+#
+# IMPORTANT:  Any code path that uses these globals MUST be reachable only
+# AFTER initialize_runtime() has returned True.  If you add a new function
+# that touches cps.*, cwa_db, epub_fixer, audiobook, or requests, ensure
+# it is only called from add_book_to_library(), add_format_to_book(), or
+# another path gated by initialize_runtime().
+# ───────────────────────────────────────────────────────────────────────────
 _GDRIVE_AVAILABLE = False
 _CPS_AVAILABLE = False
 _gdriveutils = None

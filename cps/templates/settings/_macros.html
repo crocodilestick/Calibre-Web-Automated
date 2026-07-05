@@ -7,14 +7,18 @@
       {% if field in BOOLEAN_SETTINGS %}
         {# Checkbox mirroring: only render value="on" if value is truthy/1/True/on #}
         {% set val = source_data[field] %}
-        {% if val and (val == True or val == 1 or val == 'on' or val == 'True') %}
+        {% if val is defined and val is not none and (val == True or val == 1 or val == 'on' or val == 'True') %}
           <input type="hidden" name="{{ field }}" value="on">
         {% endif %}
       {% else %}
         {# Text/Integer/JSON mirroring #}
         {% set val = source_data[field] %}
-        {% set fallback_val = 'Submit' if field == 'submit_button' else '' %}
-        <input type="hidden" name="{{ field }}" value="{% if val != None %}{{ val }}{% else %}{{ fallback_val }}{% endif %}">
+        {% if val is defined and val is not none %}
+          <input type="hidden" name="{{ field }}" value="{{ val }}">
+        {% else %}
+          {% set fallback_val = 'Submit' if field == 'submit_button' else '' %}
+          <input type="hidden" name="{{ field }}" value="{{ fallback_val }}">
+        {% endif %}
       {% endif %}
     {% endif %}
   {% endfor %}

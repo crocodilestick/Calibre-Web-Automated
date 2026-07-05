@@ -208,12 +208,12 @@ body.cwa-shelf-view-gallery #main-nav > li > a .hidden-sm {
 
 /* Left sidebar as translucent glass panel */
 body.cwa-shelf-view-gallery .col-sm-2 {
-    background-color: rgba(8, 8, 12, 0.035) !important;
+    background-color: rgba(8, 8, 12, 0.015) !important;
     background-image:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.17) 0%, rgba(255, 255, 255, 0.015) 100%),
+        linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.004) 100%),
         radial-gradient(circle at 10% 20%, rgba(20, 32, 65, 0.45) 0%, transparent 60%),
         radial-gradient(circle at 90% 80%, rgba(55, 18, 38, 0.35) 0%, transparent 70%),
-        linear-gradient(180deg, rgba(12, 10, 12, 0.5) 0%, rgba(12, 10, 12, 0.78) 100%),
+        linear-gradient(180deg, rgba(12, 10, 12, 0.7) 0%, rgba(12, 10, 12, 0.92) 100%),
         url('../img/alexandria/wood_dark.jpg') !important;
     background-size: auto, cover, cover, cover, cover !important;
     background-position: center, center, center, center, center !important;
@@ -221,12 +221,12 @@ body.cwa-shelf-view-gallery .col-sm-2 {
     background-repeat: no-repeat !important;
     -webkit-backdrop-filter: blur(30px) saturate(1.55);
     backdrop-filter: blur(30px) saturate(1.55);
-    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
-    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.12), inset -1px 0 0 rgba(0, 0, 0, 0.4), 4px 0 24px rgba(0, 0, 0, 0.4);
+    border-right: 1px solid rgba(255, 255, 255, 0.035) !important;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.06), inset -1px 0 0 rgba(255, 255, 255, 0.025), 2px 0 18px rgba(0, 0, 0, 0.16);
     border-radius: 0 14px 14px 0;
-    height: calc(100vh - 96px) !important;
+    height: calc(100vh - 86px) !important;
     min-height: 0;
-    top: 64px !important;
+    top: 54px !important;
 }
 
 body.cwa-shelf-view-gallery .col-sm-10,
@@ -395,11 +395,19 @@ body.cwa-shelf-view-gallery .shelf-sort-label {
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 2.6em 1.3em 1.3em auto;
     gap: 3px;
     padding: 2px 0 0 0;
     text-transform: none !important;
+}
+
+#shelf-container.shelf-view-gallery .shelf-book-card .meta > a {
+    display: block;
+    height: 2.6em;
+    color: inherit !important;
+    overflow: hidden;
+    grid-row: 1;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .title {
@@ -411,7 +419,10 @@ body.cwa-shelf-view-gallery .shelf-sort-label {
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    white-space: normal !important;
     overflow: hidden;
+    overflow-wrap: break-word;
+    text-overflow: ellipsis !important;
     height: 2.6em;
     text-transform: none !important;
 }
@@ -424,6 +435,9 @@ body.cwa-shelf-view-gallery .shelf-sort-label {
     overflow: hidden;
     text-overflow: ellipsis;
     text-transform: none !important;
+    min-height: 1.3em;
+    line-height: 1.3;
+    grid-row: 2;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .series-meta {
@@ -434,11 +448,19 @@ body.cwa-shelf-view-gallery .shelf-sort-label {
     overflow: hidden;
     text-overflow: ellipsis;
     text-transform: none !important;
+    min-height: 1.3em;
+    line-height: 1.3;
+    grid-row: 3;
+}
+
+#shelf-container.shelf-view-gallery .shelf-book-card .meta .series-meta-empty {
+    visibility: hidden;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .rating {
     /* caliBlur hides grid ratings globally; the dark library shows them */
     display: block !important;
+    grid-row: 4;
     margin-top: 4px;
     color: #c9a227;
 }
@@ -513,8 +535,10 @@ body.cwa-shelf-view-gallery input[type=checkbox] {
 
 /* ----------------- B) READER VIEW (UNIFIED EINK) ----------------- */
 body.cwa-shelf-view-reader {
-    background-color: #f7f6f2 !important;
-    background-image: url('../img/alexandria/reader_paper.jpg') !important;
+    background-color: #fcfcfa !important;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.44), rgba(255, 255, 255, 0.44)),
+        url('../img/alexandria/reader_paper.jpg') !important;
     background-repeat: repeat !important;
     color: #111111 !important;
 }
@@ -533,8 +557,50 @@ body.cwa-shelf-view-reader .navbar {
     border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
 }
 
+body.cwa-shelf-view-reader div.navbar.navbar-default.navbar-static-top {
+    background-color: rgba(255, 255, 255, 0.035) !important;
+    background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.64) 0%, rgba(255, 255, 255, 0.24) 100%),
+        url('../img/alexandria/reader_paper.jpg') !important;
+    background-repeat: repeat !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.05);
+    backdrop-filter: blur(18px) saturate(1.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.055) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), inset 0 -1px 0 rgba(0, 0, 0, 0.035) !important;
+}
+
+body.cwa-shelf-view-reader div.navbar.navbar-default.navbar-static-top > .container-fluid > form.navbar-form {
+    display: none !important;
+}
+
+body.cwa-shelf-view-reader #advanced_search {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0 !important;
+    margin-left: 46px !important;
+}
+
+body.cwa-shelf-view-reader #advanced_search .glyphicon-search {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-right: 8px !important;
+    width: 24px;
+    flex: 0 0 24px;
+}
+
+body.cwa-shelf-view-reader #advanced_search .hidden-sm {
+    display: inline-block !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+body.cwa-shelf-view-reader #main-nav > li > a {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px;
+}
+
 /* Flatten caliBlur's own navbar sub-surfaces onto the paper */
-body.cwa-shelf-view-reader div.navbar.navbar-default.navbar-static-top,
 body.cwa-shelf-view-reader .navbar .navbar-header,
 body.cwa-shelf-view-reader .navbar .navbar-collapse {
     background: transparent !important;
@@ -551,12 +617,33 @@ body.cwa-shelf-view-reader div.navbar.navbar-default.navbar-static-top div.navba
     background: transparent !important;
     text-shadow: none !important;
     font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+    display: flex !important;
+    align-items: center !important;
+    height: 60px !important;
+    margin: 0 !important;
+    padding: 0 26px !important;
+    width: 230px !important;
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    position: relative;
+    z-index: 2;
 }
 
 body.cwa-shelf-view-reader .col-sm-2 {
-    background: transparent !important;
-    border-right: 1px solid rgba(0, 0, 0, 0.12) !important;
-    min-height: 100vh;
+    background-color: rgba(255, 255, 255, 0.025) !important;
+    background-image:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.3) 100%),
+        url('../img/alexandria/reader_paper.jpg') !important;
+    background-repeat: repeat !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.02);
+    backdrop-filter: blur(18px) saturate(1.02);
+    border-right: 1px solid rgba(0, 0, 0, 0.018) !important;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.62), inset -1px 0 0 rgba(0, 0, 0, 0.008), 2px 0 10px rgba(0, 0, 0, 0.018);
+    border-radius: 0 14px 14px 0;
+    height: calc(100vh - 86px) !important;
+    min-height: 0;
+    top: 54px !important;
 }
 
 /* Sidebar links follow the reader ink colours */
@@ -565,13 +652,23 @@ body.cwa-shelf-view-reader .navigation li a {
     font-weight: 500;
 }
 
+body.cwa-shelf-view-reader .navigation li a .glyphicon {
+    color: #4b5563 !important;
+    opacity: 1 !important;
+}
+
 body.cwa-shelf-view-reader .navigation li a:hover {
-    background-color: rgba(0, 0, 0, 0.05) !important;
+    background-color: rgba(255, 255, 255, 0.62) !important;
     color: #000000 !important;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.035);
+}
+
+body.cwa-shelf-view-reader .navigation li a:hover .glyphicon {
+    color: #111827 !important;
 }
 
 body.cwa-shelf-view-reader .navigation li.active a {
-    background-color: rgba(0, 0, 0, 0.08) !important;
+    background-color: rgba(0, 0, 0, 0.055) !important;
     color: #000000 !important;
     font-weight: 700;
 }
@@ -593,6 +690,19 @@ body.cwa-shelf-view-reader .shelf-header-wrapper {
     border-bottom-color: rgba(0, 0, 0, 0.15) !important;
 }
 
+body.cwa-shelf-view-reader .shelf-toolbar {
+    justify-content: flex-end !important;
+    margin-top: -104px !important;
+    margin-bottom: 34px !important;
+    min-height: 54px;
+    position: relative;
+    z-index: 3;
+}
+
+body.cwa-shelf-view-reader .shelf-actions-group {
+    margin-left: auto;
+}
+
 /* eInk is monochrome: Kobo status lines lose their green/yellow */
 body.cwa-shelf-view-reader .shelf-kobo-status,
 body.cwa-shelf-view-reader .shelf-kobo-status .text-success,
@@ -609,7 +719,7 @@ body.cwa-shelf-view-reader .shelf-kobo-status .text-warning {
     display: flex;
     flex-direction: column;
     background: transparent !important;
-    border: 1px solid rgba(0, 0, 0, 0.12);
+    border: 1px solid transparent;
     border-radius: 0;
     padding: 14px !important;
     transition: none !important;
@@ -655,6 +765,28 @@ body.cwa-shelf-view-reader .shelf-kobo-status .text-warning {
     filter: saturate(0.6) contrast(0.92) brightness(1.03);
 }
 
+#shelf-container.shelf-view-reader .shelf-book-card .cover .badge.read {
+    top: 8px !important;
+    right: 8px !important;
+    bottom: auto !important;
+    left: auto !important;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    padding: 0 !important;
+    border-radius: 50%;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    background: rgba(17, 17, 17, 0.72) !important;
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    color: #ffffff !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+    font-size: 11px;
+    line-height: 1 !important;
+    z-index: 3;
+}
+
 #shelf-container.shelf-view-reader .shelf-book-card .meta {
     display: flex;
     flex-direction: column;
@@ -662,18 +794,29 @@ body.cwa-shelf-view-reader .shelf-kobo-status .text-warning {
     text-transform: none !important;
 }
 
+#shelf-container.shelf-view-reader .shelf-book-card .meta > a {
+    display: block;
+    color: inherit !important;
+}
+
 #shelf-container.shelf-view-reader .shelf-book-card .meta .title {
     font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
     font-weight: 700;
-    font-size: 1.1em;
+    font-size: 1em;
     line-height: 1.3;
     margin: 0;
     color: #000000 !important;
+    white-space: normal !important;
+    text-overflow: ellipsis !important;
+    overflow-wrap: break-word;
+    word-break: normal;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
     overflow: hidden;
-    height: 2.6em;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    min-height: 2.6em;
+    max-height: 2.6em;
     text-transform: none !important;
 }
 
@@ -681,20 +824,15 @@ body.cwa-shelf-view-reader .shelf-kobo-status .text-warning {
     font-size: 0.95em;
     color: #27272a !important;
     margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal !important;
+    overflow: visible;
+    text-overflow: clip !important;
+    overflow-wrap: anywhere;
     text-transform: none !important;
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .meta .series-meta {
-    font-size: 0.88em;
-    color: #52525b !important;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    text-transform: none !important;
+    display: none !important;
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .meta .rating {
@@ -717,8 +855,9 @@ body.cwa-shelf-view-reader .view-mode-toggle button {
     border-radius: 0 !important;
 }
 body.cwa-shelf-view-reader .view-mode-toggle button:hover {
-    background: rgba(0, 0, 0, 0.06) !important;
+    background: rgba(255, 255, 255, 0.72) !important;
     color: #000000 !important;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
 body.cwa-shelf-view-reader .view-mode-toggle button.active {
     background: #111111 !important;
@@ -810,7 +949,7 @@ body.cwa-shelf-view-reader .dropdown-menu {
     color: #000000 !important;
     border: 1px solid #71717a !important;
     box-shadow: none !important;
-    border-radius: 0 !important;
+    border-radius: 6px !important;
 }
 
 body.cwa-shelf-view-reader .dropdown-menu li a {
@@ -818,7 +957,7 @@ body.cwa-shelf-view-reader .dropdown-menu li a {
 }
 
 body.cwa-shelf-view-reader .dropdown-menu li a:hover {
-    background-color: rgba(0, 0, 0, 0.08) !important;
+    background-color: rgba(255, 255, 255, 0.72) !important;
     color: #000000 !important;
 }
 body.cwa-shelf-view-reader .dropdown-menu li.active a {

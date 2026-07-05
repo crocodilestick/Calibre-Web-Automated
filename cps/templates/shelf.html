@@ -227,7 +227,7 @@
       </div>
       <div class="meta">
         <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}>
-          <p title="{{entry.Books.title}}" class="title">{{entry.Books.title|shortentitle}}</p>
+          <p title="{{entry.Books.title}}" class="title">{{entry.Books.title}}</p>
         </a>
         <p class="author">
           {% for author in entry.Books.authors %}
@@ -251,19 +251,22 @@
         {# Stabile Reihen-Formatierung (Int-Vergleich zur Entfernung von Dezimalstellen bei Ganzzahlen) #}
         {% if entry.Books.series.__len__() > 0 %}
         <p class="series-meta">
-          <a class="text-muted" href="{{url_for('web.books_list', data='series', sort_param='stored', book_id=entry.Books.series[0].id )}}">
-            {% set idx = entry.Books.series_index %}
-            {% if idx is not none %}
-              {% if idx == idx | int %}
-                {{ _('Buch %(num)d der Reihe %(name)s', num=idx|int, name=entry.Books.series[0].name) }}
-              {% else %}
-                {{ _('Buch %(num)s der Reihe %(name)s', num=idx|float, name=entry.Books.series[0].name) }}
-              {% endif %}
+          {% set idx = entry.Books.series_index %}
+          {% if idx is not none %}
+            {% if idx == idx | int %}
+              {% set series_label = _('Buch %(num)d der Reihe %(name)s', num=idx|int, name=entry.Books.series[0].name) %}
             {% else %}
-              {{ entry.Books.series[0].name }}
+              {% set series_label = _('Buch %(num)s der Reihe %(name)s', num=idx|float, name=entry.Books.series[0].name) %}
             {% endif %}
+          {% else %}
+            {% set series_label = entry.Books.series[0].name %}
+          {% endif %}
+          <a class="text-muted" href="{{url_for('web.books_list', data='series', sort_param='stored', book_id=entry.Books.series[0].id )}}" title="{{ series_label }}">
+            {{ series_label }}
           </a>
         </p>
+        {% else %}
+        <p class="series-meta series-meta-empty" aria-hidden="true">&nbsp;</p>
         {% endif %}
 
         {# Universum Platzhalter (Phase 1: Wird nur gerendert, falls vorhanden) #}

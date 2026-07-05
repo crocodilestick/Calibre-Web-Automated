@@ -10,7 +10,7 @@
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
       {# Mirror remaining ajaxconfig fields #}
-      {{ spiegel_inputs(AJAXCONFIG_FIELDS, visible_ajax_fields, config, BOOLEAN_SETTINGS) }}
+      {{ spiegel_inputs(AJAXCONFIG_FIELDS, visible_ajax_fields, config, BOOLEAN_SETTINGS, provider=provider) }}
 
       <div class="settings-card">
         <div class="settings-card-title">
@@ -89,13 +89,10 @@
             <span>{{ _("KOReader is enabled. You can configure user accounts and devices in the KOReader setup page.") }}</span>
           </div>
         </div>
-
         <div style="display: flex; gap: 1rem; align-items: center; justify-content: flex-end;">
-          {% if feature_support['kosync'] %}
-            <a href="{{ url_for('kosync.kosync_plugin_page') }}" class="settings-btn settings-btn-secondary" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;">
-              <span class="glyphicon glyphicon-cog"></span> {{ _("Setup KOReader Sync") }}
-            </a>
-          {% endif %}
+          <a href="{{ url_for('kosync.kosync_plugin_page') }}" class="settings-btn settings-btn-secondary" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+            <span class="glyphicon glyphicon-cog"></span> {{ _("Setup KOReader Sync") }}
+          </a>
           <button type="submit" class="settings-btn settings-btn-primary">{{ _("Save Settings") }}</button>
         </div>
       </div>

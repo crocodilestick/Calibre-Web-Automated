@@ -21,7 +21,7 @@
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
       {# Mirror remaining ajaxconfig fields #}
-      {{ spiegel_inputs(AJAXCONFIG_FIELDS, visible_ajax_fields, config, BOOLEAN_SETTINGS) }}
+      {{ spiegel_inputs(AJAXCONFIG_FIELDS, visible_ajax_fields, config, BOOLEAN_SETTINGS, provider=provider) }}
 
       <div class="settings-card">
         <div class="settings-card-title">

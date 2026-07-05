@@ -1,10 +1,36 @@
 {# Macros for consolidated settings (Roadmap-Punkt 2) #}
 
-{% macro spiegel_inputs(endpoint_fields, visible_fields, source_data, BOOLEAN_SETTINGS) %}
+{% macro spiegel_inputs(endpoint_fields, visible_fields, source_data, BOOLEAN_SETTINGS, provider=None) %}
   {% for field in endpoint_fields %}
     {% if field not in visible_fields %}
+      {# Special case: OAuth fields need lookup in provider blueprints list rather than config #}
+      {% if field.startswith('config_') and 'oauth_' in field %}
+        {% set oauth_val = None %}
+        {% if provider %}
+          {% if 'generic_oauth_' in field %}
+            {% set suffix = field.replace('config_generic_oauth_', '') %}
+            {% for bp in provider %}
+              {% if bp.provider_name == 'generic' %}
+                {% set oauth_val = bp['oauth_' ~ suffix] %}
+              {% endif %}
+            {% endfor %}
+          {% else %}
+            {# Field format: config_<pid>_oauth_<type> #}
+            {% set parts = field.split('_') %}
+            {% if parts|length >= 4 %}
+              {% set pid = parts[1] %}
+              {% set type_suffix = parts[3:]|join('_') %}
+              {% for bp in provider %}
+                {% if bp.id|string == pid|string %}
+                  {% set oauth_val = bp['oauth_' ~ type_suffix] %}
+                {% endif %}
+              {% endfor %}
+            {% endif %}
+          {% endif %}
+        {% endif %}
+        <input type="hidden" name="{{ field }}" value="{% if oauth_val is defined and oauth_val is not none %}{{ oauth_val }}{% endif %}">
       {# Determine if field is a boolean/checkbox #}
-      {% if field in BOOLEAN_SETTINGS %}
+      {% elif field in BOOLEAN_SETTINGS %}
         {# Checkbox mirroring: only render value="on" if value is truthy/1/True/on #}
         {% set val = source_data[field] %}
         {% if val is defined and val is not none and (val == True or val == 1 or val == 'on' or val == 'True') %}

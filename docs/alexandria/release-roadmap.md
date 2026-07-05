@@ -45,6 +45,7 @@ Der Klick auf „Sammlungen“ (Shelves / Magic Shelves) führt derzeit auf eine
 * **Lesbare Metadaten trotz Kürzung:** Abgeschnittene Titel, Serien- und perspektivisch Universumszeilen sollen beim Hover vollständig lesbar werden, z. B. über native Tooltips oder eine ruhige eigene Tooltip-Komponente.
 * **Erweiterte Sortierung:** Zusätzlich zu den bestehenden Sortierungen soll eine Sortierung nach Serie und perspektivisch nach Universum ergänzt werden. Innerhalb einer Serie sollen Bücher nach Serienindex sortiert werden, sodass z. B. Serien alphabetisch gruppiert und darin `Buch 1`, `Buch 2`, `Buch 3` korrekt angeordnet werden.
 * **Micro-Animations & Hover-Effekte:** Dezente visuelle Rückmeldungen beim Überfahren der Kacheln, um das Stöbern lebendiger zu machen.
+* **Cozy Musikmodus beim Stöbern (Produkt-Spike):** Optionaler, unaufdringlicher Musikplayer für eine positive, gemütliche Bibliotheksstimmung beim Durchstöbern der Bücher. Nutzer sollen später eigene lokale Musikdateien oder kuratierte Playlists einbetten können. Vor einer Umsetzung müssen Speicherort, Datenschutz, Rechte-/Lizenzfragen, Autoplay-Verhalten und ein klarer Aus-Schalter geprüft werden.
 
 ---
 

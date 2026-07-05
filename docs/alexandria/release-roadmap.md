@@ -41,6 +41,9 @@ Der Klick auf „Sammlungen“ (Shelves / Magic Shelves) führt derzeit auf eine
   * **Sync-Status:** Sichtbarkeit der Kobo-Eigenschaften (*Wird auf Kobo synchronisiert* vs. *Display-only*).
   * **Metadaten:** Anzeige der Buchanzahl innerhalb der Kachel.
 * **Bedingungs-Vorschau (Magic Shelves):** Direkt im Editor für automatische Sammlungen soll eine Live-Vorschau der Bücher angezeigt werden, die den aktuellen Bedingungen entsprechen, um Fehleinstellungen sofort zu erkennen.
+* **Anpassbare Darstellung:** Später sollen Nutzer zentrale Darstellungsparameter der Regalansicht anpassen können, insbesondere Schriftarten, Titel-Schriftart, Titelgröße und Titel-/Akzentfarben für Galerie- und Reader-Modus. Als Inspirationsquelle für lizenzfreie, eReader-optimierte Schriften soll <https://github.com/nicoverbruggen/ebook-fonts> geprüft werden; konkrete Schriften werden vor Übernahme jeweils einzeln auf Lizenz, Attribution und Web-Eignung geprüft.
+* **Lesbare Metadaten trotz Kürzung:** Abgeschnittene Titel, Serien- und perspektivisch Universumszeilen sollen beim Hover vollständig lesbar werden, z. B. über native Tooltips oder eine ruhige eigene Tooltip-Komponente.
+* **Erweiterte Sortierung:** Zusätzlich zu den bestehenden Sortierungen soll eine Sortierung nach Serie und perspektivisch nach Universum ergänzt werden. Innerhalb einer Serie sollen Bücher nach Serienindex sortiert werden, sodass z. B. Serien alphabetisch gruppiert und darin `Buch 1`, `Buch 2`, `Buch 3` korrekt angeordnet werden.
 * **Micro-Animations & Hover-Effekte:** Dezente visuelle Rückmeldungen beim Überfahren der Kacheln, um das Stöbern lebendiger zu machen.
 
 ---

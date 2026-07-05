@@ -18,6 +18,83 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-05 — Ganzheitliches Alexandria-Regal-Theme (Phase 3)
+
+- **Feature/Bug:** Schöne Sammlungsansicht (Ganzheitliches Alexandria-Regal-Theme, Phase 3 - Integration eines geschlossenen Theme-Systems für Galerie- und Reader-Modus).
+- **Branch / Worktree:** `feature/beautiful-shelf-view-phase-3` (Worktree: `infallible-leavitt-d1f70f`)
+- **Status:** Phase 3 vollständig implementiert, unit-getestet (pytest grün), formale Code-Hygiene (`git diff --check`) durchgeführt und bereit zur Abnahme.
+
+### Erledigt
+- [x] **Ganzheitliche Theme-Etablierung (.cwa-shelf-page):**
+  - Etablierung eines einheitlichen visuellen Systems über die Body-Klasse `.cwa-shelf-page` (per Inline-JS), um andere CWA-Seiten nicht zu beeinflussen.
+  - Navbar, Sidebar und Hauptbereich verschmelzen farblich in einem geschlossenen Design (Dunkle Glasmorphismus-Bibliothek für Galerie; flaches eInk-Papier für Reader).
+- [x] **Feinabstimmung des Galerie-Modus:**
+  - Subtile Farbtiefe im dunklen Theme durch Überlagerung der Holztextur mit kaum sichtbaren radialen Verläufen in Dunkelblau (oben links) und gedämpftem Pink/Magenta (unten rechts).
+  - Deaktivierung der lauten orangefarbenen Bootstrap-Töne; Ersetzung durch Graphitgrau und warmes Messing.
+  - Plastischer Glassmorphismus: Sidebar und Navbar im Galerie-Modus erhielten helle Linear-Gradient-Overlays (Lichtkanten), eine sensible Hintergrund-Deckkraft, feine helle Innenkanten (Highlight) und dunkle Schattenkanten (inset box-shadows) sowie einen weichen Backdrop-Blur und Schlagschatten nach rechts.
+  - Nach visueller Prüfung verwenden Navbar und Sidebar zusätzlich dieselbe fixierte Holz-/Verlaufsebene wie der Body, damit der Holzgrund trotz caliBlur-/Bootstrap-Zwischenflächen sichtbar durch die Glasoberflächen wirkt.
+  - Brand-Zeile `CWA Alexandria` nach visueller Prüfung wieder in die obere Navbar gezogen; Sidebar stattdessen als eigenständige Badge-Fläche mit oberem/unterem Abstand und abgerundeten rechten Ecken gestaltet.
+  - Der aktive Navigationseintrag in der Sidebar wurde optisch beruhigt (thinner 2px border und transluzentes Glas-Hintergrunddesign mit 0.05 opacity und inset box-shadow).
+- [x] **Präzise Icon- und Text-Ausrichtung:**
+  - Systematisches Flexbox-Alignment (`display: inline-flex`/`flex`, `align-items: center` und `gap` Definitionen) für alle Sidebar-Navigationslinks, Toolbar-Buttons, View-Mode-Toggles und Dropdowns.
+  - Advanced-Search-Link und Profil-Link in der Topbar mit explizitem Flex-Gap versehen, damit Icons und Text nicht mehr optisch kleben; Suche wurde weiter in Richtung Mitte gesetzt.
+  - Text und Icons stehen in allen Steuerelementen exakt auf einer horizontalen und vertikalen Mittellinie.
+  - Feste Icon-Spalte von 22px in der Sidebar-Navigation zur perfekten vertikalen Ausrichtung der Icons.
+- [x] **Unified Reader-Modus:**
+  - Die eInk-Papiertextur umspannt das gesamte Layout flach und barrierefrei ohne störende Kontrastbrüche.
+- [x] **UX & Layout-Spacing:**
+  - Deutliche Vergrößerung des Desktop-Gutters (Abstand) zwischen linker Sidebar und Hauptinhalt für mehr "Atemraum", voll responsive.
+  - Korrektur des Bootstrap-Grid-Overflows: Die symmetrischen Desktop-Abstände liegen nun auf `#shelf-container` statt auf `.col-sm-10`; die Spaltenbreite bleibt stabil, wodurch kein horizontaler Versatz nach rechts entsteht.
+  - Feinjustierung nach visueller Abnahme: Desktop-Gutter wieder auf einen Mittelweg reduziert, der Headerbereich nach oben verdichtet und die Status-Icons optisch an die Textmitte gesetzt.
+  - Kobo-Status-Bereich mit eigenen semantischen Statusklassen (`cwa-status-enabled`, `cwa-status-disabled`) ausgestattet. `Kobo Collection: Disabled` und inaktive Zustände wirken nun rot und disabled (Galerie) beziehungsweise dezent verblasst (monochromer Reader).
+  - Spätere visuelle Feinschleife: Regalüberschrift übernimmt den warmen Brand-Farbton von `CWA Alexandria`; `Regal verwalten` sitzt visuell beim Regal-Header, während die Sortierung direkt oberhalb der Buchkacheln steht.
+  - Sidebar wieder stärker auf Navigation reduziert: Der View-Mode-Umschalter bleibt links, der Sortier-Dropdown wurde aus der Sidebar entfernt, ohne doppelte DOM-IDs für die historischen Sortier-Selektoren zu erzeugen.
+  - Topbar weiter entzerrt: Brand, Suchfeld und Advanced-Search-Link erhalten explizitere Abstände, damit Lupe und Text nicht mehr optisch kleben oder in den Brand laufen.
+  - Abschließender Navbar-Feinschliff: Advanced-Search-Abstand wieder an den Profil-Link angeglichen, das einfache Suchformular in der Galerie-Regalansicht ausgeblendet und der Abstand zwischen Navbar und Sidebar reduziert.
+  - Finales Sidebar-Tuning: Abstand zur Navbar weiter verengt; Sidebar-Hintergrundlayer an den Body angenähert und die eigenen Glas-Kanten abgeschwächt, damit die Sidebar stärker mit dem Holzgrund zerfließt.
+  - Reader-Übertragung: Weißes Theme übernimmt die Navbar-/Sidebar-Badge-Logik; Brand sitzt prominenter in der Topbar, `Regal verwalten` rückt in die Header-Ebene, Buchkarten verlieren den äußeren Rahmen und Buchtitel werden nicht mehr serverseitig gekürzt.
+  - Finale Metadaten-Politur: Buchtitel werden in Galerie und Reader auf zwei Zeilen geklemmt; im Galerie-Modus reserviert das Meta-Grid feste Zeilen für Titel, Autor, Serie und Rating, damit Karten mit und ohne Serie gleichmäßig ausgerichtet bleiben.
+  - Reader-Feinschliff: Papierhintergrund, Navbar und Sidebar wurden aufgehellt; Hover-Zustände in der Sidebar werden nun weißlich statt grau/dunkel und der alte orange Read-Badge wurde im Reader-Modus neutralisiert.
+  - Roadmap ergänzt: anpassbare Schriften/Farben, eReader-Font-Inspiration (`nicoverbruggen/ebook-fonts`), Tooltips für gekürzte Metadaten sowie Sortierung nach Serie/Universum.
+- [x] **caliBlur-Zwischenflächen neutralisiert:**
+  - Für `.cwa-shelf-view-gallery` werden Navbar-/Sidebar-Untercontainer sowie `.col-sm-10`/`.discover`-Hintergründe und Pseudoelemente gezielt transparent gesetzt, damit Holztextur und Verlauf wirklich durch die Glasflächen scheinen.
+- [x] **Titel-Bereinigung:**
+  - Entfernung des Präfixes `Shelf:` und der Anführungszeichen bei normalen Regalen (nur noch der Regalname wird gerendert). Magic Shelves bleiben sauber getrennt.
+
+### Belege
+- Unit-Tests: pytest-Suite für Kobo-Decoupling und Magic-Shelves läuft fehlerfrei durch (27 passed).
+- Syntax-Check: py_compile der modifizierten Python-Dateien ist erfolgreich.
+- Whitespace-Cleanliness: `git diff --check` meldet 0 Fehler.
+
+## 2026-07-05 — Schöne Sammlungsansicht (Phase 2 & Visuelle Nachrunde)
+
+- **Feature/Bug:** Schöne Sammlungsansicht (Kachel-/Card-Ansicht für Regale & Magic Shelves, Phase 2 - UI-Slice für `/shelf/<id>` und `/magicshelf/<id>`).
+- **Branch / Worktree:** `feature/beautiful-shelf-view-phase-2`
+- **Status:** Phase 2 inklusive der visuellen Nachrunde vollständig implementiert, unit-getestet (pytest grün), formale Code-Hygiene (`git diff --check`) durchgeführt und bereit zur Abnahme.
+
+### Erledigt
+- [x] **Integration web-optimierter Design-Assets:**
+  - `wood_dark.jpg` (dunkle Holztextur, ca. 525 KB) und `reader_paper.jpg` (ca. 259 KB) per `sips` komprimiert und in `cps/static/img/alexandria/` abgelegt. Ungenutzte Assets (`wood_light.jpg`) wurden entfernt.
+  - *Quellennachweis:* Die Texturen stammen von Pixabay (`wood_dark.jpg` von User *peggy_marco*, `reader_paper.jpg` von User *byunilho*) und sind unter der freien Pixabay-Lizenz lizenzfrei zur Modifikation und Nutzung freigegeben.
+- [x] **Zusammenhängender Papier-Look im Reader-Modus:**
+  - Der gesamte Hintergrund (Navbar, linke Sidebar, Hauptbereich und Cards) verwendet einheitlich die `reader_paper.jpg`-Textur auf cremeweißem Grund. Harte weiße Kartenboxen, Schatten und Rundungen wurden durch flache eInk-Linien ersetzt.
+- [x] **Cover-First Galerie-Modus mit Holztextur:**
+  - Die dunkle Holztextur wird mit einem radialen Vignetten-Overlay dargestellt. Buchcover sind um 20% vergrößert (`minmax(180px, 1fr)`). Kacheln haben keine Boxen-Rahmen mehr (Bücher stehen frei). Verspieltes Goldleuchten entfernt (Schlagschatten, Hover-Anhebung und Cover-Skalierung).
+- [x] **Sortierung in der linken Seitenleiste:**
+  - Das Sortier-Dropdown wurde aus dem Hauptbereich entfernt und in die linke Sidebar unter den View-Toggle verschoben. Kompatibilität für das Ausgrauen bei manueller Sortierung im JS gewahrt.
+- [x] **Theme-Warnmeldung entfernt:**
+  - Die tägliche caliBlur-Warnmeldung in `cps/render_template.py` gezielt deaktiviert, ohne andere Flash-Kategorien zu stören.
+- [x] **Review-Nacharbeiten:**
+  - URL-Sprünge bei `#toggle_order_shelf` und `#delete_shelf` durch `href="javascript:void(0);"` behoben.
+  - Sortier-HTML-IDs im Macro mit den JS-Erwartungen in `main.js` harmonisiert.
+- [x] **Planung Phase 3:**
+  - Buchdetail-Modal als eigenen, separaten Slice (Phase 3) ausgeplant.
+
+### Belege
+- Unit-Tests: `.venv/bin/pytest tests/unit/test_magic_shelf_rules.py tests/unit/test_kobo_decoupling.py` laufen fehlerfrei durch (27 passed).
+- Compile-Check: `py_compile` für alle betroffenen Python-Dateien ist erfolgreich.
+- Code-Hygiene: `git diff --check` läuft komplett sauber ohne Whitespace-Fehler.
+
 ## 2026-07-05 — Schöne Sammlungsansicht (Phase 1)
 
 - **Feature/Bug:** Schöne Sammlungsansicht (Kachel-/Card-Ansicht für Regale & Magic Shelves, Phase 1 - Buchliste im Regal)

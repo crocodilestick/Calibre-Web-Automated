@@ -46,9 +46,17 @@ body.modal-open #remove-from-shelves + .tags {
     max-width: 40vw;
 }
 
-/* --- Alexandria Beautiful Shelf Views (Roadmap Step 3) --- */
+/* --- Alexandria Beautiful Shelf Views (Phase 3: full-page theme) ---
+ *
+ * Two visual systems, both scoped to shelf pages only via the body classes
+ * `cwa-shelf-view-gallery` / `cwa-shelf-view-reader` (set by shelf.html):
+ *   A) Gallery = "cinematic dark" (Netflix-style): flat near-black page,
+ *      clean cover rows with zoom-on-hover, white/graphite controls.
+ *   B) Reader  = "unified eInk": flat paper surface across the whole page,
+ *      thin grey lines, black/white controls, serif titles, muted covers.
+ */
 
-/* Grid Layout */
+/* Base grid layout (both modes) */
 #shelf-container .shelf-books-grid {
     display: grid !important;
     grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -62,12 +70,15 @@ body.modal-open #remove-from-shelves + .tags {
 }
 #shelf-container .shelf-book-card {
     width: auto !important;
+    /* caliBlur pins .book:not(body) to exactly 180px via min/max-width */
+    max-width: none !important;
+    min-width: 0 !important;
     float: none !important;
     margin: 0 !important;
     padding: 0 !important;
 }
 
-/* View Mode Toggle Styles */
+/* View mode toggle: neutral base, mode-specific accents further below */
 .view-mode-toggle button {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.15);
@@ -80,65 +91,323 @@ body.modal-open #remove-from-shelves + .tags {
     color: #fff;
 }
 .view-mode-toggle button.active {
-    background: #337ab7 !important;
-    border-color: #2e6da4 !important;
+    background: #3f3f46 !important;
+    border-color: #52525b !important;
     color: #fff !important;
 }
 
-/* Light Theme overrides for Toggle Button */
-body:not(.blur) .view-mode-toggle button {
-    background: #fff;
-    border-color: #ccc;
-    color: #333;
-}
-body:not(.blur) .view-mode-toggle button:hover {
-    background: #f5f5f5;
-}
-body:not(.blur) .view-mode-toggle button.active {
-    background: #337ab7 !important;
-    border-color: #2e6da4 !important;
-    color: #fff !important;
+/* ----------------- A) GALLERY VIEW (CINEMATIC DARK) ----------------- */
+
+/* Full-page flat near-black background with a subtle vertical gradient,
+   modelled on streaming UIs (Netflix-style) */
+body.cwa-shelf-view-gallery {
+    background-color: #0c0a0c !important;
+    background-image:
+        radial-gradient(circle at 10% 20%, rgba(20, 32, 65, 0.45) 0%, transparent 60%),
+        radial-gradient(circle at 90% 80%, rgba(55, 18, 38, 0.35) 0%, transparent 70%),
+        linear-gradient(180deg, rgba(12, 10, 12, 0.7) 0%, rgba(12, 10, 12, 0.92) 100%),
+        url('../img/alexandria/wood_dark.jpg') !important;
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    background-repeat: no-repeat !important;
 }
 
-/* ----------------- A) GALLERY VIEW ----------------- */
+/* Navbar as translucent glass over the page */
+body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top {
+    background-color: rgba(8, 8, 12, 0.035) !important;
+    background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.14) 0%, rgba(255, 255, 255, 0.01) 100%),
+        radial-gradient(circle at 10% 20%, rgba(20, 32, 65, 0.45) 0%, transparent 60%),
+        radial-gradient(circle at 90% 80%, rgba(55, 18, 38, 0.35) 0%, transparent 70%),
+        linear-gradient(180deg, rgba(12, 10, 12, 0.5) 0%, rgba(12, 10, 12, 0.78) 100%),
+        url('../img/alexandria/wood_dark.jpg') !important;
+    background-size: auto, cover, cover, cover, cover !important;
+    background-position: center, center, center, center, center !important;
+    background-attachment: scroll, fixed, fixed, fixed, fixed !important;
+    background-repeat: no-repeat !important;
+    -webkit-backdrop-filter: blur(30px) saturate(1.55);
+    backdrop-filter: blur(30px) saturate(1.55);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -1px 0 rgba(0, 0, 0, 0.4), 0 4px 24px rgba(0, 0, 0, 0.3) !important;
+    z-index: 10 !important;
+}
+
+body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top > .container-fluid {
+    position: relative;
+}
+
+/* Navbar sub-elements (brand block, collapse bar) keep their own caliBlur
+   backgrounds; flatten them so the glass navbar is one surface */
+body.cwa-shelf-view-gallery .navbar .navbar-header,
+body.cwa-shelf-view-gallery .navbar .navbar-collapse,
+body.cwa-shelf-view-gallery .navbar > .container-fluid,
+body.cwa-shelf-view-gallery .navbar form,
+body.cwa-shelf-view-gallery .navbar form > .form-group,
+body.cwa-shelf-view-gallery .navbar .input-group,
+body.cwa-shelf-view-gallery .navbar .input-group-btn {
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+body.cwa-shelf-view-gallery .navbar .navbar-brand {
+    color: #ffffff !important;
+}
+/* caliBlur styles the brand link with a very specific selector; match it */
+body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top div.navbar-header > a.navbar-brand {
+    color: #f2d8a8 !important;
+    background: transparent !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+    display: flex !important;
+    align-items: center !important;
+    height: 60px !important;
+    margin: 0 !important;
+    padding: 0 24px !important;
+    width: 240px !important;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    text-shadow: 0 1px 16px rgba(242, 216, 168, 0.18);
+    position: relative;
+    z-index: 2;
+}
+
+body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top > .container-fluid > form.navbar-form {
+    display: none !important;
+}
+
+body.cwa-shelf-view-gallery #advanced_search {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0 !important;
+}
+body.cwa-shelf-view-gallery #advanced_search .glyphicon-search {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-right: 8px !important;
+    width: 24px;
+    flex: 0 0 24px;
+}
+body.cwa-shelf-view-gallery #advanced_search .hidden-sm {
+    display: inline-block !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+body.cwa-shelf-view-gallery #main-nav > li > a {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px;
+}
+body.cwa-shelf-view-gallery #main-nav > li > a .glyphicon {
+    margin-right: 0 !important;
+}
+body.cwa-shelf-view-gallery #main-nav > li > a .hidden-sm {
+    margin-left: 0 !important;
+}
+
+/* Left sidebar as translucent glass panel */
+body.cwa-shelf-view-gallery .col-sm-2 {
+    background-color: rgba(8, 8, 12, 0.015) !important;
+    background-image:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.06) 0%, rgba(255, 255, 255, 0.004) 100%),
+        radial-gradient(circle at 10% 20%, rgba(20, 32, 65, 0.45) 0%, transparent 60%),
+        radial-gradient(circle at 90% 80%, rgba(55, 18, 38, 0.35) 0%, transparent 70%),
+        linear-gradient(180deg, rgba(12, 10, 12, 0.7) 0%, rgba(12, 10, 12, 0.92) 100%),
+        url('../img/alexandria/wood_dark.jpg') !important;
+    background-size: auto, cover, cover, cover, cover !important;
+    background-position: center, center, center, center, center !important;
+    background-attachment: scroll, fixed, fixed, fixed, fixed !important;
+    background-repeat: no-repeat !important;
+    -webkit-backdrop-filter: blur(30px) saturate(1.55);
+    backdrop-filter: blur(30px) saturate(1.55);
+    border-right: 1px solid rgba(255, 255, 255, 0.035) !important;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.06), inset -1px 0 0 rgba(255, 255, 255, 0.025), 2px 0 18px rgba(0, 0, 0, 0.16);
+    border-radius: 0 14px 14px 0;
+    height: calc(100vh - 86px) !important;
+    min-height: 0;
+    top: 54px !important;
+}
+
+body.cwa-shelf-view-gallery .col-sm-10,
+body.cwa-shelf-view-gallery > .container-fluid,
+body.cwa-shelf-view-gallery > .container-fluid > .row-fluid,
+body.cwa-shelf-view-gallery .navigation,
+body.cwa-shelf-view-gallery #scnd-nav,
+body.cwa-shelf-view-gallery .container-fluid .discover {
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+
+body.cwa-shelf-view-gallery #main-nav + .col-sm-2:after,
+body.cwa-shelf-view-gallery .col-sm-10:before,
+body.cwa-shelf-view-gallery .col-sm-10:after,
+body.cwa-shelf-view-gallery .discover:before,
+body.cwa-shelf-view-gallery .discover:after {
+    content: none !important;
+    display: none !important;
+    background: transparent !important;
+    background-image: none !important;
+}
+
+body.cwa-shelf-view-gallery .navigation li a {
+    color: #b3b3b3 !important;
+}
+body.cwa-shelf-view-gallery .navigation li a:hover {
+    background-color: rgba(255, 255, 255, 0.08) !important;
+    color: #ffffff !important;
+}
+body.cwa-shelf-view-gallery .navigation li.active a {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-left: 2px solid #e50914;
+    color: #ffffff !important;
+    font-weight: 600;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.08), 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+body.cwa-shelf-view-gallery .navigation .nav-head {
+    color: #808080 !important;
+}
+
+/* The shelf container itself becomes transparent: the wood is the page */
+#shelf-container.shelf-view-gallery {
+    background: transparent !important;
+    background-image: none !important;
+    border: none !important;
+    border-radius: 0;
+    box-shadow: none !important;
+    padding: 0 10px 56px !important;
+}
+
+/* Display typography: big, bold, clean heading */
+body.cwa-shelf-view-gallery .shelf-header-wrapper h2 {
+    color: #f2d8a8 !important;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    text-shadow: 0 1px 18px rgba(242, 216, 168, 0.2);
+}
+body.cwa-shelf-view-gallery .shelf-header-wrapper {
+    border-bottom-color: rgba(255, 255, 255, 0.1) !important;
+    margin-top: -22px !important;
+    margin-bottom: 18px !important;
+    padding-bottom: 10px !important;
+}
+
+body.cwa-shelf-view-gallery .shelf-toolbar {
+    justify-content: flex-end !important;
+    margin-top: -78px !important;
+    margin-bottom: 46px !important;
+    min-height: 54px;
+    position: relative;
+    z-index: 3;
+}
+
+body.cwa-shelf-view-gallery .shelf-actions-group {
+    margin-left: auto;
+}
+
+body.cwa-shelf-view-gallery .shelf-books-controls {
+    display: flex;
+    justify-content: flex-start;
+    margin: 0 0 24px 0;
+    position: relative;
+    z-index: 2;
+}
+
+body.cwa-shelf-view-gallery .shelf-sort-control {
+    width: 270px;
+    max-width: 100%;
+}
+
+body.cwa-shelf-view-gallery .shelf-sort-control > .btn {
+    width: 100%;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    text-align: left;
+}
+
+body.cwa-shelf-view-gallery .shelf-sort-label {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
+}
+
+/* Compact covers in clean rows: more books per row */
+#shelf-container.shelf-view-gallery .shelf-books-grid {
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+    gap: 32px 20px !important;
+}
+
 #shelf-container.shelf-view-gallery .shelf-book-card {
     display: flex;
     flex-direction: column;
-    background: rgba(32, 44, 53, 0.4);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    border-radius: 6px;
-    padding: 12px !important;
-    transition: transform 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), box-shadow 0.25s cubic-bezier(0.25, 0.8, 0.25, 1), border-color 0.25s ease;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0;
+    padding: 0 !important;
+    box-shadow: none !important;
 }
 
-#shelf-container.shelf-view-gallery .shelf-book-card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(32, 44, 53, 0.55);
-}
-
+/* Cover block: the inner .img span zooms on hover, streaming-tile style */
 #shelf-container.shelf-view-gallery .shelf-book-card .cover {
-    margin-bottom: 10px;
-    border-radius: 4px;
-    overflow: hidden;
+    position: relative;
+    overflow: visible;
     aspect-ratio: 2 / 3;
-    background: rgba(0, 0, 0, 0.2);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    /* style.css forces a fixed 225px height on .book .cover which would
+       override the aspect-ratio and distort the grid rows */
+    height: auto !important;
+    width: 100%;
+    margin-bottom: 12px;
+    background: transparent;
+    border-radius: 4px;
+    box-shadow: none;
+}
+
+#shelf-container.shelf-view-gallery .shelf-book-card .cover .img {
+    display: block;
+    position: relative;
+    bottom: auto;
+    width: 100%;
+    height: 100%;
+    background: #1f1f1f;
+    border-radius: 4px;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5);
+    transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+
+#shelf-container.shelf-view-gallery .shelf-book-card:hover .cover .img {
+    transform: scale(1.05) translateY(-4px);
+    box-shadow: 0 14px 32px rgba(0, 0, 0, 0.8);
+    z-index: 5;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .cover img {
-    width: 100%;
-    height: 100%;
+    /* caliBlur pins .book.isotope-item .cover img to 150px with !important
+       and layers it behind content backgrounds via z-index: -9 */
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    position: relative;
+    z-index: 1 !important;
     object-fit: cover;
+    border-radius: 4px;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: 2.6em 1.3em 1.3em auto;
     gap: 3px;
     padding: 2px 0 0 0;
+    text-transform: none !important;
+}
+
+#shelf-container.shelf-view-gallery .shelf-book-card .meta > a {
+    display: block;
+    height: 2.6em;
+    color: inherit !important;
+    overflow: hidden;
+    grid-row: 1;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .title {
@@ -146,66 +415,313 @@ body:not(.blur) .view-mode-toggle button.active {
     font-size: 1.05em;
     line-height: 1.3;
     margin: 0 0 2px 0;
-    color: #fff;
+    color: #ffffff !important;
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
+    white-space: normal !important;
     overflow: hidden;
+    overflow-wrap: break-word;
+    text-overflow: ellipsis !important;
     height: 2.6em;
+    text-transform: none !important;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .author {
     font-size: 0.9em;
-    color: #bbb;
+    color: #b3b3b3 !important;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-transform: none !important;
+    min-height: 1.3em;
+    line-height: 1.3;
+    grid-row: 2;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .series-meta {
     font-size: 0.82em;
-    color: #888;
+    color: #8c8c8c !important;
     margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    text-transform: none !important;
+    min-height: 1.3em;
+    line-height: 1.3;
+    grid-row: 3;
+}
+
+#shelf-container.shelf-view-gallery .shelf-book-card .meta .series-meta-empty {
+    visibility: hidden;
 }
 
 #shelf-container.shelf-view-gallery .shelf-book-card .meta .rating {
+    /* caliBlur hides grid ratings globally; the dark library shows them */
+    display: block !important;
+    grid-row: 4;
     margin-top: 4px;
+    color: #c9a227;
 }
 
-/* Light Theme overrides for Gallery View */
-body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card {
-    background: #fff;
-    border-color: #e2e8f0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+/* caliBlur colours the links inside the meta lines, not the paragraphs */
+#shelf-container.shelf-view-gallery .shelf-book-card .meta .author a {
+    color: #b3b3b3 !important;
 }
-body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card:hover {
-    background: #f8fafc;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
-    border-color: #cbd5e1;
-}
-body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card .meta .title {
-    color: #1e293b;
-}
-body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card .meta .author {
-    color: #64748b;
-}
-body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card .meta .series-meta {
-    color: #94a3b8;
+#shelf-container.shelf-view-gallery .shelf-book-card .meta .series-meta a {
+    color: #8c8c8c !important;
 }
 
+/* Graphite/white controls: no loud Bootstrap orange or blue on this page */
+body.cwa-shelf-view-gallery .shelf-toolbar .btn-default,
+body.cwa-shelf-view-gallery .shelf-books-controls .btn-default,
+body.cwa-shelf-view-gallery .sidebar-sort-item .btn-default,
+body.cwa-shelf-view-gallery .sidebar-view-mode-item .btn-default {
+    background: rgba(255, 255, 255, 0.1) !important;
+    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    color: #e5e5e5 !important;
+    box-shadow: none !important;
+    border-radius: 4px;
+}
+body.cwa-shelf-view-gallery .shelf-toolbar .btn-default:hover,
+body.cwa-shelf-view-gallery .shelf-books-controls .btn-default:hover,
+body.cwa-shelf-view-gallery .sidebar-sort-item .btn-default:hover,
+body.cwa-shelf-view-gallery .sidebar-view-mode-item .btn-default:hover {
+    background: rgba(255, 255, 255, 0.2) !important;
+    border-color: rgba(255, 255, 255, 0.4) !important;
+    color: #ffffff !important;
+}
 
-/* ----------------- B) READER VIEW ----------------- */
+body.cwa-shelf-view-gallery .dropdown-menu {
+    background: #1f1f1f !important;
+    border: 1px solid rgba(255, 255, 255, 0.12) !important;
+    border-radius: 4px !important;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7) !important;
+}
+body.cwa-shelf-view-gallery .dropdown-menu li a {
+    color: #d6d6d6 !important;
+}
+body.cwa-shelf-view-gallery .dropdown-menu li a:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    color: #ffffff !important;
+}
+body.cwa-shelf-view-gallery .dropdown-menu li.active a {
+    background-color: rgba(255, 255, 255, 0.15) !important;
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+/* Active toggle: white pill with dark text (streaming-UI CTA style) */
+body.cwa-shelf-view-gallery .view-mode-toggle button.active {
+    background: #ffffff !important;
+    border-color: #ffffff !important;
+    color: #141414 !important;
+}
+
+/* Neutralise caliBlur's orange on primary buttons (e.g. modal dialogs) */
+body.cwa-shelf-view-gallery .btn-primary.active,
+body.cwa-shelf-view-gallery .btn-primary:active,
+body.cwa-shelf-view-gallery .btn-primary:focus,
+body.cwa-shelf-view-gallery .btn-primary:hover,
+body.cwa-shelf-view-gallery .open .dropdown-toggle.btn-primary {
+    background-color: #ffffff !important;
+    border-color: #ffffff !important;
+    color: #141414 !important;
+}
+body.cwa-shelf-view-gallery input[type=checkbox] {
+    accent-color: #e50914;
+}
+
+/* ----------------- B) READER VIEW (UNIFIED EINK) ----------------- */
+body.cwa-shelf-view-reader {
+    background-color: #fcfcfa !important;
+    background-image:
+        linear-gradient(rgba(255, 255, 255, 0.44), rgba(255, 255, 255, 0.44)),
+        url('../img/alexandria/reader_paper.jpg') !important;
+    background-repeat: repeat !important;
+    color: #111111 !important;
+}
+
+/* Navbar and sidebar melt into the paper surface */
+body.cwa-shelf-view-reader .navbar,
+body.cwa-shelf-view-reader .navigation,
+body.cwa-shelf-view-reader #shelf-container {
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+
+body.cwa-shelf-view-reader .navbar {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.12) !important;
+}
+
+body.cwa-shelf-view-reader div.navbar.navbar-default.navbar-static-top {
+    background-color: rgba(255, 255, 255, 0.035) !important;
+    background-image:
+        linear-gradient(180deg, rgba(255, 255, 255, 0.64) 0%, rgba(255, 255, 255, 0.24) 100%),
+        url('../img/alexandria/reader_paper.jpg') !important;
+    background-repeat: repeat !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.05);
+    backdrop-filter: blur(18px) saturate(1.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.055) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82), inset 0 -1px 0 rgba(0, 0, 0, 0.035) !important;
+}
+
+body.cwa-shelf-view-reader div.navbar.navbar-default.navbar-static-top > .container-fluid > form.navbar-form {
+    display: none !important;
+}
+
+body.cwa-shelf-view-reader #advanced_search {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 0 !important;
+    margin-left: 46px !important;
+}
+
+body.cwa-shelf-view-reader #advanced_search .glyphicon-search {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    margin-right: 8px !important;
+    width: 24px;
+    flex: 0 0 24px;
+}
+
+body.cwa-shelf-view-reader #advanced_search .hidden-sm {
+    display: inline-block !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+body.cwa-shelf-view-reader #main-nav > li > a {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 10px;
+}
+
+/* Flatten caliBlur's own navbar sub-surfaces onto the paper */
+body.cwa-shelf-view-reader .navbar .navbar-header,
+body.cwa-shelf-view-reader .navbar .navbar-collapse {
+    background: transparent !important;
+    background-image: none !important;
+    box-shadow: none !important;
+}
+body.cwa-shelf-view-reader .navbar .navbar-brand,
+body.cwa-shelf-view-reader .navbar a {
+    color: #111111 !important;
+}
+/* caliBlur styles the brand link with a very specific selector; match it */
+body.cwa-shelf-view-reader div.navbar.navbar-default.navbar-static-top div.navbar-header > a.navbar-brand {
+    color: #111111 !important;
+    background: transparent !important;
+    text-shadow: none !important;
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+    display: flex !important;
+    align-items: center !important;
+    height: 60px !important;
+    margin: 0 !important;
+    padding: 0 26px !important;
+    width: 230px !important;
+    font-size: 24px !important;
+    font-weight: 700 !important;
+    line-height: 1 !important;
+    position: relative;
+    z-index: 2;
+}
+
+body.cwa-shelf-view-reader .col-sm-2 {
+    background-color: rgba(255, 255, 255, 0.025) !important;
+    background-image:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.62) 0%, rgba(255, 255, 255, 0.3) 100%),
+        url('../img/alexandria/reader_paper.jpg') !important;
+    background-repeat: repeat !important;
+    -webkit-backdrop-filter: blur(18px) saturate(1.02);
+    backdrop-filter: blur(18px) saturate(1.02);
+    border-right: 1px solid rgba(0, 0, 0, 0.018) !important;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.62), inset -1px 0 0 rgba(0, 0, 0, 0.008), 2px 0 10px rgba(0, 0, 0, 0.018);
+    border-radius: 0 14px 14px 0;
+    height: calc(100vh - 86px) !important;
+    min-height: 0;
+    top: 54px !important;
+}
+
+/* Sidebar links follow the reader ink colours */
+body.cwa-shelf-view-reader .navigation li a {
+    color: #27272a !important;
+    font-weight: 500;
+}
+
+body.cwa-shelf-view-reader .navigation li a .glyphicon {
+    color: #4b5563 !important;
+    opacity: 1 !important;
+}
+
+body.cwa-shelf-view-reader .navigation li a:hover {
+    background-color: rgba(255, 255, 255, 0.62) !important;
+    color: #000000 !important;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.035);
+}
+
+body.cwa-shelf-view-reader .navigation li a:hover .glyphicon {
+    color: #111827 !important;
+}
+
+body.cwa-shelf-view-reader .navigation li.active a {
+    background-color: rgba(0, 0, 0, 0.055) !important;
+    color: #000000 !important;
+    font-weight: 700;
+}
+
+body.cwa-shelf-view-reader .navigation .nav-head {
+    color: #52525b !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08) !important;
+    font-weight: 700;
+    margin-top: 15px;
+}
+
+/* Page heading: book-like serif in plain black ink */
+body.cwa-shelf-view-reader .shelf-header-wrapper h2 {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
+    color: #000000 !important;
+    text-shadow: none;
+}
+body.cwa-shelf-view-reader .shelf-header-wrapper {
+    border-bottom-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+body.cwa-shelf-view-reader .shelf-toolbar {
+    justify-content: flex-end !important;
+    margin-top: -104px !important;
+    margin-bottom: 34px !important;
+    min-height: 54px;
+    position: relative;
+    z-index: 3;
+}
+
+body.cwa-shelf-view-reader .shelf-actions-group {
+    margin-left: auto;
+}
+
+/* eInk is monochrome: Kobo status lines lose their green/yellow */
+body.cwa-shelf-view-reader .shelf-kobo-status,
+body.cwa-shelf-view-reader .shelf-kobo-status .text-success,
+body.cwa-shelf-view-reader .shelf-kobo-status .text-warning {
+    color: #111111 !important;
+}
+
+/* The grid in reader mode */
+#shelf-container.shelf-view-reader .shelf-books-grid {
+    gap: 30px !important;
+}
+
 #shelf-container.shelf-view-reader .shelf-book-card {
     display: flex;
     flex-direction: column;
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: transparent !important;
+    border: 1px solid transparent;
     border-radius: 0;
-    padding: 16px !important;
+    padding: 14px !important;
     transition: none !important;
     box-shadow: none !important;
     transform: none !important;
@@ -213,73 +729,367 @@ body:not(.blur) #shelf-container.shelf-view-gallery .shelf-book-card .meta .seri
 
 #shelf-container.shelf-view-reader .shelf-book-card .cover {
     margin-bottom: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    border: 1px solid #3f3f46;
     border-radius: 0;
     aspect-ratio: 2 / 3;
-    background: rgba(0, 0, 0, 0.3);
+    /* see gallery note: neutralise the fixed 225px height from style.css */
+    height: auto !important;
+    width: 100%;
+    background: #e4e4e7;
+    box-shadow: none !important;
+    transition: none !important;
+    transform: none !important;
+}
+
+#shelf-container.shelf-view-reader .shelf-book-card .cover .img {
+    display: block;
+    position: relative;
+    bottom: auto;
+    width: 100%;
+    height: 100%;
+}
+
+#shelf-container.shelf-view-reader .shelf-book-card:hover .cover {
+    transform: none !important;
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .cover img {
-    width: 100%;
-    height: 100%;
+    /* see gallery note: beat caliBlur's fixed 150px width and z-index: -9 */
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    position: relative;
+    z-index: 1 !important;
     object-fit: cover;
+    /* colour eInk look: keep the colours but noticeably muted */
+    filter: saturate(0.6) contrast(0.92) brightness(1.03);
+}
+
+#shelf-container.shelf-view-reader .shelf-book-card .cover .badge.read {
+    top: 8px !important;
+    right: 8px !important;
+    bottom: auto !important;
+    left: auto !important;
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    padding: 0 !important;
+    border-radius: 50%;
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    background: rgba(17, 17, 17, 0.72) !important;
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    color: #ffffff !important;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+    font-size: 11px;
+    line-height: 1 !important;
+    z-index: 3;
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .meta {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    text-transform: none !important;
+}
+
+#shelf-container.shelf-view-reader .shelf-book-card .meta > a {
+    display: block;
+    color: inherit !important;
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .meta .title {
+    font-family: Georgia, "Iowan Old Style", "Palatino Linotype", "Times New Roman", serif;
     font-weight: 700;
-    font-size: 1.1em;
+    font-size: 1em;
     line-height: 1.3;
     margin: 0;
-    color: #fff;
+    color: #000000 !important;
+    white-space: normal !important;
+    text-overflow: ellipsis !important;
+    overflow-wrap: break-word;
+    word-break: normal;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
     overflow: hidden;
-    height: 2.6em;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    min-height: 2.6em;
+    max-height: 2.6em;
+    text-transform: none !important;
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .meta .author {
     font-size: 0.95em;
-    color: #ccc;
+    color: #27272a !important;
     margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    white-space: normal !important;
+    overflow: visible;
+    text-overflow: clip !important;
+    overflow-wrap: anywhere;
+    text-transform: none !important;
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .meta .series-meta {
-    font-size: 0.88em;
-    color: #aaa;
-    margin: 0;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: none !important;
 }
 
 #shelf-container.shelf-view-reader .shelf-book-card .meta .rating {
-    display: none !important; /* Deaktiviert für eInk-Minimalismus */
+    display: none !important;
 }
 
-/* Light Theme overrides for Reader View */
-body:not(.blur) #shelf-container.shelf-view-reader .shelf-book-card {
-    border-color: #334155;
-    background: #fff;
+/* caliBlur colours the links inside the meta lines, not the paragraphs */
+#shelf-container.shelf-view-reader .shelf-book-card .meta .author a {
+    color: #27272a !important;
 }
-body:not(.blur) #shelf-container.shelf-view-reader .shelf-book-card .cover {
-    border-color: #0f172a;
+#shelf-container.shelf-view-reader .shelf-book-card .meta .series-meta a {
+    color: #52525b !important;
 }
-body:not(.blur) #shelf-container.shelf-view-reader .shelf-book-card .meta .title {
-    color: #000;
+
+/* Flat black/white active state for the view toggle in reader mode */
+body.cwa-shelf-view-reader .view-mode-toggle button {
+    background: transparent !important;
+    border: 1px solid #71717a !important;
+    color: #27272a !important;
+    border-radius: 0 !important;
 }
-body:not(.blur) #shelf-container.shelf-view-reader .shelf-book-card .meta .author {
-    color: #334155;
+body.cwa-shelf-view-reader .view-mode-toggle button:hover {
+    background: rgba(255, 255, 255, 0.72) !important;
+    color: #000000 !important;
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.04);
 }
-body:not(.blur) #shelf-container.shelf-view-reader .shelf-book-card .meta .series-meta {
-    color: #475569;
+body.cwa-shelf-view-reader .view-mode-toggle button.active {
+    background: #111111 !important;
+    border-color: #111111 !important;
+    color: #ffffff !important;
+}
+
+/* Neutralise caliBlur's orange on primary buttons in reader mode too */
+body.cwa-shelf-view-reader .btn-primary.active,
+body.cwa-shelf-view-reader .btn-primary:active,
+body.cwa-shelf-view-reader .btn-primary:focus,
+body.cwa-shelf-view-reader .btn-primary:hover,
+body.cwa-shelf-view-reader .open .dropdown-toggle.btn-primary {
+    background-color: #111111 !important;
+    border-color: #111111 !important;
+    color: #ffffff !important;
+}
+body.cwa-shelf-view-reader input[type=checkbox] {
+    accent-color: #111111;
+}
+
+/* ----------------- C) TOOLBAR & CONTROL STYLINGS ----------------- */
+.shelf-toolbar {
+    margin-top: 5px;
+}
+
+.shelf-books-controls {
+    display: flex;
+    justify-content: flex-start;
+    margin: 0 0 24px 0;
+}
+
+.shelf-sort-control {
+    width: 270px;
+    max-width: 100%;
+}
+
+.shelf-sort-control > .btn {
+    width: 100%;
+    justify-content: space-between !important;
+}
+
+.shelf-toolbar .btn,
+.shelf-toolbar .dropdown-menu a,
+.shelf-books-controls .btn,
+.shelf-books-controls .dropdown-menu a,
+.view-mode-toggle button {
+    text-transform: none !important;
+    letter-spacing: normal !important;
+}
+
+/* Grey out and block disabled sort links */
+.dropdown-menu li a.disabled {
+    color: #9ca3af !important;
+    pointer-events: none;
+    cursor: not-allowed;
+    background: transparent !important;
+    opacity: 0.5;
+}
+
+/* View mode toggle inside the sidebar */
+.sidebar-view-mode-item .btn-group {
+    display: flex;
+    width: 100%;
+}
+.sidebar-view-mode-item .btn-group .btn {
+    flex: 1;
+    float: none;
+    text-align: center;
+    text-transform: none !important;
+    letter-spacing: normal !important;
+    border-radius: 4px;
+}
+
+/* Sort dropdown inside the sidebar */
+.sidebar-sort-item {
+    margin-bottom: 10px;
+}
+.sidebar-sort-item .dropdown .dropdown-menu {
+    width: calc(100% - 30px);
+    left: 15px !important;
+    right: 15px !important;
+}
+
+/* Reader mode: flat, high-contrast dropdown buttons */
+body.cwa-shelf-view-reader .btn-default,
+body.cwa-shelf-view-reader .dropdown-menu {
+    background-color: #f7f6f2 !important;
+    color: #000000 !important;
+    border: 1px solid #71717a !important;
+    box-shadow: none !important;
+    border-radius: 6px !important;
+}
+
+body.cwa-shelf-view-reader .dropdown-menu li a {
+    color: #27272a !important;
+}
+
+body.cwa-shelf-view-reader .dropdown-menu li a:hover {
+    background-color: rgba(255, 255, 255, 0.72) !important;
+    color: #000000 !important;
+}
+body.cwa-shelf-view-reader .dropdown-menu li.active a {
+    background-color: rgba(0, 0, 0, 0.15) !important;
+    color: #000000 !important;
+    font-weight: 700;
+}
+body.cwa-shelf-view-reader .dropdown-menu li a.disabled {
+    color: #a1a1aa !important;
+    opacity: 0.4;
+}
+
+/* Narrow screens: tighter grid so the shelf still fits a phone */
+@media (max-width: 767px) {
+    #shelf-container.shelf-view-gallery .shelf-books-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+        gap: 28px 16px !important;
+    }
+}
+
+/* ----------------- D) ALEXANDRIA LAYOUT & SEMANTICS ----------------- */
+@media (min-width: 768px) {
+    body.cwa-shelf-page .col-sm-10 {
+        padding-left: 15px !important;
+        padding-right: 15px !important;
+    }
+    body.cwa-shelf-page #shelf-container {
+        padding-left: 34px !important;
+        padding-right: 34px !important;
+        box-sizing: border-box;
+        max-width: 100%;
+    }
+}
+@media (min-width: 1200px) {
+    body.cwa-shelf-page #shelf-container {
+        padding-left: 44px !important;
+        padding-right: 44px !important;
+    }
+}
+
+/* Kobo Status Semantics */
+body.cwa-shelf-view-gallery .cwa-status-enabled {
+    color: #34d399 !important;
+    font-weight: 600;
+}
+body.cwa-shelf-view-gallery .cwa-status-disabled {
+    color: #f87171 !important;
+    opacity: 0.8;
+    font-weight: 500;
+}
+
+body.cwa-shelf-view-reader .cwa-status-enabled {
+    color: #111111 !important;
+    font-weight: 600;
+}
+body.cwa-shelf-view-reader .cwa-status-disabled {
+    color: #71717a !important;
+    opacity: 0.6;
+    font-weight: 400;
+}
+
+body.cwa-shelf-page .shelf-kobo-status .glyphicon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1 !important;
+    transform: translateY(2px);
+}
+
+/* Alexandria Icon & Text Alignment */
+body.cwa-shelf-page .navigation li a {
+    display: flex !important;
+    align-items: center !important;
+}
+body.cwa-shelf-page .navigation li a .glyphicon {
+    margin: 0 12px 0 0 !important;
+    width: 22px !important;
+    height: 22px !important;
+    text-align: center;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    transform: translateY(-1px) !important;
+}
+
+body.cwa-shelf-page .shelf-toolbar .btn,
+body.cwa-shelf-page .shelf-books-controls .btn,
+body.cwa-shelf-page .view-mode-toggle button {
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+body.cwa-shelf-page .shelf-toolbar .btn .glyphicon,
+body.cwa-shelf-page .shelf-books-controls .btn .glyphicon,
+body.cwa-shelf-page .view-mode-toggle button .glyphicon {
+    margin: 0 8px 0 0 !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.cwa-shelf-page .view-mode-toggle button .glyphicon {
+    margin: 0 6px 0 0 !important;
+}
+
+body.cwa-shelf-page .shelf-toolbar .btn .caret {
+    margin-left: 6px !important;
+    margin-top: 0 !important;
+}
+
+body.cwa-shelf-page .shelf-books-controls .btn .caret {
+    margin-left: 10px !important;
+    margin-top: 0 !important;
+}
+
+/* Sidebar Sort Button Layout Adjustments */
+body.cwa-shelf-page #sortDropdown {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+}
+body.cwa-shelf-page #sortDropdown > span {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+}
+body.cwa-shelf-page #sortDropdown > span .glyphicon {
+    margin: 0 !important;
+}
+body.cwa-shelf-page #sortDropdown .caret {
+    margin-left: 6px !important;
+    margin-top: 0 !important;
 }

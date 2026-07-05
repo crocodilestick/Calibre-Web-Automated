@@ -160,7 +160,7 @@ def test_model_properties_existence():
     from cps import settings_ui
     from cps import ub
     from cps import config_sql
-    
+
     settings_cls = config_sql._Settings
 
     # 1. Verify scheduled tasks fields exist on _Settings class
@@ -187,4 +187,3 @@ def test_model_properties_existence():
             assert hasattr(settings_cls, 'mail_password'), "mail_password does not exist on _Settings class"
         else:
             assert hasattr(settings_cls, field), f"Mail setting '{field}' does not exist on _Settings class"
-

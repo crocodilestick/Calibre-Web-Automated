@@ -161,7 +161,9 @@
 {% endblock %}
 {% block body %}
 <div name="profile-page" class="discover" style="padding-top: 0px !important;">
-  {% include "settings/_tabs.html" %}
+  {% if profile %}
+    {% include "settings/_tabs.html" %}
+  {% endif %}
   <!-- Profile Header with Picture and Title -->
   <div class="profile-header-container">
     <div class="profile-picture" id="user-profile-picture">

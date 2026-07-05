@@ -179,7 +179,7 @@ def get_dynamic_oauth_fields():
         oauth_bps = getattr(oauth_bb, "oauthblueprints", []) or oauth_blueprints
     except ImportError:
         oauth_bps = oauth_blueprints
-        
+
     for bp in oauth_bps:
         pid = bp.get("id")
         pname = bp.get("provider_name")

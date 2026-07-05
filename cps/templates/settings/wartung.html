@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   // Bind reconnect database and metadata backup dialogs
-  function setupStatusDialogAction(buttonId, endpointUrl) {
+  function setupStatusDialogAction(buttonId, endpointUrl, postData) {
     $('#' + buttonId).on('click', function() {
       var msg = 'Running task...';
       if (buttonId === 'restart_database') msg = 'Reconnecting to Calibre database...';
@@ -335,7 +335,7 @@ document.addEventListener('DOMContentLoaded', function() {
       $('#spinner3').show();
       $('#status-dialog-close').hide();
 
-      $.ajax({
+      var ajaxOptions = {
         url: endpointUrl,
         type: 'POST',
         success: function(response) {
@@ -348,22 +348,33 @@ document.addEventListener('DOMContentLoaded', function() {
           $('#spinner3').hide();
           $('#status-dialog-close').show();
         }
-      });
+      };
+
+      if (postData !== undefined) {
+        ajaxOptions.contentType = "application/json; charset=utf-8";
+        ajaxOptions.dataType = "json";
+        ajaxOptions.data = JSON.stringify(postData);
+      }
+
+      $.ajax(ajaxOptions);
     });
   }
 
-  setupManualAction('admin_refresh_cover_cache', '{{ url_for("admin.refresh_cover_cache") }}', 'spinner3');
-  setupStatusDialogAction('restart_database', '{{ url_for("admin.reconnect_db") }}');
+  setupManualAction('admin_refresh_cover_cache', '{{ url_for("admin.update_thumbnails") }}', 'spinner3');
+  setupStatusDialogAction('restart_database', '{{ url_for("admin.shutdown") }}', {parameter: 2});
   {% if config.schedule_metadata_backup %}
-    setupStatusDialogAction('metadata_backup', '{{ url_for("admin.metadata_backup") }}');
+    setupStatusDialogAction('metadata_backup', '{{ url_for("admin.queue_metadata_backup") }}');
   {% endif %}
 
   // Restart / Shutdown endpoints
   $('#restart').on('click', function() {
     $('#spinner').show();
     $.ajax({
-      url: '{{ url_for("admin.restart") }}',
+      url: '{{ url_for("admin.shutdown") }}',
       type: 'POST',
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      data: JSON.stringify({parameter: 0}),
       success: function() {
         alert('Server is restarting...');
       },
@@ -378,6 +389,9 @@ document.addEventListener('DOMContentLoaded', function() {
     $.ajax({
       url: '{{ url_for("admin.shutdown") }}',
       type: 'POST',
+      contentType: "application/json; charset=utf-8",
+      dataType: "json",
+      data: JSON.stringify({parameter: 1}),
       success: function() {
         alert('Server shutting down.');
       },

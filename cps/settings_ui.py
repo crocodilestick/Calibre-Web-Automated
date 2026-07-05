@@ -173,8 +173,14 @@ IGNORABLE_FORMATS = [
 def get_dynamic_oauth_fields():
     """Generates OAuth field names dynamically based on loaded blueprints."""
     fields = []
-    # Use module-level pre-loaded oauth_blueprints list (already import protected)
-    for bp in oauth_blueprints:
+    # Safely query oauth blueprints at call time
+    try:
+        from . import oauth_bb
+        oauth_bps = getattr(oauth_bb, "oauthblueprints", []) or oauth_blueprints
+    except ImportError:
+        oauth_bps = oauth_blueprints
+        
+    for bp in oauth_bps:
         pid = bp.get("id")
         pname = bp.get("provider_name")
         if pname == "generic":

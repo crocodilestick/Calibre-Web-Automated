@@ -494,6 +494,9 @@
                           <span class="label label-default kobo-reason-badge" style="background-color: #abb7b7 !important;" title="{{ _('In keinem Kobo-Synchronisations-Regal') }}"><span class="glyphicon glyphicon-minus-sign"></span> {{ _('Keine Kobo-Freigabe') }}</span>
                         {% endif %}
                       {% endif %}
+                      {% if book.is_allowed and not book.collections %}
+                        <span class="label label-warning kobo-reason-badge" title="{{ _('Dieses Buch wird auf den Reader übertragen, erscheint dort aber in keiner Sammlung. Füge es einem passenden Regal hinzu, das als Reader-Sammlung angezeigt wird.') }}"><span class="glyphicon glyphicon-exclamation-sign"></span> {{ _('Keine Reader-Sammlung') }}</span>
+                      {% endif %}
                     </div>
                   </td>
                   <td>
@@ -954,6 +957,11 @@ $(document).ready(function() {
             } else if (exp.blocker_reasons.indexOf('no_source') !== -1) {
               reasonsHtml += '<span class="label label-default kobo-reason-badge" style="background-color: #abb7b7 !important;" title="' + escapeHtml("{{ _('In keinem Kobo-Synchronisations-Regal') }}") + '"><span class="glyphicon glyphicon-minus-sign"></span> ' + escapeHtml("{{ _('Keine Kobo-Freigabe') }}") + '</span> ';
             }
+          }
+
+          // 3. Warnung "Keine Reader-Sammlung" rendern, wenn erlaubt, aber in keiner Sammlung
+          if (exp.is_allowed_on_device && (!exp.kobo_actual_collections || exp.kobo_actual_collections.length === 0)) {
+            reasonsHtml += '<span class="label label-warning kobo-reason-badge" title="' + escapeHtml("{{ _('Dieses Buch wird auf den Reader übertragen, erscheint dort aber in keiner Sammlung. Füge es einem passenden Regal hinzu, das als Reader-Sammlung angezeigt wird.') }}") + '"><span class="glyphicon glyphicon-exclamation-sign"></span> ' + escapeHtml("{{ _('Keine Reader-Sammlung') }}") + '</span> ';
           }
 
           reasonsContainer.html(reasonsHtml);

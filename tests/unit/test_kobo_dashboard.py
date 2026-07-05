@@ -483,6 +483,8 @@ class TestKoboDashboard:
         assert "{{ _('Ist im Archiv') }}" in template
         assert "{{ _('Keine Kobo-Freigabe') }}" in template
         assert "{{ _('Manuell blockiert') }}" in template
+        assert "{{ _('Keine Reader-Sammlung') }}" in template
+        assert "{{ _('Dieses Buch wird auf den Reader übertragen, erscheint dort aber in keiner Sammlung. Füge es einem passenden Regal hinzu, das als Reader-Sammlung angezeigt wird.') }}" in template
 
     def test_kobo_dashboard_script_runs_after_global_jquery(self):
         """Dashboard click handlers must be in the js block after layout loads jQuery."""
@@ -1006,3 +1008,123 @@ class TestKoboDashboard:
         assert wb[0]["id"] == 10
         assert wb[0]["release_sources"] == [{"type": "normal_shelf", "name": "Shelf A"}]
         assert wb[0]["blocker_reasons"] == ["archived"]
+
+    @patch('cps.kobo.get_kobo_books_sync_explanations')
+    @patch('cps.kobo.get_kobo_blocked_book_ids')
+    @patch('cps.kobo_dashboard.get_kobo_excluded_books')
+    @patch('cps.kobo_dashboard.config')
+    @patch('cps.kobo.get_kobo_allowed_book_ids')
+    @patch('cps.ub.session')
+    @patch('cps.kobo_dashboard.db.CalibreDB')
+    def test_workspace_book_warning_for_no_collections(
+        self,
+        mock_calibredb_cls,
+        mock_session,
+        mock_allowed_books,
+        mock_config,
+        mock_excluded,
+        mock_blocked,
+        mock_batch_explain
+    ):
+        """Verify that workspace books dictionary has the expected structure when allowed but not in any collection."""
+        mock_blocked.return_value = set()
+        mock_config.config_kobo_sync_magic_shelves = False
+        mock_excluded.return_value = []
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+        fake_user.role_download.return_value = True
+        fake_user.kobo_only_shelves_sync = 1
+
+        mock_allowed_books.return_value = {15}
+
+        q = MagicMock()
+        q.filter_by.return_value.first.return_value = MagicMock()
+        # synced_book_ids, override_book_ids, normal_shelves, magic_shelves
+        q.filter_by.return_value.all.side_effect = [
+            [MagicMock(book_id=15)], # synced
+            [],                      # overrides
+            [],                      # normal shelves
+            []                       # magic shelves
+        ]
+        mock_session.query.return_value = q
+
+        mock_cdb = MagicMock()
+        mock_calibredb_cls.return_value = mock_cdb
+        fake_book = MagicMock(id=15, title="Collectionless Allowed Book")
+        mock_cdb.session.query.return_value.filter.return_value.filter.return_value.all.return_value = [fake_book]
+
+        mock_batch_explain.return_value = {
+            15: {
+                "is_synced": True,
+                "is_allowed_on_device": True, # Allowed!
+                "reader_override": "auto",
+                "kobo_actual_collections": [], # No collections!
+                "release_sources": [{"type": "full_sync", "name": "Ganze Bibliothek"}],
+                "blocker_reasons": []
+            }
+        }
+
+        dashboard_data = get_kobo_dashboard_data(fake_user)
+        wb = dashboard_data["workspace_books"]
+        assert len(wb) == 1
+        assert wb[0]["id"] == 15
+        assert wb[0]["is_allowed"] is True
+        assert wb[0]["collections"] == []
+
+    def test_workspace_book_warning_renders_in_template(self):
+        """Test that the 'Keine Reader-Sammlung' warning badge actually renders in the template snippet."""
+        from flask import Flask, render_template_string
+        from pathlib import Path
+
+        template_content = Path("cps/templates/kobo_dashboard.html").read_text(encoding="utf-8")
+        start_idx = template_content.index('{% if workspace_books %}')
+        end_idx = template_content.index('</table>\n        </div>', start_idx) + len('</table>\n        </div>')
+        snippet = template_content[start_idx:end_idx] + '\n      {% endif %}'
+
+        app = Flask("test_app")
+
+        # Case 1: Book is allowed, but has no collections -> should render badge
+        context_warning = {
+            "workspace_books": [{
+                "id": 12,
+                "title": "Warning Book",
+                "is_synced": False,
+                "is_allowed": True,
+                "reader_override": "always",
+                "collections": [], # Empty!
+                "is_orphan": False,
+                "release_sources": [],
+                "blocker_reasons": []
+            }],
+            "is_two_column_sync": True,
+            "_": lambda x: x,
+            "url_for": lambda *args, **kwargs: "#"
+        }
+
+        with app.test_request_context():
+            html_warning = render_template_string(snippet, **context_warning)
+            assert "Keine Reader-Sammlung" in html_warning
+            assert "Dieses Buch wird auf den Reader übertragen, erscheint dort aber in keiner Sammlung." in html_warning
+
+        # Case 2: Book is allowed, and HAS collections -> should NOT render badge
+        context_no_warning = {
+            "workspace_books": [{
+                "id": 12,
+                "title": "Warning Book",
+                "is_synced": False,
+                "is_allowed": True,
+                "reader_override": "always",
+                "collections": ["My Collection"], # Has collection!
+                "is_orphan": False,
+                "release_sources": [],
+                "blocker_reasons": []
+            }],
+            "is_two_column_sync": True,
+            "_": lambda x: x,
+            "url_for": lambda *args, **kwargs: "#"
+        }
+
+        with app.test_request_context():
+            html_no_warning = render_template_string(snippet, **context_no_warning)
+            assert "Keine Reader-Sammlung" not in html_no_warning

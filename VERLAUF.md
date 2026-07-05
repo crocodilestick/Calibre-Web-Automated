@@ -18,6 +18,33 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-05 — Ganzheitliches Alexandria-Regal-Theme (Phase 3)
+
+- **Feature/Bug:** Schöne Sammlungsansicht (Ganzheitliches Alexandria-Regal-Theme, Phase 3 - Integration eines geschlossenen Theme-Systems für Galerie- und Reader-Modus).
+- **Branch / Worktree:** `feature/beautiful-shelf-view-phase-3` (Worktree: `infallible-leavitt-d1f70f`)
+- **Status:** Phase 3 vollständig implementiert, unit-getestet (pytest grün), formale Code-Hygiene (`git diff --check`) durchgeführt und bereit zur Abnahme.
+
+### Erledigt
+- [x] **Ganzheitliche Theme-Etablierung (.cwa-shelf-page):**
+  - Etablierung eines einheitlichen visuellen Systems über die Body-Klasse `.cwa-shelf-page` (per Inline-JS), um andere CWA-Seiten nicht zu beeinflussen.
+  - Navbar, Sidebar und Hauptbereich verschmelzen farblich in einem geschlossenen Design (Dunkle Glasmorphismus-Bibliothek für Galerie; flaches eInk-Papier für Reader).
+- [x] **Feinabstimmung des Galerie-Modus:**
+  - Subtile Farbtiefe im dunklen Theme durch Überlagerung der Holztextur mit kaum sichtbaren radialen Verläufen in Dunkelblau (oben links) und gedämpftem Pink/Magenta (unten rechts).
+  - Physische Holzregalkanten unter den Buchcovern hinzugefügt.
+  - Deaktivierung der lauten orangefarbenen Bootstrap-Töne; Ersetzung durch Graphitgrau und warmes Messing.
+- [x] **Unified Reader-Modus:**
+  - Die eInk-Papiertextur umspannt das gesamte Layout flach und barrierefrei ohne störende Kontrastbrüche.
+- [x] **UX & Layout-Spacing:**
+  - Deutliche Vergrößerung des Desktop-Gutters (Abstand) zwischen linker Sidebar und Hauptinhalt für mehr "Atemraum" (padding-left 80px auf großen Bildschirmen), voll responsive.
+  - Kobo-Status-Bereich mit eigenen semantischen Statusklassen (`cwa-status-enabled`, `cwa-status-disabled`) ausgestattet. `Kobo Collection: Hidden` und inaktive Zustände wirken nun rot und disabled (Galerie) beziehungsweise dezent verblasst (monochromer Reader).
+- [x] **Titel-Bereinigung:**
+  - Entfernung des Präfixes `Shelf:` und der Anführungszeichen bei normalen Regalen (nur noch der Regalname wird gerendert). Magic Shelves bleiben sauber getrennt.
+
+### Belege
+- Unit-Tests: pytest-Suite für Kobo-Decoupling und Magic-Shelves läuft fehlerfrei durch (27 passed).
+- Syntax-Check: py_compile der modifizierten Python-Dateien ist erfolgreich.
+- Whitespace-Cleanliness: `git diff --check` meldet 0 Fehler.
+
 ## 2026-07-05 — Schöne Sammlungsansicht (Phase 2 & Visuelle Nachrunde)
 
 - **Feature/Bug:** Schöne Sammlungsansicht (Kachel-/Card-Ansicht für Regale & Magic Shelves, Phase 2 - UI-Slice für `/shelf/<id>` und `/magicshelf/<id>`).

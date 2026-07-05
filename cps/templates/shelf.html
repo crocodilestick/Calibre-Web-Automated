@@ -147,50 +147,9 @@
         {% endif %}
       {% endif %}
     </div>
-
-    {# Sortierung Dropdown #}
-    {% if entries.__len__() %}
-      <div class="shelf-sort-group" style="display: flex; gap: 10px; align-items: center; margin-left: auto;">
-        <div class="dropdown sort-dropdown">
-          <button class="btn btn-default dropdown-toggle" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
-            <span class="glyphicon glyphicon-sort"></span>
-            {{ _('Sort:') }}
-            <strong>
-              {% if order == 'new' %}{{ _('Date Added (Newest)') }}
-              {% elif order == 'old' %}{{ _('Date Added (Oldest)') }}
-              {% elif order == 'abc' %}{{ _('Title A-Z') }}
-              {% elif order == 'zyx' %}{{ _('Title Z-A') }}
-              {% elif order == 'authaz' %}{{ _('Author A-Z') }}
-              {% elif order == 'authza' %}{{ _('Author Z-A') }}
-              {% elif order == 'pubnew' %}{{ _('Publishing Date (Newest)') }}
-              {% elif order == 'pubold' %}{{ _('Publishing Date (Oldest)') }}
-              {% elif order == 'shelfnew' %}{{ _('Added to Shelf (Newest)') }}
-              {% elif order == 'shelfold' %}{{ _('Added to Shelf (Oldest)') }}
-              {% else %}{{ _('Default') }}
-              {% endif %}
-            </strong>
-            <span class="caret"></span>
-          </button>
-          <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown">
-            {{ sort_item('abc', _('Title A-Z'), 'asc') }}
-            {{ sort_item('zyx', _('Title Z-A'), 'desc') }}
-            {{ sort_item('authaz', _('Author A-Z'), 'auth_az') }}
-            {{ sort_item('authza', _('Author Z-A'), 'auth_za') }}
-            {{ sort_item('new', _('Date Added (Newest)'), 'new') }}
-            {{ sort_item('old', _('Date Added (Oldest)'), 'old') }}
-            {{ sort_item('pubnew', _('Publishing Date (Newest)'), 'pub_new') }}
-            {{ sort_item('pubold', _('Publishing Date (Oldest)'), 'pub_old') }}
-            {% if page != 'magicshelf' %}
-              {{ sort_item('shelfnew', _('Added to Shelf (Newest)'), 'shelf_new') }}
-              {{ sort_item('shelfold', _('Added to Shelf (Oldest)'), 'shelf_old') }}
-            {% endif %}
-          </ul>
-        </div>
-      </div>
-    {% endif %}
   </div>
 
-  {# Quelle für die Sidebar-View-Steuerung (wird per JS in die Sidebar eingehängt) #}
+  {# Quelle für die Sidebar-View- und Sortiersteuerung (wird per JS in die Sidebar eingehängt) #}
   <div id="sidebar-view-toggle-source" class="hidden">
     <li class="nav-head hidden-xs text-uppercase sidebar-view-mode-title" style="font-size: 0.75em; letter-spacing: 0.05em; margin-top: 15px;">{{ _('View Mode') }}</li>
     <li class="sidebar-view-mode-item" style="padding: 5px 15px;">
@@ -207,6 +166,48 @@
         </div>
       </div>
     </li>
+
+    {% if entries.__len__() %}
+      <li class="nav-head hidden-xs text-uppercase sidebar-sort-title" style="font-size: 0.75em; letter-spacing: 0.05em; margin-top: 15px;">{{ _('Sortierung') }}</li>
+      <li class="sidebar-sort-item" style="padding: 5px 15px;">
+        <div class="dropdown sort-dropdown">
+          <button class="btn btn-default dropdown-toggle btn-xs" type="button" id="sortDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true" style="width: 100%; text-align: left; display: flex; justify-content: space-between; align-items: center;">
+            <span>
+              <span class="glyphicon glyphicon-sort"></span>
+              <strong>
+                {% if order == 'new' %}{{ _('Date Added (Newest)') }}
+                {% elif order == 'old' %}{{ _('Date Added (Oldest)') }}
+                {% elif order == 'abc' %}{{ _('Title A-Z') }}
+                {% elif order == 'zyx' %}{{ _('Title Z-A') }}
+                {% elif order == 'authaz' %}{{ _('Author A-Z') }}
+                {% elif order == 'authza' %}{{ _('Author Z-A') }}
+                {% elif order == 'pubnew' %}{{ _('Publishing Date (Newest)') }}
+                {% elif order == 'pubold' %}{{ _('Publishing Date (Oldest)') }}
+                {% elif order == 'shelfnew' %}{{ _('Added to Shelf (Newest)') }}
+                {% elif order == 'shelfold' %}{{ _('Added to Shelf (Oldest)') }}
+                {% else %}{{ _('Default') }}
+                {% endif %}
+              </strong>
+            </span>
+            <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right" aria-labelledby="sortDropdown" style="width: 100%; min-width: 150px;">
+            {{ sort_item('abc', _('Title A-Z'), 'asc') }}
+            {{ sort_item('zyx', _('Title Z-A'), 'desc') }}
+            {{ sort_item('authaz', _('Author A-Z'), 'auth_az') }}
+            {{ sort_item('authza', _('Author Z-A'), 'auth_za') }}
+            {{ sort_item('new', _('Date Added (Newest)'), 'new') }}
+            {{ sort_item('old', _('Date Added (Oldest)'), 'old') }}
+            {{ sort_item('pubnew', _('Publishing Date (Newest)'), 'pub_new') }}
+            {{ sort_item('pubold', _('Publishing Date (Oldest)'), 'pub_old') }}
+            {% if page != 'magicshelf' %}
+              {{ sort_item('shelfnew', _('Added to Shelf (Newest)'), 'shelf_new') }}
+              {{ sort_item('shelfold', _('Added to Shelf (Oldest)'), 'shelf_old') }}
+            {% endif %}
+          </ul>
+        </div>
+      </li>
+    {% endif %}
   </div>
 
   {# Das Buch-Grid #}
@@ -300,10 +301,10 @@
 {{ super() }}
 <script>
 $(document).ready(function() {
-    // 1. Sidebar View Toggle einhängen (Kindelemente klonen, um Source-Container unberührt zu lassen)
+    // 1. Sidebar View & Sort Toggle einhängen (Kindelemente klonen, um Source-Container unberührt zu lassen)
     if ($('#scnd-nav').length && $('#sidebar-view-toggle-source').length) {
         // Eventuelle alte Reste entfernen
-        $('#scnd-nav .sidebar-view-mode-title, #scnd-nav .sidebar-view-mode-item').remove();
+        $('#scnd-nav .sidebar-view-mode-title, #scnd-nav .sidebar-view-mode-item, #scnd-nav .sidebar-sort-title, #scnd-nav .sidebar-sort-item').remove();
         // Klonen und als HTML anhängen
         var clonedToggle = $('#sidebar-view-toggle-source').contents().clone();
         clonedToggle.appendTo('#scnd-nav');

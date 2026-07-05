@@ -164,7 +164,9 @@ def get_kobo_dashboard_data(user):
                 "is_allowed": bool(exp.get("is_allowed_on_device", False)),
                 "reader_override": exp.get("reader_override", "auto"),
                 "collections": [col["name"] for col in exp.get("kobo_actual_collections", [])],
-                "is_orphan": bool(exp.get("is_synced", False) and not exp.get("kobo_actual_collections"))
+                "is_orphan": bool(exp.get("is_synced", False) and not exp.get("kobo_actual_collections")),
+                "release_sources": exp.get("release_sources", []),
+                "blocker_reasons": exp.get("blocker_reasons", [])
             })
 
     # 3. Sammlungen aggregieren (kobo_display == True)

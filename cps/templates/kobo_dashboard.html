@@ -86,6 +86,19 @@
     margin: 0;
     padding: 0.5rem 0;
   }
+  .kobo-reasons-container {
+    margin-top: 6px;
+    line-height: 1.6;
+  }
+  .kobo-reason-badge {
+    display: inline-block;
+    margin-right: 4px;
+    margin-bottom: 2px;
+    font-size: 80% !important;
+    font-weight: 500;
+    padding: 3px 6px !important;
+    border-radius: 3px;
+  }
 </style>
 {% endblock %}
 {% block body %}
@@ -458,6 +471,30 @@
                     <a href="#" class="kobo-book-details text-muted" data-book-id="{{ book.id }}" style="margin-left: 5px;" title="{{ _('Details anzeigen') }}">
                       <span class="glyphicon glyphicon-info-sign"></span>
                     </a>
+                    <div class="kobo-reasons-container">
+                      {% if book.release_sources %}
+                        {% for src in book.release_sources %}
+                          {% if src.type == 'override' %}
+                            <span class="label label-primary kobo-reason-badge" title="{{ _('Manuell immer auf dem Reader') }}"><span class="glyphicon glyphicon-pushpin"></span> {{ _('Manuell') }}</span>
+                          {% elif src.type == 'normal_shelf' %}
+                            <span class="label label-default kobo-reason-badge" title="{{ _('Regal') }}: {{ src.name }}"><span class="glyphicon glyphicon-bookmark"></span> {{ src.name }}</span>
+                          {% elif src.type == 'magic_shelf' %}
+                            <span class="label label-info kobo-reason-badge" title="{{ _('Automatische Sammlung') }}: {{ src.name }}"><span class="glyphicon glyphicon-magic"></span> {{ src.name }}</span>
+                          {% elif src.type == 'full_sync' %}
+                            <span class="label label-success kobo-reason-badge" title="{{ _('Vollständige Synchronisation') }}"><span class="glyphicon glyphicon-globe"></span> {{ _('Ganze Bibliothek') }}</span>
+                          {% endif %}
+                        {% endfor %}
+                      {% endif %}
+                      {% if book.blocker_reasons %}
+                        {% if 'never_override' in book.blocker_reasons %}
+                          <span class="label label-danger kobo-reason-badge" title="{{ _('Dieses Buch wurde manuell blockiert') }}"><span class="glyphicon glyphicon-ban-circle"></span> {{ _('Manuell blockiert') }}</span>
+                        {% elif 'archived' in book.blocker_reasons %}
+                          <span class="label label-warning kobo-reason-badge" title="{{ _('Dieses Buch ist im Archiv') }}"><span class="glyphicon glyphicon-compressed"></span> {{ _('Ist im Archiv') }}</span>
+                        {% elif 'no_source' in book.blocker_reasons %}
+                          <span class="label label-default kobo-reason-badge" style="background-color: #abb7b7 !important;" title="{{ _('In keinem Kobo-Synchronisations-Regal') }}"><span class="glyphicon glyphicon-minus-sign"></span> {{ _('Keine Kobo-Freigabe') }}</span>
+                        {% endif %}
+                      {% endif %}
+                    </div>
                   </td>
                   <td>
                     {% if book.collections %}
@@ -888,6 +925,38 @@ $(document).ready(function() {
             statusHtml = '<span class="text-danger"><span class="glyphicon glyphicon-remove-sign"></span> <span class="status-text">' + escapeHtml("{{ _('Blockiert / Nicht freigegeben') }}") + '</span></span>';
           }
           statusCell.html(statusHtml);
+
+          // Badges rendern
+          var reasonsContainer = $row.find('.kobo-reasons-container');
+          var reasonsHtml = '';
+
+          // 1. Quellen (release_sources) rendern
+          if (exp.release_sources && exp.release_sources.length > 0) {
+            exp.release_sources.forEach(function(src) {
+              if (src.type === 'override') {
+                reasonsHtml += '<span class="label label-primary kobo-reason-badge" title="' + escapeHtml("{{ _('Manuell immer auf dem Reader') }}") + '"><span class="glyphicon glyphicon-pushpin"></span> ' + escapeHtml("{{ _('Manuell') }}") + '</span> ';
+              } else if (src.type === 'normal_shelf') {
+                reasonsHtml += '<span class="label label-default kobo-reason-badge" title="' + escapeHtml("{{ _('Regal') }}") + ': ' + escapeHtml(src.name) + '"><span class="glyphicon glyphicon-bookmark"></span> ' + escapeHtml(src.name) + '</span> ';
+              } else if (src.type === 'magic_shelf') {
+                reasonsHtml += '<span class="label label-info kobo-reason-badge" title="' + escapeHtml("{{ _('Automatische Sammlung') }}") + ': ' + escapeHtml(src.name) + '"><span class="glyphicon glyphicon-magic"></span> ' + escapeHtml(src.name) + '</span> ';
+              } else if (src.type === 'full_sync') {
+                reasonsHtml += '<span class="label label-success kobo-reason-badge" title="' + escapeHtml("{{ _('Vollständige Synchronisation') }}") + '"><span class="glyphicon glyphicon-globe"></span> ' + escapeHtml("{{ _('Ganze Bibliothek') }}") + '</span> ';
+              }
+            });
+          }
+
+          // 2. Blocker (blocker_reasons) rendern mit Priorität
+          if (exp.blocker_reasons && exp.blocker_reasons.length > 0) {
+            if (exp.blocker_reasons.indexOf('never_override') !== -1) {
+              reasonsHtml += '<span class="label label-danger kobo-reason-badge" title="' + escapeHtml("{{ _('Dieses Buch wurde manuell blockiert') }}") + '"><span class="glyphicon glyphicon-ban-circle"></span> ' + escapeHtml("{{ _('Manuell blockiert') }}") + '</span> ';
+            } else if (exp.blocker_reasons.indexOf('archived') !== -1) {
+              reasonsHtml += '<span class="label label-warning kobo-reason-badge" title="' + escapeHtml("{{ _('Dieses Buch ist im Archiv') }}") + '"><span class="glyphicon glyphicon-compressed"></span> ' + escapeHtml("{{ _('Ist im Archiv') }}") + '</span> ';
+            } else if (exp.blocker_reasons.indexOf('no_source') !== -1) {
+              reasonsHtml += '<span class="label label-default kobo-reason-badge" style="background-color: #abb7b7 !important;" title="' + escapeHtml("{{ _('In keinem Kobo-Synchronisations-Regal') }}") + '"><span class="glyphicon glyphicon-minus-sign"></span> ' + escapeHtml("{{ _('Keine Kobo-Freigabe') }}") + '</span> ';
+            }
+          }
+
+          reasonsContainer.html(reasonsHtml);
         }
 
         // Filter-Zähler dynamisch aktualisieren und aktiven Filter erneut anwenden

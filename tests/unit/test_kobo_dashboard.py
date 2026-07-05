@@ -478,6 +478,11 @@ class TestKoboDashboard:
         assert "url_for('kobo_auth.allow_excluded_book', book_id=book.id)" in template
         assert "{{ _('Beim nächsten Sync auslassen') }}" in template
         assert "{{ _('Beim nächsten Sync wieder anbieten') }}" in template
+        assert "kobo-reasons-container" in template
+        assert "kobo-reason-badge" in template
+        assert "{{ _('Ist im Archiv') }}" in template
+        assert "{{ _('Keine Kobo-Freigabe') }}" in template
+        assert "{{ _('Manuell blockiert') }}" in template
 
     def test_kobo_dashboard_script_runs_after_global_jquery(self):
         """Dashboard click handlers must be in the js block after layout loads jQuery."""
@@ -936,3 +941,68 @@ class TestKoboDashboard:
         assert len(wb) == 2
         assert wb[0]["id"] == 10
         assert wb[1]["id"] == 20
+
+    @patch('cps.kobo.get_kobo_books_sync_explanations')
+    @patch('cps.kobo.get_kobo_blocked_book_ids')
+    @patch('cps.kobo_dashboard.get_kobo_excluded_books')
+    @patch('cps.kobo_dashboard.config')
+    @patch('cps.kobo.get_kobo_allowed_book_ids')
+    @patch('cps.ub.session')
+    @patch('cps.kobo_dashboard.db.CalibreDB')
+    def test_get_kobo_dashboard_data_reasons_and_sources_passed_to_workspace(
+        self,
+        mock_calibredb_cls,
+        mock_session,
+        mock_allowed_books,
+        mock_config,
+        mock_excluded,
+        mock_blocked,
+        mock_batch_explain
+    ):
+        """Verify that release_sources and blocker_reasons are populated in workspace_books."""
+        mock_blocked.return_value = set()
+        mock_config.config_kobo_sync_magic_shelves = False
+        mock_excluded.return_value = []
+
+        fake_user = MagicMock()
+        fake_user.id = 1
+        fake_user.role_download.return_value = True
+        fake_user.kobo_only_shelves_sync = 1
+
+        mock_allowed_books.return_value = {10}
+
+        fake_synced = [MagicMock(book_id=10)]
+        fake_override = MagicMock(book_id=10, reader_override="auto")
+
+        q = MagicMock()
+        q.filter_by.return_value.first.return_value = MagicMock()
+        q.filter_by.return_value.all.side_effect = [
+            fake_synced,
+            [fake_override],
+            [],
+            []
+        ]
+        mock_session.query.return_value = q
+
+        mock_cdb = MagicMock()
+        mock_calibredb_cls.return_value = mock_cdb
+        fake_book_10 = MagicMock(id=10, title="Test Book")
+        mock_cdb.session.query.return_value.filter.return_value.filter.return_value.all.return_value = [fake_book_10]
+
+        mock_batch_explain.return_value = {
+            10: {
+                "is_synced": True,
+                "is_allowed_on_device": False,
+                "reader_override": "auto",
+                "kobo_actual_collections": [],
+                "release_sources": [{"type": "normal_shelf", "name": "Shelf A"}],
+                "blocker_reasons": ["archived"]
+            }
+        }
+
+        dashboard_data = get_kobo_dashboard_data(fake_user)
+        wb = dashboard_data["workspace_books"]
+        assert len(wb) == 1
+        assert wb[0]["id"] == 10
+        assert wb[0]["release_sources"] == [{"type": "normal_shelf", "name": "Shelf A"}]
+        assert wb[0]["blocker_reasons"] == ["archived"]

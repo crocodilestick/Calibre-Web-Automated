@@ -1,10 +1,339 @@
 {% extends "settings/_shell.html" %}
+{% from "settings/_macros.html" import spiegel_inputs %}
+{% from "modal_dialogs.html" import restrict_modal %}
+
+{% block header %}
+{{ super() }}
+<link href="{{ url_for('static', filename='css/libs/bootstrap-table.min.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/libs/bootstrap-editable.css') }}" rel="stylesheet">
+{% endblock %}
 
 {% block settings_content %}
-<div class="settings-card">
-  <div class="settings-card-title">
-    <span class="glyphicon glyphicon-book"></span> {{ _("Library Settings") }}
+<div class="row">
+  <div class="col-md-12 col-lg-6">
+    <!-- Card 1: Bibliothek & Uploads (ajaxconfig) -->
+    {% set visible_ajax_fields = [
+      'config_calibre', 'config_uploading', 'config_unicode_filename',
+      'config_embed_metadata', 'config_upload_formats', 'config_binariesdir',
+      'config_kepubifypath', 'config_converterpath', 'config_rarfile_location'
+    ] %}
+    <form id="library-config-form" role="form" method="POST" action="{{ url_for('admin.update_ajaxconfig') }}" autocomplete="off" style="margin-bottom: 2rem;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      {# Mirror remaining ajaxconfig fields #}
+      {{ spiegel_inputs(AJAXCONFIG_FIELDS, visible_ajax_fields, config, BOOLEAN_SETTINGS) }}
+
+      <div class="settings-card">
+        <div class="settings-card-title">
+          <span class="glyphicon glyphicon-book"></span> {{ _("Library & Upload Settings") }}
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_calibre">{{ _("Calibre Database Directory") }}</label>
+          <input type="text" class="settings-input" name="config_calibre" id="config_calibre" value="{{ config.config_calibre or '' }}" placeholder="/path/to/calibre/library" required>
+        </div>
+
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Allow eBook Uploads") }}</span>
+            <span class="settings-switch-desc">{{ _("Enable uploading eBooks to the library.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_uploading" name="config_uploading" data-control="upload-settings" {% if config.config_uploading %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div data-related="upload-settings" style="{% if not config.config_uploading %}display: none;{% endif %}">
+          <div class="settings-form-group">
+            <label class="settings-label" for="config_upload_formats">{{ _("Allowed Upload Formats") }}</label>
+            <input type="text" class="settings-input" name="config_upload_formats" id="config_upload_formats" value="{{ config.config_upload_formats or '' }}" placeholder="epub,pdf,mobi">
+          </div>
+        </div>
+
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Use Unicode Filenames") }}</span>
+            <span class="settings-switch-desc">{{ _("Save uploaded files using Unicode filenames instead of ASCII transliteration.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_unicode_filename" name="config_unicode_filename" {% if config.config_unicode_filename %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Embed Metadata") }}</span>
+            <span class="settings-switch-desc">{{ _("Write metadata directly into downloaded ePUB files.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_embed_metadata" name="config_embed_metadata" {% if config.config_embed_metadata %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_binariesdir">{{ _("Calibre Binaries Directory") }}</label>
+          <input type="text" class="settings-input" name="config_binariesdir" id="config_binariesdir" value="{{ config.config_binariesdir or '' }}" placeholder="/usr/bin">
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_kepubifypath">{{ _("Kepubify Tool Path") }}</label>
+          <input type="text" class="settings-input" name="config_kepubifypath" id="config_kepubifypath" value="{{ config.config_kepubifypath or '' }}" placeholder="/usr/local/bin/kepubify">
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_converterpath">{{ _("EBook Converter Path") }}</label>
+          <input type="text" class="settings-input" name="config_converterpath" id="config_converterpath" value="{{ config.config_converterpath or '' }}" placeholder="/usr/bin/ebook-convert">
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_rarfile_location">{{ _("Unrar Executable Path") }}</label>
+          <input type="text" class="settings-input" name="config_rarfile_location" id="config_rarfile_location" value="{{ config.config_rarfile_location or '' }}" placeholder="/usr/bin/unrar">
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: right;">
+          <button type="submit" name="submit" value="submit" class="settings-btn settings-btn-primary">{{ _("Save Library Settings") }}</button>
+        </div>
+      </div>
+    </form>
   </div>
-  <p>{{ _("Placeholder for Library Settings.") }}</p>
+
+  <div class="col-md-12 col-lg-6">
+    <!-- Card 2: Anzeige & Standards (viewconfig) -->
+    {% set visible_view_fields = [
+      'config_calibre_web_title', 'config_books_per_page', 'config_random_books',
+      'config_authors_max', 'config_theme', 'config_columns_to_ignore',
+      'config_read_column', 'config_restricted_column', 'config_title_regex',
+      'config_default_language', 'config_default_locale',
+      'admin_role', 'download_role', 'upload_role', 'edit_role', 'delete_role',
+      'passwd_role', 'edit_shelf_role', 'viewer_role',
+      'show_2', 'show_4', 'show_8', 'show_16', 'show_32', 'show_64', 'show_128',
+      'show_256', 'show_512', 'show_1024', 'show_4096', 'show_8192', 'show_16384',
+      'show_32768', 'show_65536', 'show_131072', 'show_262144',
+      'Show_detail_random'
+    ] %}
+    <form id="view-config-form" role="form" method="POST" action="{{ url_for('admin.update_view_configuration') }}" autocomplete="off">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      {# Mirror remaining viewconfig fields #}
+      {{ spiegel_inputs(VIEWCONFIG_FIELDS, visible_view_fields, config, BOOLEAN_SETTINGS) }}
+
+      <div class="settings-card">
+        <div class="settings-card-title">
+          <span class="glyphicon glyphicon-eye-open"></span> {{ _("Display & User Defaults") }}
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_calibre_web_title">{{ _("Application Title") }}</label>
+          <input type="text" class="settings-input" name="config_calibre_web_title" id="config_calibre_web_title" value="{{ config.config_calibre_web_title or '' }}" required>
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_books_per_page">{{ _("Books per Page") }}</label>
+          <input type="number" min="1" max="200" class="settings-input" name="config_books_per_page" id="config_books_per_page" value="{{ config.config_books_per_page or 20 }}">
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_random_books">{{ _("Number of Random Books") }}</label>
+          <input type="number" min="1" max="30" class="settings-input" name="config_random_books" id="config_random_books" value="{{ config.config_random_books or 8 }}">
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_authors_max">{{ _("Maximum Authors Before Hiding") }}</label>
+          <input type="number" min="0" max="999" class="settings-input" name="config_authors_max" id="config_authors_max" value="{{ config.config_authors_max or 0 }}">
+        </div>
+
+        <div class="settings-form-group" style="display: none;">
+          <label class="settings-label" for="config_theme">{{ _("Default Theme") }}</label>
+          <select name="config_theme" id="config_theme" class="settings-input">
+            <option value="1" selected>{{ _("caliBlur! Dark Theme") }}</option>
+          </select>
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_title_regex">{{ _("Regex for Title Sorting") }}</label>
+          <input type="text" class="settings-input" name="config_title_regex" id="config_title_regex" value="{{ config.config_title_regex or '' }}">
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_columns_to_ignore">{{ _("Regex for Ignored Custom Columns") }}</label>
+          <input type="text" class="settings-input" name="config_columns_to_ignore" id="config_columns_to_ignore" value="{{ config.config_columns_to_ignore or '' }}">
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_read_column">{{ _("Link Read Status to Calibre Custom Column") }}</label>
+          <select name="config_read_column" id="config_read_column" class="settings-input">
+            <option value="0" {% if config.config_read_column == 0 %}selected{% endif %}>{{ _("None") }}</option>
+            {% for col in readColumns %}
+              <option value="{{ col.id }}" {% if col.id == config.config_read_column %}selected{% endif %}>{{ col.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_restricted_column">{{ _("View Restrictions Custom Column") }}</label>
+          <select name="config_restricted_column" id="config_restricted_column" class="settings-input">
+            <option value="0" {% if config.config_restricted_column == 0 %}selected{% endif %}>{{ _("None") }}</option>
+            {% for col in restrictColumns %}
+              <option value="{{ col.id }}" {% if col.id == config.config_restricted_column %}selected{% endif %}>{{ col.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_default_locale">{{ _("Default Interface Language") }}</label>
+          <select name="config_default_locale" id="config_default_locale" class="settings-input">
+            {% for translation in translations %}
+              <option value="{{ translation }}" {% if translation|string == config.config_default_locale %}selected{% endif %}>{{ translation.display_name|capitalize }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <div class="settings-form-group">
+          <label class="settings-label" for="config_default_language">{{ _("Default Books Filter Language") }}</label>
+          <select name="config_default_language" id="config_default_language" class="settings-input">
+            <option value="all" {% if config.config_default_language == "all" %}selected{% endif %}>{{ _("Show All") }}</option>
+            {% for language in languages %}
+              <option value="{{ language.lang_code }}" {% if config.config_default_language == language.lang_code %}selected{% endif %}>{{ language.name }}</option>
+            {% endfor %}
+          </select>
+        </div>
+
+        <!-- Section: Default Roles -->
+        <div style="margin-top: 2rem; margin-bottom: 1.5rem;">
+          <span class="settings-label" style="font-weight: 600; color: #ffc200; font-size: 0.95rem;">{{ _("Default Permissions for New Users") }}</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; background: rgba(255, 255, 255, 0.02); padding: 1.25rem; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.05);">
+          <div>
+            <label style="display: flex; gap: 0.5rem; align-items: center; color: #c1c2c5; font-weight: normal; cursor: pointer;">
+              <input type="checkbox" name="admin_role" id="admin_role" {% if config.role_admin() %}checked{% endif %}>
+              {{ _("Admin") }}
+            </label>
+          </div>
+          <div>
+            <label style="display: flex; gap: 0.5rem; align-items: center; color: #c1c2c5; font-weight: normal; cursor: pointer;">
+              <input type="checkbox" name="download_role" id="download_role" {% if config.role_download() %}checked{% endif %}>
+              {{ _("Downloads") }}
+            </label>
+          </div>
+          <div>
+            <label style="display: flex; gap: 0.5rem; align-items: center; color: #c1c2c5; font-weight: normal; cursor: pointer;">
+              <input type="checkbox" name="viewer_role" id="viewer_role" {% if config.role_viewer() %}checked{% endif %}>
+              {{ _("eBook Viewer") }}
+            </label>
+          </div>
+          {% if config.config_uploading %}
+            <div>
+              <label style="display: flex; gap: 0.5rem; align-items: center; color: #c1c2c5; font-weight: normal; cursor: pointer;">
+                <input type="checkbox" name="upload_role" id="upload_role" {% if config.role_upload() %}checked{% endif %}>
+                {{ _("Uploads") }}
+              </label>
+            </div>
+          {% endif %}
+          <div>
+            <label style="display: flex; gap: 0.5rem; align-items: center; color: #c1c2c5; font-weight: normal; cursor: pointer;">
+              <input type="checkbox" name="edit_role" id="edit_role" class="edit-role-trigger" {% if config.role_edit() %}checked{% endif %}>
+              {{ _("Edit Books") }}
+            </label>
+          </div>
+          <div class="delete-role-block" style="{% if not config.role_edit() %}display: none;{% endif %}">
+            <label style="display: flex; gap: 0.5rem; align-items: center; color: #c1c2c5; font-weight: normal; cursor: pointer;">
+              <input type="checkbox" name="delete_role" id="delete_role" {% if config.role_delete_books() %}checked{% endif %}>
+              {{ _("Delete Books") }}
+            </label>
+          </div>
+          <div>
+            <label style="display: flex; gap: 0.5rem; align-items: center; color: #c1c2c5; font-weight: normal; cursor: pointer;">
+              <input type="checkbox" name="passwd_role" id="passwd_role" {% if config.role_passwd() %}checked{% endif %}>
+              {{ _("Change Password") }}
+            </label>
+          </div>
+          <div>
+            <label style="display: flex; gap: 0.5rem; align-items: center; color: #c1c2c5; font-weight: normal; cursor: pointer;">
+              <input type="checkbox" name="edit_shelf_role" id="edit_shelf_role" {% if config.role_edit_shelfs() %}checked{% endif %}>
+              {{ _("Public Shelves") }}
+            </label>
+          </div>
+        </div>
+
+        <!-- Section: Sidebar Visibility -->
+        <div style="margin-top: 1rem; margin-bottom: 1.5rem;">
+          <span class="settings-label" style="font-weight: 600; color: #ffc200; font-size: 0.95rem;">{{ _("Default Sidebar Navigation for New Users") }}</span>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; background: rgba(255, 255, 255, 0.02); padding: 1.25rem; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.05);">
+          {% for element in sidebar %}
+            {% if element['config_show'] %}
+              <div>
+                <label style="display: flex; gap: 0.5rem; align-items: center; color: #c1c2c5; font-weight: normal; cursor: pointer;">
+                  <input type="checkbox" name="show_{{ element['visibility'] }}" id="show_{{ element['visibility'] }}" {% if config.show_element_new_user(element['visibility']) %}checked{% endif %}>
+                  {{ element['show_text'] }}
+                </label>
+              </div>
+            {% endif %}
+          {% endfor %}
+          <div>
+            <label style="display: flex; gap: 0.5rem; align-items: center; color: #c1c2c5; font-weight: normal; cursor: pointer;">
+              <input type="checkbox" name="Show_detail_random" id="Show_detail_random" {% if config.show_detail_random() %}checked{% endif %}>
+              {{ _("Show Random Books in Details") }}
+            </label>
+          </div>
+        </div>
+
+        {% if not simple %}
+          <div style="display: flex; gap: 1rem; margin-bottom: 1.5rem;">
+            <button type="button" id="get_tags" data-id="0" class="settings-btn settings-btn-secondary" data-toggle="modal" data-target="#restrictModal" style="flex-grow: 1;">
+              <span class="glyphicon glyphicon-tags"></span> {{ _("Allowed/Denied Tags") }}
+            </button>
+            <button type="button" id="get_column_values" data-id="0" class="settings-btn settings-btn-secondary" data-toggle="modal" data-target="#restrictModal" style="flex-grow: 1;">
+              <span class="glyphicon glyphicon-list-alt"></span> {{ _("Allowed/Denied Columns") }}
+            </button>
+          </div>
+        {% endif %}
+
+        <div style="margin-top: 1.5rem; text-align: right;">
+          <button type="submit" class="settings-btn settings-btn-primary">{{ _("Save Display Settings") }}</button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
+{% endblock %}
+
+{% block modal %}
+{{ restrict_modal() }}
+{% endblock %}
+
+{% block js %}
+{{ super() }}
+{% if not simple %}
+  <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table-editable.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-editable.min.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/table.js') }}"></script>
+{% endif %}
+<script>
+  $(document).ready(function() {
+    // Show/hide upload allowed formats based on uploading checkbox
+    $('#config_uploading').change(function() {
+      if ($(this).is(':checked')) {
+        $('[data-related="upload-settings"]').slideDown(200);
+      } else {
+        $('[data-related="upload-settings"]').slideUp(200);
+      }
+    });
+
+    // Show/hide delete books permission based on edit books permission
+    $('.edit-role-trigger').change(function() {
+      if ($(this).is(':checked')) {
+        $('.delete-role-block').slideDown(200);
+      } else {
+        $('.delete-role-block').slideUp(200);
+      }
+    });
+  });
+</script>
 {% endblock %}

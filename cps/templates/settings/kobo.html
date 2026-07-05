@@ -1,10 +1,121 @@
 {% extends "settings/_shell.html" %}
+{% from "settings/_macros.html" import spiegel_inputs %}
 
 {% block settings_content %}
-<div class="settings-card">
-  <div class="settings-card-title">
-    <span class="glyphicon glyphicon-phone"></span> {{ _("Kobo Synchronisation") }}
+<div class="row">
+  <div class="col-md-12 col-lg-6">
+    <!-- Card 1: Kobo eReader Integration (ajaxconfig) -->
+    {% set visible_ajax_fields = ['config_kobo_sync', 'config_kobo_proxy'] %}
+    <form id="kobo-config-form" role="form" method="POST" action="{{ url_for('admin.update_ajaxconfig') }}" autocomplete="off" style="margin-bottom: 2rem;">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      {# Mirror remaining ajaxconfig fields #}
+      {{ spiegel_inputs(AJAXCONFIG_FIELDS, visible_ajax_fields, config, BOOLEAN_SETTINGS) }}
+
+      <div class="settings-card">
+        <div class="settings-card-title">
+          <span class="glyphicon glyphicon-book"></span> {{ _("Kobo eReader Integration") }}
+        </div>
+
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Enable Kobo Sync") }}</span>
+            <span class="settings-switch-desc">{{ _("Enable built-in Kobo KoboStore API endpoint for syncing reading progress and books.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_kobo_sync" name="config_kobo_sync" {% if config.config_kobo_sync %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Proxy Support") }}</span>
+            <span class="settings-switch-desc">{{ _("Enable proxying book downloads through the Calibre-Web server.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_kobo_proxy" name="config_kobo_proxy" {% if config.config_kobo_proxy %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div style="margin-top: 1.5rem; text-align: right;">
+          <button type="submit" name="submit" value="submit" class="settings-btn settings-btn-primary">{{ _("Save Kobo Settings") }}</button>
+        </div>
+      </div>
+    </form>
   </div>
-  <p>{{ _("Placeholder for Kobo Synchronisation.") }}</p>
+
+  <div class="col-md-12 col-lg-6">
+    <!-- Card 2: Kobo-Spezial & KOReader (cwa-settings) -->
+    {% set visible_cwa_fields = ['config_kobo_sync_magic_shelves', 'koreader_sync_enabled'] %}
+    <form id="kobo-cwa-form" role="form" method="POST" action="{{ url_for('cwa_settings.set_cwa_settings') }}" autocomplete="off">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="submit_button" value="Submit">
+
+      {# Mirror remaining CWA settings #}
+      {{ spiegel_inputs(CWA_FIELDS, visible_cwa_fields, cwa_settings, BOOLEAN_SETTINGS) }}
+
+      <div class="settings-card">
+        <div class="settings-card-title">
+          <span class="glyphicon glyphicon-phone"></span> {{ _("Kobo Special & KOReader Settings") }}
+        </div>
+
+        <div class="settings-switch-group">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Sync Automatic Shelves (Magic Shelves)") }}</span>
+            <span class="settings-switch-desc">{{ _("Synchronize dynamic/automatic shelves (Magic Shelves) to the Kobo eReader.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="config_kobo_sync_magic_shelves" name="config_kobo_sync_magic_shelves" {% if cwa_settings.config_kobo_sync_magic_shelves %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div class="settings-switch-group" style="margin-bottom: 1.5rem;">
+          <div class="settings-switch-label-block">
+            <span class="settings-switch-title">{{ _("Enable KOReader Sync") }}</span>
+            <span class="settings-switch-desc">{{ _("Enable synchronization for KOReader devices.") }}</span>
+          </div>
+          <label class="settings-switch">
+            <input type="checkbox" id="koreader_sync_enabled" name="koreader_sync_enabled" data-control="koreader-settings" {% if cwa_settings.koreader_sync_enabled %}checked{% endif %}>
+            <span class="settings-slider"></span>
+          </label>
+        </div>
+
+        <div data-related="koreader-settings" style="{% if not cwa_settings.koreader_sync_enabled %}display: none;{% endif %}; margin-bottom: 1.5rem;">
+          <div class="settings-alert settings-alert-info" style="margin-bottom: 0;">
+            <span class="glyphicon glyphicon-info-sign"></span>
+            <span>{{ _("KOReader is enabled. You can configure user accounts and devices in the KOReader setup page.") }}</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: center; justify-content: flex-end;">
+          {% if feature_support['kosync'] %}
+            <a href="{{ url_for('kosync.kosync_plugin_page') }}" class="settings-btn settings-btn-secondary" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+              <span class="glyphicon glyphicon-cog"></span> {{ _("Setup KOReader Sync") }}
+            </a>
+          {% endif %}
+          <button type="submit" class="settings-btn settings-btn-primary">{{ _("Save Settings") }}</button>
+        </div>
+      </div>
+    </form>
+  </div>
 </div>
+{% endblock %}
+
+{% block js %}
+{{ super() }}
+<script>
+  $(document).ready(function() {
+    // Show/hide KOReader notice based on toggle
+    $('#koreader_sync_enabled').change(function() {
+      if ($(this).is(':checked')) {
+        $('[data-related="koreader-settings"]').slideDown(200);
+      } else {
+        $('[data-related="koreader-settings"]').slideUp(200);
+      }
+    });
+  });
+</script>
 {% endblock %}

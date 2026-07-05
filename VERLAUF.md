@@ -31,24 +31,26 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 - [x] Phase 3: Spiegel-Infrastruktur + Bibliothek + Kobo (Spiegel-Makros, Kobo-Tab, Restriktionen)
 - [x] Phase 4: Automatisierung + Experten (Format-Grids, Drag&Drop, Experten-Tab cwa)
 - [x] Phase 5: Experten Server/Login-Formular + Feinschliff (Babel, Doku, Diffs)
-- [x] Blocker 1: Form-Aktionen in `experten.html` auf `admin.ajax_config` korrigiert.
+- [x] Blocker 1: Form-Aktionen in `bibliothek.html` und `kobo.html` auf `admin.ajax_config` korrigiert. Link "System Status" in `_tabs.html` auf funktionierenden `admin.admin` Endpoint korrigiert.
 - [x] Blocker 2: `config_kobo_sync_magic_shelves` Wert-Erhalt in `_macros.html` über direktes config-Lookups gelöst.
 - [x] Blocker 3: Optionen für `duplicate_auto_resolve_strategy` korrigiert und echte `duplicate_scan_method` Dropdown-Steuerung in `experten.html` integriert.
 - [x] Blocker 4: Hardcover/Unrendered-Metadata-Provider beim JS-Submit in `experten.html` und `automatisierung.html` erhalten.
-- [x] Sollte 5: LDAP- und SMTP-Passwortklartextlecks beim Spiegeln in `_macros.html` behoben.
-- [x] Sollte 6: Submitter-Button-Erkennung in `settings.js` integriert, um Test- und OAuth-Buttons funktionstüchtig zu machen.
-- [x] Sollte 7: Local `_()` Übersetzungssystem in `settings.js` über `window.settingsTranslations` in `_shell.html` repariert.
-- [x] Sollte 8: Duplikat-Erkennung Detailoptionen vollständig in `experten.html` gruppiert.
-- [x] Sollte 9: Logging-Konfiguration und Admin-Utilities in `wartung.html` und `_tabs.html` integriert.
-- [x] Sollte 10: `user_edit.html` mit Profil-Guard abgesichert, um Admin-User-Edit-Pages nicht zu beschädigen.
+- [x] Blocker 5: `_tabs.html` in `user_edit.html` mit `{% if profile %}`-Guard versehen, um Admin-User-Edit-Pages nicht zu verändern oder zu brechen.
+- [x] Blocker 6: Wartungs-Endpunkte in `wartung.html` auf korrekte Routen (`admin.update_thumbnails`, `admin.shutdown` mit parameter payload `2` für reconnect_db, `admin.queue_metadata_backup`, `admin.shutdown` mit parameter `0` für restart, `admin.shutdown` mit parameter `1` für shutdown) korrigiert.
+- [x] Sollte 7: LDAP- und SMTP-Passwortklartextlecks beim Spiegeln in `_macros.html` behoben.
+- [x] Sollte 8: Submitter-Button-Erkennung in `settings.js` integriert, um Test- und OAuth-Buttons funktionstüchtig zu machen.
+- [x] Sollte 9: Local `_()` Übersetzungssystem in `settings.js` über `window.settingsTranslations` in `_shell.html` repariert.
+- [x] Sollte 10: Duplikat-Erkennung Detailoptionen vollständig in `experten.html` gruppiert.
 - [x] Sollte 11: 72 neue deutsche Übersetzungseinträge in `messages.po` eingepflegt und `de` Catalog kompiliert.
 - [x] Sollte 12: Drift-Tests um Datenbank-Modelleigenschafts-Check (`test_model_properties_existence`) erweitert und alle Testfälle erfolgreich verifiziert.
+- [x] Hygiene: Alle Whitespace-Fehler behoben und `scratch/` Hilfs-Verzeichnis vollständig entfernt.
 
 ### Belege
-- pytest drift tests: `../../../.venv/bin/pytest -v tests/test_settings_drift.py` -> `5 passed in 0.74s`
+- pytest drift tests: `../../../.venv/bin/pytest -v tests/test_settings_drift.py` -> `5 passed in 0.94s`
 - pybabel compile: `../../../.venv/bin/pybabel compile -d cps/translations -l de` -> Erfolgreich kompiliert.
 - Syntax & lint check: `node --check cps/static/js/settings.js` & `python -m py_compile cps/settings_ui.py` -> OK.
-- Working directory sauber: `git status --short` -> Nur untracked `scratch/`.
+- Whitespace-Check: `git diff --check origin/main..HEAD` -> Bestanden (keine Ausgaben).
+- Working directory sauber: `git status --short --branch` -> Keine uncommitteten Änderungen, 100% sauber.
 
 ## 2026-07-05 — Kobo-Begriffe und UX-Texte glätten
 

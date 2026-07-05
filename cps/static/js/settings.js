@@ -40,6 +40,17 @@ $(document).ready(function() {
             return response.text();
         })
         .then(function(responseText) {
+            // Parse response as HTML to check for flash errors
+            if (responseText) {
+                var parser = new DOMParser();
+                var doc = parser.parseFromString(responseText, 'text/html');
+                var $dangerAlert = $(doc).find('#flash_danger, .alert-danger');
+                if ($dangerAlert.length > 0) {
+                    var errMsg = $dangerAlert.first().text().replace(/×/g, '').trim();
+                    throw new Error(errMsg || _('An error occurred while saving.'));
+                }
+            }
+
             // Restore button state
             $saveBtn.prop('disabled', false).html(originalBtnText);
 

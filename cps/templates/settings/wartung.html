@@ -9,6 +9,13 @@
     <form id="scheduled-tasks-form" role="form" method="POST" action="{{ url_for('admin.update_scheduledtasks') }}" autocomplete="off" style="margin-bottom: 2rem;">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
+      {# Mirror remaining scheduledtasks settings (like schedule_generate_series_covers) #}
+      {% set visible_scheduled_fields = [
+        'schedule_start_time', 'schedule_duration', 'schedule_generate_book_covers',
+        'schedule_reconnect', 'schedule_metadata_backup'
+      ] %}
+      {{ spiegel_inputs(SCHEDULEDTASKS_FIELDS, visible_scheduled_fields, config, BOOLEAN_SETTINGS) }}
+
       <div class="settings-card">
         <div class="settings-card-title">
           <span class="glyphicon glyphicon-wrench"></span> {{ _("Scheduled Maintenance Tasks") }}
@@ -225,7 +232,6 @@
 
 {% block js %}
 {{ super() }}
-<script src="{{ url_for('static', filename='js/main.js') }}"></script>
 <script>
   $(document).ready(function() {
     // Show/hide cleanup frequency settings based on enabled checkbox

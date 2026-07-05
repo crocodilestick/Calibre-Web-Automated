@@ -148,6 +148,7 @@
 {% endblock %}
 
 {% block js %}
+{{ super() }}
 {% if g.allow_registration %}
   <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table.min.js') }}"></script>
   <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table-locale-all.min.js') }}"></script>

@@ -118,7 +118,9 @@ CWA_FIELDS = [
     "hardcover_auto_fetch_enabled", "hardcover_auto_fetch_schedule",
     "hardcover_auto_fetch_schedule_day", "hardcover_auto_fetch_schedule_hour",
     "hardcover_auto_fetch_min_confidence", "hardcover_auto_fetch_batch_size",
-    "hardcover_auto_fetch_rate_limit"
+    "hardcover_auto_fetch_rate_limit",
+    # Form control field required by handler
+    "submit_button"
 ]
 
 BOOLEAN_SETTINGS = {

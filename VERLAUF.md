@@ -18,6 +18,28 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-05 — Einstellungen zusammenführen und beruhigen
+
+- **Feature/Bug:** Einstellungen zusammenführen und beruhigen (Roadmap-Punkt 2)
+- **Branch / Worktree:** `feature/alexandria-settings-consolidation`
+- **Status:** Konsolidierung der Einstellungen erfolgreich abgeschlossen und verifiziert
+
+### Erledigt
+- [x] Phase 0: Feldinventar und Drift-Test
+- [x] Phase 1: Shell & Navigation (Blueprint, CSS, Tabs, Integration in layout/user_edit)
+- [x] Phase 2: E-Mail + Wartung (Tabs, Fetch-Submit, Option-Lists)
+- [x] Phase 3: Spiegel-Infrastruktur + Bibliothek + Kobo (Spiegel-Makros, Kobo-Tab, Restriktionen)
+- [x] Phase 4: Automatisierung + Experten (Format-Grids, Drag&Drop, Experten-Tab cwa)
+- [x] Phase 5: Experten Server/Login-Formular + Feinschliff (Babel, Doku, Diffs)
+
+### Belege
+- Drift-Unit-Test mit dynamic mapping & integer check erfolgreich ausgeführt:
+  `../../../.venv/bin/pytest -v tests/test_settings_drift.py` -> 4 passed in 0.80s
+- Syntax-Validierung:
+  `python -m py_compile cps/settings_ui.py tests/test_settings_drift.py` -> OK
+- Whitespace-Validierung:
+  `git diff --check` -> 0 Fehler / Keine Ausgaben
+
 ## 2026-07-05 — Kobo-Begriffe und UX-Texte glätten
 
 - **Feature/Bug:** Kobo-Begriffe und UX-Texte zwischen Dashboard und Buchdetailseite glätten.

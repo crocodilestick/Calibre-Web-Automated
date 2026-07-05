@@ -115,12 +115,12 @@ body.cwa-shelf-view-gallery {
 
 /* Navbar as translucent glass over the page */
 body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top {
-    background: rgba(10, 10, 12, 0.18) !important;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.005) 100%), rgba(10, 10, 14, 0.3) !important;
     background-image: none !important;
     -webkit-backdrop-filter: blur(25px) saturate(1.4);
     backdrop-filter: blur(25px) saturate(1.4);
-    border-bottom: 1px solid rgba(255, 255, 255, 0.04) !important;
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), inset 0 -1px 0 rgba(0, 0, 0, 0.25) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.12), inset 0 -1px 0 rgba(0, 0, 0, 0.4), 0 4px 24px rgba(0, 0, 0, 0.3) !important;
 }
 
 /* Navbar sub-elements (brand block, collapse bar) keep their own caliBlur
@@ -144,11 +144,11 @@ body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top div.navb
 
 /* Left sidebar as translucent glass panel */
 body.cwa-shelf-view-gallery .col-sm-2 {
-    background: rgba(10, 10, 12, 0.18) !important;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.005) 100%), rgba(10, 10, 14, 0.3) !important;
     -webkit-backdrop-filter: blur(25px) saturate(1.4);
     backdrop-filter: blur(25px) saturate(1.4);
-    border-right: 1px solid rgba(255, 255, 255, 0.04) !important;
-    box-shadow: inset 1px 0 0 rgba(255, 255, 255, 0.08), inset -1px 0 0 rgba(0, 0, 0, 0.25);
+    border-right: 1px solid rgba(255, 255, 255, 0.08) !important;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.12), inset -1px 0 0 rgba(0, 0, 0, 0.4), 4px 0 24px rgba(0, 0, 0, 0.4);
     min-height: 100vh;
 }
 
@@ -160,10 +160,11 @@ body.cwa-shelf-view-gallery .navigation li a:hover {
     color: #ffffff !important;
 }
 body.cwa-shelf-view-gallery .navigation li.active a {
-    background-color: rgba(255, 255, 255, 0.03) !important;
+    background-color: rgba(255, 255, 255, 0.05) !important;
     border-left: 2px solid #e50914;
     color: #ffffff !important;
     font-weight: 600;
+    box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.08), 0 2px 8px rgba(0, 0, 0, 0.2);
 }
 body.cwa-shelf-view-gallery .navigation .nav-head {
     color: #808080 !important;
@@ -678,14 +679,14 @@ body.cwa-shelf-view-reader .dropdown-menu li a.disabled {
 /* ----------------- D) ALEXANDRIA LAYOUT & SEMANTICS ----------------- */
 @media (min-width: 768px) {
     body.cwa-shelf-page .col-sm-10 {
-        padding-left: 55px !important;
-        padding-right: 35px !important;
+        padding-left: 45px !important;
+        padding-right: 45px !important;
     }
 }
 @media (min-width: 1200px) {
     body.cwa-shelf-page .col-sm-10 {
-        padding-left: 80px !important;
-        padding-right: 50px !important;
+        padding-left: 60px !important;
+        padding-right: 60px !important;
     }
 }
 
@@ -716,12 +717,15 @@ body.cwa-shelf-page .navigation li a {
     align-items: center !important;
 }
 body.cwa-shelf-page .navigation li a .glyphicon {
-    margin: 0 10px 0 0 !important;
-    width: 16px;
+    margin: 0 12px 0 0 !important;
+    width: 22px !important;
+    height: 22px !important;
     text-align: center;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    line-height: 1 !important;
+    transform: translateY(-1px) !important;
 }
 
 body.cwa-shelf-page .shelf-toolbar .btn,

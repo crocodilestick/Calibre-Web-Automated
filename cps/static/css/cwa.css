@@ -165,24 +165,30 @@ body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top div.navb
     font-weight: 700;
     letter-spacing: 0.02em;
     text-shadow: 0 1px 16px rgba(242, 216, 168, 0.18);
+    position: relative;
+    z-index: 2;
 }
 
 body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top > .container-fluid > form.navbar-form {
-    margin-left: 265px !important;
+    margin-left: 292px !important;
 }
 
 body.cwa-shelf-view-gallery #advanced_search {
     display: inline-flex !important;
     align-items: center !important;
-    gap: 12px;
+    gap: 0 !important;
 }
 body.cwa-shelf-view-gallery #advanced_search .glyphicon-search {
     padding-left: 0 !important;
     padding-right: 0 !important;
-    margin-right: 0 !important;
+    margin-right: 16px !important;
+    width: 24px;
+    flex: 0 0 24px;
 }
 body.cwa-shelf-view-gallery #advanced_search .hidden-sm {
+    display: inline-block !important;
     margin-left: 0 !important;
+    padding-left: 6px !important;
 }
 body.cwa-shelf-view-gallery #main-nav > li > a {
     display: inline-flex !important;
@@ -271,15 +277,56 @@ body.cwa-shelf-view-gallery .navigation .nav-head {
 
 /* Display typography: big, bold, clean heading */
 body.cwa-shelf-view-gallery .shelf-header-wrapper h2 {
-    color: #ffffff !important;
+    color: #f2d8a8 !important;
     font-weight: 700;
     letter-spacing: 0.01em;
+    text-shadow: 0 1px 18px rgba(242, 216, 168, 0.2);
 }
 body.cwa-shelf-view-gallery .shelf-header-wrapper {
     border-bottom-color: rgba(255, 255, 255, 0.1) !important;
     margin-top: -22px !important;
     margin-bottom: 18px !important;
     padding-bottom: 10px !important;
+}
+
+body.cwa-shelf-view-gallery .shelf-toolbar {
+    justify-content: flex-end !important;
+    margin-top: -78px !important;
+    margin-bottom: 46px !important;
+    min-height: 54px;
+    position: relative;
+    z-index: 3;
+}
+
+body.cwa-shelf-view-gallery .shelf-actions-group {
+    margin-left: auto;
+}
+
+body.cwa-shelf-view-gallery .shelf-books-controls {
+    display: flex;
+    justify-content: flex-start;
+    margin: 0 0 24px 0;
+    position: relative;
+    z-index: 2;
+}
+
+body.cwa-shelf-view-gallery .shelf-sort-control {
+    width: 270px;
+    max-width: 100%;
+}
+
+body.cwa-shelf-view-gallery .shelf-sort-control > .btn {
+    width: 100%;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    text-align: left;
+}
+
+body.cwa-shelf-view-gallery .shelf-sort-label {
+    display: inline-flex;
+    align-items: center;
+    min-width: 0;
 }
 
 /* Compact covers in clean rows: more books per row */
@@ -402,6 +449,7 @@ body.cwa-shelf-view-gallery .shelf-header-wrapper {
 
 /* Graphite/white controls: no loud Bootstrap orange or blue on this page */
 body.cwa-shelf-view-gallery .shelf-toolbar .btn-default,
+body.cwa-shelf-view-gallery .shelf-books-controls .btn-default,
 body.cwa-shelf-view-gallery .sidebar-sort-item .btn-default,
 body.cwa-shelf-view-gallery .sidebar-view-mode-item .btn-default {
     background: rgba(255, 255, 255, 0.1) !important;
@@ -411,6 +459,7 @@ body.cwa-shelf-view-gallery .sidebar-view-mode-item .btn-default {
     border-radius: 4px;
 }
 body.cwa-shelf-view-gallery .shelf-toolbar .btn-default:hover,
+body.cwa-shelf-view-gallery .shelf-books-controls .btn-default:hover,
 body.cwa-shelf-view-gallery .sidebar-sort-item .btn-default:hover,
 body.cwa-shelf-view-gallery .sidebar-view-mode-item .btn-default:hover {
     background: rgba(255, 255, 255, 0.2) !important;
@@ -692,8 +741,26 @@ body.cwa-shelf-view-reader input[type=checkbox] {
     margin-top: 5px;
 }
 
+.shelf-books-controls {
+    display: flex;
+    justify-content: flex-start;
+    margin: 0 0 24px 0;
+}
+
+.shelf-sort-control {
+    width: 270px;
+    max-width: 100%;
+}
+
+.shelf-sort-control > .btn {
+    width: 100%;
+    justify-content: space-between !important;
+}
+
 .shelf-toolbar .btn,
 .shelf-toolbar .dropdown-menu a,
+.shelf-books-controls .btn,
+.shelf-books-controls .dropdown-menu a,
 .view-mode-toggle button {
     text-transform: none !important;
     letter-spacing: normal !important;
@@ -835,6 +902,7 @@ body.cwa-shelf-page .navigation li a .glyphicon {
 }
 
 body.cwa-shelf-page .shelf-toolbar .btn,
+body.cwa-shelf-page .shelf-books-controls .btn,
 body.cwa-shelf-page .view-mode-toggle button {
     display: inline-flex !important;
     align-items: center !important;
@@ -842,6 +910,7 @@ body.cwa-shelf-page .view-mode-toggle button {
 }
 
 body.cwa-shelf-page .shelf-toolbar .btn .glyphicon,
+body.cwa-shelf-page .shelf-books-controls .btn .glyphicon,
 body.cwa-shelf-page .view-mode-toggle button .glyphicon {
     margin: 0 8px 0 0 !important;
     display: inline-flex;
@@ -855,6 +924,11 @@ body.cwa-shelf-page .view-mode-toggle button .glyphicon {
 
 body.cwa-shelf-page .shelf-toolbar .btn .caret {
     margin-left: 6px !important;
+    margin-top: 0 !important;
+}
+
+body.cwa-shelf-page .shelf-books-controls .btn .caret {
+    margin-left: 10px !important;
     margin-top: 0 !important;
 }
 

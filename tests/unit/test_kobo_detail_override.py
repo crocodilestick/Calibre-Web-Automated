@@ -629,3 +629,139 @@ class TestKoboDetailOverride:
                     mock_session.add.assert_called_once()
                     mock_invalidate.assert_called_once()
                     mock_session.commit.assert_called_once()
+
+    def test_detail_template_rendering_badges(self):
+        """Render detail.html with various kobo_explanations and assert on actual HTML output."""
+        from flask import Flask, render_template
+        from cps.jinjia import jinjia
+        import os
+
+        template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "cps", "templates"))
+        app = Flask("test_app", template_folder=template_dir)
+        app.secret_key = "test_secret"
+        app.register_blueprint(jinjia)
+
+        # Override Babel-dependent filters to run without Flask-Babel extension
+        app.jinja_env.filters["formatdate"] = lambda val: str(val)
+        app.jinja_env.filters["formatfloat"] = lambda val, *args, **kwargs: str(val)
+
+        # Mock needed context functions/globals
+        @app.context_processor
+        def utility_processor():
+            return {
+                "csrf_token": lambda: "mock_csrf",
+                "current_user": MagicMock(is_authenticated=True),
+                "kobo_sync_enabled": True,
+            }
+
+        # Mock url_for to avoid routing exceptions
+        @app.template_global()
+        def url_for(endpoint, **values):
+            return f"/{endpoint}"
+
+        # Mock delete_book macro
+        @app.template_global()
+        def delete_book(*args, **kwargs):
+            return ""
+
+        # Mock _ for translation
+        @app.template_global()
+        def _(text, **kwargs):
+            if kwargs:
+                return text % kwargs
+            return text
+
+        # Mock entry (book data)
+        mock_entry = MagicMock()
+        mock_entry.id = 42
+        mock_entry.title = "Test Book"
+        mock_entry.comments = []
+        mock_entry.is_archived = False
+        mock_entry.read_status = False
+        mock_entry.last_modified.timestamp.return_value = 123456.0
+
+        # Scenario 1: Source badge (normal shelf) and collections
+        explanation_shelf = {
+            "exists": True,
+            "book_id": 42,
+            "is_allowed_on_device": True,
+            "is_visible_on_device": True,
+            "is_synced": True,
+            "reader_override": "auto",
+            "release_sources": [{"type": "normal_shelf", "id": 1, "name": "Sci-Fi"}],
+            "kobo_actual_collections": [{"id": 1, "type": "normal_shelf", "name": "Sci-Fi Shelf"}],
+            "blocker_reasons": []
+        }
+
+        with app.test_request_context():
+            html = render_template("detail.html",
+                                   entry=mock_entry,
+                                   kobo_explanation=explanation_shelf,
+                                   is_xhr=True,
+                                   cc=[],
+                                   books_shelfs=[],
+                                   cwa_settings=MagicMock(),
+                                   kosync_progress=None,
+                                   kosync_progress_timestamp=None)
+            # Assertions for Scenario 1
+            assert "class=\"label label-default kobo-reason-badge\"" in html
+            assert "title=\"Regal: Sci-Fi\"" in html
+            assert "Sci-Fi" in html
+            assert "Kobo-Sammlungen:" in html
+            assert "Sci-Fi Shelf" in html
+
+        # Scenario 2: Never override ("Manuell blockiert")
+        explanation_blocked = {
+            "exists": True,
+            "book_id": 42,
+            "is_allowed_on_device": False,
+            "is_visible_on_device": False,
+            "is_synced": False,
+            "reader_override": "never",
+            "release_sources": [],
+            "kobo_actual_collections": [],
+            "blocker_reasons": ["never_override"]
+        }
+
+        with app.test_request_context():
+            html = render_template("detail.html",
+                                   entry=mock_entry,
+                                   kobo_explanation=explanation_blocked,
+                                   is_xhr=True,
+                                   cc=[],
+                                   books_shelfs=[],
+                                   cwa_settings=MagicMock(),
+                                   kosync_progress=None,
+                                   kosync_progress_timestamp=None)
+            # Assertions for Scenario 2
+            assert "class=\"label label-danger kobo-reason-badge\"" in html
+            assert "title=\"Dieses Buch wurde manuell blockiert\"" in html
+            assert "Manuell blockiert" in html
+
+        # Scenario 3: Allowed on device but no collections ("Keine Reader-Sammlung")
+        explanation_no_collections = {
+            "exists": True,
+            "book_id": 42,
+            "is_allowed_on_device": True,
+            "is_visible_on_device": True,
+            "is_synced": False,
+            "reader_override": "always",
+            "release_sources": [{"type": "override", "name": "Manuell immer auf dem Reader"}],
+            "kobo_actual_collections": [],
+            "blocker_reasons": []
+        }
+
+        with app.test_request_context():
+            html = render_template("detail.html",
+                                   entry=mock_entry,
+                                   kobo_explanation=explanation_no_collections,
+                                   is_xhr=True,
+                                   cc=[],
+                                   books_shelfs=[],
+                                   cwa_settings=MagicMock(),
+                                   kosync_progress=None,
+                                   kosync_progress_timestamp=None)
+            # Assertions for Scenario 3
+            assert "class=\"label label-warning kobo-reason-badge\"" in html
+            assert "title=\"Dieses Buch wird auf den Reader übertragen, erscheint dort aber in keiner Sammlung. Füge es einem passenden Regal hinzu, das als Reader-Sammlung angezeigt wird.\"" in html
+            assert "Keine Reader-Sammlung" in html

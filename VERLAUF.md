@@ -18,6 +18,26 @@ für die nächste Aufgabe leeren. Gleiches Format → reines Copy-Paste.
 > `VERLAUF.md` lohnt sich vor allem dort, wo echte Feature-Arbeit lückenlos und
 > ohne Git-Kenntnisse lesbar sein soll.
 
+## 2026-07-05 — Kobo-Transparenz auf der Buchdetailseite angleichen
+
+- **Feature/Bug:** Kobo-Transparenz auf der Buchdetailseite an das Dashboard angleichen.
+- **Branch / Worktree:** `feature/kobo-detail-transparency`
+- **Status:** Implementiert und unit-getestet (54/54 Tests bestanden). `git diff --check` sauber.
+
+### Erledigt
+
+- **CSS & Badges**: Styling-Klassen für `.kobo-reasons-container` und `.kobo-reason-badge` in `detail.html` eingefügt.
+- **Sammlungszeile**: „Kobo-Sammlungen:“-Reihe zur Statusübersicht hinzugefügt, die `kobo_actual_collections` auflistet.
+- **Begründungs-Badges**: Textbasierte Erklärung durch kompakte, farbige Badges (Manuell, Regal, Automatische Sammlung, Ganze Bibliothek, Manuell blockiert, Ist im Archiv, Keine Kobo-Freigabe) ersetzt.
+- **Warn-Badge**: Die Zusatzwarnung „Keine Reader-Sammlung“ integriert, gesteuert über `kobo_explanation.is_allowed_on_device and not kobo_explanation.kobo_actual_collections`.
+- **Unit-Tests**: 3 Template-Rendering-Szenarien in `test_kobo_detail_override.py` implementiert, die das tatsächlich erzeugte HTML verifizieren.
+- **Git Check**: `git diff --check` erfolgreich ausgeführt (keine Whitespace-Fehler).
+
+### Belege
+
+- Unit-Tests bestanden: `.venv/bin/pytest tests/unit/test_kobo_detail_override.py` (18 passed in 0.75s).
+- `git diff --check` sauber.
+
 ## 2026-07-05 — Kobo-Reader-Sammlung-Warnung im Kobo-Dashboard
 
 - **Feature/Bug:** Kobo-Reader-Sammlung-Warnung (Zusatzerklärung für Bücher, die auf den Reader dürfen, aber in keiner Reader-Sammlung sind).

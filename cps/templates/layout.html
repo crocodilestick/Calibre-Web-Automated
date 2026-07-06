@@ -104,10 +104,6 @@
           </button>
           <a class="navbar-brand" href="{{url_for('web.index')}}">{{instance}}</a>
         </div>
-        {% if g.current_theme == 1 and page != 'book' %}
-            <div class="home-btn"><a class="home-btn-tooltip" href="{{url_for("web.index",page=1)}}" data-toggle="tooltip" title="" data-placement="bottom" data-original-title="Home"></a></div>
-            <div class="plexBack"><a href="{{url_for('web.index')}}"></a></div>
-        {% endif %}
         {% if current_user.is_authenticated or g.allow_anonymous %}
           <form class="navbar-form navbar-left" role="search" action="{{url_for('search.simple_search')}}" method="GET">
             <div class="form-group input-group input-group-sm">

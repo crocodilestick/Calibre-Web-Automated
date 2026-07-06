@@ -12,6 +12,63 @@ body.admin h2 {
     margin-bottom: 30px !important;
 }
 
+#main-nav > li.cwa-switch-theme {
+    display: none !important;
+}
+
+body.book .home-btn,
+body.book .navbar-header:before {
+    display: none !important;
+    content: none !important;
+}
+
+body.book .plexBack {
+    left: 12px !important;
+    z-index: 3;
+}
+
+body.book div.navbar.navbar-default.navbar-static-top div.navbar-header > a.navbar-brand {
+    padding-left: 58px !important;
+    width: auto !important;
+    min-width: 300px;
+    max-width: 420px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+body.book .book-detail-cover {
+    flex: 0 0 240px !important;
+    width: 240px !important;
+    max-width: 240px !important;
+}
+
+body.book .book-detail-cover img#detailcover {
+    width: 100% !important;
+    max-width: 240px !important;
+    height: auto !important;
+    max-height: 360px !important;
+    object-fit: contain;
+}
+
+@media (max-width: 600px) {
+    body.book div.navbar.navbar-default.navbar-static-top div.navbar-header > a.navbar-brand {
+        min-width: 0;
+        max-width: calc(100vw - 130px);
+    }
+
+    body.book .book-detail-cover {
+        flex-basis: 200px !important;
+        width: 200px !important;
+        max-width: min(200px, 70vw) !important;
+    }
+
+    body.book .book-detail-cover img#detailcover {
+        max-width: min(200px, 70vw) !important;
+        max-height: 300px !important;
+    }
+}
+
 /* Fix z-index issues with specific elements that show through modals */
 body.modal-open .book-meta > .author > a:first-of-type:before,
 body.modal-open div.tags > p > span.glyphicon.glyphicon-tags,

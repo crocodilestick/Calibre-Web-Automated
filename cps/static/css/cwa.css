@@ -59,7 +59,8 @@ body.modal-open #remove-from-shelves + .tags {
 /* Base grid layout (both modes) */
 #shelf-container .shelf-books-grid {
     display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 180px));
+    justify-content: start;
     gap: 25px;
     margin: 20px 0 0 0 !important;
     padding: 0 !important;
@@ -171,6 +172,11 @@ body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top div.navb
     text-shadow: 0 1px 16px rgba(242, 216, 168, 0.18);
     position: relative;
     z-index: 2;
+}
+
+body.cwa-shelf-view-gallery .home-btn,
+body.cwa-shelf-view-reader .home-btn {
+    display: none !important;
 }
 
 body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top > .container-fluid > form.navbar-form {
@@ -335,7 +341,8 @@ body.cwa-shelf-view-gallery .shelf-sort-label {
 
 /* Compact covers in clean rows: more books per row */
 #shelf-container.shelf-view-gallery .shelf-books-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 180px)) !important;
+    justify-content: start !important;
     gap: 32px 20px !important;
 }
 
@@ -712,6 +719,8 @@ body.cwa-shelf-view-reader .shelf-kobo-status .text-warning {
 
 /* The grid in reader mode */
 #shelf-container.shelf-view-reader .shelf-books-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 170px)) !important;
+    justify-content: start !important;
     gap: 30px !important;
 }
 
@@ -974,6 +983,7 @@ body.cwa-shelf-view-reader .dropdown-menu li a.disabled {
 @media (max-width: 767px) {
     #shelf-container.shelf-view-gallery .shelf-books-grid {
         grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+        justify-content: stretch !important;
         gap: 28px 16px !important;
     }
 }

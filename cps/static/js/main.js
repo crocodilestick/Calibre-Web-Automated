@@ -2116,6 +2116,30 @@ $(function() {
 
     // =========================================================================
 
+
+
+    // Delegated click handler to intercept cover clicks and open the modal robustly,
+
+    // even if caliBlur removed the data-toggle attribute.
+
+    $(document).on("click", ".book-cover-link[data-target='#previewOverlayModal']", function(e) {
+
+        // Only intervene if Bootstrap's data-toggle was removed (e.g. by caliBlur).
+
+        // If it's still there, Bootstrap's default data-api will handle it.
+
+        if (!$(this).attr("data-toggle")) {
+
+            e.preventDefault();
+
+            $("#previewOverlayModal").modal("show", this);
+
+        }
+
+    });
+
+
+
     $("#previewOverlayModal")
 
         .on("show.bs.modal", function(e) {

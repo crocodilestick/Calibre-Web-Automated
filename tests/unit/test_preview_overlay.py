@@ -111,6 +111,27 @@ class TestPreviewOverlay:
         assert "#previewOverlayModal" in template_content
         assert "data-target=\"#previewOverlayModal\"" in template_content
 
+    def test_main_js_contains_caliblur_guard(self):
+        """Test that main.js has the delegated click handler with the caliBlur guard and simple check."""
+        js_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "cps", "static", "js", "main.js"))
+        with open(js_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        # Ensure the handler targets links with data-target (which are omitted when simple == true)
+        assert ".book-cover-link[data-target='#previewOverlayModal']" in content
+        # Ensure the handler has the guard against double-firing when caliBlur is not active
+        assert "if (!$(this).attr(\"data-toggle\"))" in content
+
+    def test_templates_respect_simple_flag(self):
+        """Ensure that data-target and data-toggle are conditionally rendered based on simple flag."""
+        template_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "cps", "templates"))
+        for template in ["index.html", "author.html", "search.html", "shelf.html"]:
+            with open(os.path.join(template_dir, template), "r", encoding="utf-8") as f:
+                content = f.read()
+                # If the template has book-cover-link, it should guard the modal attributes
+                if "class=\"book-cover-link\"" in content:
+                    assert "{% if simple==false %}data-toggle=\"modal\" data-target=\"#previewOverlayModal\"" in content
+
     @patch('cps.web.render_template')
     @patch('cps.web.calibre_db')
     @patch('cps.web.current_user')

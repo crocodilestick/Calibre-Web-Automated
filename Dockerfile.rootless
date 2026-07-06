@@ -1,0 +1,265 @@
+# syntax=docker/dockerfile:1
+
+# ============================================================================
+# STAGE 1: Dependencies - Install system packages and Python dependencies
+# ============================================================================
+FROM ubuntu:24.04 AS dependencies
+
+ARG DEBIAN_FRONTEND=noninteractive
+ARG CALIBRE_RELEASE=8.9.0
+ARG KEPUBIFY_RELEASE=v4.0.4
+
+# Set the default shell
+SHELL ["/bin/bash", "-c"]
+
+# STEP 1 - Install Required Packages
+RUN \
+    echo "**** install build dependencies ****" && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+    build-essential \
+    libldap2-dev \
+    libsasl2-dev \
+    gettext \
+    python3-dev \
+    python3-venv \
+    python3-pip \
+    curl \
+    ca-certificates \
+    gnupg \
+    xz-utils \
+    && \
+    echo "**** install runtime dependencies ****" && \
+    apt-get install -y --no-install-recommends \
+    imagemagick \
+    ghostscript \
+    libldap2 \
+    libmagic1 \
+    libsasl2-2 \
+    libxi6 \
+    libxslt1.1 \
+    xdg-utils \
+    inotify-tools \
+    python3 \
+    nano \
+    sqlite3 \
+    zip \
+    libxtst6 \
+    libxrandr2 \
+    libxkbfile1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxfixes3 \
+    libxrender1 \
+    libopengl0 \
+    libnss3 \
+    libxkbcommon0 \
+    libegl1 \
+    libxdamage1 \
+    libgl1 \
+    libglx-mesa0 \
+    binutils \
+    supervisor \
+    && \
+    # Create symlink for python
+    ln -sf /usr/bin/python3 /usr/bin/python && \
+    # Cleanup apt cache to keep image small
+    rm -rf /var/lib/apt/lists/*
+
+# STEP 2 - Set up 'abc' user
+# STEP 2 - Set up 'abc' user
+RUN \
+    userdel -r ubuntu && \
+    groupadd -g 1000 abc && \
+    useradd -u 1000 -g abc -d /config -s /bin/bash abc && \
+    mkdir -p /config /cwa-book-ingest /calibre-library /app/calibre-web-automated /app/calibre && \
+    chown -R abc:abc /config /cwa-book-ingest /calibre-library /app/calibre-web-automated /app/calibre
+
+# STEP 3 - Install Python packages
+COPY requirements.txt optional-requirements.txt /app/calibre-web-automated/
+RUN \
+    echo "**** install python packages system-wide ****" && \
+    pip3 install --break-system-packages --no-cache-dir -r /app/calibre-web-automated/requirements.txt -r /app/calibre-web-automated/optional-requirements.txt
+
+# STEP 4 - Install kepubify
+RUN \
+    echo "**** install kepubify ****" && \
+    if [[ $KEPUBIFY_RELEASE == 'newest' ]]; then \
+    KEPUBIFY_RELEASE=$(curl -sX GET "https://api.github.com/repos/pgaskin/kepubify/releases/latest" \
+    | awk '/tag_name/{print $4;exit}' FS='[""]'); \
+    fi && \
+    if [ "$(uname -m)" == "x86_64" ]; then \
+    curl -o \
+    /usr/bin/kepubify -L \
+    https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-64bit; \
+    elif [ "$(uname -m)" == "aarch64" ]; then \
+    curl -o \
+    /usr/bin/kepubify -L \
+    https://github.com/pgaskin/kepubify/releases/download/${KEPUBIFY_RELEASE}/kepubify-linux-arm64; \
+    fi && \
+    chmod +x /usr/bin/kepubify
+
+# STEP 5 - Install Calibre
+RUN \
+    echo "**** install calibre ****" && \
+    if [ "$(uname -m)" == "x86_64" ]; then \
+    curl -o \
+    /calibre.txz -L \
+    "https://download.calibre-ebook.com/${CALIBRE_RELEASE}/calibre-${CALIBRE_RELEASE}-x86_64.txz"; \
+    elif [ "$(uname -m)" == "aarch64" ]; then \
+    curl -o \
+    /calibre.txz -L \
+    "https://download.calibre-ebook.com/${CALIBRE_RELEASE}/calibre-${CALIBRE_RELEASE}-arm64.txz"; \
+    fi && \
+    tar xf /calibre.txz -C /app/calibre && \
+    rm /calibre.txz
+
+# ============================================================================
+# STAGE 2: Final - Build the final runtime image
+# ============================================================================
+FROM ubuntu:24.04
+
+ARG BUILD_DATE
+ARG VERSION
+ARG CALIBREWEB_RELEASE=0.6.24
+ARG CALIBRE_RELEASE=8.9.0
+ARG KEPUBIFY_RELEASE=v4.0.4
+
+LABEL build_version="Version:- ${VERSION}"
+LABEL build_date="${BUILD_DATE}"
+LABEL CW-base-version="${CALIBREWEB_RELEASE}"
+LABEL maintainer="CrocodileStick"
+
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+ENV CALIBRE_CONFIG_DIR=/config/.config/calibre
+ENV PATH="/app/calibre:${PATH}"
+
+SHELL ["/bin/bash", "-c"]
+
+# Copy system packages and installed python packages from dependencies stage?
+# NOTE: Multi-stage build for system packages is tricky unless we COPY /usr, which is risky.
+# Easier to just reinstall runtime packages in final stage or do it all in one stage if layer size isn't critical.
+# However, we can just copy the /usr/local/lib/python3.*/dist-packages and /usr/local/bin.
+# But for simplicity and correctness with shared libs, let's reinstall dependencies cleanly in final stage or just merge stages.
+# Given the user wants to migrate existing logic, let's stick to a single stage or similar flow if possible, 
+# BUT the original used multi-stage to copy from linuxserver base.
+# Here we will do a clean install in final stage to keep it slim.
+
+RUN \
+    echo "**** install runtime dependencies ****" && \
+    apt-get update && \
+    apt-get install -y --no-install-recommends \
+    imagemagick \
+    ghostscript \
+    libldap2 \
+    libmagic1 \
+    libsasl2-2 \
+    libxi6 \
+    libxslt1.1 \
+    xdg-utils \
+    inotify-tools \
+    python3 \
+    python3-full \
+    nano \
+    sqlite3 \
+    zip \
+    libxtst6 \
+    libxrandr2 \
+    libxkbfile1 \
+    libxcomposite1 \
+    libxcursor1 \
+    libxfixes3 \
+    libxrender1 \
+    libopengl0 \
+    libnss3 \
+    libxkbcommon0 \
+    libegl1 \
+    libxdamage1 \
+    libgl1 \
+    libglx-mesa0 \
+    xz-utils \
+    curl \
+    ca-certificates \
+    supervisor \
+    netcat-openbsd \
+    && \
+    ln -sf /usr/bin/python3 /usr/bin/python && \
+    rm -rf /var/lib/apt/lists/*
+
+# Copy python packages
+COPY --from=dependencies /usr/local/lib/python3.12/dist-packages /usr/local/lib/python3.12/dist-packages
+COPY --from=dependencies /usr/local/bin /usr/local/bin
+
+# Copy binaries
+COPY --from=ghcr.io/linuxserver/unrar:latest /usr/bin/unrar-ubuntu /usr/bin/unrar
+COPY --from=dependencies /usr/bin/kepubify /usr/bin/kepubify
+COPY --from=dependencies /app/calibre /app/calibre
+
+# Setup user
+RUN \
+    userdel -r ubuntu && \
+    groupadd -g 1000 abc && \
+    useradd -u 1000 -g abc -d /config -s /bin/bash abc && \
+    mkdir -p /config /cwa-book-ingest /calibre-library /app/calibre-web-automated && \
+    chown -R abc:abc /config /cwa-book-ingest /calibre-library /app/calibre-web-automated
+
+# Add version files
+RUN \
+    echo "$VERSION" >| /app/CWA_RELEASE && \
+    echo "$KEPUBIFY_RELEASE" >| /app/KEPUBIFY_RELEASE && \
+    echo "$CALIBRE_RELEASE" > /CALIBRE_RELEASE
+
+# Copy application files
+COPY --chown=abc:abc . /app/calibre-web-automated/
+
+# Setup CWA
+# Setup CWA
+RUN \
+    # Create required directories
+    mkdir -p /app/calibre-web-automated/metadata_change_logs \
+    /app/calibre-web-automated/metadata_temp \
+    /app/calibre-web-automated/cps/static \
+    /cwa-book-ingest \
+    /calibre-library && \
+    chown -R abc:abc /app/calibre-web-automated /cwa-book-ingest /calibre-library && \
+    \
+    # Compile translations
+    chmod +x /app/calibre-web-automated/scripts/compile_translations.sh && \
+    bash /app/calibre-web-automated/scripts/compile_translations.sh && \
+    \
+    # Create koplugin.zip
+    export KOPLUGIN_DIR="/app/calibre-web-automated/koreader/plugins" && \
+    if [ -d "$KOPLUGIN_DIR/cwasync.koplugin" ]; then \
+    cd "$KOPLUGIN_DIR" && \
+    zip -r koplugin.zip cwasync.koplugin/ && \
+    cp koplugin.zip /app/calibre-web-automated/cps/static/ ; \
+    fi && \
+    \
+    # Add aliases to global bashrc (since home is /config and might be mounted)
+    echo "alias cwa-check='bash /app/calibre-web-automated/scripts/check-cwa-services.sh'" >> /etc/bash.bashrc && \
+    echo "alias cwa-change-dirs='nano /app/calibre-web-automated/dirs.json'" >> /etc/bash.bashrc && \
+    echo "cover-enforcer () { python3 /app/calibre-web-automated/scripts/cover_enforcer.py \"\$@\"; }" >> /etc/bash.bashrc && \
+    echo "convert-library () { python3 /app/calibre-web-automated/scripts/convert_library.py \"\$@\"; }" >> /etc/bash.bashrc
+
+# Make scripts executable
+RUN chmod +x /app/calibre-web-automated/scripts/*.sh && \
+    chmod +x /app/calibre-web-automated/scripts/service-wrappers/*.sh
+
+# Copy Supervisord config
+COPY configs/supervisord.conf /etc/supervisor/supervisord.conf
+
+# Copy entrypoint
+COPY scripts/entrypoint.rootless.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
+WORKDIR /config
+EXPOSE 8083
+VOLUME /config
+VOLUME /cwa-book-ingest
+VOLUME /calibre-library
+
+USER abc
+
+ENTRYPOINT ["/entrypoint.sh"]

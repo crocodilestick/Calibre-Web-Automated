@@ -3,9 +3,11 @@ local Device = require("device")
 local Dispatcher = require("dispatcher")
 local Event = require("ui/event")
 local InfoMessage = require("ui/widget/infomessage")
+local InputDialog = require("ui/widget/inputdialog")
 local Math = require("optmath")
 local MultiInputDialog = require("ui/widget/multiinputdialog")
 local NetworkMgr = require("ui/network/manager")
+local Notification = require("ui/widget/notification")
 local UIManager = require("ui/uimanager")
 local WidgetContainer = require("ui/widget/container/widgetcontainer")
 local logger = require("logger")
@@ -181,6 +183,8 @@ local function validateUser(user, pass)
 end
 
 function CWASync:onDispatcherRegisterActions()
+    Dispatcher:registerAction("cwasync_set_autosync", { category="string", event="CWASyncToggleAutoSync", title=_("Set auto progress sync"), reader=true, args={true, false}, toggle={_("on"), _("off")},})
+    Dispatcher:registerAction("cwasync_toggle_autosync", { category="none", event="CWASyncToggleAutoSync", title=_("Toggle auto progress sync"), reader=true,})
     Dispatcher:registerAction("cwasync_push_progress", { category="none", event="CWASyncPushProgress", title=_("Push progress from this device"), reader=true,})
     Dispatcher:registerAction("cwasync_pull_progress", { category="none", event="CWASyncPullProgress", title=_("Pull progress from other devices"), reader=true, separator=true,})
 end
@@ -219,6 +223,41 @@ function CWASync:addToMainMenu(menu_items)
                 end,
             },
             {
+                text = _("Device hostname"),
+                keep_menu_open = true,
+                callback = function()
+                    local dialog
+                    dialog = InputDialog:new{
+                        title = _("Hostname for sync"),
+                        input = self.settings.cwasync_hostname,
+                        input_hint = _("Leave empty to use default"),
+                        buttons = {
+                            {
+                                {
+                                    text = _("Cancel"),
+                                    id = "close",
+                                    callback = function()
+                                        UIManager:close(dialog)
+                                    end,
+                                },
+                                {
+                                    text = _("OK"),
+                                    is_enter_default = true,
+                                    callback = function()
+                                        local hostname = dialog:getInputText()
+                                        logger.dbg("CWASync: Setting custom hostname to:", hostname)
+                                        self.settings.cwasync_hostname = hostname ~= "" and hostname or nil
+                                        UIManager:close(dialog)
+                                    end,
+                                },
+                            },
+                        },
+                    }
+                    UIManager:show(dialog)
+                    dialog:onShowKeyboard()
+                end,
+            },
+            {
                 text_func = function()
                     return self.settings.password and (_("Logout"))
                         or _("Login")
@@ -242,23 +281,7 @@ function CWASync:addToMainMenu(menu_items)
                 checked_func = function() return self.settings.auto_sync end,
                 help_text = _([[This may lead to nagging about toggling WiFi on document close and suspend/resume, depending on the device's connectivity.]]),
                 callback = function()
-                    -- Actively recommend switching the before wifi action to "turn_on" instead of prompt, as prompt will just not be practical (or even plain usable) here.
-                    if Device:hasSeamlessWifiToggle() and G_reader_settings:readSetting("wifi_enable_action") ~= "turn_on" and not self.settings.auto_sync then
-                        UIManager:show(InfoMessage:new{ text = _("You will have to switch the 'Action when Wi-Fi is off' Network setting to 'turn on' to be able to enable this feature!") })
-                        return
-                    end
-
-                    self.settings.auto_sync = not self.settings.auto_sync
-                    self:registerEvents()
-                    if self.settings.auto_sync then
-                        -- Since we will update the progress when closing the document,
-                        -- pull the current progress now so as not to silently overwrite it.
-                        self:getProgress(true, true)
-                    else
-                        -- Since we won't update the progress when closing the document,
-                        -- push the current progress now so as not to lose it.
-                        self:updateProgress(true, true)
-                    end
+                    self:onCWASyncToggleAutoSync(nil, true)
                 end,
             },
             {
@@ -650,6 +673,7 @@ function CWASync:updateProgress(ensure_networking, interactive, on_suspend)
     end
     local progress = self:getLastProgress()
     local percentage = self:getLastPercent()
+    local chosen_device_name = self.settings.cwasync_hostname or Device.model
     local ok, err = pcall(client.update_progress,
         client,
         self.settings.username,
@@ -657,7 +681,7 @@ function CWASync:updateProgress(ensure_networking, interactive, on_suspend)
         doc_digest,
         progress,
         percentage,
-        Device.model,
+        chosen_device_name,
         self.device_id,
         function(ok, body)
             logger.dbg("CWASync: [Push] progress to", percentage * 100, "% =>", progress, "for", self.view.document.file)
@@ -941,6 +965,35 @@ end
 
 function CWASync:onCWASyncPullProgress()
     self:getProgress(true, true)
+end
+
+function CWASync:onCWASyncToggleAutoSync(toggle, from_menu)
+    if toggle == self.settings.auto_sync then
+        return true
+    end
+
+    -- Actively recommend switching the before wifi action to "turn_on" instead of prompt, as prompt will just not be practical (or even plain usable) here.
+    if not self.settings.auto_sync and Device:hasSeamlessWifiToggle() and G_reader_settings:readSetting("wifi_enable_action") ~= "turn_on" then
+        UIManager:show(InfoMessage:new{ text = _("You will have to switch the 'Action when Wi-Fi is off' Network setting to 'turn on' to be able to enable this feature!") })
+        return true
+    end
+
+    self.settings.auto_sync = not self.settings.auto_sync
+    self:registerEvents()
+    if self.settings.auto_sync then
+        -- Since we will update the progress when closing the document,
+        -- pull the current progress now so as not to silently overwrite it.
+        self:getProgress(true, true)
+    elseif from_menu then
+        -- Since we won't update the progress when closing the document,
+        -- push the current progress now so as not to lose it.
+        self:updateProgress(true, true)
+    end
+
+    if not from_menu then
+        Notification:notify(self.settings.auto_sync and _("Auto progress sync: on") or _("Auto progress sync: off"))
+    end
+    return true
 end
 
 function CWASync:registerEvents()

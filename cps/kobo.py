@@ -548,6 +548,19 @@ def get_series(book):
     return book.series[0].name
 
 
+def get_subtitle(book):
+    if not config.config_kobo_subtitle_cc:
+        return ""
+    subtitleColumn = getattr(book, f'custom_column_{config.config_kobo_subtitle_cc}')
+    if not len(subtitleColumn):
+        return ""
+    return (
+        f"{config.config_kobo_subtitle_prefix or ''} "
+        f"{subtitleColumn[0].value} "
+        f"{config.config_kobo_subtitle_suffix or ''}"
+    ).strip()
+
+
 def get_seriesindex(book):
     return book.series_index if isinstance(book.series_index, float) else 1
 
@@ -605,9 +618,13 @@ def get_metadata(book):
                 log.error(e)
 
     book_uuid = book.uuid
+    
     cover_image_id = _get_cover_image_id(book)
     if cover_image_id != str(book_uuid):
         log.debug("Kobo Sync: cache-busting cover id for book %s: %s", book.id, cover_image_id)
+
+    subtitle = get_subtitle(book)
+
     metadata = {
         "Categories": ["00000000-0000-0000-0000-000000000001", ],
         # "Contributors": get_author(book),
@@ -630,6 +647,7 @@ def get_metadata(book):
         "Publisher": {"Imprint": "", "Name": get_publisher(book), },
         "RevisionId": book_uuid,
         "Title": book.title,
+        "Subtitle": subtitle,
         "WorkId": book_uuid,
     }
     metadata.update(get_author(book))

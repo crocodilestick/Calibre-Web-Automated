@@ -551,8 +551,18 @@ def db_configuration():
 @user_login_required
 @admin_required
 def configuration():
+    subtitle_columns = (
+        calibre_db.session
+        .query(db.CustomColumns)
+        .filter(
+            db.CustomColumns.datatype.notin_(db.cc_exceptions),
+            db.CustomColumns.mark_for_delete == 0
+        )
+        .all()
+    )
     return render_title_template("config_edit.html",
                                  config=config,
+                                 subtitleColumns=subtitle_columns,
                                  provider=oauth_bb.oauthblueprints,
                                  feature_support=feature_support,
                                  title=_("Basic Configuration"), page="config")
@@ -587,10 +597,13 @@ def view_configuration():
         .filter(and_(db.CustomColumns.datatype == 'bool', db.CustomColumns.mark_for_delete == 0)).all()
     restrict_columns = calibre_db.session.query(db.CustomColumns) \
         .filter(and_(db.CustomColumns.datatype == 'text', db.CustomColumns.mark_for_delete == 0)).all()
+    subtitle_columns = calibre_db.session.query(db.CustomColumns) \
+        .filter(and_(or_(db.CustomColumns.datatype == 'text', db.CustomColumns.datatype == 'comments'), db.CustomColumns.mark_for_delete == 0)).all()
     languages = calibre_db.speaking_language()
     translations = get_available_locale()
     return render_title_template("config_view_edit.html", conf=config, readColumns=read_column,
                                  restrictColumns=restrict_columns,
+                                 subtitleColumns=subtitle_columns,
                                  languages=languages,
                                  translations=translations,
                                  title=_("UI Configuration"), page="uiconfig")
@@ -889,6 +902,12 @@ def update_view_configuration():
         log.debug("Invalid Read column")
         return view_configuration()
     _config_int(to_save, "config_read_column")
+
+    if not check_valid_subtitle_column(to_save.get("config_subtitle_column", "0")):
+        flash(_("Invalid Subtitle Column"), category="error")
+        log.debug("Invalid Subtitle column")
+        return view_configuration()
+    _config_int(to_save, "config_subtitle_column")
 
     if not check_valid_restricted_column(to_save.get("config_restricted_column", "0")):
         flash(_("Invalid Restricted Column"), category="error")
@@ -1258,6 +1277,14 @@ def check_valid_read_column(column):
     if column != "0":
         if not calibre_db.session.query(db.CustomColumns).filter(db.CustomColumns.id == column) \
           .filter(and_(db.CustomColumns.datatype == 'bool', db.CustomColumns.mark_for_delete == 0)).all():
+            return False
+    return True
+
+
+def check_valid_subtitle_column(column):
+    if column != "0":
+        if not calibre_db.session.query(db.CustomColumns).filter(db.CustomColumns.id == column) \
+          .filter(and_(or_(db.CustomColumns.datatype == 'text', db.CustomColumns.datatype == 'comments'), db.CustomColumns.mark_for_delete == 0)).all():
             return False
     return True
 
@@ -2307,6 +2334,9 @@ def _configuration_update_helper():
         _config_int(to_save, "config_external_port")
         _config_checkbox_int(to_save, "config_kobo_proxy")
         _config_checkbox_int(to_save, "config_hardcover_sync")
+        _config_int(to_save, "config_kobo_subtitle_cc")
+        _config_string(to_save, "config_kobo_subtitle_prefix")
+        _config_string(to_save, "config_kobo_subtitle_suffix")
 
         if "config_upload_formats" in to_save:
             to_save["config_upload_formats"] = ','.join(

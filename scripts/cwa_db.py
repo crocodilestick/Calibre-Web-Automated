@@ -19,7 +19,10 @@ class CWA_DB:
         self.verbose = verbose
 
         self.db_file = "cwa.db"
-        self.db_path = "/config/"
+        self.db_path = os.environ.get('CWA_DB_PATH', '/config/')
+        if not self.db_path.endswith('/'):
+            self.db_path += '/'
+        os.makedirs(self.db_path, exist_ok=True)
         self.con, self.cur = self.connect_to_db() # type: ignore
 
         # Support both Docker and CI environments for schema path

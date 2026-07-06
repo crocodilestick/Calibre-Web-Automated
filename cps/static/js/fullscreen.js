@@ -41,5 +41,8 @@ function toggleFullscreen(elem) {
 }
 
 $("#detailcover").click(function() {
+  if ($(this).closest(".book-detail-card").length) {
+    return;
+  }
   toggleFullscreen(this);
 });

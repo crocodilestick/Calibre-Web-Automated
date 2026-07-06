@@ -12,6 +12,39 @@ body.admin h2 {
     margin-bottom: 30px !important;
 }
 
+body.book .home-btn,
+body.book .navbar-header:before {
+    display: none !important;
+    content: none !important;
+}
+
+body.book .book-detail-cover {
+    flex: 0 0 240px !important;
+    width: 240px !important;
+    max-width: 240px !important;
+}
+
+body.book .book-detail-cover img#detailcover {
+    width: 100% !important;
+    max-width: 240px !important;
+    height: auto !important;
+    max-height: 360px !important;
+    object-fit: contain;
+}
+
+@media (max-width: 600px) {
+    body.book .book-detail-cover {
+        flex-basis: 200px !important;
+        width: 200px !important;
+        max-width: min(200px, 70vw) !important;
+    }
+
+    body.book .book-detail-cover img#detailcover {
+        max-width: min(200px, 70vw) !important;
+        max-height: 300px !important;
+    }
+}
+
 /* Fix z-index issues with specific elements that show through modals */
 body.modal-open .book-meta > .author > a:first-of-type:before,
 body.modal-open div.tags > p > span.glyphicon.glyphicon-tags,
@@ -59,7 +92,8 @@ body.modal-open #remove-from-shelves + .tags {
 /* Base grid layout (both modes) */
 #shelf-container .shelf-books-grid {
     display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(150px, 180px));
+    justify-content: start;
     gap: 25px;
     margin: 20px 0 0 0 !important;
     padding: 0 !important;
@@ -171,6 +205,18 @@ body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top div.navb
     text-shadow: 0 1px 16px rgba(242, 216, 168, 0.18);
     position: relative;
     z-index: 2;
+}
+
+body.cwa-shelf-view-gallery .home-btn,
+body.cwa-shelf-view-reader .home-btn,
+body.shelf .home-btn {
+    display: none !important;
+}
+
+body.cwa-shelf-page .navbar-header:before,
+body.shelf .navbar-header:before {
+    content: none !important;
+    display: none !important;
 }
 
 body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top > .container-fluid > form.navbar-form {
@@ -335,7 +381,8 @@ body.cwa-shelf-view-gallery .shelf-sort-label {
 
 /* Compact covers in clean rows: more books per row */
 #shelf-container.shelf-view-gallery .shelf-books-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)) !important;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 180px)) !important;
+    justify-content: start !important;
     gap: 32px 20px !important;
 }
 
@@ -712,6 +759,8 @@ body.cwa-shelf-view-reader .shelf-kobo-status .text-warning {
 
 /* The grid in reader mode */
 #shelf-container.shelf-view-reader .shelf-books-grid {
+    grid-template-columns: repeat(auto-fill, minmax(140px, 170px)) !important;
+    justify-content: start !important;
     gap: 30px !important;
 }
 
@@ -974,6 +1023,7 @@ body.cwa-shelf-view-reader .dropdown-menu li a.disabled {
 @media (max-width: 767px) {
     #shelf-container.shelf-view-gallery .shelf-books-grid {
         grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)) !important;
+        justify-content: stretch !important;
         gap: 28px 16px !important;
     }
 }
@@ -1075,6 +1125,49 @@ body.cwa-shelf-page .shelf-books-controls .btn .caret {
     margin-top: 0 !important;
 }
 
+/* Hard guard for shelf pages: keep cover cards book-sized even if Bootstrap,
+   caliBlur, or the stored view-mode class wins part of the cascade. */
+body.shelf .shelf-books-grid,
+body.cwa-shelf-page .shelf-books-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 180px)) !important;
+    justify-content: start !important;
+    align-items: start !important;
+}
+
+body.shelf .shelf-book-card,
+body.cwa-shelf-page .shelf-book-card {
+    width: 180px !important;
+    max-width: 180px !important;
+    min-width: 0 !important;
+    flex: 0 0 180px !important;
+}
+
+body.shelf .shelf-book-card .cover,
+body.cwa-shelf-page .shelf-book-card .cover {
+    width: 180px !important;
+    max-width: 180px !important;
+    height: 270px !important;
+    aspect-ratio: 2 / 3;
+}
+
+body.shelf .shelf-book-card .book-cover-link,
+body.cwa-shelf-page .shelf-book-card .book-cover-link,
+body.shelf .shelf-book-card .cover .img,
+body.cwa-shelf-page .shelf-book-card .cover .img {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+body.shelf .shelf-book-card .cover img,
+body.cwa-shelf-page .shelf-book-card .cover img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    object-fit: cover !important;
+}
+
 /* Sidebar Sort Button Layout Adjustments */
 body.cwa-shelf-page #sortDropdown {
     display: flex !important;
@@ -1092,4 +1185,205 @@ body.cwa-shelf-page #sortDropdown > span .glyphicon {
 body.cwa-shelf-page #sortDropdown .caret {
     margin-left: 6px !important;
     margin-top: 0 !important;
+}
+
+/* ==========================================================================
+   Book Preview Overlay (Netflix-Style)
+   ========================================================================== */
+.cwa-preview-overlay {
+    padding: 20px;
+    color: var(--cwa-text-primary);
+}
+
+.cwa-preview-header {
+    display: flex;
+    gap: 30px;
+    margin-bottom: 30px;
+}
+
+.cwa-preview-cover-wrapper {
+    flex: 0 0 200px;
+    transform: translateY(-40px); /* Lift the cover slightly up out of the modal bounds */
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--cwa-surface-2);
+}
+
+.cwa-preview-cover {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.cwa-preview-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.cwa-preview-info h2 {
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 28px;
+    font-weight: 600;
+}
+
+.cwa-preview-authors {
+    font-size: 16px;
+    color: var(--cwa-text-secondary);
+    margin-bottom: 15px;
+}
+
+.cwa-preview-desc {
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--cwa-text-secondary);
+    margin-bottom: 25px;
+    max-height: 120px;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 5;
+    -webkit-box-orient: vertical;
+}
+
+.cwa-preview-actions {
+    margin-top: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.cwa-primary-actions .btn {
+    padding: 10px 24px;
+    font-size: 16px;
+    font-weight: 500;
+    border-radius: 4px;
+}
+
+.cwa-quick-actions-toolbar .btn {
+    padding: 10px 15px;
+    font-size: 16px;
+    border-radius: 4px;
+    background: var(--cwa-surface-3);
+    border: 1px solid var(--cwa-border);
+    color: var(--cwa-text-primary);
+}
+
+.cwa-quick-actions-toolbar .btn:hover {
+    background: var(--cwa-surface-4);
+}
+
+.cwa-view-details-btn {
+    margin-left: auto;
+    color: var(--cwa-text-secondary);
+    text-decoration: underline;
+}
+
+/* Related Books Section */
+.cwa-preview-related {
+    border-top: 1px solid var(--cwa-border);
+    padding-top: 20px;
+}
+
+.cwa-related-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.cwa-related-header .nav-tabs {
+    border-bottom: none;
+    margin: 0;
+}
+
+.cwa-related-header .nav-tabs > li > a {
+    background: transparent;
+    border: none;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 0;
+    color: var(--cwa-text-primary);
+}
+
+.cwa-related-header .nav-tabs > li > a:hover {
+    color: var(--cwa-brand-color);
+}
+
+.cwa-view-toggle .btn {
+    padding: 5px 10px;
+    background: transparent;
+    color: var(--cwa-text-secondary);
+    border: none;
+}
+
+.cwa-view-toggle .btn.active {
+    color: var(--cwa-brand-color);
+}
+
+/* Grid View */
+.cwa-related-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 15px;
+}
+
+.cwa-related-grid .cwa-related-book-link img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 4px;
+    transition: transform 0.2s ease;
+}
+
+.cwa-related-grid .cwa-related-book-link:hover img {
+    transform: scale(1.05);
+}
+
+/* Carousel View */
+.cwa-related-carousel {
+    display: none; /* Hidden by default */
+}
+
+/* Switcher logic */
+.cwa-related-content[data-current-view="grid"] .cwa-related-carousel { display: none; }
+.cwa-related-content[data-current-view="grid"] .cwa-related-grid { display: grid; }
+.cwa-related-content[data-current-view="carousel"] .cwa-related-carousel { display: block; }
+.cwa-related-content[data-current-view="carousel"] .cwa-related-grid { display: none; }
+
+.cwa-related-carousel .item {
+    text-align: center;
+    padding: 0 40px;
+}
+
+.cwa-related-carousel .item img {
+    height: 200px;
+    width: auto;
+    margin: 0 auto;
+    border-radius: 4px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+}
+
+/* Mobile adjustments */
+@media (max-width: 767px) {
+    .cwa-preview-header {
+        flex-direction: column;
+        gap: 15px;
+    }
+    .cwa-preview-cover-wrapper {
+        transform: translateY(0);
+        width: 150px;
+        margin: 0 auto;
+    }
+    .cwa-preview-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .cwa-view-details-btn {
+        margin-left: 0;
+        text-align: center;
+        margin-top: 10px;
+    }
 }

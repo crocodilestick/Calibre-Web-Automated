@@ -1,0 +1,203 @@
+<div class="cwa-preview-overlay">
+
+    <div class="cwa-preview-header">
+
+        <div class="cwa-preview-cover-wrapper">
+
+            <img src="{{ url_for('web.get_cover', book_id=entry.id) }}" alt="{{ entry.title }}" class="cwa-preview-cover">
+
+        </div>
+
+
+
+        <div class="cwa-preview-info">
+
+            <h2>{{ entry.title }}</h2>
+
+            <p class="cwa-preview-authors">
+
+                {% for author in entry.ordered_authors %}
+
+                    {{ author.name }}{% if not loop.last %}, {% endif %}
+
+                {% endfor %}
+
+            </p>
+
+            {% if entry.comments %}
+
+            <div class="cwa-preview-desc">
+
+                {{ entry.comments[0].text|safe }}
+
+            </div>
+
+            {% endif %}
+
+
+
+            <div class="cwa-preview-actions">
+
+                <div class="cwa-primary-actions">
+
+                {% if current_user.role_viewer() and entry.reader_list %}
+
+                    <a target="_blank" href="{{ url_for('web.read_book', book_id=entry.id, book_format=entry.reader_list[0]) }}" class="btn btn-primary cwa-read-now-btn">
+
+                        <span class="glyphicon glyphicon-book"></span> {{ _('Read Now') }}
+
+                    </a>
+
+                {% elif current_user.role_download() and entry.data|length %}
+
+                    {% set format = entry.data[0] %}
+
+                    <a href="{{ url_for('web.download_link', book_id=entry.id, book_format=format.format|lower, anyname=entry.id|string+'.'+format.format|lower|replace('kepub', 'kepub.epub')) }}" class="btn btn-primary cwa-download-now-btn">
+
+                        <span class="glyphicon glyphicon-download"></span> {{ _('Download') }}
+
+                    </a>
+
+                {% endif %}
+
+                </div>
+
+
+
+                {% if not current_user.is_anonymous %}
+
+                <div class="cwa-quick-actions-toolbar btn-group">
+
+                    <button class="btn btn-default cwa-quick-read-toggle" data-book-id="{{ entry.id }}" title="{{ entry.read_status and _('Mark As Unread') or _('Mark As Read') }}">
+
+                        <span class="glyphicon {{ entry.read_status and 'glyphicon-eye-open' or 'glyphicon-eye-close' }}"></span>
+
+                    </button>
+
+
+
+                    {% if current_user.kindle_mail and entry.email_share_list %}
+
+                        <button class="btn btn-default cwa-quick-send-ereader" data-book-id="{{ entry.id }}" data-book-format="{{ entry.email_share_list[0]['format'] }}" data-convert="{{ entry.email_share_list[0]['convert'] }}" data-selected-emails="{{ current_user.kindle_mail }}" title="{{ _('Send to eReader') }}">
+
+                            <span class="glyphicon glyphicon-send"></span>
+
+                        </button>
+
+                    {% endif %}
+
+
+
+                    {% if current_user.role_edit() %}
+
+                        <a href="{{ url_for('edit-book.show_edit_book', book_id=entry.id) }}" class="btn btn-default cwa-quick-edit" title="{{ _('Edit Metadata') }}">
+
+                            <span class="glyphicon glyphicon-pencil"></span>
+
+                        </a>
+
+                    {% endif %}
+
+                </div>
+
+                {% endif %}
+
+
+
+                <a href="{{ url_for('web.show_book', book_id=entry.id) }}" class="btn btn-secondary cwa-view-details-btn">
+
+                    {{ _('Buchdetails ansehen') }}
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    {% if series_books %}
+
+    <div class="cwa-preview-related">
+
+        <div class="cwa-related-header">
+
+            <ul class="nav nav-tabs">
+
+                <li class="active"><a href="javascript:void(0);">Aus der Serie "{{ entry.series[0].name }}"</a></li>
+
+            </ul>
+
+            <div class="cwa-view-toggle">
+
+                <button class="btn btn-icon active" data-view="grid" title="Grid View"><span class="glyphicon glyphicon-th"></span></button>
+
+                <button class="btn btn-icon" data-view="carousel" title="Carousel View"><span class="glyphicon glyphicon-resize-horizontal"></span></button>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="tab-content cwa-related-content" data-current-view="grid">
+
+            <div class="cwa-related-grid">
+
+                {% for s_book in series_books %}
+
+                <a href="{{ url_for('web.show_book', book_id=s_book.id) }}" class="cwa-related-book-link" title="{{ s_book.title }}">
+
+                    <img src="{{ url_for('web.get_cover', book_id=s_book.id) }}" alt="{{ s_book.title }}">
+
+                </a>
+
+                {% endfor %}
+
+            </div>
+
+
+
+            <div class="cwa-related-carousel carousel slide" id="relatedCarousel-{{ entry.id }}" data-interval="false">
+
+                <div class="carousel-inner">
+
+                    {% for s_book in series_books %}
+
+                    <div class="item {% if loop.first %}active{% endif %}">
+
+                        <a href="{{ url_for('web.show_book', book_id=s_book.id) }}" class="cwa-related-book-link">
+
+                            <img src="{{ url_for('web.get_cover', book_id=s_book.id) }}" alt="{{ s_book.title }}">
+
+                        </a>
+
+                    </div>
+
+                    {% endfor %}
+
+                </div>
+
+                <a class="left carousel-control" href="#relatedCarousel-{{ entry.id }}" data-slide="prev">
+
+                    <span class="glyphicon glyphicon-chevron-left"></span>
+
+                </a>
+
+                <a class="right carousel-control" href="#relatedCarousel-{{ entry.id }}" data-slide="next">
+
+                    <span class="glyphicon glyphicon-chevron-right"></span>
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    {% endif %}
+
+</div>

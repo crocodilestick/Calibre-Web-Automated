@@ -14,7 +14,7 @@ import re
 import zipfile
 import xml.etree.ElementTree as ET
 
-from flask import Blueprint, jsonify
+from flask import Blueprint, jsonify, render_template
 from flask import request, redirect, send_from_directory, send_file, make_response, flash, abort, url_for, Response, g
 from flask import session as flask_session
 from flask_babel import gettext as _
@@ -2910,6 +2910,50 @@ def read_book(book_id, book_format):
               category="error")
         return redirect(url_for("web.index"))
 
+
+
+@web.route("/book/<int:book_id>/preview")
+@login_required_if_no_ano
+def preview_book(book_id):
+    try:
+        book_id = int(book_id)
+    except (ValueError, TypeError):
+        log.error(f"Invalid book_id passed to preview_book: {book_id}")
+        abort(404)
+
+    entries = calibre_db.get_book_read_archived(book_id, config.config_read_column, allow_show_archived=True)
+    if entries:
+        read_book = entries[1]
+        archived_book = entries[2]
+        entry = entries[0]
+        entry.read_status = read_book == ub.ReadBook.STATUS_FINISHED
+        entry.is_archived = archived_book
+        for lang_index in range(0, len(entry.languages)):
+            entry.languages[lang_index].language_name = isoLanguages.get_language_name(get_locale(), entry.languages[lang_index].lang_code)
+        entry.tags = sort(entry.tags, key=lambda tag: tag.name)
+
+        if current_user.is_authenticated:
+            allowed_tags = current_user.list_allowed_tags()
+            denied_tags = current_user.list_denied_tags()
+            if allowed_tags and allowed_tags != ['']:
+                entry.tags = [tag for tag in entry.tags if tag.name in allowed_tags]
+            if denied_tags and denied_tags != ['']:
+                entry.tags = [tag for tag in entry.tags if tag.name not in denied_tags]
+        entry.ordered_authors = calibre_db.order_authors([entry])
+        entry.email_share_list = check_send_to_ereader(entry)
+        entry.reader_list = check_read_formats(entry)
+        series_books = []
+        if len(entry.series) > 0:
+            series_id = entry.series[0].id
+            series_books = calibre_db.session.query(db.Books).filter(calibre_db.common_filters()).filter(
+                db.Books.series.any(db.Series.id == series_id),
+                db.Books.id != book_id
+            ).order_by(db.Books.series_index).all()
+        return render_template('preview_fragment.html',
+                               entry=entry,
+                               series_books=series_books)
+    else:
+        abort(404)
 
 @web.route("/book/<int:book_id>")
 @login_required_if_no_ano

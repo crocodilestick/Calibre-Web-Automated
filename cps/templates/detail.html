@@ -41,12 +41,17 @@
 
         .book-detail-cover {
             flex: 0 0 240px;
+            width: 240px;
             max-width: 240px;
+            min-width: 0;
         }
 
         .book-detail-cover img {
-            width: 100%;
+            width: 240px;
+            max-width: 100%;
             height: auto;
+            max-height: 360px;
+            object-fit: contain;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
         }
@@ -391,10 +396,6 @@
                 justify-content: center;
             }
 
-            .book-detail-cover {
-                max-width: 60%;
-            }
-
             .book-detail-meta {
                 width: 100%;
             }
@@ -402,7 +403,15 @@
 
         @media (max-width: 600px) {
             .book-detail-cover {
-                max-width: 75%;
+                flex-basis: 200px;
+                width: 200px;
+                max-width: min(200px, 70vw);
+            }
+
+            .book-detail-cover img {
+                width: 200px;
+                max-width: min(200px, 70vw);
+                max-height: 300px;
             }
 
             .book-detail-meta h2#title {

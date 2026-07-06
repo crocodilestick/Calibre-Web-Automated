@@ -12,29 +12,10 @@ body.admin h2 {
     margin-bottom: 30px !important;
 }
 
-#main-nav > li.cwa-switch-theme {
-    display: none !important;
-}
-
 body.book .home-btn,
 body.book .navbar-header:before {
     display: none !important;
     content: none !important;
-}
-
-body.book .plexBack {
-    left: 12px !important;
-    z-index: 3;
-}
-
-body.book div.navbar.navbar-default.navbar-static-top div.navbar-header > a.navbar-brand {
-    padding-left: 58px !important;
-    width: auto !important;
-    min-width: 300px;
-    max-width: 420px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
 body.book .book-detail-cover {
@@ -52,11 +33,6 @@ body.book .book-detail-cover img#detailcover {
 }
 
 @media (max-width: 600px) {
-    body.book div.navbar.navbar-default.navbar-static-top div.navbar-header > a.navbar-brand {
-        min-width: 0;
-        max-width: calc(100vw - 130px);
-    }
-
     body.book .book-detail-cover {
         flex-basis: 200px !important;
         width: 200px !important;

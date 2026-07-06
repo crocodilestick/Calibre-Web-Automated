@@ -1304,6 +1304,57 @@ def HandleOauthRequest(subpath=None):
     return make_calibre_web_oauth_response()
 
 
+@kobo.route("/oauth/.well-known/openid-configuration", methods=["GET"])
+@requires_kobo_auth
+def HandleOauthDiscovery():
+    # Recent Kobo firmware performs OpenID Connect discovery against oauth_host
+    # before refreshing an expired access token. When Kobo Store proxying is
+    # disabled CWA hosts the OAuth endpoints itself (see HandleInitRequest ->
+    # oauth_host), so it must advertise them here. Without a token_endpoint the
+    # device requests "a new token from ''", raises a web request error and
+    # cancels the whole sync queue (SyncLibraryCommand included), so
+    # /v1/library/sync is never reached and the device reports "Sync failed".
+    oauth_url = url_for("kobo.HandleOauthRequest",
+                        auth_token=get_auth_token(), _external=True)
+    issuer = oauth_url.rsplit("/oauth", 1)[0] + "/oauth"
+    return make_response(jsonify({
+        "issuer": issuer,
+        "authorization_endpoint": issuer + "/auth",
+        "token_endpoint": issuer + "/token",
+        "userinfo_endpoint": issuer + "/userinfo",
+        "jwks_uri": issuer + "/jwks",
+        "response_types_supported": ["code", "token"],
+        "grant_types_supported": ["authorization_code", "refresh_token"],
+        "subject_types_supported": ["public"],
+        "id_token_signing_alg_values_supported": ["RS256"],
+        "scopes_supported": ["openid", "offline_access"],
+        "token_endpoint_auth_methods_supported":
+            ["client_secret_post", "client_secret_basic", "none"],
+    }))
+
+
+@kobo.before_app_request
+def _kobo_reading_services_stub():
+    # Kobo firmware treats reading_services_host as scheme+host only: it strips
+    # any path and calls these endpoints at the SITE ROOT (e.g.
+    # https://host/api/UserStorage/Metadata). In fully-local mode (no Kobo
+    # account, so CWA issues a dummy token) those calls would 401 against CWA,
+    # which the device turns into a web request error and uses to abort the sync
+    # batch (notebooks -> SyncNotebookCommand), so nothing -- not even shelves --
+    # commits. Return benign empty responses so the sync completes. Only the Kobo
+    # reading-services paths are matched; every other request falls through.
+    p = request.path
+    if p == "/api/v3/content/checkforchanges":
+        return make_response(jsonify([]))
+    if p.startswith("/api/v3/content/") and p.endswith("/annotations"):
+        return make_response(jsonify({"data": [], "totalResults": 0}))
+    if p.startswith("/api/UserStorage/"):
+        return make_response(jsonify({}))
+    if p.startswith("/api/internal/notebooks"):
+        return make_response(jsonify({"data": [], "totalResults": 0}))
+    return None
+
+
 @kobo.route("/v1/initialization")
 @requires_kobo_auth
 def HandleInitRequest():
@@ -1396,6 +1447,11 @@ def HandleInitRequest():
                                   auth_token=kobo_auth.get_auth_token(),
                                   _external=True)
         kobo_resources["oauth_host"] = oauth_token_url.rsplit("/oauth", 1)[0] + "/oauth"
+        # Device strips reading_services_host to scheme+host; keep it on CWA so its
+        # reading-services calls hit us (see _kobo_reading_services_stub) instead of
+        # Kobo cloud, which 401s our dummy token and aborts the sync.
+        if not (config.config_hardcover_annotations_sync and bool(hardcover)):
+            kobo_resources["reading_services_host"] = url_for("web.index", _external=True).strip("/")
 
     response = make_response(jsonify({"Resources": kobo_resources}))
     response.headers["x-kobo-apitoken"] = "e30="

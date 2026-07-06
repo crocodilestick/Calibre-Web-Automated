@@ -175,7 +175,14 @@ body.cwa-shelf-view-gallery div.navbar.navbar-default.navbar-static-top div.navb
 }
 
 body.cwa-shelf-view-gallery .home-btn,
-body.cwa-shelf-view-reader .home-btn {
+body.cwa-shelf-view-reader .home-btn,
+body.shelf .home-btn {
+    display: none !important;
+}
+
+body.cwa-shelf-page .navbar-header:before,
+body.shelf .navbar-header:before {
+    content: none !important;
     display: none !important;
 }
 
@@ -1083,6 +1090,49 @@ body.cwa-shelf-page .shelf-toolbar .btn .caret {
 body.cwa-shelf-page .shelf-books-controls .btn .caret {
     margin-left: 10px !important;
     margin-top: 0 !important;
+}
+
+/* Hard guard for shelf pages: keep cover cards book-sized even if Bootstrap,
+   caliBlur, or the stored view-mode class wins part of the cascade. */
+body.shelf .shelf-books-grid,
+body.cwa-shelf-page .shelf-books-grid {
+    display: grid !important;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 180px)) !important;
+    justify-content: start !important;
+    align-items: start !important;
+}
+
+body.shelf .shelf-book-card,
+body.cwa-shelf-page .shelf-book-card {
+    width: 180px !important;
+    max-width: 180px !important;
+    min-width: 0 !important;
+    flex: 0 0 180px !important;
+}
+
+body.shelf .shelf-book-card .cover,
+body.cwa-shelf-page .shelf-book-card .cover {
+    width: 180px !important;
+    max-width: 180px !important;
+    height: 270px !important;
+    aspect-ratio: 2 / 3;
+}
+
+body.shelf .shelf-book-card .book-cover-link,
+body.cwa-shelf-page .shelf-book-card .book-cover-link,
+body.shelf .shelf-book-card .cover .img,
+body.cwa-shelf-page .shelf-book-card .cover .img {
+    display: block !important;
+    width: 100% !important;
+    height: 100% !important;
+}
+
+body.shelf .shelf-book-card .cover img,
+body.cwa-shelf-page .shelf-book-card .cover img {
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    object-fit: cover !important;
 }
 
 /* Sidebar Sort Button Layout Adjustments */

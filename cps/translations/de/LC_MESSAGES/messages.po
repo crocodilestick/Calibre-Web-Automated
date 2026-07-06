@@ -1068,6 +1068,8 @@ msgstr "Calibre-Web Automated - EPUB-Fixer-Dienst"
 #: cps/cwa_functions.py:2173
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
+"Der EPUB-Fixer für ein einzelnes Buch wird für Google Drive-Bibliotheken"
+"nicht unterstützt."
 
 #: cps/cwa_functions.py:2180
 msgid "Invalid book selection."
@@ -1091,7 +1093,7 @@ msgstr "EPUB-Fixer für das ausgewählte Buch gestartet."
 
 #: cps/cwa_functions.py:2214
 msgid "Failed to start EPUB Fixer for selected book."
-msgstr ""
+msgstr "Der EPUB-Fixer konnte für das ausgewählte Buch nicht gestartet werden."
 
 #: cps/cwa_functions.py:2261
 msgid "You must be an admin to access this page."
@@ -1187,7 +1189,8 @@ msgstr ""
 msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
-msgstr ""
+msgstr "Das Verzeichnis für neu hinzugefügte Bücher ist nicht beschreibbar."
+"Berechtigungen für /cwa-book-ingest überprüfen!"
 
 #: cps/editbooks.py:121
 msgid "Missing or invalid book id for format upload"
@@ -1488,7 +1491,7 @@ msgstr ""
 #: cps/helper.py:1067 cps/helper.py:1075
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
-msgstr ""
+msgstr "Cover-Bild ist größer als das erlaubte Maximum von $(size)s MB."
 
 #: cps/helper.py:1086
 msgid "Error Downloading Cover"
@@ -4426,11 +4429,11 @@ msgstr "Fehler beim Planen der Bibliothekskonvertierung"
 
 #: cps/templates/cwa_epub_fixer.html:22
 msgid "Run on a single book"
-msgstr ""
+msgstr "Auf ein einzelnes Buch ausführen"
 
 #: cps/templates/cwa_epub_fixer.html:24
 msgid "Search by title/author"
-msgstr ""
+msgstr "Nach Titel/Autor suchen"
 
 #: cps/templates/cwa_epub_fixer.html:29
 msgid "Run on selected book"
@@ -4560,6 +4563,9 @@ msgid ""
 "temporarily lock metadata.db. To stop a running backfill, restart the "
 "container after disabling."
 msgstr ""
+"Hinweis: Aktivieren startet einen Prüfsummen-Dienst, welcher möglicherweise"
+"beim Start die metadata.db sperrt. Um diesen Dienst zu stoppen, muss der"
+"Container nach dem Deaktivieren neu gestartet werden."
 
 #: cps/templates/cwa_settings.html:192
 msgid "Enable Aggressive EPUB Fixer Mode (riskier)"
@@ -6298,7 +6304,8 @@ msgstr "Standard-Login ist deaktiviert."
 msgid ""
 "Enable it in CWA Settings to activate the /kosync endpoints and checksum "
 "generation."
-msgstr ""
+msgstr "In den CWA-Einstellungen einschalten um den /kosync Endpunkt und die "
+"Prüfsummen-Generierung zu aktivieren."
 
 #: cps/templates/kosync_plugin.html:115
 #, fuzzy
@@ -6307,7 +6314,8 @@ msgstr "CWA Einstellungen"
 
 #: cps/templates/kosync_plugin.html:139
 msgid "Download is available after enabling KOReader Sync in CWA Settings."
-msgstr ""
+msgstr "Herunterladen ist möglich, nachdem KOReader-Sync in den CWA Einstellungen"
+"aktiviert wurde."
 
 #: cps/templates/layout.html:93 cps/templates/login.html:51
 msgid "Home"
@@ -7117,7 +7125,7 @@ msgstr ""
 
 #: cps/templates/user_edit.html:228
 msgid "Enable Send-to-eReader Pop-up Modal"
-msgstr ""
+msgstr "Aktiviere Send-to-eReader Pop-up Dialog."
 
 #: cps/templates/user_edit.html:230
 msgid ""
@@ -7125,6 +7133,9 @@ msgid ""
 "enter extra email addresses and only send to a selection of saved addresses "
 "when sending to eReader."
 msgstr ""
+"Aktiviert oder deaktiviert den Send-to-eReader Pop-up Dialog, welcher es"
+"Benutzern erlaubt weitere Email-Adressen einzugeben und nur an ausgewählte"
+"Adressen zu versenden beim Senden zum eReader."
 
 #: cps/templates/user_edit.html:232
 #, fuzzy
@@ -7257,39 +7268,39 @@ msgstr "Magische Regale ✨"
 
 #: cps/templates/user_edit.html:455
 msgid "Choose how your magic shelves are ordered in the sidebar."
-msgstr ""
+msgstr "Wähle aus, wie deine Magische Regale ✨ in der Seitenleiste sortiert werden."
 
 #: cps/templates/user_edit.html:459
 msgid "Order Mode"
-msgstr ""
+msgstr "Sortiermodus"
 
 #: cps/templates/user_edit.html:461
 msgid "Manual (drag to reorder)"
-msgstr ""
+msgstr "Manuell (ziehen zum Umsortieren)"
 
 #: cps/templates/user_edit.html:462
 msgid "Name (A-Z)"
-msgstr ""
+msgstr "Name (A-Z)"
 
 #: cps/templates/user_edit.html:463
 msgid "Name (Z-A)"
-msgstr ""
+msgstr "Name (Z-A)"
 
 #: cps/templates/user_edit.html:464
 msgid "Book count (high to low)"
-msgstr ""
+msgstr "Anzahl Bücher (mehr zu weniger)"
 
 #: cps/templates/user_edit.html:465
 msgid "Book count (low to high)"
-msgstr ""
+msgstr "Anzahl Bücher (weniger zu mehr)"
 
 #: cps/templates/user_edit.html:466
 msgid "Created (newest first)"
-msgstr ""
+msgstr "Erstellt (neuestes zuerst"
 
 #: cps/templates/user_edit.html:467
 msgid "Created (oldest first)"
-msgstr ""
+msgstr "Erstellt (ältestes zuerst)"
 
 #: cps/templates/user_edit.html:468
 #, fuzzy
@@ -7303,7 +7314,7 @@ msgstr "Zuletzt geändert"
 
 #: cps/templates/user_edit.html:480
 msgid "Manual order is used only when the order mode is set to Manual."
-msgstr ""
+msgstr "Manuelle Sortierung wird nur verwendet wenn der Sortiermodus auf 'Manuell' gesetzt ist."
 
 #: cps/templates/user_edit.html:486
 msgid "Magic Shelves Visibility"

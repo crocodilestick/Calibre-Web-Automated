@@ -1,5 +1,24 @@
 # Verlauf
 
+## 2026-07-05 - Buch-Detail UX (Phase 4)
+
+# Übergabe-Stand — CWA Alexandria
+
+## Kontext & Letzter Stand
+*   **Abgeschlossenes Feature:** Buch-Detail UX-Schicht (Phase 4 - Netflix-Style Vorschau-Overlay).
+    *   **Vorschau-Overlay:** Wenn man auf ein Buch-Cover klickt, öffnet sich nun ein asynchron geladenes `#previewOverlayModal` (basierend auf der neuen Route `/book/<id>/preview`).
+    *   **Entkopplung der Aktionen:** Die fehleranfälligen "Hover-Actions" für "Gelesen", "An E-Reader senden" und "Bearbeiten" wurden aus `caliBlur.js` entfernt und sauber in das neue Overlay als Action-Toolbar integriert.
+    *   **Serien-Integration:** Das Overlay zeigt automatisch verwandte Bücher aus derselben Serie an.
+    *   **Darstellungs-Toggle:** Für verwandte Bücher kann zwischen Grid- und Carousel-Ansicht gewechselt werden.
+    *   **Template-Angleichung:** Alle betroffenen Templates (`index.html`, `shelf.html`, `search.html`, `author.html`) wurden so umgeschrieben, dass der Cover-Klick das Vorschau-Modal öffnet und der Titel-Klick direkt auf die vollständige Detailseite navigiert.
+*   **Branch:** `plan/book-detail-ux`
+
+## Nächste Schritte & Offene Entscheidungen
+1.  **Testen & Review:** Alex kann die neuen Overlays manuell testen und bei Bedarf visuelles Feintuning (z.B. Schatten, Abstände) vornehmen.
+2.  **Einstellungs-Ansichten:** Als nächster großer Block der Roadmap steht die UX-Bereinigung und Gruppierung der Einstellungen an.
+
+
+
 Fortlaufende, **eingecheckte** Historie dieses Projekts — wie `STAND.md`, nur
 dass nichts gelöscht wird. Zweck: den gesamten Entwicklungsverlauf lückenlos
 nachvollziehen, ohne `git log` durchforsten zu müssen.

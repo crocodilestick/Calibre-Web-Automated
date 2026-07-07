@@ -26,7 +26,7 @@ import requests
 from lxml import etree
 
 from . import logger, calibre_db, db, config, ub, csrf
-from .cw_login import current_user, login_required
+from .cw_login import current_user, login_required, login_user
 from .services import hardcover
 
 log = logger.create()
@@ -135,10 +135,23 @@ def requires_reading_services_auth_and_config(f):
         # Check if user is authenticated (cookie from Kobo sync)
         if current_user.is_authenticated:
             return f(*args, **kwargs)
-        else:
-            # User not authenticated - just proxy to Kobo
-            log.debug("Reading services request without auth, proxying to Kobo")
-            return proxy_to_kobo_reading_services()
+
+        # Fallback: authenticate via X-Kobo-Deviceid header mapping
+        # This handles scenarios where the session cookie is expired/missing
+        device_id = request.headers.get('X-Kobo-Deviceid')
+        if device_id:
+            from .kobo_auth import get_user_id_for_device
+            user_id = get_user_id_for_device(device_id)
+            if user_id:
+                user = ub.session.query(ub.User).filter(ub.User.id == user_id).first()
+                if user:
+                    login_user(user)
+                    log.debug("Reading services: authenticated user %s via device ID mapping", user.name)
+                    return f(*args, **kwargs)
+
+        # User not authenticated - just proxy to Kobo
+        log.debug("Reading services request without auth, proxying to Kobo")
+        return proxy_to_kobo_reading_services()
     return decorated_function
 
 
@@ -485,6 +498,89 @@ def process_annotation_for_sync(
     
 
 
+def process_annotation_patch(entitlement_id):
+    """Process a PATCH request for annotations, syncing changes to Hardcover."""
+    try:
+        data = request.get_json()
+        log_annotation_data(entitlement_id, "PATCH", data)
+
+        # Get book from database
+        book = get_book_by_entitlement_id(entitlement_id)
+        if not book:
+            log.warning(f"Book not found for entitlement {entitlement_id}, skipping Hardcover sync")
+            return
+
+        identifiers = get_book_identifiers(book)
+
+        if data and "deletedAnnotationIds" in data:
+            deleted_ids = data["deletedAnnotationIds"]
+            log.info(f"Processing {len(deleted_ids)} deleted annotation IDs")
+            for annotation_id in deleted_ids:
+                sync_record = ub.session.query(ub.KoboAnnotationSync).filter(
+                    ub.KoboAnnotationSync.annotation_id == annotation_id,
+                    ub.KoboAnnotationSync.user_id == current_user.id
+                ).first()
+                if sync_record:
+                    try:
+                        hardcover_client = hardcover.HardcoverClient(current_user.hardcover_token)
+                        deleted_id = hardcover_client.delete_journal_entry(journal_id=sync_record.hardcover_journal_id)
+                        if deleted_id == sync_record.hardcover_journal_id:
+                            try:
+                                ub.session.delete(sync_record)
+                                ub.session_commit()
+                                log.info(f"Successfully deleted journal entry {sync_record.hardcover_journal_id} from Hardcover and local DB")
+                            except Exception as db_error:
+                                log.error(f"Failed to delete local sync record after Hardcover deletion succeeded: {db_error}")
+                                log.error(f"Annotation {annotation_id} deleted from Hardcover but DB record remains - manual cleanup may be needed")
+                                ub.session.rollback()
+                        else:
+                            log.warning(f"Failed to delete journal entry {sync_record.hardcover_journal_id} from Hardcover - keeping local record")
+                    except Exception as api_error:
+                        log.error(f"Error deleting annotation {annotation_id} from Hardcover: {api_error}")
+                        # Don't delete local record if Hardcover deletion failed
+                else:
+                    log.warning(f"Sync record not found for annotation {annotation_id}, skipping deletion")
+
+        # Extract updated annotations
+        if data and "updatedAnnotations" in data:
+            annotations = data['updatedAnnotations']
+            log.info(f"Processing {len(annotations)} updated annotations")
+
+            # Batch load existing sync records to avoid N+1 queries
+            existing_syncs = {}
+            annotation_ids = [a.get('id') for a in annotations if a.get('id')]
+            if annotation_ids:
+                syncs = ub.session.query(ub.KoboAnnotationSync).filter(
+                    ub.KoboAnnotationSync.annotation_id.in_(annotation_ids),
+                    ub.KoboAnnotationSync.user_id == current_user.id
+                ).all()
+                existing_syncs = {s.annotation_id: s for s in syncs}
+
+            # Check blacklist once per book
+            book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
+                ub.HardcoverBookBlacklist.book_id == book.id
+            ).first()
+            is_blacklisted = book_blacklist and book_blacklist.blacklist_annotations
+
+            # Initialize progress calculator once per book
+            progress_calculator = EpubProgressCalculator(book)
+
+            for annotation in annotations:
+                process_annotation_for_sync(
+                    annotation=annotation,
+                    book=book,
+                    identifiers=identifiers,
+                    existing_syncs=existing_syncs,
+                    progress_calculator=progress_calculator,
+                    is_blacklisted=is_blacklisted
+                )
+
+    except Exception as e:
+        log.error(f"Error processing PATCH annotations: {e}")
+        import traceback
+        log.error(traceback.format_exc())
+
+
 @csrf.exempt
 @readingservices_api_v3.route("/content/<entitlement_id>/annotations", methods=["GET", "PATCH"])
 @requires_reading_services_auth_and_config
@@ -497,84 +593,7 @@ def handle_annotations(entitlement_id):
     # GET requests are proxied directly to Kobo at the end of the function
     # We only intercept PATCH requests to sync changes to Hardcover
     if request.method == "PATCH":
-        try:
-            data = request.get_json()
-            log_annotation_data(entitlement_id, "PATCH", data)
-
-            # Get book from database
-            book = get_book_by_entitlement_id(entitlement_id)
-            if not book:
-                log.warning(f"Book not found for entitlement {entitlement_id}, skipping Hardcover sync")
-            else:
-                identifiers = get_book_identifiers(book)
-
-                if data and "deletedAnnotationIds" in data:
-                    deleted_ids = data["deletedAnnotationIds"]
-                    log.info(f"Processing {len(deleted_ids)} deleted annotation IDs")
-                    for annotation_id in deleted_ids:
-                        sync_record = ub.session.query(ub.KoboAnnotationSync).filter(
-                            ub.KoboAnnotationSync.annotation_id == annotation_id,
-                            ub.KoboAnnotationSync.user_id == current_user.id
-                        ).first()
-                        if sync_record:
-                            try:
-                                hardcover_client = hardcover.HardcoverClient(current_user.hardcover_token)
-                                deleted_id = hardcover_client.delete_journal_entry(journal_id=sync_record.hardcover_journal_id)
-                                if deleted_id == sync_record.hardcover_journal_id:
-                                    try:
-                                        ub.session.delete(sync_record)
-                                        ub.session_commit()
-                                        log.info(f"Successfully deleted journal entry {sync_record.hardcover_journal_id} from Hardcover and local DB")
-                                    except Exception as db_error:
-                                        log.error(f"Failed to delete local sync record after Hardcover deletion succeeded: {db_error}")
-                                        log.error(f"Annotation {annotation_id} deleted from Hardcover but DB record remains - manual cleanup may be needed")
-                                        ub.session.rollback()
-                                else:
-                                    log.warning(f"Failed to delete journal entry {sync_record.hardcover_journal_id} from Hardcover - keeping local record")
-                            except Exception as api_error:
-                                log.error(f"Error deleting annotation {annotation_id} from Hardcover: {api_error}")
-                                # Don't delete local record if Hardcover deletion failed
-                        else:
-                            log.warning(f"Sync record not found for annotation {annotation_id}, skipping deletion")
-            
-                # Extract updated annotations
-                if data and "updatedAnnotations" in data:
-                    annotations = data['updatedAnnotations']
-                    log.info(f"Processing {len(annotations)} updated annotations")
-                
-                    # Batch load existing sync records to avoid N+1 queries
-                    existing_syncs = {}
-                    annotation_ids = [a.get('id') for a in annotations if a.get('id')]
-                    if annotation_ids:
-                        syncs = ub.session.query(ub.KoboAnnotationSync).filter(
-                            ub.KoboAnnotationSync.annotation_id.in_(annotation_ids),
-                            ub.KoboAnnotationSync.user_id == current_user.id
-                        ).all()
-                        existing_syncs = {s.annotation_id: s for s in syncs}
-                    
-                    # Check blacklist once per book
-                    book_blacklist = ub.session.query(ub.HardcoverBookBlacklist).filter(
-                        ub.HardcoverBookBlacklist.book_id == book.id
-                    ).first()
-                    is_blacklisted = book_blacklist and book_blacklist.blacklist_annotations
-
-                    # Initialize progress calculator once per book
-                    progress_calculator = EpubProgressCalculator(book)
-
-                    for annotation in annotations:
-                        process_annotation_for_sync(
-                            annotation=annotation, 
-                            book=book, 
-                            identifiers=identifiers, 
-                            existing_syncs=existing_syncs,
-                            progress_calculator=progress_calculator,
-                            is_blacklisted=is_blacklisted
-                        )
-
-        except Exception as e:
-            log.error(f"Error processing PATCH annotations: {e}")
-            import traceback
-            log.error(traceback.format_exc())
+        process_annotation_patch(entitlement_id)
 
     # Proxy to Kobo reading services
     return proxy_to_kobo_reading_services()

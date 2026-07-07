@@ -720,6 +720,7 @@ class RemoteAuthToken(Base):
     verified = Column(Boolean, default=False)
     expiration = Column(DateTime)
     token_type = Column(Integer, default=0)
+    device_id = Column(String, default=None)
 
     def __init__(self):
         super().__init__()
@@ -1037,6 +1038,15 @@ def migrate_magic_shelf_table(engine, _session):
         _run_ddl_with_retry(engine, "ALTER TABLE magic_shelf ADD column 'kobo_sync' Boolean DEFAULT 0")
 
 
+def migrate_remote_auth_token_table(engine, _session):
+    try:
+        _session.query(exists().where(RemoteAuthToken.device_id)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        _safe_session_rollback(_session, "remote_auth_token.device_id")
+        _run_ddl_with_retry(engine, "ALTER TABLE remote_auth_token ADD column 'device_id' String DEFAULT NULL")
+
+
 # Migrate database to current version, has to be updated after every database change. Currently migration from
 # maybe 4/5 versions back to current should work.
 # Migration is done by checking if relevant columns are existing, and then adding rows with SQL commands
@@ -1049,6 +1059,7 @@ def migrate_Database(_session):
     migrate_oauth_provider_table(engine, _session)
     migrate_config_table(engine, _session)
     migrate_magic_shelf_table(engine, _session)
+    migrate_remote_auth_token_table(engine, _session)
 
     # Ensure progress syncing tables in app.db (user-related tables)
     from .progress_syncing.models import ensure_app_db_tables

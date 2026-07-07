@@ -10,6 +10,11 @@ from gevent.pywsgi import WSGIHandler
 
 
 class MyWSGIHandler(WSGIHandler):
+    def read_request(self, raw_requestline):
+        is_valid = super().read_request(raw_requestline)
+        self.close_connection = True
+        return is_valid
+
     def get_environ(self):
         env = super().get_environ()
         path, __ = self.path.split('?', 1) if '?' in self.path else (self.path, '')
@@ -38,4 +43,3 @@ class MyWSGIHandler(WSGIHandler):
             (self._orig_status or self.status or '000').split()[0],
             length,
             delta)
-

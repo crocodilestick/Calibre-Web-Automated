@@ -5,6 +5,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
+import os
 import sys
 
 from .iso_language_names import LANGUAGE_NAMES as _LANGUAGE_NAMES
@@ -12,7 +13,6 @@ from . import logger
 from .string_helper import strip_whitespaces
 
 log = logger.create()
-
 
 try:
     from pycountry import languages as pyc_languages
@@ -94,3 +94,39 @@ def get_lang3(lang):
     except (KeyError, AttributeError):
         ret_value = lang
     return ret_value
+
+
+def _load_custom_language_codes():
+    custom_codes_str = os.environ.get("CWA_CUSTOM_LANGUAGE_CODES", "")
+    custom_languages = {}
+    if custom_codes_str:
+        for item in custom_codes_str.split(","):
+            parts = item.strip().strip('"').strip("'").split(":", 1)
+            if len(parts) == 2:
+                code, name = parts[0].strip(), parts[1].strip()
+                if code and name:
+                    custom_languages[code] = name
+                else:
+                    log.warning(f"Malformed custom language entry: \'{item}\'. Skipping.")
+            else:
+                log.warning(f"Malformed custom language entry: \'{item}\'. Skipping.")
+    return custom_languages
+
+
+def _merge_custom_languages():
+    custom_languages = _load_custom_language_codes()
+    if not custom_languages:
+        return
+
+    for code, name in custom_languages.items():
+        log.info(f"Adding custom language code mapping: '{code}' = '{name}'")
+
+    for locale_code in _LANGUAGE_NAMES.keys():
+        for code, name in custom_languages.items():
+            if code in _LANGUAGE_NAMES[locale_code]:
+                log.warning(f"Overwriting existing language code '{code}' for locale '{locale_code}'")
+            _LANGUAGE_NAMES[locale_code][code] = name
+
+
+# Call this function at the end of the module to apply custom languages
+_merge_custom_languages()

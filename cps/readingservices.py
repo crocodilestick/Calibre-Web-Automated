@@ -435,7 +435,8 @@ def process_annotation_for_sync(
                         note_text=note_text,
                         progress_percent=progress_percent,
                         progress_page=progress_page,
-                        highlighted_text=highlighted_text
+                        highlighted_text=highlighted_text,
+                        highlight_color=highlight_color
                     )
                 
                 if result:

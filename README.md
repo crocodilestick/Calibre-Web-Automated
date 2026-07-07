@@ -349,8 +349,8 @@ services:
       # Only change these if you know what you're doing
       - PUID=1000
       - PGID=1000
-      # Edit to match your current timezone https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-      - TZ=UTC
+      # Edit to match your current timezone e.g. Europe/London, America/New_York - https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+      - TZ=Europe/London
       # Hardcover API Key required for Hardcover as a Metadata Provider, get one here: https://docs.hardcover.app/api/getting-started/
       - HARDCOVER_TOKEN=your_hardcover_api_key_here
       # If your library is on a network share (e.g., NFS/SMB), disable WAL to reduce locking issues

@@ -40,25 +40,25 @@
         <input type="text" class="form-control" name="config_calibre_web_title" id="config_calibre_web_title" value="{% if conf.config_calibre_web_title != None %}{{ conf.config_calibre_web_title }}{% endif %}" autocomplete="off" required>
         <p class="settings-explanation">{{_('The title displayed in the browser tab and navbar.')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_books_per_page">{{_('Books per Page')}}</label>
         <input type="number" min="1" max="200" class="form-control" name="config_books_per_page" id="config_books_per_page" value="{% if conf.config_books_per_page != None %}{{ conf.config_books_per_page }}{% endif %}" autocomplete="off">
         <p class="settings-explanation">{{_('Number of books to display per page in list views (1-200).')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_random_books">{{_('No. of Random Books to Display')}}</label>
         <input type="number" min="1" max="30" class="form-control" name="config_random_books" id="config_random_books" value="{% if conf.config_random_books != None %}{{ conf.config_random_books }}{% endif %}" autocomplete="off">
         <p class="settings-explanation">{{_('Number of random books shown on the home page (1-30).')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_authors_max">{{_('No. of Authors to Display Before Hiding (0=Disable Hiding)')}}</label>
         <input type="number" min="0" max="999" class="form-control" name="config_authors_max" id="config_authors_max" value="{% if conf.config_authors_max != None %}{{ conf.config_authors_max }}{% endif %}" autocomplete="off">
         <p class="settings-explanation">{{_('Maximum number of authors to show in book details before truncating. Set to 0 to disable.')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_theme">{{_('Default Theme')}}</label>
         <select name="config_theme" id="config_theme" class="form-control">
@@ -66,13 +66,13 @@
         </select>
         <p class="settings-explanation">{{_('Default theme for new users and anonymous browsing. Users can select their own preferred theme in their profile.')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_columns_to_ignore">{{_('Regular Expression for Ignoring Columns')}}</label>
         <input type="text" class="form-control" name="config_columns_to_ignore" id="config_columns_to_ignore" value="{% if conf.config_columns_to_ignore != None %}{{ conf.config_columns_to_ignore }}{% endif %}" autocomplete="off">
         <p class="settings-explanation">{{_('Regex pattern to hide custom columns from being displayed in the UI.')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_read_column">{{_('Link Read/Unread Status to Calibre Column')}}</label>
         <select name="config_read_column" id="config_read_column" class="form-control">
@@ -101,12 +101,41 @@
         <p class="settings-explanation">{{_('Regex to strip prefixes from titles for proper sorting (e.g., "The", "A", "An").')}}</p>
       </div>
     </div>
-    
+
+    <!-- Custom Column Display Order Card -->
+    {% if allColumns|length > 0 %}
+    <div class="settings-container">
+      <h4 class="settings-section-header">{{_('Custom Column Display Order')}}</h4>
+      <p class="settings-explanation">{{_('Drag to set the display order of custom columns in book details.')}}</p>
+      <input type="hidden" name="config_cc_display_order" id="config_cc_display_order" value="">
+      {% set link_col_ids = (conf.config_cc_link_columns or '').split(',') %}
+      {% set hide_col_ids = (conf.config_cc_hidden_columns or '').split(',') %}
+      <div id="cc-order-list-outer">
+        <div id="cc-order-list">
+          {% for col in allColumns %}
+          <div class="cc-order-item" data-id="{{ col.id }}">
+            <span class="cc-drag-handle">⋮⋮</span>
+            <span class="cc-col-name">{{ col.name }}</span>
+            <label class="cc-link-label">
+              <input type="checkbox" name="cc_hide_{{ col.id }}" {% if col.id|string in hide_col_ids %}checked{% endif %}>
+              {{_('Hide')}}
+            </label>
+            <label class="cc-link-label">
+              <input type="checkbox" name="cc_link_{{ col.id }}" {% if col.id|string in link_col_ids %}checked{% endif %}>
+              {{_('Link')}}
+            </label>
+          </div>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
     <!-- Default Settings for New Users Card -->
     <div class="settings-container">
       <h4 class="settings-section-header">{{_('Default Settings for New Users')}}</h4>
       <p class="settings-explanation">{{_('These settings will be applied to all newly created user accounts.')}}</p>
-      
+
       <h5 style="color: #ffc200; margin-top: 25px; margin-bottom: 15px;">{{_('Permissions')}}</h5>
       <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 12px; background: #202c34a3; padding: 2rem; border-radius: 4px;">
         <div>
@@ -221,6 +250,67 @@
 {{ restrict_modal() }}
 {% endblock %}
 {% block js %}
+<script>
+(function() {
+  var list = document.getElementById('cc-order-list');
+  var orderInput = document.getElementById('config_cc_display_order');
+  if (!list || !orderInput) return;
+
+  function updateOrder() {
+    var items = list.querySelectorAll('.cc-order-item');
+    var ids = Array.prototype.map.call(items, function(el) { return el.getAttribute('data-id'); });
+    orderInput.value = ids.join(',');
+  }
+  updateOrder();
+
+  var draggedElement = null;
+  var isDragging = false;
+
+  list.addEventListener('mousedown', function(e) {
+    if (e.target.tagName === 'INPUT' || e.target.tagName === 'LABEL') return;
+    var item = e.target.closest('.cc-order-item');
+    if (!item) return;
+    draggedElement = item;
+    isDragging = true;
+    item.classList.add('dragging');
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+  });
+
+  document.addEventListener('mousemove', function(e) {
+    if (!isDragging || !draggedElement) return;
+    var afterElement = getAfterElement(list, e.clientY);
+    if (afterElement == null) {
+      list.appendChild(draggedElement);
+    } else {
+      list.insertBefore(draggedElement, afterElement);
+    }
+  });
+
+  document.addEventListener('mouseup', function() {
+    if (!isDragging) return;
+    isDragging = false;
+    if (draggedElement) {
+      draggedElement.classList.remove('dragging');
+      draggedElement = null;
+    }
+    document.body.style.userSelect = '';
+    updateOrder();
+  });
+
+  function getAfterElement(container, y) {
+    var elements = Array.from(container.querySelectorAll('.cc-order-item:not(.dragging)'));
+    return elements.reduce(function(closest, child) {
+      var box = child.getBoundingClientRect();
+      var offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      }
+      return closest;
+    }, { offset: Number.NEGATIVE_INFINITY }).element;
+  }
+})();
+</script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table-editable.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-editable.min.js') }}"></script>

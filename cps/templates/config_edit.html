@@ -536,11 +536,11 @@
             </span>
           </div>
         {% if feature_support['rar'] %}
-            <label for="config_rarfile_location">{{_('Location of Unrar binary')}}</label>
+            <label for="config_rarfile_location">{{_('Location of Unar binary')}}</label>
            <div class="form-group input-group">
             <input type="text" class="form-control" id="config_rarfile_location" name="config_rarfile_location" value="{% if config.config_rarfile_location != None %}{{ config.config_rarfile_location }}{% endif %}" autocomplete="off">
             <span class="input-group-btn">
-              <button type="button" id="unrar_path" data-toggle="modal" data-link="config_rarfile_location" data-target="#fileModal" class="btn btn-default"><span class="glyphicon glyphicon-folder-open"></span></button>
+              <button type="button" id="unar_path" data-toggle="modal" data-link="config_rarfile_location" data-target="#fileModal" class="btn btn-default"><span class="glyphicon glyphicon-folder-open"></span></button>
             </span>
           </div>
         {% endif %}

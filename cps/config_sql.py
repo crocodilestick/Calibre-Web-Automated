@@ -223,11 +223,11 @@ class ConfigSQL(object):
             change = True
             self.config_kepubifypath = autodetect_kepubify_binary()
 
-        # Autodetect UnRar if not configured or empty string
+        # Autodetect Unar if not configured or empty string
         # (empty string can occur from failed previous autodetection or manual clearing)
         if not self.config_rarfile_location:
             change = True
-            self.config_rarfile_location = autodetect_unrar_binary()
+            self.config_rarfile_location = autodetect_unar_binary()
         if change:
             self.save()
 
@@ -551,14 +551,14 @@ def autodetect_converter_binary(calibre_path):
     return ""
 
 
-def autodetect_unrar_binary():
+def autodetect_unar_binary():
     if sys.platform == "win32":
-        calibre_path = ["C:\\program files\\WinRar\\unRAR.exe",
-                        "C:\\program files(x86)\\WinRar\\unRAR.exe"]
+        calibre_path = ["C:\\program files\\unar\\unar.exe",
+                        "C:\\program files(x86)\\unar\\unar.exe"]
     elif sys.platform.startswith("freebsd"):
-        calibre_path = ["/usr/local/bin/unrar"]
+        calibre_path = ["/usr/local/bin/unar"]
     else:
-        calibre_path = ["/usr/bin/unrar"]
+        calibre_path = ["/usr/bin/unar"]
     for element in calibre_path:
         if os.path.isfile(element) and os.access(element, os.X_OK):
             return element

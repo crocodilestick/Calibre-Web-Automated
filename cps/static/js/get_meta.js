@@ -106,10 +106,12 @@ $(function () {
       )
     );
     if (updateItems.description) {
+      var description = book.description || "";
       if (typeof tinymce !== "undefined" && tinymce.get("comments")) {
-        tinymce.get("comments").setContent(book.description);
+        tinymce.get("comments").setContent(description);
+        tinymce.get("comments").save();
       } else {
-        $("#comments").val(book.description);
+        $("#comments").val(description);
       }
     }
     if (updateItems.tags) {

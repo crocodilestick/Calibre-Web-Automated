@@ -33,6 +33,7 @@ from werkzeug.datastructures import Headers
 from sqlalchemy import func
 from sqlalchemy.sql.expression import and_, or_
 from sqlalchemy.exc import StatementError
+from sqlalchemy.orm import joinedload
 from sqlalchemy.sql import select
 import requests
 
@@ -232,14 +233,20 @@ def HandleSyncRequest():
 
     log.debug("Kobo Sync: books last modified: {}".format(sync_token.books_last_modified))
 
+    rstate_join = and_(
+        db.Books.id == ub.KoboReadingState.book_id,
+        ub.KoboReadingState.user_id == current_user.id,
+    )
     if only_kobo_shelves:
         changed_entries = calibre_db.session.query(db.Books,
                                                    ub.ArchivedBook.last_modified,
                                                    ub.BookShelf.date_added,
-                                                   ub.ArchivedBook.is_archived)
+                                                   ub.ArchivedBook.is_archived,
+                                                   ub.KoboReadingState)
         changed_entries = (changed_entries
                            .join(db.Data).outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
                                                                           ub.ArchivedBook.user_id == current_user.id))
+                           .outerjoin(ub.KoboReadingState, rstate_join)
                            .filter(db.Books.id.notin_(calibre_db.session.query(ub.KoboSyncedBooks.book_id)
                                                       .filter(ub.KoboSyncedBooks.user_id == current_user.id)))
                           .filter(or_(
@@ -257,20 +264,34 @@ def HandleSyncRequest():
                                and_(ub.Shelf.user_id == current_user.id, ub.Shelf.kobo_sync == True),
                                db.Books.id.in_(magic_shelf_book_ids) if magic_shelf_book_ids else False
                            ))
+                           .options(joinedload(db.Books.authors),
+                                    joinedload(db.Books.publishers),
+                                    joinedload(db.Books.series),
+                                    joinedload(db.Books.languages),
+                                    joinedload(db.Books.comments),
+                                    joinedload(db.Books.data))
                            .distinct())
     else:
         changed_entries = calibre_db.session.query(db.Books,
                                                    ub.ArchivedBook.last_modified,
-                                                   ub.ArchivedBook.is_archived)
+                                                   ub.ArchivedBook.is_archived,
+                                                   ub.KoboReadingState)
         changed_entries = (changed_entries
                            .join(db.Data).outerjoin(ub.ArchivedBook, and_(db.Books.id == ub.ArchivedBook.book_id,
                                                                           ub.ArchivedBook.user_id == current_user.id))
+                           .outerjoin(ub.KoboReadingState, rstate_join)
                            .filter(db.Books.id.notin_(calibre_db.session.query(ub.KoboSyncedBooks.book_id)
                                                       .filter(ub.KoboSyncedBooks.user_id == current_user.id)))
                            .filter(calibre_db.common_filters(allow_show_archived=True))
                            .filter(db.Data.format.in_(KOBO_FORMATS))
                            .order_by(db.Books.last_modified)
-                           .order_by(db.Books.id))
+                           .order_by(db.Books.id)
+                           .options(joinedload(db.Books.authors),
+                                    joinedload(db.Books.publishers),
+                                    joinedload(db.Books.series),
+                                    joinedload(db.Books.languages),
+                                    joinedload(db.Books.comments),
+                                    joinedload(db.Books.data)))
     log.debug("Kobo Sync: changed entries: {}".format(changed_entries.count()))
 
     reading_states_in_new_entitlements = []
@@ -278,16 +299,15 @@ def HandleSyncRequest():
     log.debug("Kobo Sync: selected to sync: {}".format(len(books.all())))
     for book in books:
         formats = [data.format for data in book.Books.data]
-        if 'KEPUB' not in formats and config.config_kepubifypath and 'EPUB' in formats:
-            helper.convert_book_format(book.Books.id, config.get_book_path(), 'EPUB', 'KEPUB', current_user.name)
 
-        kobo_reading_state = get_or_create_reading_state(book.Books.id)
+        kobo_reading_state = book.KoboReadingState  # None when no record exists yet
         entitlement = {
             "BookEntitlement": create_book_entitlement(book.Books, archived=(book.is_archived==True)),
             "BookMetadata": get_metadata(book.Books),
         }
 
-        if kobo_reading_state.last_modified > sync_token.reading_state_last_modified:
+        if (kobo_reading_state is not None
+                and kobo_reading_state.last_modified > sync_token.reading_state_last_modified):
             entitlement["ReadingState"] = get_kobo_reading_state_response(book.Books, kobo_reading_state)
             new_reading_state_last_modified = max(new_reading_state_last_modified, kobo_reading_state.last_modified)
             reading_states_in_new_entitlements.append(book.Books.id)
@@ -581,28 +601,32 @@ def _get_cover_image_id(book):
 
 def get_metadata(book):
     download_urls = []
-    kepub = [data for data in book.data if data.format == 'KEPUB']
 
-    for book_data in kepub if len(kepub) > 0 else book.data:
-        if book_data.format not in KOBO_FORMATS:
-            continue
-        for kobo_format in KOBO_FORMATS[book_data.format]:
-            # log.debug('Id: %s, Format: %s' % (book.id, kobo_format))
-            try:
-                if get_epub_layout(book, book_data) == 'pre-paginated':
-                    kobo_format = 'EPUB3FL'
-                download_urls.append(
-                    {
-                        "Format": kobo_format,
-                        "Size": book_data.uncompressed_size,
-                        "Url": get_download_url_for_book(book.id, book_data.format),
-                        # The Kobo forma accepts platforms: (Generic, Android)
-                        "Platform": "Generic",
-                        # "DrmType": "None", # Not required
-                    }
-                )
-            except (zipfile.BadZipfile, FileNotFoundError) as e:
-                log.error(e)
+    kepub_data = next((d for d in book.data if d.format == 'KEPUB'), None)
+    epub_data  = next((d for d in book.data if d.format == 'EPUB'),  None)
+
+    if kepub_data:
+        book_data, dl_format, published_format = kepub_data, 'kepub', 'KEPUB'
+    elif epub_data and config.config_kepubifypath:
+        book_data, dl_format, published_format = epub_data, 'kepub', 'KEPUB'
+    elif epub_data:
+        book_data, dl_format, published_format = epub_data, 'epub', 'EPUB3'
+    else:
+        book_data = None
+
+    if book_data:
+        try:
+            if get_epub_layout(book, book_data) == 'pre-paginated':
+                published_format = 'EPUB3FL'
+        except (zipfile.BadZipfile, FileNotFoundError) as e:
+            log.error(e)
+        download_urls.append({
+            "Format": published_format,
+            "Size": book_data.uncompressed_size,
+            "Url": get_download_url_for_book(book.id, dl_format),
+            "Platform": "Generic",
+            "DrmType": "None",
+        })
 
     book_uuid = book.uuid
     cover_image_id = _get_cover_image_id(book)
@@ -634,11 +658,12 @@ def get_metadata(book):
     }
     metadata.update(get_author(book))
 
-    if get_series(book):
-        name = get_series(book)
+    series_name = get_series(book)
+    if series_name:
+        name = series_name
         try:
             metadata["Series"] = {
-                "Name": get_series(book),
+                "Name": series_name,
                 "Number": get_seriesindex(book),        # ToDo Check int() ?
                 "NumberFloat": float(get_seriesindex(book)),
                 # Get a deterministic id based on the series name.
@@ -1043,8 +1068,10 @@ def get_ub_read_status(kobo_read_status):
 
 
 def get_or_create_reading_state(book_id):
-    book_read = ub.session.query(ub.ReadBook).filter(ub.ReadBook.book_id == book_id,
-                                                     ub.ReadBook.user_id == int(current_user.id)).one_or_none()
+    book_read = ub.session.query(ub.ReadBook).filter(
+        ub.ReadBook.book_id == book_id,
+        ub.ReadBook.user_id == int(current_user.id),
+    ).one_or_none()
     if not book_read:
         book_read = ub.ReadBook(user_id=current_user.id, book_id=book_id)
     if not book_read.kobo_reading_state:
@@ -1122,7 +1149,7 @@ def HandleCoverImageRequest(book_uuid, width, height, Quality, isGreyscale):
         else:
             resolution = COVER_THUMBNAIL_SMALL
     except ValueError:
-        log.error("Requested height %s of book %s is invalid" % (book_uuid, height))
+        log.error("Requested height %s of book %s is invalid" % (height, book_uuid))
         resolution = COVER_THUMBNAIL_SMALL
     book_cover = helper.get_book_cover_with_uuid(book_uuid, resolution=resolution)
     if book_cover:

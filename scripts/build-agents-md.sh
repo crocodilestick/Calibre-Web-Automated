@@ -30,14 +30,21 @@ if [ ! -f "$SRC" ]; then
   exit 1
 fi
 
-TMP="$(mktemp)"
-trap 'rm -f "$TMP"' EXIT
-
 # Bestimme, ob wir im Kit-Modus sind
 HAS_LOCAL_RULES=0
 if [ -d "$ROOT/rules" ]; then
   HAS_LOCAL_RULES=1
 fi
+
+# Skill-/MCP-Übersicht (rules/99-...) aktualisieren — nur im Kit-Kontext
+INDEX_GEN="$(dirname "${BASH_SOURCE[0]}")/build-index.sh"
+if [ -f "$INDEX_GEN" ] && [ -d "$ROOT/skills-src" ]; then
+  bash "$INDEX_GEN" "$ROOT" >/dev/null 2>&1 || \
+    echo "Hinweis: Übersicht (build-index) übersprungen." >&2
+fi
+
+TMP="$(mktemp)"
+trap 'rm -f "$TMP"' EXIT
 
 {
   echo "<!-- AUTOMATISCH GENERIERT aus CLAUDE.md durch scripts/build-agents-md.sh."
@@ -102,8 +109,12 @@ while IFS= read -r line || [ -n "$line" ]; do
     echo >> "$TMP"
   fi
 
-  if [[ "$line" =~ ^@(.+\.md)[[:space:]]*$ ]]; then
-    importpath="${BASH_REMATCH[1]}"
+  if [[ "$line" =~ ^@ ]]; then
+    if [ "$HAS_LOCAL_RULES" -eq 0 ]; then
+      echo "Fehler: @-Imports sind in schlanken Projekten nicht erlaubt: $line" >&2
+      exit 1
+    fi
+    importpath="${line#@}"
     target="$ROOT/$importpath"
     if [ -f "$target" ]; then
       cat "$target" >> "$TMP"
@@ -133,3 +144,13 @@ mkdir -p "$AGENTS_DIR"
 cp "$OUT" "$AGENTS_DIR/AGENTS.md"
 chmod 644 "$AGENTS_DIR/AGENTS.md"
 echo "Außerdem geschrieben: $AGENTS_DIR/AGENTS.md (für Gemini/Antigravity)"
+
+# Größen-Wächter am Ende
+MAX_BYTES="${AGENTS_MAX_BYTES:-28672}"   # 28 KiB Vorwarnung vor dem 32-KiB-Limit
+BYTES="$(wc -c < "$OUT" | tr -d ' ')"
+echo "Größe: ${BYTES} Bytes (Warnschwelle ${MAX_BYTES})."
+if [ "$BYTES" -gt "$MAX_BYTES" ]; then
+  echo "Warnung: AGENTS.md nähert sich dem Tool-Limit für Projekt-Doku" >&2
+  echo "         (z. B. Codex project_doc_max_bytes ~32 KiB). Regeln kürzen oder" >&2
+  echo "         komplexe Abläufe in Skills/separate Docs auslagern." >&2
+fi

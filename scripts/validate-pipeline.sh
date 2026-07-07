@@ -161,6 +161,20 @@ if [ -f "$AGENTS_FILE" ]; then
       status_err "Regel-Begriff FEHLT in $AGENTS_FILE: $desc!"
     fi
   done
+
+  # In schlanken Projekten dürfen keine ungelösten @rules/ Imports übrig bleiben
+  if [ "$IS_KIT" -eq 0 ] && [ ! -d "$ROOT/rules" ]; then
+    if [ -f "$ROOT/CLAUDE.md" ] && grep -q "^@rules/" "$ROOT/CLAUDE.md"; then
+      status_err "CLAUDE.md enthält ungelöste @rules/-Imports!"
+    else
+      status_ok "CLAUDE.md ist frei von ungelösten @rules/-Imports."
+    fi
+    if grep -q "^@rules/" "$AGENTS_FILE"; then
+      status_err "AGENTS.md enthält ungelöste @rules/-Imports!"
+    else
+      status_ok "AGENTS.md ist frei von ungelösten @rules/-Imports."
+    fi
+  fi
 else
   status_err "Kompilierte AGENTS.md ($AGENTS_FILE) existiert nicht, Inhalt kann nicht validiert werden."
 fi

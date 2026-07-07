@@ -286,11 +286,13 @@ $(function() {
     $.ajaxPrefilter(preFilters.fire);
 
     // equip all post requests with csrf_token
-    var csrftoken = $("input[name='csrf_token']").val();
     $.ajaxSetup({
         beforeSend: function(xhr, settings) {
             if (!/^(GET|HEAD|OPTIONS|TRACE)$/i.test(settings.type) && !this.crossDomain) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken)
+                var csrftoken = $("input[name='csrf_token']").first().val();
+                if (csrftoken) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
             }
         }
     });

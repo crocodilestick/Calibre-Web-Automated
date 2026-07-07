@@ -314,6 +314,14 @@
         {{_('When enabled, fetched metadata will only replace existing data if it appears to be better quality (e.g., longer descriptions, higher resolution covers). When disabled, fetched metadata will replace existing data as-is from the preferred provider.')}}
       </p>
 
+      <div class="form-group" style="margin-top: 20px;">
+        <label for="auto_metadata_ignore_sentinel" style="font-weight: 600;">{{_('Auto-Metadata Ignore Sentinel')}}</label>
+        <input type="text" class="form-control" id="auto_metadata_ignore_sentinel" name="auto_metadata_ignore_sentinel" value="{{ cwa_settings.get('auto_metadata_ignore_sentinel', '') }}" placeholder="{{_('e.g. [no-metadata-fetch]')}}" style="max-width: 400px; margin-top: 6px;">
+        <p class="cwa-settings-tooltip">
+          {{_('If a book\'s description contains this string, automatic metadata fetching will be skipped for that book. Useful for preserving hand-curated metadata on specific items (e.g. web articles converted to EPUB). Leave empty to disable.')}}
+        </p>
+      </div>
+
       <!-- Metadata Field Selection -->
       <div id="metadata-field-selection" style="margin-top: 20px; padding: 2rem; border: 1px solid transparent; border-radius: 6px; background-color: #1d28328a;">
         <h5 style="margin-bottom: 15px; color: var(--color-text);">📝 {{_('Metadata Fields to Update')}}</h5>

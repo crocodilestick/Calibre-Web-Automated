@@ -85,7 +85,7 @@ except ImportError:
         @staticmethod
         def register_user_with_oauth(*args, **kwargs):
             return None
-        @staticmethod  
+        @staticmethod
         def logout_oauth_user(*args, **kwargs):
             return None
         @staticmethod
@@ -890,29 +890,29 @@ def render_magic_shelf(shelf_id, sort_param, page):
     if not shelf:
         log.warning(f"Magic shelf {shelf_id} not found")
         abort(404)
-    
+
     # Check access - users can view their own shelves OR public shelves
     if shelf.user_id != current_user.id and shelf.is_public != 1:
         log.warning(f"User {current_user.id} attempted to access private magic shelf {shelf_id} owned by {shelf.user_id}")
         abort(403)
-    
+
     # Get sort order using the same function as other book lists
     order = get_sort_function(sort_param, "magicshelf")
-    
+
     # Get pagination settings\
     per_page = config.config_books_per_page or 20
-    
+
     # Build sort order - order[0] is a list, we need to unpack it
     sort_order = order[0] if order and len(order) > 0 else []
-    
+
     # Check for cache bypass
     bypass_cache = request.args.get('refresh') == '1'
 
     # Get books with pagination
     try:
         books, total_count = magic_shelf.get_books_for_magic_shelf(
-            shelf_id, 
-            page=page, 
+            shelf_id,
+            page=page,
             page_size=per_page,
             sort_order=sort_order,
             sort_param=sort_param,
@@ -939,18 +939,18 @@ def render_magic_shelf(shelf_id, sort_param, page):
         log.error(f"Error retrieving books for magic shelf {shelf_id}: {e}")
         flash(_("Error loading magic shelf"), category="error")
         return redirect(url_for('web.index'))
-    
+
     # Create proper pagination object
     from .pagination import Pagination
     pagination = Pagination(page, per_page, total_count)
-    
+
     # Wrap books in entry objects with .Books attribute for template compatibility
     class Entry:
         def __init__(self, book):
             self.Books = book
-    
+
     entries = [Entry(book) for book in books]
-    
+
     # Check if this shelf is hidden by current user (for public shelves)
     is_hidden = False
     if shelf.user_id != current_user.id:
@@ -958,15 +958,15 @@ def render_magic_shelf(shelf_id, sort_param, page):
             ub.HiddenMagicShelfTemplate.user_id == current_user.id,
             ub.HiddenMagicShelfTemplate.shelf_id == shelf_id
         ).first() is not None
-    
-    return render_title_template('index.html', 
-                                 entries=entries, 
+
+    return render_title_template('index.html',
+                                 entries=entries,
                                  pagination=pagination,
-                                 title=_("Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s", icon=shelf.icon, name=shelf.name), 
+                                 title=_("Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s", icon=shelf.icon, name=shelf.name),
                                  page="magicshelf",
                                  shelf=shelf,
                                  is_hidden_shelf=is_hidden,
-                                 id=shelf_id, 
+                                 id=shelf_id,
                                  order=order[1])
 
 
@@ -1033,38 +1033,38 @@ def preview_magic_shelf():
     try:
         data = request.get_json()
         rules = data.get('rules')
-        
+
         if not rules or not rules.get('rules'):
             return jsonify({"success": False, "message": _("No rules provided")}), 400
-        
+
         # Temporarily create a query to count matching books
         try:
             query_filter = magic_shelf.build_query_from_rules(rules, user_id=current_user.id)
             if query_filter is None:
                 return jsonify({"success": False, "message": _("Invalid rules format")}), 400
-            
+
             cdb = db.CalibreDB(init=True)
             query = cdb.session.query(db.Books)
             query = query.filter(query_filter)
             query = query.filter(cdb.common_filters())
-            
+
             # Get total count
             total_count = query.count()
-            
+
             # Get sample books (first 5)
             sample_books = query.limit(5).all()
             sample_titles = [book.title for book in sample_books]
-            
+
             return jsonify({
                 "success": True,
                 "count": total_count,
                 "sample_books": sample_titles
             })
-            
+
         except Exception as e:
             log.error(f"Error previewing magic shelf rules: {str(e)}", exc_info=True)
             return jsonify({"success": False, "message": _("Error processing rules")}), 500
-            
+
     except Exception as e:
         log.error(f"Error in preview_magic_shelf: {e}")
         return jsonify({"success": False, "message": _("Invalid request")}), 400
@@ -1096,7 +1096,7 @@ def create_magic_shelf():
         # Nature & Weather
         '🌈', '☀️', '🌙', '🌸', '🌺', '🌻', '🌹', '🌷', '🍀', '🌱'
     ]
-    
+
     if request.method == "POST":
         data = request.get_json()
         name = strip_whitespaces(data.get('name', ''))
@@ -1104,22 +1104,22 @@ def create_magic_shelf():
         icon = data.get('icon', '🪄')
         kobo_sync = data.get('kobo_sync', False)
         is_public = data.get('is_public', False)
-        
+
         # Only allow public if user has permission
         if is_public and not current_user.role_edit_shelfs():
             is_public = False
-        
+
         # Validate inputs
         if not name or not rules:
             return jsonify({"success": False, "message": _("Name and rules are required")}), 400
-        
+
         if len(name) > 100:
             return jsonify({"success": False, "message": _("Shelf name too long (max 100 characters)")}), 400
-        
+
         # Use default icon if none provided, otherwise accept any emoji/symbol
         if not icon:
             icon = '🪄'
-        
+
         try:
             new_shelf = ub.MagicShelf(
                 name=name,
@@ -1137,7 +1137,7 @@ def create_magic_shelf():
             log.error(f"Error creating magic shelf: {e}")
             ub.session.rollback()
             return jsonify({"success": False, "message": _("Error creating shelf")}), 500
-    
+
     # For GET request, render the creation form
     # Fetch available languages for the dropdown
     languages = calibre_db.session.query(db.Languages).all()
@@ -1149,8 +1149,8 @@ def create_magic_shelf():
         except:
             language_map[lang.lang_code] = lang.lang_code
 
-    return render_title_template('magic_shelf_edit.html', 
-                                 title=_("Create Magic Shelf"), 
+    return render_title_template('magic_shelf_edit.html',
+                                 title=_("Create Magic Shelf"),
                                  page="magic_shelf_create",
                                  allowed_icons=ALLOWED_ICONS,
                                  languages=language_map)
@@ -1182,12 +1182,12 @@ def edit_magic_shelf(shelf_id):
         # Nature & Weather
         '🌈', '☀️', '🌙', '🌸', '🌺', '🌻', '🌹', '🌷', '🍀', '🌱'
     ]
-    
+
     shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
     if not shelf:
         log.warning(f"Magic shelf {shelf_id} not found")
         abort(404)
-    
+
     # Check if user can edit this shelf (owner or admin only)
     if shelf.user_id != current_user.id and not current_user.role_admin():
         log.warning(f"User {current_user.id} attempted to edit magic shelf {shelf_id} without permission")
@@ -1200,23 +1200,23 @@ def edit_magic_shelf(shelf_id):
         icon = data.get('icon', shelf.icon)
         kobo_sync = data.get('kobo_sync', shelf.kobo_sync)
         is_public = data.get('is_public', shelf.is_public == 1)
-        
+
         # Only allow changing public status if user has permission
         if is_public != (shelf.is_public == 1):
             if not current_user.role_edit_shelfs():
                 return jsonify({"success": False, "message": _("Permission denied to change public status")}), 403
-        
+
         # Validate inputs
         if not name:
             return jsonify({"success": False, "message": _("Shelf name is required")}), 400
-        
+
         if len(name) > 100:
             return jsonify({"success": False, "message": _("Shelf name too long (max 100 characters)")}), 400
-        
+
         # Use default icon if none provided, otherwise accept any emoji/symbol
         if not icon:
             icon = '🪄'
-        
+
         try:
             shelf.name = name
             shelf.rules = rules
@@ -1224,19 +1224,19 @@ def edit_magic_shelf(shelf_id):
             shelf.kobo_sync = kobo_sync
             shelf.is_public = 1 if is_public else 0
             flag_modified(shelf, "rules")
-            
+
             # Invalidate Complex Query Cache
             ub.session.query(ub.MagicShelfCache).filter_by(shelf_id=shelf.id).delete()
-            
+
             ub.session_commit()
-            
+
             # Invalidate cache
             if 'magic_shelf_counts' in flask_session:
                 counts = flask_session['magic_shelf_counts']
                 if str(shelf_id) in counts:
                     del counts[str(shelf_id)]
                     flask_session.modified = True
-            
+
             log.info(f"User {current_user.id} updated magic shelf {shelf_id} ('{name}') with icon '{icon}'")
             return jsonify({"success": True})
         except Exception as e:
@@ -1255,9 +1255,9 @@ def edit_magic_shelf(shelf_id):
         except:
             language_map[lang.lang_code] = lang.lang_code
 
-    return render_title_template('magic_shelf_edit.html', 
-                                 shelf=shelf, 
-                                 title=_("Edit Magic Shelf"), 
+    return render_title_template('magic_shelf_edit.html',
+                                 shelf=shelf,
+                                 title=_("Edit Magic Shelf"),
                                  page="magic_shelf_edit",
                                  allowed_icons=ALLOWED_ICONS,
                                  languages=language_map)
@@ -1271,16 +1271,16 @@ def duplicate_magic_shelf(shelf_id):
     if not shelf:
         log.warning(f"Magic shelf {shelf_id} not found for duplication")
         return jsonify({"success": False, "message": _("Shelf not found")}), 404
-    
+
     # Users can duplicate their own shelves or any public shelf
     if shelf.user_id != current_user.id and not shelf.is_public:
         log.warning(f"User {current_user.id} attempted to duplicate private shelf {shelf_id} owned by {shelf.user_id}")
         return jsonify({"success": False, "message": _("Permission denied")}), 403
-    
+
     try:
         # Create duplicate with " (Copy)" suffix
         new_name = f"{shelf.name} (Copy)"
-        
+
         # If name already exists, add number
         counter = 1
         while ub.session.query(ub.MagicShelf).filter(
@@ -1289,7 +1289,7 @@ def duplicate_magic_shelf(shelf_id):
         ).first():
             counter += 1
             new_name = f"{shelf.name} (Copy {counter})"
-        
+
         duplicate_shelf = ub.MagicShelf(
             user_id=current_user.id,
             name=new_name,
@@ -1298,17 +1298,17 @@ def duplicate_magic_shelf(shelf_id):
             is_system=False,  # Duplicates are never system shelves
             is_public=0  # Duplicates start as private
         )
-        
+
         ub.session.add(duplicate_shelf)
         ub.session_commit()
-        
+
         log.info(f"User {current_user.id} duplicated magic shelf {shelf_id} as '{new_name}' (ID: {duplicate_shelf.id})")
         return jsonify({
-            "success": True, 
+            "success": True,
             "shelf_id": duplicate_shelf.id,
             "message": _("Shelf duplicated successfully")
         })
-        
+
     except Exception as e:
         log.error(f"Error duplicating magic shelf {shelf_id}: {e}")
         ub.session.rollback()
@@ -1322,26 +1322,26 @@ def delete_magic_shelf(shelf_id):
     if not shelf:
         log.warning(f"Magic shelf {shelf_id} not found for deletion")
         abort(404)
-    
+
     # Check if user can delete this shelf
     can_delete = False
     if shelf.user_id == current_user.id:
         can_delete = True
     elif shelf.is_public == 1 and current_user.role_edit_shelfs():
         can_delete = True
-    
+
     if not can_delete:
         log.warning(f"User {current_user.id} attempted to delete magic shelf {shelf_id} without permission")
         abort(403)
-    
+
     # Prevent deletion of system shelves
     if shelf.is_system:
         log.warning(f"User {current_user.id} attempted to delete system shelf {shelf_id}")
         return jsonify({
-            "success": False, 
+            "success": False,
             "message": _("System shelves cannot be deleted. You can hide them in your user profile settings.")
         }), 400
-    
+
     try:
         shelf_name = shelf.name
         # Delete cache entries first
@@ -1367,23 +1367,23 @@ def hide_magic_shelf(shelf_id):
     if not shelf:
         log.warning(f"Magic shelf {shelf_id} not found")
         abort(404)
-    
+
     # Can only hide shelves you don't own (public or system)
     if shelf.user_id == current_user.id:
         return jsonify({
-            "success": False, 
+            "success": False,
             "message": _("You cannot hide your own shelves. Delete them instead if you don't want them.")
         }), 400
-    
+
     # Check if already hidden
     existing = ub.session.query(ub.HiddenMagicShelfTemplate).filter(
         ub.HiddenMagicShelfTemplate.user_id == current_user.id,
         ub.HiddenMagicShelfTemplate.shelf_id == shelf_id
     ).first()
-    
+
     if existing:
         return jsonify({"success": True, "message": _("Shelf already hidden")})
-    
+
     try:
         hidden = ub.HiddenMagicShelfTemplate(
             user_id=current_user.id,
@@ -1408,10 +1408,10 @@ def unhide_magic_shelf(shelf_id):
             ub.HiddenMagicShelfTemplate.user_id == current_user.id,
             ub.HiddenMagicShelfTemplate.shelf_id == shelf_id
         ).first()
-        
+
         if not hidden:
             return jsonify({"success": True, "message": _("Shelf was not hidden")})
-        
+
         ub.session.delete(hidden)
         ub.session_commit()
         log.info(f"User {current_user.id} unhid magic shelf {shelf_id}")
@@ -1949,8 +1949,7 @@ def serve_book(book_id, book_format, anyname):
 @login_required_if_no_ano
 @download_required
 def download_link(book_id, book_format, anyname):
-    client = "kobo" if "Kobo" in request.headers.get('User-Agent') else ""
-    return get_download_link(book_id, book_format, client)
+    return get_download_link(book_id, book_format)
 
 
 @web.route('/send/<int:book_id>/<book_format>/<int:convert>', methods=["POST"])
@@ -2132,7 +2131,7 @@ def register():
 
 def handle_login_user(user, remember, message, category):
     login_user(user, remember=remember)
-    
+
     # Track login activity
     try:
         from scripts.cwa_db import CWA_DB
@@ -2144,7 +2143,7 @@ def handle_login_user(user, remember, message, category):
         )
     except Exception as e:
         log.debug(f"Failed to log login activity: {e}")
-    
+
     flash(message, category=category)
     [limiter.limiter.storage.clear(k.key) for k in limiter.current_limits]
 
@@ -2308,7 +2307,7 @@ def login_post():
                 # Use request.remote_addr (already corrected by ProxyFix) instead of raw header
                 ip_address = request.remote_addr
                 log.warning('LDAP Login failed for user "%s" IP-address: %s', username, ip_address)
-                
+
                 # Track failed login attempt
                 try:
                     from scripts.cwa_db import CWA_DB
@@ -2324,7 +2323,7 @@ def login_post():
                     )
                 except Exception as e:
                     log.debug(f"Failed to log failed login attempt: {e}")
-                
+
                 flash(_(u"Wrong Username or Password"), category="error")
             flash(_(u"Wrong Username or Password"), category="error")
     else:
@@ -2352,7 +2351,7 @@ def login_post():
                                          "success")
             else:
                 log.warning('Login failed for user "{}" IP-address: {}'.format(username, ip_address))
-                
+
                 # Track failed login attempt
                 try:
                     from scripts.cwa_db import CWA_DB
@@ -2368,7 +2367,7 @@ def login_post():
                     )
                 except Exception as e:
                     log.debug(f"Failed to log failed login attempt: {e}")
-                
+
                 flash(_(u"Wrong Username or Password"), category="error")
     return render_login(username, form.get("password", ""))
 
@@ -2432,7 +2431,7 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
         current_user.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
         current_user.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
         current_user.allow_additional_ereader_emails = to_save.get("allow_additional_ereader_emails") == "on"
-        
+
         # Handle hidden magic shelf templates and custom shelves
         from . import magic_shelf
         if not current_user.is_anonymous:
@@ -2444,11 +2443,11 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
             ).all()
             current_hidden_template_keys = {h.template_key for h in current_hidden if h.template_key}
             current_hidden_shelf_ids = {h.shelf_id for h in current_hidden if h.shelf_id}
-            
+
             # Handle system templates
             visible_template_keys = {key for key in all_template_keys if to_save.get(f"show_magic_shelf_{key}") == "on"}
             should_be_hidden_templates = all_template_keys - visible_template_keys
-            
+
             # Add newly hidden templates
             for key in should_be_hidden_templates:
                 if key not in current_hidden_template_keys:
@@ -2458,23 +2457,23 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                     )
                     ub.session.add(new_hidden)
                     log.info(f"User {current_user.id} hid system shelf template '{key}'")
-            
+
             # Remove templates that should no longer be hidden
             for hidden in current_hidden:
                 if hidden.template_key and hidden.template_key in visible_template_keys:
                     ub.session.delete(hidden)
                     log.info(f"User {current_user.id} unhid system shelf template '{hidden.template_key}'")
-            
+
             # Handle custom public shelves - get all available ones
             all_public_shelves = ub.session.query(ub.MagicShelf).filter(
                 ub.MagicShelf.is_public == 1,
                 ub.MagicShelf.user_id != current_user.id,
                 ub.MagicShelf.is_system == False
             ).all()
-            
+
             # Check which ones should be visible (checked)
             visible_shelf_ids = {s.id for s in all_public_shelves if to_save.get(f"show_custom_shelf_{s.id}") == "on"}
-            
+
             # Hide shelves that are unchecked but not currently hidden
             for shelf in all_public_shelves:
                 if shelf.id not in visible_shelf_ids and shelf.id not in current_hidden_shelf_ids:
@@ -2484,13 +2483,13 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                     )
                     ub.session.add(new_hidden)
                     log.info(f"User {current_user.id} hid custom shelf {shelf.id}")
-            
+
             # Unhide shelves that are checked but currently hidden
             for hidden in current_hidden:
                 if hidden.shelf_id and hidden.shelf_id in visible_shelf_ids:
                     ub.session.delete(hidden)
                     log.info(f"User {current_user.id} unhid custom shelf {hidden.shelf_id}")
-        
+
         # Theme change (force dark)
         if 'theme' in to_save:
             try:
@@ -2691,10 +2690,10 @@ def profile():
     else:
         oauth_status = None
         local_oauth_check = {}
-    
+
     if request.method == "POST":
         return change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_status, translations, languages)
-    
+
     # Query magic shelf data after POST to get updated values
     from . import magic_shelf
     system_shelf_templates = magic_shelf.SYSTEM_SHELF_TEMPLATES
@@ -2706,14 +2705,14 @@ def profile():
     ).all()
     hidden_shelf_templates = {item.template_key for item in hidden_items if item.template_key}
     hidden_custom_shelf_ids = {item.shelf_id for item in hidden_items if item.shelf_id}
-    
+
     # Get ALL public custom shelves that user doesn't own (both hidden and visible)
     all_public_shelves = ub.session.query(ub.MagicShelf).filter(
         ub.MagicShelf.is_public == 1,
         ub.MagicShelf.user_id != current_user.id,
         ub.MagicShelf.is_system == False
     ).all()
-    
+
     # Separate into hidden and visible
     hidden_custom_shelves = [s for s in all_public_shelves if s.id in hidden_custom_shelf_ids]
     visible_public_shelves = [s for s in all_public_shelves if s.id not in hidden_custom_shelf_ids]
@@ -2817,7 +2816,7 @@ def read_book(book_id, book_format):
         try:
             from scripts.cwa_db import CWA_DB
             import json
-            
+
             # Detect source of book discovery
             source = request.args.get('from', 'direct')
             referer = request.headers.get('Referer', '')
@@ -2832,7 +2831,7 @@ def read_book(book_id, book_format):
                     source = 'category'
                 elif '/shelf' in referer:
                     source = 'shelf'
-            
+
             cwa_db = CWA_DB()
             cwa_db.log_activity(
                 user_id=int(current_user.id),
@@ -2844,7 +2843,7 @@ def read_book(book_id, book_format):
             )
         except Exception as e:
             log.debug(f"Failed to log read activity: {e}")
-    
+
     if book_format.lower() == "epub":
         log.debug("Start epub reader for %d", book_id)
         return render_title_template('read.html', bookid=book_id, title=book.title,
@@ -2910,16 +2909,16 @@ def show_book(book_id):
             book_in_shelves.append(sh.shelf)
 
         entry.tags = sort(entry.tags, key=lambda tag: tag.name)
-        
+
         # Filter tags based on user's allowed/denied tags (Issue #906)
         if current_user.is_authenticated:
             allowed_tags = current_user.list_allowed_tags()
             denied_tags = current_user.list_denied_tags()
-            
+
             # If allowed tags are configured (not empty), filter to only show allowed tags
             if allowed_tags and allowed_tags != ['']:
                 entry.tags = [tag for tag in entry.tags if tag.name in allowed_tags]
-            
+
             # Remove denied tags
             if denied_tags and denied_tags != ['']:
                 entry.tags = [tag for tag in entry.tags if tag.name not in denied_tags]

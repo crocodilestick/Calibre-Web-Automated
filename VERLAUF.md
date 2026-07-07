@@ -1,5 +1,30 @@
 # Verlauf
 
+## 2026-07-07 - Agenten-Pipeline Phase 0 (Fundament: GitHub als Rückgrat)
+
+# Übergabe-Stand — CWA Alexandria
+
+## Kontext & Letzter Stand
+*   **Aktuelle Aufgabe:** Agenten-Pipeline Phase 0 (Fundament: GitHub als Rückgrat) einrichten, korrigieren und validieren.
+*   **Zustand:** 
+    *   Die globalen Regeln im AI-Coding-Starter-Kit wurden aktualisiert und global ausgespielt.
+    *   `build-agents-md.sh` kompiliert nun deterministisch und bricht bei Importfehlern in Projekten ohne lokales `rules/` hart ab.
+    *   `validate-pipeline.sh` prüft in schlanken Projekten explizit auf ungelöste `@rules/`-Imports.
+    *   Der Smoke-Test für neue Projekte war vollständig sauber.
+    *   `fingerprint-app` wurde auf dem Branch `feature/agent-pipeline-rules` mit sauberem Scope neu aufgebaut und mit `--force-with-lease` gepusht.
+    *   `cwa-alexandria` wurde auf dem Branch `feature/agent-pipeline-setup` mit sauberem Scope (nur 9 Pipeline-Dateien) committet.
+    *   Die Branch-Protection auf `main` für `cwa-alexandria` ist aktiv.
+    *   Die Validierung läuft in allen drei Repositories erfolgreich durch (`VERDICT: PIPELINE OK`).
+*   **Branch:** `feature/agent-pipeline-setup` (Alexandria) / `feature/agent-pipeline-rules` (Fingerprint-App & Kit).
+
+## Nächste Schritte & Offene Entscheidungen
+1.  **Phase 0 Mergen:** Pull Requests für `cwa-alexandria` und `fingerprint-app` mergen.
+2.  **Phase 1 starten:** OpenCode Go einrichten und den Reviewer-Agenten konfigurieren.
+3.  **Secrets befüllen:** `.env`-Dateien befüllen.
+4.  **Canvas ACP Spike einplanen:** Vor Phase 4 muss ein Spike zur Verifizierung der ACP-Kette zwischen Agent Canvas, Gemini CLI und OpenCode stattfinden.
+
+---
+
 ## 2026-07-05 - Buch-Detail UX (Phase 4)
 
 # Übergabe-Stand — CWA Alexandria

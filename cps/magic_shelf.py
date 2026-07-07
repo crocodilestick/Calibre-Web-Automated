@@ -11,7 +11,6 @@ from sqlalchemy import and_, or_, not_
 from sqlalchemy.sql.expression import func
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime, timedelta, timezone
-
 log = logger.create()
 
 MAGIC_SHELF_ORDER_MODES = {
@@ -699,6 +698,31 @@ def get_book_count_for_magic_shelf(shelf_id):
     except Exception as e:
         log.error(f"Error counting books for magic shelf {shelf_id}: {e}")
         return 0
+
+def update_kobo_book_visibility_from_magic_shelves(user_id):
+    """Update KoboBookVisibility for all kobo_sync=True magic shelves of user_id.
+
+    Called once per sync round start so that books that entered or left a
+    magic shelf have their KoboBookVisibility rows updated.
+
+    Args:
+        user_id: ID of the user
+    """
+    magic_shelves = ub.session.query(ub.MagicShelf).filter_by(user_id=user_id, kobo_sync=True).all()
+    if not magic_shelves:
+        return set()
+
+    from .kobo_sync_status import recompute_kobo_visibility
+
+    book_ids = set()
+    for shelf in magic_shelves:
+        books, _ = get_books_for_magic_shelf(shelf.id, page=1, page_size=None)
+        for book in books:
+            book_ids.add(book.id)
+
+    from . import calibre_db
+    all_book_ids = [r for r, in calibre_db.session.query(db.Books.id).all()]
+    recompute_kobo_visibility(all_book_ids, user_id, force_visible=book_ids)
 
 
 def create_system_magic_shelves(user_id, template_keys=None):

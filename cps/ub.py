@@ -280,6 +280,9 @@ class User(UserBase, Base):
     remote_auth_token = relationship('RemoteAuthToken', backref='user', lazy='dynamic')
     view_settings = Column(JSON, default={})
     kobo_only_shelves_sync = Column(Integer, default=0)
+    # When True, the next Kobo sync request ignores the incoming SyncToken and
+    # performs a full library sync. The flag is cleared once that sync starts.
+    kobo_force_full_sync = Column(Boolean, default=False)
     hardcover_token = Column(String, unique=True, default=None)
     # New per-user theme (0=default/light, 1=caliBlur) replacing global-only behavior
     theme = Column(Integer, default=1)
@@ -569,11 +572,24 @@ class ArchivedBook(Base):
     last_modified = Column(DateTime, default=lambda: datetime.now(timezone.utc))
 
 
-class KoboSyncedBooks(Base):
-    __tablename__ = 'kobo_synced_books'
-    id = Column(Integer, primary_key=True, autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.id'))
-    book_id = Column(Integer)
+# Per-(user, book) Kobo visibility state.  is_visible tracks whether the book
+# is currently on at least one kobo-sync shelf (regular or magic) for this user.
+# last_modified is bumped whenever visibility changes, feeding the sync cursor so
+# shelf add/remove events surface on the device without a separate state table.
+# A missing row means the book has never been on any kobo shelf for this user;
+# the sync query treats that as is_visible=False via the OUTER JOIN NULL.
+class KoboBookVisibility(Base):
+    __tablename__ = 'kobo_book_visibility'
+
+    user_id = Column(Integer, ForeignKey('user.id'), primary_key=True, nullable=False)
+    book_id = Column(Integer, primary_key=True, nullable=False)
+    is_visible = Column(Boolean, nullable=False)
+    last_modified = Column(DateTime, nullable=False, default=lambda: datetime.now(timezone.utc))
+
+    __table_args__ = (
+        Index('idx_kobo_book_visibility_user_lm', 'user_id', 'last_modified', 'book_id'),
+    )
+
 
 # The Kobo ReadingState API keeps track of 4 timestamped entities:
 #   ReadingState, StatusInfo, Statistics, CurrentBookmark
@@ -796,6 +812,8 @@ def add_missing_tables(engine, _session):
         MagicShelfCache.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "hidden_magic_shelf_templates"):
         HiddenMagicShelfTemplate.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "kobo_book_visibility"):
+        KoboBookVisibility.__table__.create(bind=engine, checkfirst=True)
 
 
 # migrate all settings missing in registration table
@@ -893,6 +911,14 @@ def migrate_user_table(engine, _session):
     except exc.OperationalError:
         _safe_session_rollback(_session, "user.kindle_mail_subject")
         _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'kindle_mail_subject' String DEFAULT ''")
+
+    # Migration to add the Kobo force-full-sync flag (replaces kobo_synced_books-based reset)
+    try:
+        _session.query(exists().where(User.kobo_force_full_sync)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        _safe_session_rollback(_session, "user.kobo_force_full_sync")
+        _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'kobo_force_full_sync' Boolean DEFAULT 0")
 
     # Migration to enable duplicates sidebar for existing admin users (one-time)
     try:
@@ -1049,6 +1075,19 @@ def migrate_Database(_session):
     migrate_oauth_provider_table(engine, _session)
     migrate_config_table(engine, _session)
     migrate_magic_shelf_table(engine, _session)
+
+    # Drop legacy sync-state tables that have been superseded by KoboBookVisibility.
+    try:
+        with engine.begin() as conn:
+            for legacy_table in ("kobo_synced_books", "kobo_book_sync_state"):
+                exists = conn.execute(text(
+                    "SELECT 1 FROM sqlite_master WHERE type='table' AND name=:t"
+                ), {"t": legacy_table}).first() is not None
+                if exists:
+                    conn.execute(text(f"DROP TABLE {legacy_table}"))
+                    log.info("Dropped legacy Kobo table: %s", legacy_table)
+    except Exception as e:
+        log.warning("Could not drop legacy Kobo tables: %s", e)
 
     # Ensure progress syncing tables in app.db (user-related tables)
     from .progress_syncing.models import ensure_app_db_tables

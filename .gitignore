@@ -213,3 +213,6 @@ STAND.md
 /graphify-out/
 .cwa_migrations/
 gdrive.db
+.key
+.playwright-mcp/
+app.db

@@ -35,6 +35,7 @@ Co-Authored-By: AI Coding Assistant <noreply@github.com>
 - Tests ausfuehren: CWA nutzt `pytest`; bei Aenderungen zuerst gezielte Tests im betroffenen Bereich ausfuehren.
 - App starten: bevorzugt ueber die vorhandenen CWA-Docker-/Compose-Dateien pruefen, bevor lokale Sonderwege dokumentiert werden.
 - Lint/Format: upstream-nahe bleiben und keine neuen Formatter/Linter einfuehren, solange CWA dafuer kein klares Projektmuster hat.
+- Docker-Builds fuer das Ziel-Deployment auf dem x86-NAS immer mit: `docker buildx build --platform linux/amd64`
 
 ### Projektspezifische Pflicht-Updates nach jedem Feature-Schritt
 

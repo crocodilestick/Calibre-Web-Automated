@@ -3,6 +3,7 @@ local Device = require("device")
 local Dispatcher = require("dispatcher")
 local Event = require("ui/event")
 local InfoMessage = require("ui/widget/infomessage")
+local Json = require("json")
 local Math = require("optmath")
 local MultiInputDialog = require("ui/widget/multiinputdialog")
 local NetworkMgr = require("ui/network/manager")
@@ -749,6 +750,7 @@ function CWASync:getProgress(ensure_networking, interactive)
         function(ok, body)
             logger.dbg("CWASync: [Pull] progress for", self.view.document.file)
             logger.dbg("CWASync: ok:", ok, "body:", body)
+
             if not ok or not body then
                 if interactive then
                     showSyncError()
@@ -756,7 +758,22 @@ function CWASync:getProgress(ensure_networking, interactive)
                 return
             end
 
+            -- Some older KOReader Spore versions can return the raw JSON string
+            -- rather than a Lua table as the body.
+            if type(body) == "string" and body:find("^(%s*){") ~= nil then
+                logger.dbg("CWASync: attempting to decode body payload as json string")
+                local decoded_ok, decoded_body = pcall(function()
+                    return Json.decode(body)
+                end)
+                body = decoded_body
+                if interactive and not decoded_ok then
+                    showSyncError()
+                    return
+                end
+            end
+
             if type(body) ~= "table" then
+                logger.dbg("CWASync: body is " .. type(body) .. " not a table")
                 if interactive then
                     showSyncError()
                 end
@@ -764,6 +781,7 @@ function CWASync:getProgress(ensure_networking, interactive)
             end
 
             if not body.percentage then
+                logger.dbg("CWASync: body.percentage missing")
                 if interactive then
                     UIManager:show(InfoMessage:new{
                         text = _("No progress found for this document."),
@@ -774,6 +792,7 @@ function CWASync:getProgress(ensure_networking, interactive)
             end
 
             if body.progress == nil then
+                logger.dbg("CWASync: body.progress missing")
                 if interactive then
                     showSyncError()
                 end

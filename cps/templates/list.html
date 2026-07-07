@@ -40,7 +40,9 @@ See CONTRIBUTORS for full list of authors. -->
       {% endif %}
 
       {% if data == "series" %}
-      <button class="update-view btn btn-primary" data-target="series_view" id="grid-button" data-view="grid">{{_('Grid')}}</button>
+      <button class="update-view btn btn-primary" data-page="series" data-target="series_view" id="grid-button" data-view="grid">{{_('Grid')}}</button>
+      {% elif data == g.series2_key %}
+      <button class="update-view btn btn-primary" data-page="series2" data-target="series2_view" id="grid-button" data-view="grid">{{_('Grid')}}</button>
       {% endif %}
     </div>
   <div class="container" id="{{_(title)}}">

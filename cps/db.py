@@ -906,6 +906,10 @@ class CalibreDB:
         self.ensure_session()
         return self.session.query(Publishers).filter(Publishers.name == name).first()
 
+    def get_rating_by_value(self, value):
+        self.ensure_session()
+        return self.session.query(Ratings).filter(Ratings.rating == value).first()
+
     def set_metadata_dirty(self, book_id):
         self.ensure_session()
         if not self.session.query(Metadata_Dirtied).filter(Metadata_Dirtied.book == book_id).one_or_none():

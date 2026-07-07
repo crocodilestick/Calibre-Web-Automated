@@ -514,6 +514,8 @@ class AlchemyEncoder(json.JSONEncoder):
                 try:
                     if isinstance(data, str):
                         data = data.replace("'", "\'")
+                    elif isinstance(data, datetime):
+                        data = data.strftime('%Y-%m-%d')
                     elif isinstance(data, InstrumentedList):
                         el = list()
                         # ele = None

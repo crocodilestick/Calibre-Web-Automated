@@ -280,6 +280,7 @@ class User(UserBase, Base):
     remote_auth_token = relationship('RemoteAuthToken', backref='user', lazy='dynamic')
     view_settings = Column(JSON, default={})
     kobo_only_shelves_sync = Column(Integer, default=0)
+    kobo_sync_public_shelves = Column(Integer, default=0)
     hardcover_token = Column(String, unique=True, default=None)
     # New per-user theme (0=default/light, 1=caliBlur) replacing global-only behavior
     theme = Column(Integer, default=1)
@@ -322,6 +323,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
     def __init__(self):
         self.hardcover_token = None
         self.kobo_only_shelves_sync = None
+        self.kobo_sync_public_shelves = None
         self.view_settings = None
         self.allowed_column_value = None
         self.allowed_tags = None
@@ -354,6 +356,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.allowed_column_value = data.allowed_column_value
         self.view_settings = data.view_settings
         self.kobo_only_shelves_sync = data.kobo_only_shelves_sync
+        self.kobo_sync_public_shelves = data.kobo_sync_public_shelves
         self.hardcover_token = data.hardcover_token
         self.auto_send_enabled = data.auto_send_enabled
     def role_admin(self):
@@ -893,6 +896,14 @@ def migrate_user_table(engine, _session):
     except exc.OperationalError:
         _safe_session_rollback(_session, "user.kindle_mail_subject")
         _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'kindle_mail_subject' String DEFAULT ''")
+
+    # Migration for per-user public Kobo shelf sync setting
+    try:
+        _session.query(exists().where(User.kobo_sync_public_shelves)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        _safe_session_rollback(_session, "user.kobo_sync_public_shelves")
+        _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'kobo_sync_public_shelves' INTEGER DEFAULT 0")
 
     # Migration to enable duplicates sidebar for existing admin users (one-time)
     try:

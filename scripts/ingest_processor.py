@@ -1158,6 +1158,26 @@ class NewBookProcessor:
                 """)
                 auto_send_users = cur.fetchall()
 
+            # Subfolder routing: if the file was ingested from a subfolder,
+            # only send to the user whose name matches that subfolder.
+            target_username = None
+            try:
+                relative = os.path.relpath(self.filepath, self.ingest_folder)
+                parts = relative.split(os.sep)
+                if len(parts) > 1:
+                    target_username = parts[0]
+            except (ValueError, TypeError):
+                pass
+
+            if target_username:
+                auto_send_users = [
+                    u for u in auto_send_users
+                    if u[1].lower() == target_username.lower()
+                ]
+                if not auto_send_users:
+                    print(f"[ingest-processor] No CWA user matches subfolder '{target_username}', skipping auto-send", flush=True)
+                    return
+
             if not auto_send_users:
                 print(f"[ingest-processor] No users with auto-send enabled found", flush=True)
                 return

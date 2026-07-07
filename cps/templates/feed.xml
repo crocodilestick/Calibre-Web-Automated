@@ -63,6 +63,11 @@
               term="{{tag.name}}"
               label="{{tag.name}}"/>
     {% endfor %}
+    {% for cc in entry.Books.custom_extra_fill %}
+    <category scheme="custom_column:{{cc.name}}"
+              term="{{cc.name}}"
+              label="{{cc.value}}"/>
+    {% endfor %}
     {% if entry.Books.comments[0] %}<summary>{{entry.Books.comments[0].text|striptags}}</summary>{% endif %}
     {% if entry.Books.has_cover %}
     <link type="image/jpeg" href="{{url_for('opds.feed_get_cover', book_id=entry.Books.id)}}" rel="http://opds-spec.org/image"/>

@@ -43,7 +43,7 @@ msgstr "Statistiques"
 
 #: cps/admin.py:128
 msgid "Calibre database unavailable. Please reconfigure the library path."
-msgstr ""
+msgstr "Base de donnée calibre indisponible. Veuillez configurer le chamin de la librairie."
 
 #: cps/admin.py:180
 msgid "Server restarted, please reload page."
@@ -112,12 +112,12 @@ msgstr "Correspond à %(action)s"
 
 #: cps/admin.py:439
 msgid "No pending matches to reject"
-msgstr ""
+msgstr "Pas de correspondantes manquantes à rejeter"
 
 #: cps/admin.py:445
 #, python-format
 msgid "Rejected %(count)s match(es)"
-msgstr ""
+msgstr "%(count)s de correspondances rejetées"
 
 #: cps/admin.py:482
 #, python-brace-format

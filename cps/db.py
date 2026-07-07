@@ -1096,32 +1096,45 @@ class CalibreDB:
         self.ensure_session()
         for entry in entries:
             if combined:
-                sort_authors = entry.Books.author_sort.split('&')
-                ids = [a.id for a in entry.Books.authors]
-
+                book = entry.Books
             else:
-                sort_authors = entry.author_sort.split('&')
-                ids = [a.id for a in entry.authors]
-            authors_ordered = list()
-            # error = False
+                book = entry
+
+            sort_authors = (book.author_sort or '').split('&')
+            authors_list = [author for author in book.authors if author is not None]
+
+            authors_by_sort = {}
+            authors_by_id = {}
+            for author in authors_list:
+                if author.sort:
+                    authors_by_sort[author.sort] = author
+                if author.id is not None:
+                    authors_by_id[author.id] = author
+
+            authors_ordered = []
+            ids_remaining = set(authors_by_id.keys())
             for auth in sort_authors:
                 auth = strip_whitespaces(auth)
-                # Skip empty author strings to prevent spurious errors
                 if not auth:
                     continue
-                results = self.session.query(Authors).filter(Authors.sort == auth).all()
-                # ToDo: How to handle not found author name
-                if not len(results):
-                    log.error("Author '{}' not found to display name in right order".format(auth))
-                    # error = True
-                    break
-                for r in results:
-                    if r.id in ids:
-                        authors_ordered.append(r)
-                        ids.remove(r.id)
-            for author_id in ids:
-                result = self.session.query(Authors).filter(Authors.id == author_id).first()
-                authors_ordered.append(result)
+
+                author = authors_by_sort.get(auth)
+                if author is None:
+                    log.warning(
+                        "Author sort '%s' of book %s not found in linked authors, skipping in sort order",
+                        auth,
+                        getattr(book, 'id', 'unknown')
+                    )
+                    continue
+
+                authors_ordered.append(author)
+                ids_remaining.discard(author.id)
+
+            for author_id in ids_remaining:
+                authors_ordered.append(authors_by_id[author_id])
+
+            if not authors_ordered:
+                authors_ordered = authors_list
 
             if list_return:
                 if combined:

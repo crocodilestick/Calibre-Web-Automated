@@ -149,6 +149,9 @@
             {{ user_checkbox_row("role", "edit_role", _('Edit'), visiblility, all_roles)}}
             {{ user_checkbox_row("role", "delete_role", _('Delete'), visiblility, all_roles)}}
             {{ user_checkbox_row("role", "edit_shelf_role", _('Edit Public Shelves'), visiblility, all_roles)}}
+            {% if shelfmark_enabled %}
+            {{ user_checkbox_row("role", "shelfmark_role", _('Shelfmark'), visiblility, all_roles)}}
+            {% endif %}
             {%  if kobo_support %}
             {{ user_single_checkbox_row("kobo_only_shelves_sync", _('Sync selected Shelves with Kobo'))}}
             {%  endif %}

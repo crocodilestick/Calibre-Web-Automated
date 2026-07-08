@@ -105,6 +105,23 @@
       </div>
     </div>
     {% endfor %}
+    {% if g.shelfmark_enabled and current_user.is_authenticated and current_user.role_shelfmark() %}
+    <div class="col-sm-3 col-lg-2 col-xs-6 book session">
+      <div class="cover">
+        <a href="{{ g.shelfmark_url }}{% if adv_searchterm %}/?q={{ adv_searchterm | urlencode | replace('%20', '+') }}&content_type=ebook{% endif %}" target="_blank">
+          <span class="img" title="{{_('Shelfmark Search')}}">
+            <img src="{{ url_for('static', filename='img/shelfmark_cover.png') }}" alt="{{_('Shelfmark Search')}}" loading="lazy" />
+          </span>
+        </a>
+      </div>
+      <div class="meta">
+        <a href="{{ g.shelfmark_url }}{% if adv_searchterm %}/?q={{ adv_searchterm | urlencode | replace('%20', '+') }}&content_type=ebook{% endif %}" target="_blank">
+          <p class="title">{{_('Find On Shelfmark')}}</p>
+        </a>
+        <p class="author">{{_('Book Downloader')}}</p>
+      </div>
+    </div>
+    {% endif %}
   </div>
 </div>
 {% endblock %}

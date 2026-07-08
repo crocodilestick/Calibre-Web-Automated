@@ -244,6 +244,18 @@
       </div>
     </div>
     <div class="form-group">
+      <input type="checkbox" id="config_shelfmark_enabled" data-control="shelfmark_url_settings" name="config_shelfmark_enabled" {% if config.config_shelfmark_enabled %}checked{% endif %}>
+      <label for="config_shelfmark_enabled">{{_('Enable Shelfmark')}}</label>
+    </div>
+    <div data-related="shelfmark_url_settings">
+      <div class="form-group">
+        <label for="config_shelfmark_url">{{_('Shelfmark URL')}}</label>
+        <input type="text" class="form-control" id="config_shelfmark_url" name="config_shelfmark_url"
+                value="{{ config.config_shelfmark_url if config.config_shelfmark_url else shelfmark_env_url }}"
+                autocomplete="off" placeholder="https://shelfmark.example.com or /path/to/shelfmark">
+      </div>
+    </div>
+    <div class="form-group">
       <input type="checkbox" id="config_allow_reverse_proxy_header_login" name="config_allow_reverse_proxy_header_login" data-control="reverse-proxy-login-settings" {% if config.config_allow_reverse_proxy_header_login %}checked{% endif %}>
       <label for="config_allow_reverse_proxy_header_login">{{_('Allow Reverse Proxy Authentication')}}</label>
       <div class="help-block">{{_('Trusts the "Remote-User" header from a reverse proxy for authentication. This is an authentication method, distinct from the HTTPS security setting below.')}}</div>
@@ -614,6 +626,7 @@
               </div>
             </div>
     </div>
+
 
     <div style="max-width: 900px; justify-self: center; margin-bottom: 1rem; display: flex; flex-direction: row; flex-wrap: wrap; width: -webkit-fill-available; justify-content: space-between; margin-inline: 2rem;">
       <button type="button" name="submit" id="config_submit" class="btn btn-default">{{_('Save')}}</button>

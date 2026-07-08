@@ -26,6 +26,9 @@
               <th class="hidden-xs hidden-sm hidden-md">{{_('Edit')}}</th>
               <th class="hidden-xs hidden-sm hidden-md">{{_('Delete')}}</th>
               <th class="hidden-xs hidden-sm hidden-md">{{_('Public Shelf')}}</th>
+              {% if config.config_shelfmark_enabled %}
+              <th class="hidden-xs hidden-sm hidden-md">{{_('Shelfmark')}}</th>
+              {%  endif %}
           </tr>
           {% for user in allUser %}
             {% if not user.role_anonymous() or config.config_anonbrowse %}
@@ -45,6 +48,9 @@
               <td class="hidden-xs hidden-sm hidden-md">{{ display_bool_setting(user.role_edit()) }}</td>
               <td class="hidden-xs hidden-sm hidden-md">{{ display_bool_setting(user.role_delete_books()) }}</td>
               <td class="hidden-xs hidden-sm hidden-md">{{ display_bool_setting(user.role_edit_shelfs()) }}</td>
+              {% if config.config_shelfmark_enabled %}
+              <td class="hidden-xs hidden-sm hidden-md">{{ display_bool_setting(user.role_shelfmark()) }}</td>
+              {%  endif %}
             </tr>
             {% endif %}
           {% endfor %}

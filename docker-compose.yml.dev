@@ -22,6 +22,8 @@ services:
       # Skip the automatic library detection/mount at startup. When enabled, the auto-library service will not run.
       # Accepts: true/yes/1 to disable auto-mount (default: false)
       # - DISABLE_LIBRARY_AUTOMOUNT=false
+      # URL to your Shelfmark Instance. Example: https://shelfmark.domain.com, or if setup as a path of your CWA domain Example: https://cwa.domain.com/shelfmark, use /shelfmark
+      # - SHELFMARK_URL=https://shelfmark.domain.com #or /path 
     volumes:
       # CW users migrating should stop their existing CW instance, make a copy of the config folder, and bind that here to carry over all of their user settings ect.
       - /path/to/config/folder:/config 

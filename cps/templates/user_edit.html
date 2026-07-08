@@ -438,10 +438,17 @@
           <input type="checkbox" name="passwd_role" id="passwd_role" {% if content.role_passwd() %}checked{% endif %} style="accent-color: var(--color-secondary);">
           <label for="passwd_role">{{_('Allow Changing Password')}}</label>
         </div>
-        
+
         <div>
           <input type="checkbox" name="edit_shelf_role" id="edit_shelf_role" {% if content.role_edit_shelfs() %}checked{% endif %} style="accent-color: var(--color-secondary);">
           <label for="edit_shelf_role">{{_('Allow Editing Public Shelves')}}</label>
+        </div>
+        {% endif %}
+
+        {% if config.config_shelfmark_enabled %}
+        <div>
+          <input type="checkbox" name="shelfmark_role" id="shelfmark_role" {% if content.role_shelfmark() %}checked{% endif %} style="accent-color: var(--color-secondary);">
+          <label for="shelfmark_role">{{_('Allow Shelfmark')}}</label>
         </div>
         {% endif %}
       </div>

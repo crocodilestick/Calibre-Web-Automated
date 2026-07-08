@@ -105,6 +105,10 @@
         const modal = document.getElementById('duplicate-notification-modal');
         return modal && modal.classList.contains('active');
     }
+
+    function isDuplicatesPage() {
+        return window.location.pathname.replace(/\/+$/, '').endsWith('/duplicates');
+    }
     
     /**
      * Show the notification modal
@@ -158,7 +162,6 @@
                 // Mark as shown and store count
                 markNotificationShown();
                 setLastNotifiedCount(count);
-                stopStatusPolling();
             }, 500);
         }
     }
@@ -168,15 +171,16 @@
             return;
         }
 
+        if (!window.CWADuplicateScanActive) {
+            updateBadge(data.count);
+        }
+        document.dispatchEvent(new CustomEvent('cwa:duplicates-status', { detail: data }));
+
         if (isModalActive()) {
-            stopStatusPolling();
             return;
         }
 
-        updateBadge(data.count);
-
-        if (data.count > 0 && data.enabled) {
-            stopStatusPolling();
+        if (data.count > 0 && data.enabled && !isDuplicatesPage()) {
             showNotificationModal(data);
             if (isModalActive()) {
                 return;
@@ -185,11 +189,6 @@
 
         if ((data.needs_scan || data.stale) && !isModalActive()) {
             startStatusPolling();
-            return;
-        }
-
-        if (data.count > 0) {
-            stopStatusPolling();
             return;
         }
 

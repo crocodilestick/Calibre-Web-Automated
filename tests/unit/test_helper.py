@@ -20,6 +20,7 @@ are tested in integration tests instead.
 import pytest
 from unittest.mock import Mock, patch, MagicMock, PropertyMock
 import re
+from types import SimpleNamespace
 
 # Import config for accessing in tests
 from cps import config
@@ -34,7 +35,9 @@ from cps.helper import (
     check_username,
     valid_email,
     valid_password,
-    uniq
+    uniq,
+    delete_book_file,
+    _directory_contains_only_nfs_placeholders,
 )
 
 
@@ -168,6 +171,42 @@ class TestGetValidFilename:
         result = get_valid_filename("Author1|Author2|Author3")
         assert "|" not in result
         assert "," in result  # Pipes become commas
+
+
+class TestDeleteBookFile:
+    """Test file deletion edge cases."""
+
+    def test_directory_contains_only_nfs_placeholders(self, tmp_path):
+        book_dir = tmp_path / "book"
+        book_dir.mkdir()
+        (book_dir / ".nfs.123").write_text("placeholder")
+        (book_dir / ".nfs.456").write_text("placeholder")
+
+        assert _directory_contains_only_nfs_placeholders(str(book_dir)) is True
+
+    def test_directory_contains_only_nfs_placeholders_rejects_regular_files(self, tmp_path):
+        book_dir = tmp_path / "book"
+        book_dir.mkdir()
+        (book_dir / ".nfs.123").write_text("placeholder")
+        (book_dir / "cover.jpg").write_text("cover")
+
+        assert _directory_contains_only_nfs_placeholders(str(book_dir)) is False
+
+    def test_delete_book_file_tolerates_nfs_placeholders_after_unlink(self, tmp_path, monkeypatch):
+        calibre_dir = tmp_path / "library"
+        book_dir = calibre_dir / "Author" / "Book (1)"
+        book_dir.mkdir(parents=True)
+        (book_dir / ".nfs.123").write_text("placeholder")
+        book = SimpleNamespace(id=1, path="Author/Book (1)")
+
+        monkeypatch.setattr("cps.helper.os.walk", lambda path: [(path, [], [])])
+
+        def _raise_directory_not_empty(path):
+            raise OSError(39, "Directory not empty", path)
+
+        monkeypatch.setattr("cps.helper.shutil.rmtree", _raise_directory_not_empty)
+
+        assert delete_book_file(book, str(calibre_dir)) == (True, None)
 
 
 # ============================================================================

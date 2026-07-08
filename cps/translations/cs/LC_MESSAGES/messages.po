@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-02-05 00:15+0100\n"
+"POT-Creation-Date: 2026-07-05 13:13+0000\n"
 "PO-Revision-Date: 2020-06-09 21:11+0100\n"
 "Last-Translator: Lukas Heroudek <lukas.heroudek@gmail.com>\n"
 "Language-Team: \n"
@@ -379,8 +379,8 @@ msgid "Success! Gmail Account Verified."
 msgstr ""
 
 #: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
-#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1042
-#: cps/editbooks.py:1808 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1046
+#: cps/editbooks.py:1830 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2678
 #, python-format
@@ -876,225 +876,227 @@ msgstr "není nainstalováno"
 msgid "Execution permissions missing"
 msgstr "Chybí povolení k exekuci"
 
-#: cps/cwa_functions.py:153
+#: cps/cwa_functions.py:165
 msgid "Theme switching is temporarily disabled until v5.0.0"
 msgstr ""
 
-#: cps/cwa_functions.py:252
+#: cps/cwa_functions.py:280
 msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
 msgstr ""
 
-#: cps/cwa_functions.py:849
+#: cps/cwa_functions.py:959
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
 
-#: cps/cwa_functions.py:913
+#: cps/cwa_functions.py:1055
 #, fuzzy
 msgid "Calibre-Web Automated User Settings"
 msgstr "Nastavení převaděče e-knih Calibre"
 
-#: cps/cwa_functions.py:959 cps/cwa_functions.py:961 cps/cwa_functions.py:965
-#: cps/cwa_functions.py:967 cps/cwa_functions.py:970 cps/cwa_functions.py:972
+#: cps/cwa_functions.py:1101 cps/cwa_functions.py:1103
+#: cps/cwa_functions.py:1107 cps/cwa_functions.py:1109
+#: cps/cwa_functions.py:1112 cps/cwa_functions.py:1114
 msgid "Timestamp"
 msgstr ""
 
-#: cps/cwa_functions.py:959 cps/cwa_functions.py:961
+#: cps/cwa_functions.py:1101 cps/cwa_functions.py:1103
 #: cps/templates/tasks.html:43
 #, fuzzy
 msgid "Book ID"
 msgstr "Knihy"
 
-#: cps/cwa_functions.py:959 cps/templates/book_edit.html:83
+#: cps/cwa_functions.py:1101 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "Název knihy"
 
-#: cps/cwa_functions.py:959
+#: cps/cwa_functions.py:1101
 #, fuzzy
 msgid "Book Author"
 msgstr "Autor"
 
-#: cps/cwa_functions.py:959
+#: cps/cwa_functions.py:1101
 msgid "Trigger Type"
 msgstr ""
 
-#: cps/cwa_functions.py:961 cps/cwa_functions.py:967
+#: cps/cwa_functions.py:1103 cps/cwa_functions.py:1109
 #, fuzzy
 msgid "Filepath"
 msgstr "Formáty souborů"
 
-#: cps/cwa_functions.py:965 cps/cwa_functions.py:967 cps/cwa_functions.py:970
-#: cps/cwa_functions.py:972
+#: cps/cwa_functions.py:1107 cps/cwa_functions.py:1109
+#: cps/cwa_functions.py:1112 cps/cwa_functions.py:1114
 #, fuzzy
 msgid "Filename"
 msgstr "Přezdívka"
 
-#: cps/cwa_functions.py:965
+#: cps/cwa_functions.py:1107
 msgid "Manual?"
 msgstr ""
 
-#: cps/cwa_functions.py:965
+#: cps/cwa_functions.py:1107
 msgid "No. Fixes"
 msgstr ""
 
-#: cps/cwa_functions.py:965 cps/cwa_functions.py:970 cps/cwa_functions.py:972
+#: cps/cwa_functions.py:1107 cps/cwa_functions.py:1112
+#: cps/cwa_functions.py:1114
 msgid "Original Backed Up?"
 msgstr ""
 
-#: cps/cwa_functions.py:967
+#: cps/cwa_functions.py:1109
 msgid "Fixes Applied"
 msgstr ""
 
-#: cps/cwa_functions.py:972
+#: cps/cwa_functions.py:1114
 msgid "Original Format"
 msgstr ""
 
-#: cps/cwa_functions.py:972
+#: cps/cwa_functions.py:1114
 #, fuzzy
 msgid "End Format"
 msgstr "Nahrát formát"
 
-#: cps/cwa_functions.py:1048 cps/cwa_functions.py:1077
+#: cps/cwa_functions.py:1190 cps/cwa_functions.py:1219
 #, fuzzy
 msgid "Unknown User"
 msgstr "Neznámý"
 
-#: cps/cwa_functions.py:1185
+#: cps/cwa_functions.py:1327
 #, fuzzy
 msgid "Calibre-Web Automated Stats & Activity"
 msgstr "Calibre-Web zkušební e-mail"
 
-#: cps/cwa_functions.py:1569
+#: cps/cwa_functions.py:1711
 msgid "Calibre-Web Automated - Full Enforcement History"
 msgstr ""
 
-#: cps/cwa_functions.py:1578
+#: cps/cwa_functions.py:1720
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
 msgstr ""
 
-#: cps/cwa_functions.py:1587
+#: cps/cwa_functions.py:1729
 msgid "Calibre-Web Automated - Full Import History"
 msgstr ""
 
-#: cps/cwa_functions.py:1596
+#: cps/cwa_functions.py:1738
 msgid "Calibre-Web Automated - Full Conversion History"
 msgstr ""
 
-#: cps/cwa_functions.py:1605
+#: cps/cwa_functions.py:1747
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1614
+#: cps/cwa_functions.py:1756
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr ""
 
-#: cps/cwa_functions.py:1632
+#: cps/cwa_functions.py:1774
 msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr ""
 
-#: cps/cwa_functions.py:1634
+#: cps/cwa_functions.py:1776
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr ""
 
-#: cps/cwa_functions.py:1636
+#: cps/cwa_functions.py:1778
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr ""
 
-#: cps/cwa_functions.py:1638
+#: cps/cwa_functions.py:1780
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr ""
 
-#: cps/cwa_functions.py:1640
+#: cps/cwa_functions.py:1782
 msgid "An Error has occurred"
 msgstr ""
 
-#: cps/cwa_functions.py:1811 cps/cwa_functions.py:1837
+#: cps/cwa_functions.py:1953 cps/cwa_functions.py:1979
 msgid "Calibre-Web Automated - Convert Library"
 msgstr ""
 
-#: cps/cwa_functions.py:1953 cps/cwa_functions.py:1977
+#: cps/cwa_functions.py:2095 cps/cwa_functions.py:2119
 #, fuzzy
 msgid "Calibre-Web Automated - EPUB Fixer Service"
 msgstr "Nastavení převaděče e-knih Calibre"
 
-#: cps/cwa_functions.py:2031
+#: cps/cwa_functions.py:2173
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 
-#: cps/cwa_functions.py:2038
+#: cps/cwa_functions.py:2180
 #, fuzzy
 msgid "Invalid book selection."
 msgstr "Zadána neplatná police"
 
-#: cps/cwa_functions.py:2044
+#: cps/cwa_functions.py:2186
 #, fuzzy
 msgid "Book not found."
 msgstr "Token nenalezen"
 
-#: cps/cwa_functions.py:2050
+#: cps/cwa_functions.py:2192
 #, fuzzy
 msgid "Selected book has no EPUB format."
 msgstr "Označit jako nepřečtené"
 
-#: cps/cwa_functions.py:2054
+#: cps/cwa_functions.py:2196
 #, fuzzy
 msgid "EPUB file not found on disk."
 msgstr "%(format)s formát nenalezen na disku"
 
-#: cps/cwa_functions.py:2069
+#: cps/cwa_functions.py:2211
 msgid "EPUB Fixer started for selected book."
 msgstr ""
 
-#: cps/cwa_functions.py:2072
+#: cps/cwa_functions.py:2214
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr ""
 
-#: cps/cwa_functions.py:2119
+#: cps/cwa_functions.py:2261
 msgid "You must be an admin to access this page."
 msgstr ""
 
-#: cps/cwa_functions.py:2134
+#: cps/cwa_functions.py:2276
 msgid "Both username and image data are required."
 msgstr ""
 
-#: cps/cwa_functions.py:2142
+#: cps/cwa_functions.py:2284
 msgid "Invalid image data format. Must be a valid image."
 msgstr ""
 
-#: cps/cwa_functions.py:2150
+#: cps/cwa_functions.py:2292
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr ""
 
-#: cps/cwa_functions.py:2162
+#: cps/cwa_functions.py:2304
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr ""
 
-#: cps/cwa_functions.py:2166
+#: cps/cwa_functions.py:2308
 msgid "Invalid Base64 image data."
 msgstr ""
 
-#: cps/cwa_functions.py:2170
+#: cps/cwa_functions.py:2312
 msgid "Invalid image data format."
 msgstr ""
 
-#: cps/cwa_functions.py:2175
+#: cps/cwa_functions.py:2317
 msgid "Error validating image data."
 msgstr ""
 
-#: cps/cwa_functions.py:2193
+#: cps/cwa_functions.py:2335
 msgid "Profile picture updated successfully."
 msgstr ""
 
-#: cps/cwa_functions.py:2206
+#: cps/cwa_functions.py:2348
 msgid "CWA Profile Picture Management (WIP)"
 msgstr ""
 
-#: cps/db.py:1240 cps/templates/config_edit.html:294
+#: cps/db.py:1252 cps/templates/config_edit.html:294
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
@@ -1103,40 +1105,49 @@ msgstr ""
 msgid "None"
 msgstr "Žádné"
 
-#: cps/duplicates.py:314 cps/duplicates.py:324
+#: cps/duplicates.py:352 cps/duplicates.py:363
 #, fuzzy
 msgid "Duplicate Books"
 msgstr "Smazat knihu"
 
-#: cps/duplicates.py:1117
+#: cps/duplicates.py:1201
 msgid "Duplicate group already dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1137
+#: cps/duplicates.py:1221
 #, fuzzy
 msgid "Duplicate group dismissed"
 msgstr "Smazat knihu"
 
-#: cps/duplicates.py:1174
+#: cps/duplicates.py:1258
 #, fuzzy
 msgid "Duplicate group restored"
 msgstr "Smazat knihu"
 
-#: cps/duplicates.py:1176
+#: cps/duplicates.py:1260
 msgid "Duplicate group was not dismissed"
 msgstr ""
 
-#: cps/duplicates.py:1238
+#: cps/duplicates.py:1314
+msgid "Import is in progress. Run a full duplicate scan after ingest finishes."
+msgstr ""
+
+#: cps/duplicates.py:1335
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "Nenalezeny žádné výsledky"
 
-#: cps/duplicates.py:1296
+#: cps/duplicates.py:1404
 msgid "Duplicate scan completed (fallback)"
 msgstr ""
 
-#: cps/duplicates.py:1424
+#: cps/duplicates.py:1479
 msgid "Invalid resolution strategy"
+msgstr ""
+
+#: cps/duplicates.py:1490
+msgid ""
+"Import is in progress. Execute duplicate resolution after ingest finishes."
 msgstr ""
 
 #: cps/editbooks.py:112 cps/editbooks.py:169
@@ -1154,7 +1165,7 @@ msgid "Cannot upload format: Book no longer exists in library"
 msgstr ""
 
 #: cps/editbooks.py:152 cps/editbooks.py:179 cps/templates/book_edit.html:52
-#: cps/templates/layout.html:151
+#: cps/templates/layout.html:152
 msgid "Upload done, processing, please wait..."
 msgstr "Nahrávání hotovo, zpracovávám, čekejte prosím..."
 
@@ -1177,55 +1188,55 @@ msgstr "Kniha byla úspěšně zařazena do fronty pro převod do %(book_format)
 msgid "There was an error converting this book: %(res)s"
 msgstr "Při převodu této knihy došlo k chybě: %(res)s"
 
-#: cps/editbooks.py:367 cps/editbooks.py:1245 cps/editbooks.py:1754
+#: cps/editbooks.py:367 cps/editbooks.py:1249 cps/editbooks.py:1776
 #, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Soubor s příponou '%(ext)s' nelze odeslat na tento server"
 
-#: cps/editbooks.py:372 cps/editbooks.py:1251 cps/editbooks.py:1765
+#: cps/editbooks.py:372 cps/editbooks.py:1255 cps/editbooks.py:1787
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "Soubor s příponou '%(ext)s' nelze odeslat na tento server"
 
-#: cps/editbooks.py:376 cps/editbooks.py:1255 cps/editbooks.py:1770
+#: cps/editbooks.py:376 cps/editbooks.py:1259 cps/editbooks.py:1792
 msgid "File to be uploaded must have an extension"
 msgstr "Soubor, který má být odeslán musí mít příponu"
 
-#: cps/editbooks.py:849 cps/editbooks.py:1431 cps/web.py:612 cps/web.py:2790
+#: cps/editbooks.py:845 cps/editbooks.py:1453 cps/web.py:612 cps/web.py:2790
 #: cps/web.py:2881 cps/web.py:2966
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr ""
 "Jejda! Vybraná kniha není k dispozici. Soubor neexistuje nebo není přístupný"
 
-#: cps/editbooks.py:881 cps/editbooks.py:1838
+#: cps/editbooks.py:877 cps/editbooks.py:1860
 msgid "User has no rights to upload cover"
 msgstr ""
 
-#: cps/editbooks.py:904 cps/editbooks.py:1233
+#: cps/editbooks.py:899 cps/editbooks.py:1237
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 
-#: cps/editbooks.py:916 cps/editbooks.py:1207 cps/editbooks.py:1565
+#: cps/editbooks.py:911 cps/editbooks.py:1211 cps/editbooks.py:1587
 #, fuzzy, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s není platným jazykem"
 
-#: cps/editbooks.py:1029
+#: cps/editbooks.py:1031
 msgid "Metadata successfully updated"
 msgstr "Metadata úspěšně aktualizována"
 
-#: cps/editbooks.py:1047
+#: cps/editbooks.py:1051
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr ""
 
-#: cps/editbooks.py:1102 cps/editbooks.py:1147 cps/editbooks.py:1856
+#: cps/editbooks.py:1106 cps/editbooks.py:1151 cps/editbooks.py:1878
 #: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "Neznámý"
 
-#: cps/editbooks.py:1151
+#: cps/editbooks.py:1155
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
@@ -1233,52 +1244,52 @@ msgstr ""
 "Nahraná kniha pravděpodobně existuje v knihovně, zvažte prosím změnu před "
 "nahráním nové: "
 
-#: cps/editbooks.py:1263
+#: cps/editbooks.py:1267
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "Soubor %(filename)s nemohl být uložen do dočasného adresáře"
 
-#: cps/editbooks.py:1283
+#: cps/editbooks.py:1287
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "Nepodařilo se přesunout soubor obalu %(file)s: %(error)s"
 
-#: cps/editbooks.py:1341 cps/editbooks.py:1343
+#: cps/editbooks.py:1345 cps/editbooks.py:1347
 msgid "Book Format Successfully Deleted"
 msgstr "Formát knihy úspěšně smazán"
 
-#: cps/editbooks.py:1350 cps/editbooks.py:1352
+#: cps/editbooks.py:1354 cps/editbooks.py:1356
 msgid "Book Successfully Deleted"
 msgstr "Kniha úspěšně smazána"
 
-#: cps/editbooks.py:1416
+#: cps/editbooks.py:1438
 msgid "You are missing permissions to delete books"
 msgstr ""
 
-#: cps/editbooks.py:1470
+#: cps/editbooks.py:1492
 msgid "edit metadata"
 msgstr "upravit metadata"
 
-#: cps/editbooks.py:1524
+#: cps/editbooks.py:1546
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr ""
 
-#: cps/editbooks.py:1759
+#: cps/editbooks.py:1781
 msgid "User has no rights to upload additional file formats"
 msgstr ""
 
-#: cps/editbooks.py:1783
+#: cps/editbooks.py:1805
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "Nepodařilo se vytvořit cestu %(path)s (oprávnění odepřeno)."
 
-#: cps/editbooks.py:1790
+#: cps/editbooks.py:1812
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "Uložení souboru %(file)s se nezdařilo."
 
-#: cps/editbooks.py:1815
+#: cps/editbooks.py:1837
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "Formát souboru %(ext)s přidán do %(book)s"
@@ -1299,227 +1310,227 @@ msgstr ""
 "Doména zpětného volání není ověřena, postupujte podle pokynů k ověření "
 "domény v konzole pro vývojáře google"
 
-#: cps/helper.py:84
+#: cps/helper.py:92
 #, python-format
 msgid "%(format)s format not found for book id: %(book)d"
 msgstr "%(format)s formát pro knihu: %(book)d nenalezen"
 
-#: cps/helper.py:90 cps/tasks/convert.py:77
+#: cps/helper.py:98 cps/tasks/convert.py:77
 #, python-format
 msgid "%(format)s not found on Google Drive: %(fn)s"
 msgstr "%(format)s nenalezen na Google Drive: %(fn)s"
 
-#: cps/helper.py:95
+#: cps/helper.py:103
 #, python-format
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s nenalezen: %(fn)s"
 
-#: cps/helper.py:102 cps/helper.py:226 cps/templates/detail.html:516
+#: cps/helper.py:110 cps/helper.py:234 cps/templates/detail.html:516
 #: cps/templates/detail.html:520
 #, fuzzy
 msgid "Send to eReader"
 msgstr "Poslat do Kindle"
 
-#: cps/helper.py:104 cps/helper.py:124 cps/helper.py:237
+#: cps/helper.py:112 cps/helper.py:132 cps/helper.py:245
 #, fuzzy
 msgid "This Email has been sent via Calibre-Web Automated."
 msgstr "Tento e-mail byl odeslán přes Calibre-Web."
 
-#: cps/helper.py:122
+#: cps/helper.py:130
 #, fuzzy
 msgid "Calibre-Web Automated Test Email"
 msgstr "Calibre-Web zkušební e-mail"
 
-#: cps/helper.py:123
+#: cps/helper.py:131
 #, fuzzy
 msgid "Test Email"
 msgstr "Zkušební e-mail"
 
-#: cps/helper.py:140
+#: cps/helper.py:148
 #, fuzzy
 msgid "Get Started with Calibre-Web Automated"
 msgstr "Začínáme s Calibre-Web"
 
-#: cps/helper.py:145
+#: cps/helper.py:153
 #, fuzzy, python-format
 msgid "Registration Email for user: %(name)s"
 msgstr "Registrační e-mail pro uživatele: %(name)s"
 
-#: cps/helper.py:156 cps/helper.py:162
+#: cps/helper.py:164 cps/helper.py:170
 #, fuzzy, python-format
 msgid "Convert %(orig)s to %(format)s and send to eReader"
 msgstr "Převést %(orig)s do %(format)s a poslat do Kindle"
 
-#: cps/helper.py:181 cps/helper.py:185 cps/helper.py:189
+#: cps/helper.py:189 cps/helper.py:193 cps/helper.py:197
 #, fuzzy, python-format
 msgid "Send %(format)s to eReader"
 msgstr "Poslat %(format)s do Kindle"
 
-#: cps/helper.py:232
+#: cps/helper.py:240
 #, fuzzy, python-format
 msgid "%(book)s send to eReader"
 msgstr "Poslat do Kindle"
 
-#: cps/helper.py:239
+#: cps/helper.py:247
 msgid "The requested file could not be read. Maybe wrong permissions?"
 msgstr "Požadovaný soubor nelze přečíst. Možná nesprávná oprávnění?"
 
-#: cps/helper.py:385
+#: cps/helper.py:393
 #, python-brace-format
 msgid "Read status could not set: {}"
 msgstr ""
 
-#: cps/helper.py:408
+#: cps/helper.py:416
 #, python-format
 msgid ""
 "Deleting bookfolder for book %(id)s failed, path has subfolders: %(path)s"
 msgstr ""
 
-#: cps/helper.py:414
+#: cps/helper.py:428
 #, python-format
 msgid "Deleting book %(id)s failed: %(message)s"
 msgstr "Mazání knihy selhalo %(id)s failed: %(message)s"
 
-#: cps/helper.py:425
+#: cps/helper.py:439
 #, fuzzy, python-format
 msgid ""
 "Deleting book %(id)s from database only, book path in database not valid: "
 "%(path)s"
 msgstr "Mazání knihy %(id)s, cesta ke knize není platná %(path)s"
 
-#: cps/helper.py:514
+#: cps/helper.py:528
 #, fuzzy, python-format
 msgid ""
 "Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr ""
 "Přejmenování názvu z: '%(src)s' na '%(dest)s'  selhalo chybou: %(error)s"
 
-#: cps/helper.py:583 cps/helper.py:592
+#: cps/helper.py:597 cps/helper.py:606
 #, python-format
 msgid "File %(file)s not found on Google Drive"
 msgstr "Soubor %(file)s nenalezen na Google Drive"
 
-#: cps/helper.py:670
+#: cps/helper.py:684
 #, python-format
 msgid "Rename title from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr ""
 "Přejmenování názvu z: '%(src)s' na '%(dest)s'  selhalo chybou: %(error)s"
 
-#: cps/helper.py:709
+#: cps/helper.py:723
 #, python-format
 msgid "Book path %(path)s not found on Google Drive"
 msgstr "Cesta ke knize %(path)s nebyla nalezena na Google Drive"
 
-#: cps/helper.py:769
+#: cps/helper.py:783
 msgid "Found an existing account for this Email address"
 msgstr ""
 
-#: cps/helper.py:777
+#: cps/helper.py:791
 msgid "This username is already taken"
 msgstr "Zadané uživatelské jméno je již použito"
 
-#: cps/helper.py:791
+#: cps/helper.py:805
 msgid "Invalid Email address format"
 msgstr ""
 
-#: cps/helper.py:813
+#: cps/helper.py:827
 msgid "Password doesn't comply with password validation rules"
 msgstr ""
 
-#: cps/helper.py:1048
+#: cps/helper.py:1062
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr ""
 
-#: cps/helper.py:1053 cps/helper.py:1061
+#: cps/helper.py:1067 cps/helper.py:1075
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
 msgstr ""
 
-#: cps/helper.py:1072
+#: cps/helper.py:1086
 msgid "Error Downloading Cover"
 msgstr "Chyba stahování obalu"
 
-#: cps/helper.py:1075
+#: cps/helper.py:1089
 msgid "Cover Format Error"
 msgstr "Chyba formátu obalu"
 
-#: cps/helper.py:1078
+#: cps/helper.py:1092
 msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
 msgstr ""
 
-#: cps/helper.py:1094
+#: cps/helper.py:1108
 msgid "Failed to create path for cover"
 msgstr "Vytvoření cesty obalu selhalo"
 
-#: cps/helper.py:1110
+#: cps/helper.py:1124
 msgid "Cover-file is not a valid image file, or could not be stored"
 msgstr "Soubor obalu není platný, nebo nelze uložit"
 
-#: cps/helper.py:1127
+#: cps/helper.py:1141
 msgid "Only jpg/jpeg/png/webp/bmp files are supported as coverfile"
 msgstr ""
 
-#: cps/helper.py:1141
+#: cps/helper.py:1155
 msgid "Invalid cover file content"
 msgstr ""
 
-#: cps/helper.py:1145
+#: cps/helper.py:1159
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Pouze jpg/jpeg jsou podporované soubory pro obal"
 
-#: cps/helper.py:1304 cps/helper.py:1535
+#: cps/helper.py:1318 cps/helper.py:1557
 #, fuzzy
 msgid "Cover"
 msgstr "Objevte"
 
-#: cps/helper.py:1321
+#: cps/helper.py:1335
 msgid "UnRar binary file not found"
 msgstr "UnRar binární soubor nenalezen"
 
-#: cps/helper.py:1332
+#: cps/helper.py:1346
 #, fuzzy
 msgid "Error executing UnRar"
 msgstr "Chyba provádění UnRar"
 
-#: cps/helper.py:1338
+#: cps/helper.py:1352
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
 "aarch64."
 msgstr ""
 
-#: cps/helper.py:1347
+#: cps/helper.py:1361
 msgid "Could not find the specified directory"
 msgstr ""
 
-#: cps/helper.py:1350
+#: cps/helper.py:1364
 msgid "Please specify a directory, not a file"
 msgstr ""
 
-#: cps/helper.py:1364
+#: cps/helper.py:1378
 #, fuzzy
 msgid "Calibre binaries not viable"
 msgstr "Databáze není zapisovatelná"
 
-#: cps/helper.py:1373
+#: cps/helper.py:1387
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr ""
 
-#: cps/helper.py:1375
+#: cps/helper.py:1389
 #, fuzzy, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "Chybí povolení k exekuci"
 
-#: cps/helper.py:1380
+#: cps/helper.py:1394
 #, fuzzy
 msgid "Error executing Calibre"
 msgstr "Chyba provádění UnRar"
 
-#: cps/helper.py:1537 cps/templates/admin.html:240
+#: cps/helper.py:1559 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr ""
 
@@ -1695,8 +1706,8 @@ msgstr "Popis"
 msgid "{} Stars"
 msgstr ""
 
-#: cps/remotelogin.py:76 cps/templates/layout.html:134
-#: cps/templates/layout.html:176 cps/templates/login.html:11
+#: cps/remotelogin.py:76 cps/templates/layout.html:135
+#: cps/templates/layout.html:177 cps/templates/login.html:11
 #: cps/templates/login.html:39 cps/web.py:2187
 msgid "Login"
 msgstr "Přihlásit"
@@ -1713,75 +1724,81 @@ msgstr "Token vypršel"
 msgid "Success! Please return to your device"
 msgstr "Úspěch! Vraťte se prosím do zařízení"
 
-#: cps/render_template.py:40
+#: cps/render_template.py:54
+msgid ""
+"Duplicate scanning needs a one-time full scan before fast duplicate checks "
+"can run after imports and metadata changes. "
+msgstr ""
+
+#: cps/render_template.py:74
 msgid "Books"
 msgstr "Knihy"
 
-#: cps/render_template.py:42
+#: cps/render_template.py:76
 msgid "Show recent books"
 msgstr "Zobrazit nedávné knihy"
 
-#: cps/render_template.py:43
+#: cps/render_template.py:77
 msgid "Hot Books"
 msgstr "Žhavé knihy"
 
-#: cps/render_template.py:45
+#: cps/render_template.py:79
 msgid "Show Hot Books"
 msgstr "Zobrazit žhavé knihy"
 
-#: cps/render_template.py:47 cps/render_template.py:52
+#: cps/render_template.py:81 cps/render_template.py:86
 msgid "Downloaded Books"
 msgstr ""
 
-#: cps/render_template.py:49 cps/render_template.py:54
+#: cps/render_template.py:83 cps/render_template.py:88
 #: cps/templates/user_table.html:168
 msgid "Show Downloaded Books"
 msgstr ""
 
-#: cps/render_template.py:57 cps/web.py:502
+#: cps/render_template.py:91 cps/web.py:502
 msgid "Top Rated Books"
 msgstr "Nejlépe hodnocené knihy"
 
-#: cps/render_template.py:59 cps/templates/user_table.html:162
+#: cps/render_template.py:93 cps/templates/user_table.html:162
 msgid "Show Top Rated Books"
 msgstr "Zobrazit nejlépe hodnocené knihy"
 
-#: cps/render_template.py:60 cps/web.py:851
+#: cps/render_template.py:94 cps/web.py:851
 msgid "Read Books"
 msgstr "Přečtené knihy"
 
-#: cps/render_template.py:62
+#: cps/render_template.py:96
 #, fuzzy
 msgid "Show Read and Unread"
 msgstr "Zobrazit prečtené a nepřečtené"
 
-#: cps/render_template.py:64 cps/web.py:854
+#: cps/render_template.py:98 cps/web.py:854
 msgid "Unread Books"
 msgstr "Nepřečtené knihy"
 
-#: cps/render_template.py:66
+#: cps/render_template.py:100
 msgid "Show unread"
 msgstr "Zobrazit nepřečtené"
 
-#: cps/render_template.py:67
+#: cps/render_template.py:101
 msgid "Discover"
 msgstr "Objevte"
 
-#: cps/render_template.py:69 cps/templates/user_table.html:160
+#: cps/render_template.py:103 cps/templates/user_table.html:160
 #: cps/templates/user_table.html:163
 msgid "Show Random Books"
 msgstr "Zobrazit náhodné knihy"
 
-#: cps/render_template.py:70 cps/templates/book_table.html:106 cps/web.py:1762
+#: cps/render_template.py:104 cps/templates/book_table.html:106 cps/web.py:1762
 msgid "Categories"
 msgstr "Kategorie"
 
-#: cps/render_template.py:72 cps/templates/user_table.html:159
+#: cps/render_template.py:106 cps/templates/user_table.html:159
 #, fuzzy
 msgid "Show Category Section"
 msgstr "Zobrazit výběr kategorie"
 
-#: cps/render_template.py:73 cps/templates/book_edit.html:98
+#: cps/render_template.py:107 cps/templates/book_edit.html:98
 #: cps/templates/book_table.html:107 cps/templates/cwa_settings.html:362
 #: cps/templates/cwa_settings.html:364 cps/templates/cwa_settings.html:1103
 #: cps/templates/hardcover_review_matches.html:140
@@ -1789,87 +1806,87 @@ msgstr "Zobrazit výběr kategorie"
 msgid "Series"
 msgstr "Série"
 
-#: cps/render_template.py:75 cps/templates/user_table.html:158
+#: cps/render_template.py:109 cps/templates/user_table.html:158
 #, fuzzy
 msgid "Show Series Section"
 msgstr "Zobrazit výběr sérií"
 
-#: cps/render_template.py:76 cps/templates/book_table.html:105
+#: cps/render_template.py:110 cps/templates/book_table.html:105
 #: cps/templates/cwa_settings.html:334 cps/templates/cwa_settings.html:336
 #: cps/templates/hardcover_review_matches.html:134
 msgid "Authors"
 msgstr "Autoři"
 
-#: cps/render_template.py:78 cps/templates/user_table.html:161
+#: cps/render_template.py:112 cps/templates/user_table.html:161
 #, fuzzy
 msgid "Show Author Section"
 msgstr "Zobrazit výběr autora"
 
-#: cps/render_template.py:80 cps/templates/book_table.html:111 cps/web.py:1610
+#: cps/render_template.py:114 cps/templates/book_table.html:111 cps/web.py:1610
 msgid "Publishers"
 msgstr "Vydavatelé"
 
-#: cps/render_template.py:82 cps/templates/user_table.html:164
+#: cps/render_template.py:116 cps/templates/user_table.html:164
 #, fuzzy
 msgid "Show Publisher Section"
 msgstr "Zobrazit výběr vydavatele"
 
-#: cps/render_template.py:83 cps/templates/book_table.html:109
+#: cps/render_template.py:117 cps/templates/book_table.html:109
 #: cps/templates/detail.html:706 cps/templates/search_form.html:108
 #: cps/web.py:1734
 msgid "Languages"
 msgstr "Jazyky"
 
-#: cps/render_template.py:86 cps/templates/user_table.html:156
+#: cps/render_template.py:120 cps/templates/user_table.html:156
 #, fuzzy
 msgid "Show Language Section"
 msgstr "Zobrazit výběr jazyka"
 
-#: cps/render_template.py:87 cps/web.py:1694
+#: cps/render_template.py:121 cps/web.py:1694
 msgid "Ratings"
 msgstr "Hodnocení"
 
-#: cps/render_template.py:89 cps/templates/user_table.html:165
+#: cps/render_template.py:123 cps/templates/user_table.html:165
 #, fuzzy
 msgid "Show Ratings Section"
 msgstr "Zobrazit výběr hodnocení"
 
-#: cps/render_template.py:90
+#: cps/render_template.py:124
 msgid "File formats"
 msgstr "Formáty souborů"
 
-#: cps/render_template.py:92 cps/templates/user_table.html:166
+#: cps/render_template.py:126 cps/templates/user_table.html:166
 #, fuzzy
 msgid "Show File Formats Section"
 msgstr "Zobrazit výběr formátů"
 
-#: cps/render_template.py:94 cps/web.py:877
+#: cps/render_template.py:128 cps/web.py:877
 msgid "Archived Books"
 msgstr "Archivované knihy"
 
-#: cps/render_template.py:96 cps/templates/user_table.html:167
+#: cps/render_template.py:130 cps/templates/user_table.html:167
 #, fuzzy
 msgid "Show Archived Books"
 msgstr "Zobrazit archivované knihy"
 
-#: cps/render_template.py:99 cps/web.py:1430
+#: cps/render_template.py:133 cps/web.py:1430
 msgid "Books List"
 msgstr ""
 
-#: cps/render_template.py:101 cps/templates/user_table.html:169
+#: cps/render_template.py:135 cps/templates/user_table.html:169
 msgid "Show Books List"
 msgstr ""
 
-#: cps/render_template.py:104
+#: cps/render_template.py:138
 msgid "Duplicates"
 msgstr ""
 
-#: cps/render_template.py:106
+#: cps/render_template.py:140
 #, fuzzy
 msgid "Show Duplicate Books"
 msgstr "Zobrazit nejlépe hodnocené knihy"
 
-#: cps/render_template.py:183
+#: cps/render_template.py:217
 msgid ""
 "ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is "
 "temporarily disabled while we develop a new frontend for v5.0.0."
@@ -1877,8 +1894,8 @@ msgstr ""
 
 #: cps/search.py:53 cps/search.py:440 cps/templates/book_edit.html:275
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:34
-#: cps/templates/index.xml:12 cps/templates/layout.html:113
-#: cps/templates/layout.html:116 cps/templates/search_form.html:247
+#: cps/templates/index.xml:12 cps/templates/layout.html:114
+#: cps/templates/layout.html:117 cps/templates/search_form.html:247
 msgid "Search"
 msgstr "Hledat"
 
@@ -1909,7 +1926,7 @@ msgstr ""
 msgid "Error on search for custom columns, please restart Calibre-Web"
 msgstr ""
 
-#: cps/search.py:384 cps/search.py:416 cps/templates/layout.html:124
+#: cps/search.py:384 cps/search.py:416 cps/templates/layout.html:125
 msgid "Advanced Search"
 msgstr "Rozšířené hledání"
 
@@ -2029,7 +2046,7 @@ msgstr "Police: '%(name)s'"
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr "Chyba otevírání police. Police neexistuje nebo není přístupná"
 
-#: cps/tasks_status.py:37 cps/templates/layout.html:162
+#: cps/tasks_status.py:37 cps/templates/layout.html:163
 #: cps/templates/tasks.html:7
 msgid "Tasks"
 msgstr "Úlohy"
@@ -2191,7 +2208,7 @@ msgstr ""
 msgid "Error creating shelf"
 msgstr "Chyba stahování obalu"
 
-#: cps/templates/layout.html:313 cps/web.py:1153
+#: cps/templates/layout.html:326 cps/web.py:1153
 #, fuzzy
 msgid "Create Magic Shelf"
 msgstr "Vytvořit polici"
@@ -2312,7 +2329,7 @@ msgstr "Kniha byla úspěšně zařazena do fronty pro odeslání na %(eReaderma
 msgid "Please wait one minute to register next user"
 msgstr ""
 
-#: cps/templates/layout.html:135 cps/templates/layout.html:177
+#: cps/templates/layout.html:136 cps/templates/layout.html:178
 #: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2066
 #: cps/web.py:2070 cps/web.py:2075 cps/web.py:2079 cps/web.py:2085
 #: cps/web.py:2110 cps/web.py:2114 cps/web.py:2127 cps/web.py:2130
@@ -2540,28 +2557,57 @@ msgstr "Umístění Calibre databáze"
 msgid "Clean archived book references"
 msgstr ""
 
-#: cps/tasks/duplicate_scan.py:28 cps/tasks/duplicate_scan.py:36
+#: cps/tasks/duplicate_scan.py:36 cps/tasks/duplicate_scan.py:52
 #, fuzzy
 msgid "Duplicate scan"
 msgstr "Smazat knihu"
 
-#: cps/tasks/duplicate_scan.py:66
-msgid "Scanning for duplicates"
+#: cps/tasks/duplicate_scan.py:82
+msgid "Duplicate scan skipped: import in progress"
 msgstr ""
 
-#: cps/tasks/duplicate_scan.py:133 cps/tasks/duplicate_scan.py:311
+#: cps/tasks/duplicate_scan.py:90
+msgid "Building duplicate index"
+msgstr ""
+
+#: cps/tasks/duplicate_scan.py:98
+#, python-format
+msgid "Building duplicate index: %(processed)s/%(total)s books"
+msgstr ""
+
+#: cps/tasks/duplicate_scan.py:104
+msgid "Building duplicate index: no books"
+msgstr ""
+
+#: cps/tasks/duplicate_scan.py:108
+#, fuzzy
+msgid "Finding duplicate groups"
+msgstr "Smazat knihu"
+
+#: cps/tasks/duplicate_scan.py:124
+#, fuzzy
+msgid "Updating duplicate cache"
+msgstr "Rozbalování balíčku aktualizace"
+
+#: cps/tasks/duplicate_scan.py:153 cps/tasks/duplicate_scan.py:163
+#: cps/tasks/duplicate_scan.py:203 cps/tasks/duplicate_scan.py:212
+#, fuzzy
+msgid "Duplicate scan pending: manual scan required"
+msgstr "Nenalezeny žádné výsledky"
+
+#: cps/tasks/duplicate_scan.py:231
 #, python-format
 msgid "Duplicate scan completed: %(count)s groups"
 msgstr ""
 
-#: cps/tasks/duplicate_scan.py:203 cps/tasks/duplicate_scan.py:402
-#, python-format
-msgid "Duplicate scan completed: %(count)s groups auto-resolved"
-msgstr ""
-
-#: cps/tasks/duplicate_scan.py:313
+#: cps/tasks/duplicate_scan.py:233
 #, python-format
 msgid "Duplicate scan completed: %(count)s new groups"
+msgstr ""
+
+#: cps/tasks/duplicate_scan.py:293
+#, python-format
+msgid "Duplicate scan completed: %(count)s groups auto-resolved"
 msgstr ""
 
 #: cps/tasks/mail.py:275
@@ -2591,27 +2637,27 @@ msgstr ""
 msgid "EPUB Fixer"
 msgstr ""
 
-#: cps/tasks/thumbnail.py:86
+#: cps/tasks/thumbnail.py:96
 #, python-format
 msgid "Generated %(count)s cover thumbnails"
 msgstr ""
 
-#: cps/tasks/thumbnail.py:295 cps/tasks/thumbnail.py:513
-#: cps/tasks/thumbnail.py:581
+#: cps/tasks/thumbnail.py:316 cps/tasks/thumbnail.py:534
+#: cps/tasks/thumbnail.py:602
 msgid "Cover Thumbnails"
 msgstr ""
 
-#: cps/tasks/thumbnail.py:354
+#: cps/tasks/thumbnail.py:375
 #, python-brace-format
 msgid "Generated {0} series thumbnails"
 msgstr ""
 
-#: cps/tasks/thumbnail.py:524
+#: cps/tasks/thumbnail.py:545
 msgid "Clearing cover thumbnail cache"
 msgstr ""
 
 #: cps/tasks/upload.py:28 cps/templates/admin.html:22
-#: cps/templates/layout.html:154 cps/templates/user_table.html:146
+#: cps/templates/layout.html:155 cps/templates/user_table.html:146
 msgid "Upload"
 msgstr "Nahrávat"
 
@@ -2640,7 +2686,7 @@ msgstr "Poslat do Kindle e-mailová adresa"
 msgid "Send to eReader Subject"
 msgstr "Poslat do Kindle"
 
-#: cps/templates/admin.html:19 cps/templates/layout.html:165
+#: cps/templates/admin.html:19 cps/templates/layout.html:166
 #: cps/templates/user_table.html:144
 msgid "Admin"
 msgstr "Správce"
@@ -2660,7 +2706,7 @@ msgid "View Books"
 msgstr "Prohlížení knih"
 
 #: cps/templates/admin.html:26 cps/templates/book_table.html:47
-#: cps/templates/book_table.html:328 cps/templates/duplicates.html:501
+#: cps/templates/book_table.html:328 cps/templates/duplicates.html:657
 #: cps/templates/index.html:146 cps/templates/user_table.html:131
 #: cps/templates/user_table.html:149
 msgid "Edit"
@@ -2668,7 +2714,7 @@ msgstr "Upravovat"
 
 #: cps/templates/admin.html:27 cps/templates/book_edit.html:17
 #: cps/templates/book_table.html:62 cps/templates/book_table.html:141
-#: cps/templates/book_table.html:190 cps/templates/duplicates.html:539
+#: cps/templates/book_table.html:190 cps/templates/duplicates.html:718
 #: cps/templates/modal_dialogs.html:63 cps/templates/modal_dialogs.html:116
 #: cps/templates/user_edit.html:326 cps/templates/user_table.html:150
 msgid "Delete"
@@ -2920,7 +2966,7 @@ msgstr "Opravdu chcete restartovat?"
 
 #: cps/templates/admin.html:294 cps/templates/admin.html:308
 #: cps/templates/admin.html:328 cps/templates/config_db.html:139
-#: cps/templates/duplicates.html:609 cps/templates/duplicates.html:631
+#: cps/templates/duplicates.html:788 cps/templates/duplicates.html:810
 msgid "OK"
 msgstr "OK"
 
@@ -2933,12 +2979,13 @@ msgstr "OK"
 #: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:215
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:938
-#: cps/templates/duplicates.html:540 cps/templates/duplicates.html:567
-#: cps/templates/modal_dialogs.html:64 cps/templates/modal_dialogs.html:99
-#: cps/templates/modal_dialogs.html:117 cps/templates/modal_dialogs.html:135
-#: cps/templates/schedule_edit.html:46 cps/templates/shelf_edit.html:27
-#: cps/templates/tasks.html:94 cps/templates/tasks.html:166
-#: cps/templates/tasks.html:173 cps/templates/user_edit.html:555
+#: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
+#: cps/templates/duplicates.html:746 cps/templates/modal_dialogs.html:64
+#: cps/templates/modal_dialogs.html:99 cps/templates/modal_dialogs.html:117
+#: cps/templates/modal_dialogs.html:135 cps/templates/schedule_edit.html:46
+#: cps/templates/shelf_edit.html:27 cps/templates/tasks.html:94
+#: cps/templates/tasks.html:166 cps/templates/tasks.html:173
+#: cps/templates/user_edit.html:555
 msgid "Cancel"
 msgstr "Zrušit"
 
@@ -3029,19 +3076,19 @@ msgid "Convert book"
 msgstr "Převést knihu"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:69
-#: cps/templates/layout.html:151 cps/templates/layout.html:270
+#: cps/templates/layout.html:152 cps/templates/layout.html:283
 msgid "Uploading..."
 msgstr "Nahrávání..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
-#: cps/templates/book_table.html:342 cps/templates/duplicates.html:587
-#: cps/templates/layout.html:151 cps/templates/layout.html:360
-#: cps/templates/layout.html:425 cps/templates/modal_dialogs.html:34
+#: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
+#: cps/templates/layout.html:152 cps/templates/layout.html:373
+#: cps/templates/layout.html:438 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:573
 msgid "Close"
 msgstr "Zavřít"
 
-#: cps/templates/book_edit.html:52 cps/templates/duplicates.html:620
+#: cps/templates/book_edit.html:52 cps/templates/duplicates.html:799
 #: cps/templates/hardcover_review_matches.html:279
 #: cps/templates/hardcover_review_matches.html:288
 #: cps/templates/hardcover_review_matches.html:323
@@ -3050,7 +3097,7 @@ msgstr "Zavřít"
 #: cps/templates/hardcover_review_matches.html:369
 #: cps/templates/hardcover_review_matches.html:400
 #: cps/templates/hardcover_review_matches.html:409
-#: cps/templates/layout.html:151
+#: cps/templates/layout.html:152
 msgid "Error"
 msgstr "Chyba"
 
@@ -3206,12 +3253,12 @@ msgid "This Field is Required"
 msgstr ""
 
 #: cps/templates/book_table.html:44 cps/templates/book_table.html:171
-#: cps/templates/duplicates.html:566
+#: cps/templates/duplicates.html:745
 msgid "Merge"
 msgstr ""
 
 #: cps/templates/book_table.html:50 cps/templates/book_table.html:210
-#: cps/templates/duplicates.html:504
+#: cps/templates/duplicates.html:660
 #, fuzzy
 msgid "Archive"
 msgstr "Archivováno"
@@ -3348,7 +3395,7 @@ msgstr "Identifikátory"
 #: cps/templates/book_table.html:158 cps/templates/book_table.html:182
 #: cps/templates/book_table.html:202 cps/templates/book_table.html:222
 #: cps/templates/book_table.html:242 cps/templates/book_table.html:262
-#: cps/templates/duplicates.html:528 cps/templates/modal_dialogs.html:46
+#: cps/templates/duplicates.html:707 cps/templates/modal_dialogs.html:46
 #: cps/templates/tasks.html:84
 msgid "Are you really sure?"
 msgstr "Jste si opravdu jisti?"
@@ -5069,7 +5116,7 @@ msgid ""
 "only” to disable after-import scans while keeping cron schedules."
 msgstr ""
 
-#: cps/templates/cwa_settings.html:1069 cps/templates/duplicates.html:398
+#: cps/templates/cwa_settings.html:1069 cps/templates/duplicates.html:522
 msgid "Next scheduled scan:"
 msgstr ""
 
@@ -5172,7 +5219,7 @@ msgstr ""
 msgid "Enable Automatic Duplicate Resolution"
 msgstr "Povolit veřejnou registraci"
 
-#: cps/templates/cwa_settings.html:1169 cps/templates/duplicates.html:437
+#: cps/templates/cwa_settings.html:1169 cps/templates/duplicates.html:593
 msgid "Warning:"
 msgstr ""
 
@@ -5330,7 +5377,7 @@ msgstr "Přidat do police"
 #: cps/templates/detail.html:590 cps/templates/detail.html:612
 #: cps/templates/detail.html:765 cps/templates/detail.html:1251
 #: cps/templates/feed.xml:83 cps/templates/feed.xml:85
-#: cps/templates/layout.html:301 cps/templates/layout.html:310
+#: cps/templates/layout.html:314 cps/templates/layout.html:323
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:22
 msgid "(Public)"
@@ -5461,177 +5508,226 @@ msgstr "Vytvoření cesty obalu selhalo"
 msgid "Failed to update shelves"
 msgstr "Vytvoření cesty obalu selhalo"
 
-#: cps/templates/duplicates.html:365
+#: cps/templates/duplicates.html:497
 msgid "CWA Duplicates Manager"
 msgstr ""
 
-#: cps/templates/duplicates.html:367
+#: cps/templates/duplicates.html:499
 msgid ""
 "Books with matching titles, authors, and languages. Books in different "
 "languages are not considered duplicates."
 msgstr ""
 
-#: cps/templates/duplicates.html:373
+#: cps/templates/duplicates.html:507
+#, fuzzy
+msgid "Run Full Duplicate Scan"
+msgstr "Smazat knihu"
+
+#: cps/templates/duplicates.html:509
 #, fuzzy
 msgid "Scan for Duplicates Now"
 msgstr "Zobrazit nejlépe hodnocené knihy"
 
-#: cps/templates/duplicates.html:376
-#, fuzzy
-msgid "Cancel Scan"
-msgstr "Zrušit"
-
-#: cps/templates/duplicates.html:379
+#: cps/templates/duplicates.html:513
 msgid "Select Duplicates"
 msgstr ""
 
-#: cps/templates/duplicates.html:380
+#: cps/templates/duplicates.html:514
 #, fuzzy
 msgid "Select None"
 msgstr "Vytvořit polici"
 
-#: cps/templates/duplicates.html:381
+#: cps/templates/duplicates.html:515
 #, fuzzy
 msgid "Delete Selected"
 msgstr "Smazat knihu"
 
-#: cps/templates/duplicates.html:409
+#: cps/templates/duplicates.html:529
+msgid "Duplicate scanning needs a one-time full scan."
+msgstr ""
+
+#: cps/templates/duplicates.html:531
+msgid ""
+"CWA now uses a duplicate index to keep duplicate checks fast during imports "
+"and metadata changes. Before incremental scans can run, the index needs an "
+"initial baseline."
+msgstr ""
+
+#: cps/templates/duplicates.html:534
+msgid ""
+"Click \"Run Full Duplicate Scan\" to build it. This may take several minutes "
+"on large libraries, and you can keep using CWA while it runs."
+msgstr ""
+
+#: cps/templates/duplicates.html:541
+#, fuzzy
+msgid "Duplicate scan is running."
+msgstr "Smazat knihu"
+
+#: cps/templates/duplicates.html:542
+msgid "You can keep using CWA while it runs."
+msgstr ""
+
+#: cps/templates/duplicates.html:545 cps/templates/tasks.html:17
+msgid "Progress"
+msgstr "Průběh"
+
+#: cps/templates/duplicates.html:554
+msgid "View Background Tasks"
+msgstr ""
+
+#: cps/templates/duplicates.html:565
 msgid "Auto-Resolve Duplicates"
 msgstr ""
 
-#: cps/templates/duplicates.html:413
+#: cps/templates/duplicates.html:569
 msgid ""
 "Automatically resolve all duplicate groups by keeping one book and deleting "
 "others based on a strategy."
 msgstr ""
 
-#: cps/templates/duplicates.html:417
+#: cps/templates/duplicates.html:573
 msgid "Strategy:"
 msgstr ""
 
-#: cps/templates/duplicates.html:419
+#: cps/templates/duplicates.html:575
 msgid "Keep Newest - Delete older copies, keep the most recently added"
 msgstr ""
 
-#: cps/templates/duplicates.html:420
+#: cps/templates/duplicates.html:576
 msgid "Keep Oldest - Delete newer copies, keep the earliest added"
 msgstr ""
 
-#: cps/templates/duplicates.html:421
+#: cps/templates/duplicates.html:577
 msgid "Merge Formats - Merge formats into the newest book, delete the rest"
 msgstr ""
 
-#: cps/templates/duplicates.html:422
+#: cps/templates/duplicates.html:578
 msgid ""
 "Keep Highest Quality Format - Prefer formats based on your Duplicate Format "
 "Priority Ranking"
 msgstr ""
 
-#: cps/templates/duplicates.html:423
+#: cps/templates/duplicates.html:579
 msgid "Keep Most Metadata - Keep book with most complete information"
 msgstr ""
 
-#: cps/templates/duplicates.html:424
+#: cps/templates/duplicates.html:580
 msgid "Keep Largest File Size - Keep book with largest total file size"
 msgstr ""
 
-#: cps/templates/duplicates.html:428
+#: cps/templates/duplicates.html:584
 #, fuzzy
 msgid "Preview"
 msgstr "Předchozí"
 
-#: cps/templates/duplicates.html:432
+#: cps/templates/duplicates.html:588 cps/templates/duplicates.html:695
 msgid "Execute Resolution"
 msgstr ""
 
-#: cps/templates/duplicates.html:438
+#: cps/templates/duplicates.html:594
 msgid "This will permanently delete books. Original files will be backed up to"
 msgstr ""
 
-#: cps/templates/duplicates.html:456
+#: cps/templates/duplicates.html:612
 #, fuzzy
 msgid "Merge Selected"
 msgstr "Smazat knihu"
 
-#: cps/templates/duplicates.html:460
+#: cps/templates/duplicates.html:616
 msgid "Dismiss this duplicate group"
 msgstr ""
 
-#: cps/templates/duplicates.html:462
+#: cps/templates/duplicates.html:618
 msgid "Dismiss"
 msgstr ""
 
-#: cps/templates/duplicates.html:473
+#: cps/templates/duplicates.html:629
 #, fuzzy
 msgid "View book details"
 msgstr "Podrobnosti o knize"
 
-#: cps/templates/duplicates.html:500
+#: cps/templates/duplicates.html:656
 #, fuzzy
 msgid "Edit book metadata"
 msgstr "upravit metadata"
 
-#: cps/templates/duplicates.html:503
+#: cps/templates/duplicates.html:659
 #, fuzzy
 msgid "Archive/delete book"
 msgstr "Archivované knihy"
 
-#: cps/templates/duplicates.html:516
+#: cps/templates/duplicates.html:673
 #, fuzzy
 msgid "No Duplicate Books Found"
 msgstr "Nenalezeny žádné výsledky"
 
-#: cps/templates/duplicates.html:517
+#: cps/templates/duplicates.html:674
 msgid "Your library has no books with duplicate title and author combinations."
 msgstr ""
 
-#: cps/templates/duplicates.html:518
+#: cps/templates/duplicates.html:675
 msgid ""
 "This search looks for books with identical titles AND authors to avoid false "
 "positives."
 msgstr ""
 
-#: cps/templates/duplicates.html:532
+#: cps/templates/duplicates.html:685
+msgid "Execute Auto-Resolution"
+msgstr ""
+
+#: cps/templates/duplicates.html:688
+msgid ""
+"CWA will resolve duplicate groups using the selected strategy and "
+"permanently delete duplicate books."
+msgstr ""
+
+#: cps/templates/duplicates.html:690
+#, fuzzy
+msgid "Selected strategy:"
+msgstr "Smazat formáty:"
+
+#: cps/templates/duplicates.html:692 cps/templates/duplicates.html:715
+msgid "This action cannot be undone!"
+msgstr ""
+
+#: cps/templates/duplicates.html:711
 #, fuzzy
 msgid "The following books will be permanently deleted:"
 msgstr "Tato kniha bude trvale odstraněna z databáze"
 
-#: cps/templates/duplicates.html:536
-msgid "This action cannot be undone!"
-msgstr ""
-
-#: cps/templates/duplicates.html:551
+#: cps/templates/duplicates.html:730
 #, fuzzy
 msgid "Merge Books"
 msgstr "Nepřečtené knihy"
 
-#: cps/templates/duplicates.html:555
+#: cps/templates/duplicates.html:734
 #, fuzzy
 msgid "The following book will be kept:"
 msgstr "Tato kniha bude trvale odstraněna z databáze"
 
-#: cps/templates/duplicates.html:559
+#: cps/templates/duplicates.html:738
 #, fuzzy
 msgid "The following books will be merged into it (and then deleted):"
 msgstr "Tato kniha bude trvale odstraněna z databáze"
 
-#: cps/templates/duplicates.html:563
+#: cps/templates/duplicates.html:742
 msgid "Note: File formats from source books will be added to the target book."
 msgstr ""
 
-#: cps/templates/duplicates.html:580
+#: cps/templates/duplicates.html:759
 msgid "Resolution Preview"
 msgstr ""
 
-#: cps/templates/duplicates.html:598
+#: cps/templates/duplicates.html:777
 msgid "Success"
 msgstr ""
 
-#: cps/templates/duplicates.html:605
+#: cps/templates/duplicates.html:784
 msgid "Selected duplicate books have been deleted successfully!"
 msgstr ""
 
-#: cps/templates/duplicates.html:627
+#: cps/templates/duplicates.html:806
 msgid "An error occurred while processing your request."
 msgstr ""
 
@@ -5701,7 +5797,7 @@ msgstr "Zadejte jméno domény"
 msgid "Denied Domains (Blacklist)"
 msgstr "Zakázané domény pro registraci"
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:344
+#: cps/templates/feed.xml:22 cps/templates/layout.html:357
 msgid "Next"
 msgstr "Další"
 
@@ -5981,99 +6077,104 @@ msgstr ""
 msgid "Home"
 msgstr "Domů"
 
-#: cps/templates/layout.html:99
+#: cps/templates/layout.html:100
 msgid "Toggle Navigation"
 msgstr "Přepnout navigaci"
 
-#: cps/templates/layout.html:114
+#: cps/templates/layout.html:115
 msgid "Search Library"
 msgstr "Hledat v knihovně"
 
-#: cps/templates/layout.html:132 cps/templates/layout.html:169
+#: cps/templates/layout.html:133 cps/templates/layout.html:170
 #: cps/templates/user_edit.html:305 cps/templates/user_edit.html:307
 msgid "Account"
 msgstr "Účet"
 
-#: cps/templates/layout.html:138 cps/templates/layout.html:171
+#: cps/templates/layout.html:139 cps/templates/layout.html:172
 msgid "Logout"
 msgstr "Odhlásit se"
 
-#: cps/templates/layout.html:146
+#: cps/templates/layout.html:147
 #, fuzzy
 msgid "Switch Theme"
 msgstr "Standartní motiv"
 
-#: cps/templates/layout.html:165 cps/templates/read.html:78
+#: cps/templates/layout.html:166 cps/templates/read.html:78
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 #, fuzzy
 msgid "Settings"
 msgstr "Nastavení"
 
-#: cps/templates/layout.html:167
+#: cps/templates/layout.html:168
 #, fuzzy
 msgid "Refresh Library"
 msgstr "Hledat v knihovně"
 
-#: cps/templates/layout.html:208
+#: cps/templates/layout.html:209
 msgid "See Changelog"
 msgstr ""
 
-#: cps/templates/layout.html:228
+#: cps/templates/layout.html:219
+#, fuzzy
+msgid "Open Duplicates"
+msgstr "Smazat knihu"
+
+#: cps/templates/layout.html:241
 msgid "Contribute here!"
 msgstr ""
 
-#: cps/templates/layout.html:271
+#: cps/templates/layout.html:284
 msgid "Please do not refresh the page"
 msgstr "Prosím neobnovujte stránku"
 
-#: cps/templates/layout.html:281
+#: cps/templates/layout.html:294
 msgid "Browse"
 msgstr "Procházet"
 
-#: cps/templates/layout.html:298 cps/templates/search_form.html:88
+#: cps/templates/layout.html:311 cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "Police"
 
-#: cps/templates/layout.html:304
+#: cps/templates/layout.html:317
 #, fuzzy
 msgid "Create Shelf"
 msgstr "Vytvořit polici"
 
-#: cps/templates/layout.html:308
+#: cps/templates/layout.html:321
 msgid "Magic Shelves ✨"
 msgstr ""
 
-#: cps/templates/layout.html:317 cps/templates/stats.html:3
+#: cps/templates/layout.html:330 cps/templates/stats.html:3
 msgid "About"
 msgstr "O knihovně"
 
-#: cps/templates/layout.html:329
+#: cps/templates/layout.html:342
 msgid "Previous"
 msgstr "Předchozí"
 
-#: cps/templates/layout.html:356
+#: cps/templates/layout.html:369
 msgid "Book Details"
 msgstr "Podrobnosti o knize"
 
-#: cps/templates/layout.html:426
+#: cps/templates/layout.html:439
 #, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "Smazat knihu"
 
-#: cps/templates/layout.html:427
+#: cps/templates/layout.html:440
 msgid "You have unresolved duplicate books in your library"
 msgstr ""
 
-#: cps/templates/layout.html:432
+#: cps/templates/layout.html:445
 #, fuzzy
 msgid "Duplicate Groups Found"
 msgstr "Nenalezeny žádné výsledky"
 
-#: cps/templates/layout.html:440
+#: cps/templates/layout.html:453
 msgid "Remind Me Later"
 msgstr ""
 
-#: cps/templates/layout.html:443
+#: cps/templates/layout.html:456
 msgid "View & Resolve Duplicates"
 msgstr ""
 
@@ -6691,10 +6792,6 @@ msgstr "Úkol"
 msgid "Status"
 msgstr "Stav"
 
-#: cps/templates/tasks.html:17
-msgid "Progress"
-msgstr "Průběh"
-
 #: cps/templates/tasks.html:18
 msgid "Run Time"
 msgstr "Doba spuštění"
@@ -7139,6 +7236,10 @@ msgstr ""
 #, fuzzy
 msgid "Show Read/Unread Section"
 msgstr "Zobrazit výběr sérií"
+
+#, fuzzy
+#~ msgid "Cancel Scan"
+#~ msgstr "Zrušit"
 
 #~ msgid "Standard Theme"
 #~ msgstr "Standartní motiv"

@@ -102,6 +102,7 @@
     </script>
   </head>
   <body class="{{ page }} {{ bodyClass }}{% if g.current_theme == 1 %} blur{% endif %}{% if cwa_settings and cwa_settings.get('enable_mobile_blur') %} allow-mobile-blur{% endif %}" data-text="{{_('Home')}}" data-textback="{{_('Back')}}">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
     <!-- Static navbar -->
     <div class="navbar navbar-default navbar-static-top" role="navigation">
       <div class="container-fluid">
@@ -222,6 +223,18 @@
         <div id="flash_info" class="alert alert-info alert-cwa">
           {{ message[1] }} <a href="https://github.com/crocodilestick/Calibre-Web-Automated/releases">{{ _('See Changelog') }}</a>
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      </div>
+      {%endif%}
+      {%if message[0] == "duplicate_scan_setup" %}
+      <div class="row-fluid text-center">
+        <div id="flash_info" class="alert alert-info alert-cwa">
+          {{ message[1] }} <a href="{{ url_for('duplicates.show_duplicates') }}">{{ _('Open Duplicates') }}</a>
+          <button type="button" class="close duplicate-scan-setup-dismiss"
+                  data-dismiss-url="{{ url_for('duplicates.dismiss_duplicate_scan_setup_notice') }}"
+                  data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
         </div>

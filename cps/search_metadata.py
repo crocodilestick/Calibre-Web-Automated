@@ -8,20 +8,26 @@
 import concurrent.futures
 import importlib
 import inspect
-import json
 import os
 import sys
 
-from flask import Blueprint, request, url_for, make_response, jsonify, copy_current_request_context
-from .cw_login import current_user
-from flask_babel import get_locale
+from flask import (
+    Blueprint,
+    copy_current_request_context,
+    jsonify,
+    make_response,
+    request,
+    url_for,
+)
 from sqlalchemy.exc import InvalidRequestError, OperationalError
 from sqlalchemy.orm.attributes import flag_modified
 
 from cps.services.Metadata import Metadata
-from . import constants, logger, ub, web_server
-from .usermanagement import user_login_required
 
+from . import constants, logger, ub, web_server
+from .cw_babel import get_locale
+from .cw_login import current_user
+from .usermanagement import user_login_required
 
 meta = Blueprint("metadata", __name__)
 
@@ -30,8 +36,12 @@ log = logger.create()
 try:
     from dataclasses import asdict
 except ImportError:
-    log.info('*** "dataclasses" is needed for calibre-web automated to run. Please install it using pip: "pip install dataclasses" ***')
-    print('*** "dataclasses" is needed for calibre-web automated to run. Please install it using pip: "pip install dataclasses" ***')
+    log.info(
+        '*** "dataclasses" is needed for calibre-web automated to run. Please install it using pip: "pip install dataclasses" ***'
+    )
+    print(
+        '*** "dataclasses" is needed for calibre-web automated to run. Please install it using pip: "pip install dataclasses" ***'
+    )
     web_server.stop(True)
     sys.exit(6)
 
@@ -74,24 +84,27 @@ cl.sort(key=lambda x: x.__class__.__name__)
 def _get_global_provider_enabled_map() -> dict:
     try:
         # Import here to avoid circular import issues and keep startup fast
-        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+        sys.path.insert(1, "/app/calibre-web-automated/scripts/")
         from cwa_db import CWA_DB  # type: ignore
+
         cwa_db = CWA_DB()
         settings = cwa_db.get_cwa_settings()
-        
+
         if not settings:
             log.warning("Could not get CWA settings for provider enabled map")
             return {}
-        
+
         from cps.cwa_functions import parse_metadata_providers_enabled
+
         return parse_metadata_providers_enabled(
-            settings.get('metadata_providers_enabled', '{}')
+            settings.get("metadata_providers_enabled", "{}")
         )
     except Exception as e:
         # On any failure, treat as all enabled (empty dict = all default to enabled)
         log.warning(f"Error loading provider enabled map: {e}")
         return {}
     # Remove redundant return
+
 
 @meta.route("/metadata/provider")
 @user_login_required
@@ -156,16 +169,24 @@ def metadata_search():
     query = request.form.to_dict().get("query")
     data = list()
     active = current_user.view_settings.get("metadata", {})
-    locale = get_locale()
+    locale = get_locale() or "en_US"
     global_enabled = _get_global_provider_enabled_map()
     if query:
         static_cover = url_for("static", filename="generic_cover.svg")
         # ret = cl[0].search(query, static_cover, locale)
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        with concurrent.futures.ThreadPoolExecutor(
+            max_workers=constants.MAX_THREADS
+        ) as executor:
             meta = {
-                executor.submit(copy_current_request_context(c.search), query, static_cover, locale): c
+                executor.submit(
+                    copy_current_request_context(c.search),
+                    query,
+                    static_cover,
+                    locale,
+                ): c
                 for c in cl
-                if active.get(c.__id__, True) and bool(global_enabled.get(c.__id__, True))
+                if active.get(c.__id__, True)
+                and bool(global_enabled.get(c.__id__, True))
             }
             for future in concurrent.futures.as_completed(meta):
                 try:
@@ -178,4 +199,4 @@ def metadata_search():
                 if not result:
                     continue
                 data.extend([asdict(x) for x in result if x])
-    return  make_response(jsonify(data))
+    return make_response(jsonify(data))

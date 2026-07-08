@@ -90,6 +90,9 @@ class _Settings(_Base):
     config_kobo_sync = Column(Boolean, default=False)
     config_kobo_sync_magic_shelves = Column(Boolean, default=False)
 
+    # Metadata provider settings
+    config_amazon_region = Column(String, default="")
+
     # Sync read progress to Hardcover - should this be renamed?
     config_hardcover_sync = Column(Boolean, default=False) 
     # Sync annotations to Hardcover
@@ -371,6 +374,8 @@ class ConfigSQL(object):
                         setattr(self, k, "")
                 else:
                     setattr(self, k, v)
+
+        self.amazon_region = self.config_amazon_region or constants.AMAZON_REGIONS[0]
 
         # Enforce unified logging to stdout for Docker deployments
         if self.config_logfile not in (logger.LOG_TO_STDOUT, logger.LOG_TO_STDERR):

@@ -158,13 +158,6 @@ def before_request():
                                  'admin.ajax_pathchooser'):
         return redirect(url_for('admin.db_configuration'))
 
-
-#@admi.route("/admin")
-#@user_login_required
-#def admin_forbidden():
-#    abort(403)
-
-
 @admi.route("/shutdown", methods=["POST"])
 @user_login_required
 @admin_required

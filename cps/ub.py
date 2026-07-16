@@ -1000,6 +1000,23 @@ def migrate_config_table(engine, _session):
             # Don't raise - let CWA continue without this feature
             pass
 
+
+    # Add reverse proxy email header configuration
+    try:
+        # Test if the new column exists
+        _session.execute(text("SELECT config_reverse_proxy_login_header_email FROM settings LIMIT 1"))
+        _session.commit()
+    except exc.OperationalError:  # Column doesn't exist
+        try:
+            with engine.connect() as conn:
+                trans = conn.begin()
+                conn.execute(text("ALTER TABLE settings ADD column 'config_reverse_proxy_login_header_email' String DEFAULT 'Remote-Email'"))
+                trans.commit()
+        except Exception as e:
+            log.error("Failed to add config_reverse_proxy_login_header_email column: %s", e)
+            # Don't raise - let CWA continue without this feature
+            pass
+
     # Add LDAP auto-create users configuration
     try:
         # Test if the new column exists

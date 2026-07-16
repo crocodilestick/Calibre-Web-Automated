@@ -41,7 +41,7 @@ from .helper import check_valid_domain, check_email, check_username, \
 from .pagination import Pagination
 from .redirect import get_redirect_location
 from .cw_babel import get_available_locale
-from .usermanagement import login_required_if_no_ano
+from .usermanagement import user_login_or_anonymous, user_login_required
 from .kobo_sync_status import remove_synced_book
 from . import magic_shelf
 from .render_template import render_title_template
@@ -49,7 +49,6 @@ from .kobo_sync_status import change_archived_books
 from . import limiter
 from .services.worker import WorkerThread
 from .tasks_status import render_task_status
-from .usermanagement import user_login_required
 from .string_helper import strip_whitespaces
 
 # CWA Imports
@@ -216,7 +215,7 @@ def toggle_archived(book_id):
 
 
 @web.route("/ajax/view", methods=["POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 def update_view():
     to_save = request.get_json()
     try:
@@ -282,31 +281,31 @@ def get_comic_book(book_id, book_format, page):
 
 
 @web.route("/get_authors_json", methods=['GET'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 def get_authors_json():
     return calibre_db.get_typeahead(db.Authors, request.args.get('q'), ('|', ','))
 
 
 @web.route("/get_publishers_json", methods=['GET'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 def get_publishers_json():
     return calibre_db.get_typeahead(db.Publishers, request.args.get('q'), ('|', ','))
 
 
 @web.route("/get_tags_json", methods=['GET'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 def get_tags_json():
     return calibre_db.get_typeahead(db.Tags, request.args.get('q'), tag_filter=tags_filters())
 
 
 @web.route("/get_series_json", methods=['GET'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 def get_series_json():
     return calibre_db.get_typeahead(db.Series, request.args.get('q'))
 
 
 @web.route("/get_languages_json", methods=['GET'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 def get_languages_json():
     query = (request.args.get('q') or '').lower()
     language_names = isoLanguages.get_language_names(get_locale())
@@ -320,7 +319,7 @@ def get_languages_json():
 
 
 @web.route("/get_matching_tags", methods=['GET'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 def get_matching_tags():
     tag_dict = {'tags': []}
     q = calibre_db.session.query(db.Books).filter(calibre_db.common_filters(True))
@@ -883,7 +882,7 @@ def render_archived_books(page, sort_param):
 @web.route("/magicshelf/<int:shelf_id>", defaults={"sort_param": "stored", 'page': 1})
 @web.route("/magicshelf/<int:shelf_id>/<sort_param>", defaults={'page': 1})
 @web.route("/magicshelf/<int:shelf_id>/<sort_param>/<int:page>")
-@login_required_if_no_ano
+@user_login_or_anonymous
 def render_magic_shelf(shelf_id, sort_param, page):
     """Render a magic shelf with proper pagination and sorting."""
     shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
@@ -1006,7 +1005,7 @@ def health_check():
 
 @web.route("/", defaults={'page': 1})
 @web.route('/page/<int:page>')
-@login_required_if_no_ano
+@user_login_or_anonymous
 def index(page):
     if current_user.is_authenticated and current_user.role_admin():
         arch_warning = helper.check_architecture()
@@ -1021,7 +1020,7 @@ def index(page):
 @web.route('/<data>/<sort_param>/', defaults={'page': 1, 'book_id': 1})
 @web.route('/<data>/<sort_param>/<book_id>', defaults={'page': 1})
 @web.route('/<data>/<sort_param>/<book_id>/<int:page>')
-@login_required_if_no_ano
+@user_login_or_anonymous
 def books_list(data, sort_param, book_id, page):
     return render_books_list(data, sort_param, book_id, page)
 
@@ -1531,7 +1530,7 @@ def update_table_settings():
 
 
 @web.route("/author")
-@login_required_if_no_ano
+@user_login_or_anonymous
 def author_list():
     if current_user.check_visibility(constants.SIDEBAR_AUTHOR):
         if current_user.get_view_property('author', 'dir') == 'desc':
@@ -1551,7 +1550,7 @@ def author_list():
 
 
 @web.route("/downloadlist")
-@login_required_if_no_ano
+@user_login_or_anonymous
 def download_list():
     if current_user.get_view_property('download', 'dir') == 'desc':
         order = ub.User.name.desc()
@@ -1572,7 +1571,7 @@ def download_list():
 
 
 @web.route("/publisher")
-@login_required_if_no_ano
+@user_login_or_anonymous
 def publisher_list():
     if current_user.check_visibility(constants.SIDEBAR_PUBLISHER):
         order_dir = current_user.get_view_property('publisher', 'dir')
@@ -1613,7 +1612,7 @@ def publisher_list():
 
 
 @web.route("/series")
-@login_required_if_no_ano
+@user_login_or_anonymous
 def series_list():
     if current_user.check_visibility(constants.SIDEBAR_SERIES):
         if current_user.get_view_property('series', 'dir') == 'desc':
@@ -1658,7 +1657,7 @@ def series_list():
 
 
 @web.route("/ratings")
-@login_required_if_no_ano
+@user_login_or_anonymous
 def ratings_list():
     if current_user.check_visibility(constants.SIDEBAR_RATING):
         order_dir = current_user.get_view_property('ratings', 'dir')
@@ -1697,7 +1696,7 @@ def ratings_list():
 
 
 @web.route("/formats")
-@login_required_if_no_ano
+@user_login_or_anonymous
 def formats_list():
     if current_user.check_visibility(constants.SIDEBAR_FORMAT):
         if current_user.get_view_property('formats', 'dir') == 'desc':
@@ -1724,7 +1723,7 @@ def formats_list():
 
 
 @web.route("/language")
-@login_required_if_no_ano
+@user_login_or_anonymous
 def language_overview():
     if current_user.check_visibility(constants.SIDEBAR_LANGUAGE) and current_user.filter_language() == "all":
         order_no = 0 if current_user.get_view_property('language', 'dir') == 'desc' else 1
@@ -1737,7 +1736,7 @@ def language_overview():
 
 
 @web.route("/category")
-@login_required_if_no_ano
+@user_login_or_anonymous
 def category_list():
     if current_user.check_visibility(constants.SIDEBAR_CATEGORY):
         if current_user.get_view_property('category', 'dir') == 'desc':
@@ -1771,7 +1770,7 @@ def category_list():
 
 @web.route("/cover/<int:book_id>")
 @web.route("/cover/<int:book_id>/<string:resolution>")
-@login_required_if_no_ano
+@user_login_or_anonymous
 def get_cover(book_id, resolution=None):
     resolutions = {
         'og': constants.COVER_THUMBNAIL_ORIGINAL,
@@ -1785,7 +1784,7 @@ def get_cover(book_id, resolution=None):
 
 @web.route("/series_cover/<int:series_id>")
 @web.route("/series_cover/<int:series_id>/<string:resolution>")
-@login_required_if_no_ano
+@user_login_or_anonymous
 def get_series_cover(series_id, resolution=None):
     resolutions = {
         'og': constants.COVER_THUMBNAIL_ORIGINAL,
@@ -1885,7 +1884,7 @@ def _repair_epub_container_if_needed(book_id, original_path):
 
 @web.route("/show/<int:book_id>/<book_format>", defaults={'anyname': 'None'})
 @web.route("/show/<int:book_id>/<book_format>/<anyname>")
-@login_required_if_no_ano
+@user_login_or_anonymous
 @viewer_required
 def serve_book(book_id, book_format, anyname):
     book_format = book_format.split(".")[0]
@@ -1946,7 +1945,7 @@ def serve_book(book_id, book_format, anyname):
 
 @web.route("/download/<int:book_id>/<book_format>", defaults={'anyname': 'None'})
 @web.route("/download/<int:book_id>/<book_format>/<anyname>")
-@login_required_if_no_ano
+@user_login_or_anonymous
 @download_required
 def download_link(book_id, book_format, anyname):
     client = "kobo" if "Kobo" in request.headers.get('User-Agent') else ""
@@ -1954,7 +1953,7 @@ def download_link(book_id, book_format, anyname):
 
 
 @web.route('/send/<int:book_id>/<book_format>/<int:convert>', methods=["POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @download_required
 def send_to_ereader(book_id, book_format, convert):
     if not config.get_mail_server_configured():
@@ -1992,7 +1991,7 @@ def send_to_ereader(book_id, book_format, convert):
 
 
 @web.route('/send_selected/<int:book_id>', methods=["POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @download_required
 def send_to_selected_ereaders(book_id):
     if not config.get_mail_server_configured():
@@ -2781,7 +2780,7 @@ def profile():
 
 
 @web.route("/read/<int:book_id>/<book_format>")
-@login_required_if_no_ano
+@user_login_or_anonymous
 @viewer_required
 def read_book(book_id, book_format):
     book = calibre_db.get_filtered_book(book_id)
@@ -2884,7 +2883,7 @@ def read_book(book_id, book_format):
 
 
 @web.route("/book/<int:book_id>")
-@login_required_if_no_ano
+@user_login_or_anonymous
 def show_book(book_id):
     # Ensure book_id is a plain int to avoid SQLite binding errors
     try:

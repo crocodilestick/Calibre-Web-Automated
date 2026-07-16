@@ -8,7 +8,7 @@ from flask import Blueprint, redirect, flash, url_for, request, send_from_direct
 from flask_babel import gettext as _, lazy_gettext as _l
 
 from . import logger, config, constants, csrf, helper, ub, calibre_db
-from .usermanagement import login_required_if_no_ano, user_login_required
+from .usermanagement import user_login_required, user_login_or_anonymous
 from .admin import admin_required
 from .render_template import render_title_template
 from .cw_login import login_user, logout_user, current_user
@@ -159,7 +159,7 @@ def validate_and_cleanup_provider_enabled_map(enabled_map, available_provider_id
     return cleaned_map
 
 @switch_theme.route("/cwa-switch-theme", methods=["GET", "POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 def cwa_switch_theme():
     # Theme switching temporarily disabled for v5.0.0 frontend development
     flash(_("Theme switching is temporarily disabled until v5.0.0"), category="warning")
@@ -266,7 +266,7 @@ def refresh_library(app):
 
 @csrf.exempt
 @library_refresh.route("/cwa-library-refresh", methods=["GET", "POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 def cwa_library_refresh():
     print("[library-refresh] Library refresh manually triggered by user...", flush=True)
     app = current_app._get_current_object()  # Get actual app instance
@@ -281,7 +281,7 @@ def cwa_library_refresh():
 
 @csrf.exempt
 @library_refresh.route("/cwa-library-refresh/messages", methods=["GET"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 def get_library_refresh_messages():
     messages = current_app.config.get("library_refresh_messages", [])
 
@@ -662,7 +662,7 @@ def cwa_internal_reconnect_db():
 
 @csrf.exempt
 @cwa_stats.route('/cwa-scheduled/cancel', methods=["POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def cwa_scheduled_cancel():
     """Cancel a pending scheduled auto-send by id.
@@ -707,7 +707,7 @@ def cwa_scheduled_cancel():
 
 @csrf.exempt
 @cwa_settings.route("/cwa-settings", methods=["GET", "POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def set_cwa_settings():
     cwa_db = CWA_DB()
@@ -1115,7 +1115,7 @@ headers = {
 }
 
 @cwa_stats.route("/cwa-stats-show", methods=["GET", "POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def cwa_stats_show():
     from datetime import datetime, timedelta
@@ -1369,7 +1369,7 @@ def cwa_stats_show():
                                 data_epub_fixer_with_fixes=data_epub_fixer_with_fixes, headers_epub_fixer_with_fixes=headers["epub_fixer"]["with_fixes"])
 
 @cwa_stats.route("/cwa-stats-export-csv/<tab_name>", methods=["GET"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def export_stats_csv(tab_name):
     """Export stats data as CSV for the specified tab."""
@@ -1583,7 +1583,7 @@ def export_stats_csv(tab_name):
 
 
 @cwa_stats.route("/cwa-stats-debug", methods=["GET"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def debug_stats_data():
     """Debug endpoint to inspect raw activity data and diagnose parsing issues."""
@@ -1673,7 +1673,7 @@ def debug_stats_data():
 
 
 @cwa_stats.route('/cwa-scheduled/upcoming', methods=["GET"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def cwa_scheduled_upcoming():
     try:
@@ -1686,7 +1686,7 @@ def cwa_scheduled_upcoming():
         return jsonify({"items": []}), 200
 
 @cwa_stats.route('/cwa-scheduled/upcoming-ops', methods=["GET"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def cwa_scheduled_upcoming_ops():
     """Return upcoming scheduled operations (non auto-send), e.g., convert_library, epub_fixer."""
@@ -1703,7 +1703,7 @@ def cwa_scheduled_upcoming_ops():
         return jsonify({"items": []}), 200
                                     
 @cwa_stats.route("/cwa-stats-show/full-enforcement", methods=["GET", "POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def show_full_enforcement():
     cwa_db = CWA_DB()
@@ -1712,7 +1712,7 @@ def show_full_enforcement():
                                     table_headers=headers["enforcement"]["no_paths"], data=data)
 
 @cwa_stats.route("/cwa-stats-show/full-enforcement-with-paths", methods=["GET", "POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def show_full_enforcement_path():
     cwa_db = CWA_DB()
@@ -1721,7 +1721,7 @@ def show_full_enforcement_path():
                                     table_headers=headers["enforcement"]["with_paths"], data=data)
 
 @cwa_stats.route("/cwa-stats-show/full-imports", methods=["GET", "POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def show_full_imports():
     cwa_db = CWA_DB()
@@ -1730,7 +1730,7 @@ def show_full_imports():
                                     table_headers=headers["imports"], data=data)
 
 @cwa_stats.route("/cwa-stats-show/full-conversions", methods=["GET", "POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def show_full_conversions():
     cwa_db = CWA_DB()
@@ -1739,7 +1739,7 @@ def show_full_conversions():
                                     table_headers=headers["conversions"], data=data)
 
 @cwa_stats.route("/cwa-stats-show/full-epub-fixer", methods=["GET", "POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def show_full_epub_fixer():
     cwa_db = CWA_DB()
@@ -1748,7 +1748,7 @@ def show_full_epub_fixer():
                                     table_headers=headers["epub_fixer"]["no_fixes"], data=data)
 
 @cwa_stats.route("/cwa-stats-show/full-epub-fixer-with-paths-fixes", methods=["GET", "POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def show_full_epub_fixer_with_paths_fixes():
     cwa_db = CWA_DB()
@@ -1763,7 +1763,7 @@ def show_full_epub_fixer_with_paths_fixes():
 ##————————————————————————————————————————————————————————————————————————————##
 
 @cwa_check_status.route("/cwa-check-monitoring", methods=["GET", "POST"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def cwa_flash_status():
     result = subprocess.run(['/app/calibre-web-automated/scripts/check-cwa-services.sh'])
@@ -1954,7 +1954,7 @@ def show_convert_library_page():
                                 target_format=CWA_DB().cwa_settings['auto_convert_target_format'].upper())
 
 @convert_library.route('/cwa-convert-library/schedule/<int:delay>', methods=["GET"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def schedule_convert_library(delay: int):
     # Clamp delay to sane range
@@ -2095,7 +2095,7 @@ def show_epub_fixer_page():
     return render_title_template('cwa_epub_fixer.html', title=_("Calibre-Web Automated - EPUB Fixer Service"), page="cwa-epub-fixer")
 
 @epub_fixer.route('/cwa-epub-fixer/schedule/<int:delay>', methods=["GET"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 @admin_required
 def schedule_epub_fixer(delay: int):
     delay = max(0, min(60, int(delay)))
@@ -2167,7 +2167,7 @@ def start_epub_fixer():
 
 @epub_fixer.route('/cwa-epub-fixer/run-book', methods=["POST"])
 @csrf.exempt
-@login_required_if_no_ano
+@user_login_or_anonymous
 def run_epub_fixer_for_book():
     if config.config_use_google_drive:
         return jsonify({"success": False, "error": _("Single-book EPUB Fixer is not supported with Google Drive libraries.")}), 400

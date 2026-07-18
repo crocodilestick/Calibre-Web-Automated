@@ -43,7 +43,7 @@ msgstr "Statistiques"
 
 #: cps/admin.py:128
 msgid "Calibre database unavailable. Please reconfigure the library path."
-msgstr ""
+msgstr "La base de données Calibre n'est pas disponible. Veuillez reconfigurer le chemin d'accès à la bibliothèque."
 
 #: cps/admin.py:180
 msgid "Server restarted, please reload page."
@@ -112,7 +112,7 @@ msgstr "Correspond à %(action)s"
 
 #: cps/admin.py:439
 msgid "No pending matches to reject"
-msgstr ""
+msgstr "Aucune correspondance en attente à rejeter"
 
 #: cps/admin.py:445
 #, python-format
@@ -5803,7 +5803,7 @@ msgstr ""
 
 #: cps/templates/detail.html:680
 msgid "Date added"
-msgstr ""
+msgstr "Date d'ajout"
 
 #: cps/templates/detail.html:684
 msgid "Last modified"
@@ -5921,7 +5921,7 @@ msgstr "Effacer la sélection"
 
 #: cps/templates/duplicates.html:529
 msgid "Duplicate scanning needs a one-time full scan."
-msgstr ""
+msgstr "La recherche des doublons nécessite une analyse complète unique avant que les vérifications rapides des doublons puissent être effectuées après les importations et les modifications des métadonnées."
 
 #: cps/templates/duplicates.html:531
 msgid ""
@@ -7463,11 +7463,11 @@ msgstr ""
 
 #: cps/templates/user_edit.html:466
 msgid "Created (newest first)"
-msgstr ""
+msgstr "Date de création (à partir du plus récent)"
 
 #: cps/templates/user_edit.html:467
 msgid "Created (oldest first)"
-msgstr ""
+msgstr "Date de création (à partir du plus ancien)"
 
 #: cps/templates/user_edit.html:468
 #, fuzzy

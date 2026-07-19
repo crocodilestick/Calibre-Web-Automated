@@ -376,7 +376,7 @@ def HandleSyncRequest():
             .all()
 
         new_tags_last_modified = sync_token.tags_last_modified
-            
+
         for shelf in magic_shelves:
             books, _ = magic_shelf.get_books_for_magic_shelf(
                 shelf.id, page=1, page_size=1000
@@ -1173,6 +1173,7 @@ def HandleBookDeletionRequest(book_uuid):
 @csrf.exempt
 @kobo.route("/v1/library/<dummy>", methods=["DELETE", "GET", "POST"])
 @kobo.route("/v1/library/<dummy>/preview", methods=["POST"])
+@kobo.route("/v1/user/add-device", methods=["POST"])
 def HandleUnimplementedRequest(dummy=None):
     log.debug(f"Unimplemented Library Request received: %s (%s)",
               request.base_url,
@@ -1322,7 +1323,6 @@ def HandleOidcDiscovery():
 def HandleOauthRequest(subpath=None):
     log.debug("Kobo OAuth request: %s", request.path)
     return make_calibre_web_oauth_response()
-
 
 @kobo.route("/v1/initialization")
 @requires_kobo_auth

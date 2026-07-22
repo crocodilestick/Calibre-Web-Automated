@@ -35,7 +35,7 @@ import sys
 sys.path.insert(1, '/app/calibre-web-automated/scripts/')
 from cwa_db import CWA_DB
 from .services.background_scheduler import BackgroundScheduler, DateTrigger
-from .services.worker import WorkerThread
+from .services.worker import WorkerThread, STAT_FINISH_SUCCESS, STAT_FAIL, STAT_ENDED, STAT_CANCELLED
 from .tasks.database import TaskReconnectDatabase
 from .tasks.auto_send import TaskAutoSend
 from .tasks.ops import TaskConvertLibraryRun, TaskEpubFixerRun
@@ -62,10 +62,22 @@ DIRS_JSON = "/app/calibre-web-automated/dirs.json"
 # Debounced duplicate scan timer (web process)
 _duplicate_scan_timer = None
 _duplicate_scan_lock = Lock()
+_duplicate_scan_book_ids = set()
 
 ##———————————————————————————END OF GLOBAL VARIABLES——————————————————————————##
 
 ##————————————————————————————————————————————————————————————————————————————##
+
+
+def _duplicate_full_scan_running():
+    try:
+        return WorkerThread.get_instance().has_active_task_of_type(
+            "TaskDuplicateScan",
+            extra_check=lambda task: getattr(task, "full_scan", False),
+        )
+    except Exception as ex:
+        log.debug("[cwa-duplicates] Could not check duplicate full-scan worker state: %s", str(ex))
+    return False
 ##                                                                            ##
 ##                               CWA SWITCH THEME                             ##
 ##                                                                            ##
@@ -205,6 +217,22 @@ def get_ingest_status():
                 return {'state': status_line, 'filename': '', 'timestamp': '', 'detail': ''}
     except (FileNotFoundError, IOError):
         return {'state': 'unknown', 'filename': '', 'timestamp': '', 'detail': ''}
+
+
+def _coerce_book_ids(raw_book_ids):
+    if raw_book_ids is None:
+        return []
+    if isinstance(raw_book_ids, (str, int)):
+        raw_book_ids = [raw_book_ids]
+    book_ids = []
+    for raw_book_id in raw_book_ids:
+        try:
+            book_id = int(raw_book_id)
+        except (TypeError, ValueError):
+            continue
+        if book_id > 0:
+            book_ids.append(book_id)
+    return list(dict.fromkeys(book_ids))
 
 def get_ingest_queue_size():
     """Get the number of files in the retry queue"""
@@ -357,59 +385,141 @@ def cwa_internal_queue_duplicate_scan():
     """Debounce and queue an incremental duplicate scan in the web process.
 
     Security: Limited to localhost callers (within container/host).
-    Payload JSON: {delay_seconds:int}
+    Payload JSON: {delay_seconds:int, book_ids:[int]}
     """
     try:
         remote = request.headers.get('X-Forwarded-For', request.remote_addr)
         if remote not in (None, '127.0.0.1', '::1'):
             abort(403)
 
-        db = CWA_DB()
-        enabled = bool(db.cwa_settings.get('duplicate_scan_enabled', 0))
-        frequency = db.cwa_settings.get('duplicate_scan_frequency', 'manual')
-
         data = request.get_json(force=True, silent=True) or {}
-        default_delay = db.cwa_settings.get('duplicate_scan_debounce_seconds', 5)
-        delay_seconds = int(data.get('delay_seconds', default_delay))
-        delay_seconds = max(5, min(600, delay_seconds))
-
-        if not enabled or frequency != 'after_import':
-            return jsonify({"success": True, "skipped": True, "reason": "disabled_or_manual"}), 200
-
-        global _duplicate_scan_timer
-        with _duplicate_scan_lock:
-            if _duplicate_scan_timer is not None:
-                try:
-                    _duplicate_scan_timer.cancel()
-                except Exception:
-                    pass
-
-            def _enqueue_scan():
-                try:
-                    log.debug("[cwa-duplicates] Timer fired, attempting to import TaskDuplicateScan...")
-                    from .tasks.duplicate_scan import TaskDuplicateScan
-                    log.debug("[cwa-duplicates] TaskDuplicateScan imported successfully, creating task...")
-                    task = TaskDuplicateScan(full_scan=False, trigger_type='after_import')
-                    log.debug("[cwa-duplicates] Task created, adding to WorkerThread...")
-                    WorkerThread.add('System', task, hidden=False)
-                    log.info("[cwa-duplicates] Debounced duplicate scan queued (after_import)")
-                    print("[cwa-duplicates] Debounced duplicate scan queued (after_import)", flush=True)
-                except Exception as e:
-                    log.error("[cwa-duplicates] Failed to queue debounced duplicate scan: %s", str(e))
-                    print(f"[cwa-duplicates] ERROR: Failed to queue debounced duplicate scan: {e}", flush=True)
-                    import traceback
-                    traceback.print_exc()
-
-            _duplicate_scan_timer = Timer(delay_seconds, _enqueue_scan)
-            _duplicate_scan_timer.daemon = True
-            _duplicate_scan_timer.start()
-            log.info("[cwa-duplicates] Timer started with %d second delay", delay_seconds)
-            print(f"[cwa-duplicates] Timer started with {delay_seconds} second delay", flush=True)
-
-        return jsonify({"success": True, "queued": True, "delay_seconds": delay_seconds}), 200
+        result = queue_debounced_duplicate_scan(
+            delay_seconds=data.get('delay_seconds'),
+            book_ids=data.get('book_ids'),
+        )
+        return jsonify(result), 200
     except Exception as e:
         log.error("[cwa-duplicates] Failed to schedule debounced duplicate scan: %s", str(e))
         return jsonify({"success": False, "error": str(e)}), 500
+
+
+@csrf.exempt
+@cwa_internal.route('/cwa-internal/run-duplicate-scan', methods=["POST"])
+def cwa_internal_run_duplicate_scan():
+    """Run a bounded incremental duplicate scan synchronously in the web process.
+
+    Security: Limited to localhost callers (within container/host).
+    Payload JSON: {book_ids:[int]}
+    """
+    try:
+        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
+        if remote not in (None, '127.0.0.1', '::1'):
+            abort(403)
+
+        data = request.get_json(force=True, silent=True) or {}
+        book_ids = _coerce_book_ids(data.get('book_ids'))
+        if not book_ids:
+            return jsonify({"success": True, "skipped": True, "reason": "no_book_ids"}), 200
+
+        db = CWA_DB()
+        enabled = bool(db.cwa_settings.get('duplicate_scan_enabled', 0))
+        frequency = db.cwa_settings.get('duplicate_scan_frequency', 'manual')
+        if not enabled or frequency != 'after_import':
+            return jsonify({"success": True, "skipped": True, "reason": "disabled_or_manual"}), 200
+
+        from .tasks.duplicate_scan import TaskDuplicateScan
+        task = TaskDuplicateScan(
+            full_scan=False,
+            trigger_type='after_import',
+            book_ids=book_ids,
+        )
+        task.run(None)
+        return jsonify({
+            "success": True,
+            "result_count": task.result_count,
+            "message": str(getattr(task, "message", "")),
+        }), 200
+    except Exception as e:
+        log.error("[cwa-duplicates] Failed to run synchronous duplicate scan: %s", str(e))
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+@csrf.exempt
+@cwa_internal.route('/cwa-internal/duplicate-scan-status', methods=["GET", "POST"])
+def cwa_internal_duplicate_scan_status():
+    """Expose duplicate scan worker state to localhost-only ingest helpers."""
+    try:
+        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
+        if remote not in (None, '127.0.0.1', '::1'):
+            abort(403)
+
+        return jsonify({
+            "success": True,
+            "full_scan_running": _duplicate_full_scan_running(),
+        }), 200
+    except Exception as e:
+        log.error("[cwa-duplicates] Failed to read duplicate scan status: %s", str(e))
+        return jsonify({"success": False, "error": str(e)}), 500
+
+
+def queue_debounced_duplicate_scan(delay_seconds=None, book_ids=None):
+    """Debounce and queue an incremental duplicate scan in the web process."""
+    db = CWA_DB()
+    enabled = bool(db.cwa_settings.get('duplicate_scan_enabled', 0))
+    frequency = db.cwa_settings.get('duplicate_scan_frequency', 'manual')
+    default_delay = db.cwa_settings.get('duplicate_scan_debounce_seconds', 60)
+    delay_seconds = int(delay_seconds if delay_seconds is not None else default_delay)
+    delay_seconds = max(5, min(600, delay_seconds))
+    book_ids = _coerce_book_ids(book_ids)
+
+    if not enabled or frequency != 'after_import':
+        return {"success": True, "skipped": True, "reason": "disabled_or_manual"}
+
+    global _duplicate_scan_timer, _duplicate_scan_book_ids
+    with _duplicate_scan_lock:
+        if _duplicate_scan_timer is not None:
+            try:
+                _duplicate_scan_timer.cancel()
+            except Exception:
+                pass
+
+        _duplicate_scan_book_ids.update(book_ids)
+
+        def _enqueue_scan():
+            try:
+                log.debug("[cwa-duplicates] Timer fired, attempting to import TaskDuplicateScan...")
+                from .tasks.duplicate_scan import TaskDuplicateScan
+                log.debug("[cwa-duplicates] TaskDuplicateScan imported successfully, creating task...")
+                with _duplicate_scan_lock:
+                    queued_book_ids = sorted(_duplicate_scan_book_ids) if _duplicate_scan_book_ids else None
+                    _duplicate_scan_book_ids.clear()
+                task = TaskDuplicateScan(
+                    full_scan=False,
+                    trigger_type='after_import',
+                    book_ids=queued_book_ids,
+                )
+                log.debug("[cwa-duplicates] Task created, adding to WorkerThread...")
+                WorkerThread.add('System', task, hidden=False)
+                log.info("[cwa-duplicates] Debounced duplicate scan queued (after_import)")
+                print("[cwa-duplicates] Debounced duplicate scan queued (after_import)", flush=True)
+            except Exception as e:
+                log.error("[cwa-duplicates] Failed to queue debounced duplicate scan: %s", str(e))
+                print(f"[cwa-duplicates] ERROR: Failed to queue debounced duplicate scan: {e}", flush=True)
+                import traceback
+                traceback.print_exc()
+
+        _duplicate_scan_timer = Timer(delay_seconds, _enqueue_scan)
+        _duplicate_scan_timer.daemon = True
+        _duplicate_scan_timer.start()
+        log.info("[cwa-duplicates] Timer started with %d second delay", delay_seconds)
+        print(f"[cwa-duplicates] Timer started with {delay_seconds} second delay", flush=True)
+
+    return {"success": True, "queued": True, "delay_seconds": delay_seconds}
+
+
+def duplicate_scan_debounce_pending():
+    with _duplicate_scan_lock:
+        return _duplicate_scan_timer is not None and _duplicate_scan_timer.is_alive()
 
 @csrf.exempt
 @cwa_internal.route('/cwa-internal/schedule-convert-library', methods=["POST"])
@@ -538,17 +648,17 @@ def cwa_internal_reconnect_db():
 
     Security: Only accepts localhost callers.
     """
-    try:
-        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
-        if remote not in (None, '127.0.0.1', '::1'):
-            abort(403)
+    remote = request.headers.get('X-Forwarded-For', request.remote_addr)
+    if remote not in (None, '127.0.0.1', '::1'):
+        abort(403)
 
+    try:
         task = TaskReconnectDatabase()
         WorkerThread.add(None, task, hidden=True)
         return jsonify({"status": "enqueued"}), 200
     except Exception as e:
-        log.error(f"Internal reconnect-db failed: {e}")
-        return jsonify({"error": str(e)}), 400
+        log.exception("Internal reconnect-db failed")
+        return jsonify({"error": str(e)}), 500
 
 @csrf.exempt
 @cwa_stats.route('/cwa-scheduled/cancel', methods=["POST"])
@@ -744,7 +854,7 @@ def set_cwa_settings():
                         elif setting == 'archived_cleanup_schedule_hour':
                             result[setting] = cwa_db.cwa_settings.get(setting, 3)  # Default to 3 AM
                         elif setting == 'duplicate_scan_debounce_seconds':
-                            result[setting] = cwa_db.cwa_settings.get(setting, 30)
+                            result[setting] = cwa_db.cwa_settings.get(setting, 60)
                         elif setting == 'cover_download_max_mb':
                             result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 MB
                 else:
@@ -763,7 +873,7 @@ def set_cwa_settings():
                     elif setting == 'archived_cleanup_schedule_hour':
                         result[setting] = cwa_db.cwa_settings.get(setting, 3)  # Default to 3 AM
                     elif setting == 'duplicate_scan_debounce_seconds':
-                        result[setting] = cwa_db.cwa_settings.get(setting, 30)
+                        result[setting] = cwa_db.cwa_settings.get(setting, 60)
                     elif setting == 'cover_download_max_mb':
                         result[setting] = cwa_db.cwa_settings.get(setting, 15)  # Default to 15 MB
 
@@ -860,8 +970,26 @@ def set_cwa_settings():
             config.config_kobo_sync_magic_shelves = 'config_kobo_sync_magic_shelves' in request.form
             config.save()
 
+            duplicate_criteria_changed = False
+            try:
+                from .duplicate_index import get_criteria_fingerprint
+                submitted_settings = dict(cwa_settings)
+                submitted_settings.update(result)
+                duplicate_criteria_changed = (
+                    get_criteria_fingerprint(cwa_settings) != get_criteria_fingerprint(submitted_settings)
+                )
+            except Exception as e:
+                log.warning("[cwa-duplicates] Could not compare duplicate criteria settings: %s", str(e))
+
             cwa_db.update_cwa_settings(result)
             cwa_settings = cwa_db.get_cwa_settings()
+
+            if duplicate_criteria_changed:
+                try:
+                    from .duplicate_index import mark_duplicate_index_pending
+                    mark_duplicate_index_pending("duplicate criteria settings changed")
+                except Exception as e:
+                    log.warning("[cwa-duplicates] Could not mark duplicate index pending: %s", str(e))
 
             # If KOReader sync was just enabled, ensure required tables exist
             if not previous_koreader_enabled and bool(cwa_settings.get('koreader_sync_enabled', 0)):
@@ -893,8 +1021,22 @@ def set_cwa_settings():
 
         elif request.form['submit_button'] == "Apply Default Settings":
             cwa_db = CWA_DB()
+            duplicate_criteria_changed = False
+            try:
+                from .duplicate_index import get_criteria_fingerprint
+                previous_fingerprint = get_criteria_fingerprint(cwa_settings)
+                default_settings = dict(cwa_db.cwa_default_settings)
+                duplicate_criteria_changed = previous_fingerprint != get_criteria_fingerprint(default_settings)
+            except Exception as e:
+                log.warning("[cwa-duplicates] Could not compare duplicate criteria defaults: %s", str(e))
             cwa_db.set_default_settings(force=True)
             cwa_settings = cwa_db.get_cwa_settings()
+            if duplicate_criteria_changed:
+                try:
+                    from .duplicate_index import mark_duplicate_index_pending
+                    mark_duplicate_index_pending("duplicate criteria settings changed")
+                except Exception as e:
+                    log.warning("[cwa-duplicates] Could not mark duplicate index pending: %s", str(e))
 
     elif request.method == 'GET':
         cwa_db = CWA_DB()

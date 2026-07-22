@@ -17,12 +17,19 @@ import fcntl
 import threading
 from pathlib import Path
 
-from cwa_db import CWA_DB
-from kindle_epub_fixer import EPUBFixer
-import audiobook
-import requests
-
-# Optional: enable GDrive sync and auto-send by importing cps modules when available
+# ── Lazy-initialization sentinels ──────────────────────────────────────────
+# Heavy modules (GDrive sync, auto-send, metadata fetch, audiobook support,
+# EPUB fixing) are NOT imported at module level.  All globals below start as
+# None / empty and are populated by initialize_runtime().  This allows main()
+# to fast-exit on missing/stale ingest targets without importing cps.* (which
+# triggers Flask app init) or creating process-lock files.
+#
+# IMPORTANT:  Any code path that uses these globals MUST be reachable only
+# AFTER initialize_runtime() has returned True.  If you add a new function
+# that touches cps.*, cwa_db, epub_fixer, audiobook, or requests, ensure
+# it is only called from add_book_to_library(), add_format_to_book(), or
+# another path gated by initialize_runtime().
+# ───────────────────────────────────────────────────────────────────────────
 _GDRIVE_AVAILABLE = False
 _CPS_AVAILABLE = False
 _gdriveutils = None
@@ -31,6 +38,14 @@ fetch_and_apply_metadata = None
 TaskAutoSend = None
 WorkerThread = None
 _ub = None
+CWA_DB = None
+EPUBFixer = None
+audiobook = None
+requests = None
+backup_destinations = {}
+process_lock = None
+_runtime_initialized = False
+_runtime_init_attempted = False
 
 # Debounced duplicate scan timer
 _duplicate_scan_timer = None
@@ -173,12 +188,10 @@ class ProcessLock:
             except:
                 pass
 
-# Global lock instance
-process_lock = ProcessLock()
-
 def cleanup_lock():
     """Cleanup function for atexit"""
-    process_lock.release()
+    if process_lock:
+        process_lock.release()
 
 # Register cleanup function
 atexit.register(cleanup_lock)
@@ -224,49 +237,133 @@ def _load_cps_settings_from_app_db() -> None:
     except Exception as e:
         print(f"[ingest-processor] WARN: Could not read CPS settings from app.db ({app_db_path}): {e}", flush=True)
 
-try:
-    # Ensure project root is on sys.path to import cps
+def _ensure_project_root_on_path() -> None:
     cps_path = os.path.dirname(os.path.dirname(__file__))
     if cps_path not in sys.path:
         sys.path.append(cps_path)
 
-    # Import GDrive functionality
-    try:
-        from cps import gdriveutils as _gdriveutils, config as _cps_config
-        _GDRIVE_AVAILABLE = True
-        print("[ingest-processor] GDrive functionality available", flush=True)
-        _load_cps_settings_from_app_db()
-    except (ImportError, TypeError, AttributeError) as e:
-        print(f"[ingest-processor] GDrive functionality not available: {e}", flush=True)
-        _gdriveutils = None
-        _cps_config = None
-        _GDRIVE_AVAILABLE = False
 
-    # Import auto-send and metadata functionality
+def _load_runtime_dependencies() -> None:
+    global CWA_DB, EPUBFixer, audiobook, requests
+    if CWA_DB and EPUBFixer and audiobook and requests:
+        return
+
+    from cwa_db import CWA_DB as _CWA_DB
+    from kindle_epub_fixer import EPUBFixer as _EPUBFixer
+    import audiobook as _audiobook
+    import requests as _requests
+
+    CWA_DB = _CWA_DB
+    EPUBFixer = _EPUBFixer
+    audiobook = _audiobook
+    requests = _requests
+
+
+def _load_optional_cps_modules() -> None:
+    global _GDRIVE_AVAILABLE, _CPS_AVAILABLE
+    global _gdriveutils, _cps_config, fetch_and_apply_metadata, TaskAutoSend, WorkerThread, _ub
+
+    if _GDRIVE_AVAILABLE and _CPS_AVAILABLE:
+        return
+
     try:
-        from cps.metadata_helper import fetch_and_apply_metadata
-        from cps.tasks.auto_send import TaskAutoSend
-        from cps.services.worker import WorkerThread
-        from cps import ub as _ub
-        from cps.calibre_init import init_calibre_db_from_app_db
-        init_calibre_db_from_app_db(get_app_db_path())
-        _CPS_AVAILABLE = True
-        print("[ingest-processor] Auto-send and metadata functionality available", flush=True)
-    except ImportError as e:
-        print(f"[ingest-processor] Auto-send/metadata functionality not available: {e}", flush=True)
-        fetch_and_apply_metadata = None
-        TaskAutoSend = None
-        WorkerThread = None
-        _ub = None
+        _ensure_project_root_on_path()
+
+        # Import GDrive functionality
+        try:
+            from cps import gdriveutils as loaded_gdriveutils, config as loaded_cps_config
+            _gdriveutils = loaded_gdriveutils
+            _cps_config = loaded_cps_config
+            _GDRIVE_AVAILABLE = True
+            print("[ingest-processor] GDrive functionality available", flush=True)
+            _load_cps_settings_from_app_db()
+        except (ImportError, TypeError, AttributeError) as e:
+            print(f"[ingest-processor] GDrive functionality not available: {e}", flush=True)
+            _gdriveutils = None
+            _cps_config = None
+            _GDRIVE_AVAILABLE = False
+
+        # Import auto-send and metadata functionality
+        try:
+            from cps.metadata_helper import fetch_and_apply_metadata as loaded_fetch_and_apply_metadata
+            from cps.tasks.auto_send import TaskAutoSend as LoadedTaskAutoSend
+            from cps.services.worker import WorkerThread as LoadedWorkerThread
+            from cps import ub as loaded_ub
+            from cps.calibre_init import init_calibre_db_from_app_db
+            init_calibre_db_from_app_db(get_app_db_path())
+            fetch_and_apply_metadata = loaded_fetch_and_apply_metadata
+            TaskAutoSend = LoadedTaskAutoSend
+            WorkerThread = LoadedWorkerThread
+            _ub = loaded_ub
+            _CPS_AVAILABLE = True
+            print("[ingest-processor] Auto-send and metadata functionality available", flush=True)
+        except ImportError as e:
+            print(f"[ingest-processor] Auto-send/metadata functionality not available: {e}", flush=True)
+            fetch_and_apply_metadata = None
+            TaskAutoSend = None
+            WorkerThread = None
+            _ub = None
+            _CPS_AVAILABLE = False
+
+    except Exception as e:
+        print(f"[ingest-processor] WARN: Unexpected error during CPS path setup: {e}", flush=True)
+        _GDRIVE_AVAILABLE = False
         _CPS_AVAILABLE = False
 
-except Exception as e:
-    print(f"[ingest-processor] WARN: Unexpected error during CPS path setup: {e}", flush=True)
-    # Only disable if there's a fundamental path/import issue
-    if '_GDRIVE_AVAILABLE' not in locals():
-        _GDRIVE_AVAILABLE = False
-    if '_CPS_AVAILABLE' not in locals():
-        _CPS_AVAILABLE = False
+
+def _ensure_processed_books_dirs() -> None:
+    """Ensure processed backups directory structure exists so backups never crash on missing folders."""
+    try:
+        processed_root = "/config/processed_books"
+        os.makedirs(processed_root, exist_ok=True)
+        for name in ("converted", "imported", "fixed_originals", "failed"):
+            os.makedirs(os.path.join(processed_root, name), exist_ok=True)
+    except Exception as e:
+        print(f"[ingest-processor] WARN: Could not ensure processed_books directories: {e}", flush=True)
+
+
+def _load_backup_destinations() -> None:
+    global backup_destinations
+    try:
+        backup_destinations = {
+            entry.name: entry.path
+            for entry in os.scandir("/config/processed_books")
+            if entry.is_dir()
+        }
+    except FileNotFoundError:
+        # Fallback for test environments where /config might not exist
+        backup_destinations = {}
+    except Exception as e:
+        print(f"[ingest-processor] WARN: Could not scan processed_books: {e}", flush=True)
+        backup_destinations = {}
+
+
+def initialize_runtime() -> bool:
+    """Initialize heavy ingest runtime after the target path has passed cheap validation."""
+    global process_lock, _runtime_initialized, _runtime_init_attempted
+
+    if _runtime_initialized:
+        return True
+    if _runtime_init_attempted:
+        return False
+    _runtime_init_attempted = True
+
+    _ensure_project_root_on_path()
+    _load_runtime_dependencies()
+    _load_optional_cps_modules()
+
+    process_lock = ProcessLock()
+    if not process_lock.acquire(timeout=10):
+        return False
+
+    _ensure_processed_books_dirs()
+    _load_backup_destinations()
+    _runtime_initialized = True
+    return True
+
+
+def _is_missing_ingest_target(filepath: str) -> bool:
+    return not os.path.isfile(filepath) and not os.path.isdir(filepath)
 
 def gdrive_sync_if_enabled():
     """Sync Calibre library to Google Drive if enabled in app config."""
@@ -276,33 +373,6 @@ def gdrive_sync_if_enabled():
             print("[ingest-processor] GDrive sync completed.", flush=True)
         except Exception as e:
             print(f"[ingest-processor] WARN: GDrive sync failed: {e}", flush=True)
-
-# Acquire process lock to prevent concurrent execution
-if not process_lock.acquire(timeout=10):
-    sys.exit(2)
-
-# Ensure processed backups directory structure exists so backups never crash on missing folders
-try:
-    _processed_root = "/config/processed_books"
-    os.makedirs(_processed_root, exist_ok=True)
-    for _name in ("converted", "imported", "fixed_originals", "failed"):
-        os.makedirs(os.path.join(_processed_root, _name), exist_ok=True)
-except Exception as e:
-    print(f"[ingest-processor] WARN: Could not ensure processed_books directories: {e}", flush=True)
-
-# Generates dictionary of available backup directories and their paths
-try:
-    backup_destinations = {
-            entry.name: entry.path
-            for entry in os.scandir("/config/processed_books")
-            if entry.is_dir()
-        }
-except FileNotFoundError:
-    # Fallback for test environments where /config might not exist
-    backup_destinations = {}
-except Exception as e:
-    print(f"[ingest-processor] WARN: Could not scan processed_books: {e}", flush=True)
-    backup_destinations = {}
 
 def get_internal_api_url(path):
     """Construct internal API URL, respecting SSL configuration"""
@@ -341,6 +411,90 @@ def get_internal_api_url(path):
 def get_internal_api_headers():
     """Provide headers that satisfy localhost-only internal endpoint checks."""
     return {"X-Forwarded-For": "127.0.0.1"}
+
+
+def get_ingest_batch_dirty_file() -> str:
+    return os.environ.get("CWA_INGEST_BATCH_DIRTY_FILE", "/config/cwa_ingest_batch_dirty")
+
+
+def mark_ingest_batch_dirty() -> None:
+    dirty_file = get_ingest_batch_dirty_file()
+    try:
+        dirty_dir = os.path.dirname(dirty_file)
+        if dirty_dir:
+            os.makedirs(dirty_dir, exist_ok=True)
+        with open(dirty_file, "w", encoding="utf-8") as marker:
+            marker.write(f"dirty_at={int(time.time())}\n")
+        print(f"[ingest-processor] Marked ingest batch follow-up dirty: {dirty_file}", flush=True)
+    except Exception as e:
+        print(f"[ingest-processor] WARN: Failed to mark ingest batch follow-up dirty: {e}", flush=True)
+
+
+def _post_internal_endpoint(path: str, payload: dict | None = None) -> bool:
+    global requests
+    if requests is None:
+        import requests as loaded_requests
+        requests = loaded_requests
+
+    retryable_statuses = (500, 503)
+    retryable_exceptions = (requests.exceptions.Timeout, requests.exceptions.ConnectionError)
+    max_attempts = 2 if path == "/cwa-internal/reconnect-db" else 1
+
+    for attempt in range(1, max_attempts + 1):
+        try:
+            resp = requests.post(
+                get_internal_api_url(path),
+                json=payload,
+                headers=get_internal_api_headers(),
+                timeout=5,
+                verify=False,
+            )
+            if resp.status_code == 200:
+                return True
+            if resp.status_code in retryable_statuses and attempt < max_attempts:
+                print(
+                    f"[ingest-processor] WARN: Batch follow-up endpoint {path} returned "
+                    f"{resp.status_code}; retrying once",
+                    flush=True,
+                )
+                time.sleep(1)
+                continue
+            print(
+                f"[ingest-processor] WARN: Batch follow-up endpoint {path} returned {resp.status_code}",
+                flush=True,
+            )
+            return False
+        except retryable_exceptions as e:
+            if attempt < max_attempts:
+                print(
+                    f"[ingest-processor] WARN: Batch follow-up endpoint {path} failed transiently: "
+                    f"{e}; retrying once",
+                    flush=True,
+                )
+                time.sleep(1)
+                continue
+            print(f"[ingest-processor] WARN: Batch follow-up endpoint {path} failed: {e}", flush=True)
+            return False
+        except Exception as e:
+            print(f"[ingest-processor] WARN: Batch follow-up endpoint {path} failed: {e}", flush=True)
+            return False
+    return False
+
+
+def run_post_batch_follow_up() -> int:
+    """Run follow-up work once the ingest service observes a quiet dirty batch."""
+    print("[ingest-processor] Running post-batch follow-up", flush=True)
+    checks = [
+        _post_internal_endpoint("/cwa-internal/reconnect-db"),
+        _post_internal_endpoint("/duplicates/invalidate-cache"),
+        _post_internal_endpoint("/cwa-internal/queue-duplicate-scan"),
+    ]
+    if all(checks):
+        print("[ingest-processor] Post-batch follow-up completed", flush=True)
+        return 0
+    print("[ingest-processor] WARN: Post-batch follow-up incomplete", flush=True)
+    return 1
+
 
 class NewBookProcessor:
     def __init__(self, filepath: str):
@@ -811,6 +965,8 @@ class NewBookProcessor:
             self.db.import_add_entry(staged_path.stem,
                                     str(self.cwa_settings["auto_backup_imports"]))
 
+            mark_ingest_batch_dirty()
+
             # Optional post-import GDrive sync
             gdrive_sync_if_enabled()
 
@@ -825,16 +981,6 @@ class NewBookProcessor:
                 self.trigger_auto_send_if_enabled(book_id=self.last_added_book_id, book_path=book_path)
             else:
                 self.trigger_auto_send_if_enabled(staged_path.stem, book_path)
-
-            # CRITICAL FIX: Refresh Calibre-Web's database session to make new books visible
-            # This solves the issue where multiple books don't appear until container restart
-            self.refresh_cwa_session()
-
-            # Invalidate duplicate cache since a new book was added
-            self.invalidate_duplicate_cache()
-
-            # Debounced duplicate scan (after import)
-            self.schedule_debounced_duplicate_scan()
 
             # Generate KOReader sync checksums for the imported book
             if self.last_added_book_id is not None:
@@ -910,6 +1056,7 @@ class NewBookProcessor:
                 "calibredb", "add_format", str(book_id), str(staged_path), f"--library-path={self.library_dir}"
             ], env=self.calibre_env, check=True, capture_output=True, text=True)
             print(f"[ingest-processor] Added new format for book id {book_id}: {os.path.basename(str(staged_path))}", flush=True)
+            mark_ingest_batch_dirty()
             if self.cwa_settings['auto_backup_imports']:
                 self.backup(str(staged_path), backup_type="imported")
             # Optional post-add-format GDrive sync
@@ -1152,98 +1299,6 @@ class NewBookProcessor:
             print(f"[ingest-processor] Error generating book checksums: {e}", flush=True)
             # Don't fail the import if checksum generation fails
 
-
-    def refresh_cwa_session(self) -> None:
-        """Refresh Calibre-Web's database session to make newly added books visible
-
-        This solves the issue where external calibredb adds aren't immediately visible
-        in Calibre-Web until container restart.
-        """
-        # Route DB reconnect via the long-lived web process to avoid cross-process config/session issues
-        try:
-            url = get_internal_api_url("/cwa-internal/reconnect-db")
-            print("[ingest-processor] Refreshing Calibre-Web database session...", flush=True)
-            resp = requests.post(
-                url,
-                headers=get_internal_api_headers(),
-                timeout=5,
-                verify=False,
-            )
-            if resp.status_code == 200:
-                print("[ingest-processor] Database session refresh enqueued", flush=True)
-            else:
-                print(f"[ingest-processor] WARN: DB refresh endpoint returned {resp.status_code}", flush=True)
-        except Exception as e:
-            print(f"[ingest-processor] WARN: Failed to call DB refresh endpoint: {e}", flush=True)
-            print("[ingest-processor] Continuing despite session refresh failure - books may require manual refresh", flush=True)
-
-
-    def invalidate_duplicate_cache(self) -> None:
-        """Invalidate the duplicate detection cache after adding a new book
-
-        This marks the cache as stale (scan_pending=1) but does NOT trigger an automatic scan.
-        Users must manually trigger a scan from the /duplicates page, or wait for scheduled scans.
-        """
-        try:
-            url = get_internal_api_url("/duplicates/invalidate-cache")
-            resp = requests.post(
-                url,
-                headers=get_internal_api_headers(),
-                timeout=5,
-                verify=False,
-            )
-            if resp.status_code == 200:
-                print("[ingest-processor] Duplicate cache invalidated", flush=True)
-            else:
-                print(f"[ingest-processor] WARN: Duplicate cache invalidation returned {resp.status_code}", flush=True)
-        except Exception as e:
-            # Don't fail the import if cache invalidation fails
-            print(f"[ingest-processor] WARN: Failed to invalidate duplicate cache: {e}", flush=True)
-
-
-    def schedule_debounced_duplicate_scan(self) -> None:
-        """Schedule a debounced background duplicate scan if enabled.
-
-        Uses a 60-second timer that resets on each new import to avoid repeated scans
-        during batch ingest.
-        """
-        try:
-            enabled = bool(self.cwa_settings.get('duplicate_scan_enabled', 0))
-            frequency = self.cwa_settings.get('duplicate_scan_frequency', 'manual')
-
-            if not enabled or frequency != 'after_import':
-                return
-            # Schedule in the long-lived web process so the debounce survives
-            # the short-lived ingest process exiting.
-            try:
-                delay_seconds = int(self.cwa_settings.get('duplicate_scan_debounce_seconds', 5))
-                delay_seconds = max(5, min(600, delay_seconds))
-                url = get_internal_api_url("/cwa-internal/queue-duplicate-scan")
-                payload = {"delay_seconds": delay_seconds}
-                resp = requests.post(
-                    url,
-                    json=payload,
-                    headers=get_internal_api_headers(),
-                    timeout=5,
-                    verify=False,
-                )
-                if resp.status_code == 200:
-                    try:
-                        body = resp.json()
-                        if body.get('queued'):
-                            print("[ingest-processor] Debounced duplicate scan scheduled via web process", flush=True)
-                        elif body.get('skipped'):
-                            print("[ingest-processor] Duplicate scan scheduling skipped (disabled/manual)", flush=True)
-                    except Exception:
-                        print("[ingest-processor] Debounced duplicate scan scheduled via web process", flush=True)
-                else:
-                    print(f"[ingest-processor] WARN: Duplicate scan scheduling returned {resp.status_code}", flush=True)
-            except Exception as e:
-                print(f"[ingest-processor] WARN: Failed to schedule duplicate scan via web API: {e}", flush=True)
-        except Exception as e:
-            print(f"[ingest-processor] WARN: Failed to schedule debounced duplicate scan: {e}", flush=True)
-
-
     def set_library_permissions(self):
         try:
             nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
@@ -1266,6 +1321,9 @@ def main(filepath=None):
             sys.exit(1)
         filepath = sys.argv[1]
 
+    if filepath == "--post-batch-follow-up":
+        return run_post_batch_follow_up()
+
     nbp = None
     skip_delete = False
     try:
@@ -1279,7 +1337,11 @@ def main(filepath=None):
         # Ignore sidecar manifests entirely (handled when the real file is processed)
         if filename.endswith(".cwa.json") or filename.endswith(".cwa.failed.json"):
             print(f"[ingest-processor] Skipping sidecar manifest file: {filename}", flush=True)
-            return
+            return 0
+
+        if _is_missing_ingest_target(filepath):
+            print(f"[ingest-processor] Skipping missing ingest target: {filepath}", flush=True)
+            return 0
 
         if len(name) > allowed_len:
             new_name = name[:allowed_len] + ext
@@ -1289,11 +1351,17 @@ def main(filepath=None):
         ###############################################################################################
         if os.path.isdir(filepath) and Path(filepath).exists():
             # print(os.listdir(filepath))
+            exit_code = 0
             for filename in os.listdir(filepath):
                 f = os.path.join(filepath, filename)
                 if Path(f).exists():
-                    main(f)
-            return
+                    child_exit = main(f)
+                    if child_exit:
+                        exit_code = int(child_exit)
+            return exit_code
+
+        if not initialize_runtime():
+            return 2
 
         nbp = NewBookProcessor(filepath)
 
@@ -1306,7 +1374,7 @@ def main(filepath=None):
             if not ready:
                 print(f"[ingest-processor] WARN: File did not become ready in time or vanished (after {timeout_minutes} minutes): {nbp.filename}", flush=True)
                 skip_delete = True
-                return
+                return 0
 
         # Sidecar manifest handling for explicit actions (e.g., add_format)
         manifest_path = filepath + ".cwa.json"
@@ -1347,7 +1415,7 @@ def main(filepath=None):
                     
                     nbp.set_library_permissions()
                     nbp.delete_current_file()
-                    return
+                    return 0
         except Exception as e:
             print(f"[ingest-processor] Error processing manifest file: {e}", flush=True)
             # Continue with normal processing if manifest handling fails
@@ -1359,7 +1427,7 @@ def main(filepath=None):
             # Do NOT delete ignored temporary files; they may be renamed shortly (e.g. .uploading -> .epub)
             print(f"[ingest-processor] Skipping ignored/temporary file (no action taken): {nbp.filename}", flush=True)
             skip_delete = True
-            return
+            return 0
 
         if nbp.is_target_format: # File can just be imported
             print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, importing now...", flush=True)
@@ -1413,6 +1481,8 @@ def main(filepath=None):
             else:
                 print(f"[ingest-processor]: Cannot convert {nbp.filepath}. {nbp.input_format} is currently unsupported / is not a known ebook format.", flush=True)
 
+        return 0
+
     except Exception as e:
         print(f"[ingest-processor] Unexpected error during processing: {e}", flush=True)
         raise
@@ -1444,4 +1514,4 @@ def main(filepath=None):
                 pass  # Ignore errors in cleanup
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

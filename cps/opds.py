@@ -712,13 +712,25 @@ def get_database_stats():
     return Response(json.dumps(stat), mimetype="application/json")
 
 
-@opds.route("/opds/thumb_240_240/<book_id>")
-@opds.route("/opds/cover_240_240/<book_id>")
-@opds.route("/opds/cover_90_90/<book_id>")
 @opds.route("/opds/cover/<book_id>")
 @requires_basic_auth_if_no_ano
 def feed_get_cover(book_id):
-    return get_book_cover(book_id)
+    # feed.xml / json.txt link every book's cover AND thumbnail rel to this one
+    # route -- request a cached resolution instead of the uncached original.
+    return get_book_cover(book_id, constants.COVER_THUMBNAIL_LARGE)
+
+
+@opds.route("/opds/thumb_240_240/<book_id>")
+@opds.route("/opds/cover_240_240/<book_id>")
+@requires_basic_auth_if_no_ano
+def feed_get_cover_240(book_id):
+    return get_book_cover(book_id, constants.COVER_THUMBNAIL_MEDIUM)
+
+
+@opds.route("/opds/cover_90_90/<book_id>")
+@requires_basic_auth_if_no_ano
+def feed_get_cover_90(book_id):
+    return get_book_cover(book_id, constants.COVER_THUMBNAIL_SMALL)
 
 
 @opds.route("/opds/readbooks")

@@ -55,3 +55,11 @@ class TestFeedGetCover:
         called_resolution = mock_get_book_cover.call_args.args[1]
         assert called_resolution, "resolution passed to get_book_cover must be truthy"
         assert called_resolution != constants.COVER_THUMBNAIL_ORIGINAL
+
+
+# ============================================================================
+# Test Markers
+# ============================================================================
+
+# Mark all tests in this module as unit tests
+pytestmark = pytest.mark.unit

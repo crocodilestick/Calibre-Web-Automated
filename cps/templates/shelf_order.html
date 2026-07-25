@@ -10,7 +10,7 @@
             <div class="row">
               <div class="col-lg-2 col-sm-4 hidden-xs">
                 {% if entry['visible'] %}
-                  <img title="{{entry['Books']['title']}}" class="cover-height" src="{{ url_for('web.get_cover', book_id=entry['Books']['id']) }}">
+                  <img title="{{entry['Books']['title']}}" class="cover-height" src="{{ url_for('web.get_cover', book_id=entry['Books']['id'], resolution='sm') }}">
                 {% else %}
                   <img title="{{entry['Books']['title']}}" class="cover-height" src="{{ url_for('static', filename='generic_cover.svg') }}">
                 {% endif %}

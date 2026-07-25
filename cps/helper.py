@@ -883,10 +883,7 @@ def get_book_cover_internal(book, resolution=None):
     if book and book.has_cover:
 
         # Send the book cover thumbnail if it exists in cache
-        # (resolution=0 is COVER_THUMBNAIL_ORIGINAL -- a plain truthiness check
-        # treats that as "no resolution requested" and skips the cache/on-demand
-        # generation entirely, so this must be `is not None`)
-        if resolution is not None:
+        if resolution:
             cache = fs.FileSystem()
             # Check for both webp and jpg thumbnails, generate missing ones
             webp_thumb = get_book_cover_thumbnail_by_format(book, resolution, 'webp')

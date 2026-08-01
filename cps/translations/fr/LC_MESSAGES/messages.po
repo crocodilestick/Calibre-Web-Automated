@@ -43,7 +43,7 @@ msgstr "Statistiques"
 
 #: cps/admin.py:128
 msgid "Calibre database unavailable. Please reconfigure the library path."
-msgstr ""
+msgstr "La base de données Calibre est introuvable. Veuillez vérifier le chemin."
 
 #: cps/admin.py:180
 msgid "Server restarted, please reload page."
@@ -112,12 +112,12 @@ msgstr "Correspond à %(action)s"
 
 #: cps/admin.py:439
 msgid "No pending matches to reject"
-msgstr ""
+msgstr "Aucune correspondance en attente"
 
 #: cps/admin.py:445
 #, python-format
 msgid "Rejected %(count)s match(es)"
-msgstr ""
+msgstr "%(count)s correspondances rejetées"
 
 #: cps/admin.py:482
 #, python-brace-format
@@ -824,17 +824,17 @@ msgstr "Échec de la connexion : %(error)s"
 
 #: cps/admin.py:2975
 msgid "Restore failed: Calibre library path is not configured."
-msgstr ""
+msgstr "Echec de restoration : le chemin de la librairie Calibre est manquant"
 
 #: cps/admin.py:2980
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
-msgstr ""
+msgstr "Echec de restoration : metadata.db introuvable à l'emplacement %(path)s"
 
 #: cps/admin.py:2985
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
-msgstr ""
+msgstr "Echec de restoration : app.db introuvable à l'emplacement %(path)s"
 
 #: cps/admin.py:3057 cps/admin.py:3097
 #, fuzzy, python-format
@@ -843,7 +843,7 @@ msgstr "Échec de la connexion : %(error)s"
 
 #: cps/admin.py:3074
 msgid "Restore completed but app.db cleanup failed. See logs for details."
-msgstr ""
+msgstr "Restoration terminée mais échec du nettoyage de app.db. Consultez les logs pour plus de détails."
 
 #: cps/admin.py:3093
 #, python-format
@@ -851,6 +851,8 @@ msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
 "data was reset."
 msgstr ""
+"Restoration terminée. Les sauvegardes et journal de restoration sont enregistrés dans %(dir)s."
+"Toutes les données liées aux livres ont été réinitialisées."
 
 #: cps/constants.py:207
 msgid "Czech"
@@ -1250,12 +1252,15 @@ msgstr "Stratégie de résolution non valide"
 msgid ""
 "Import is in progress. Execute duplicate resolution after ingest finishes."
 msgstr ""
+"Import en cours. Relancez une nouvelle résolution une fois l'ingestion terminée."
 
 #: cps/editbooks.py:112 cps/editbooks.py:169
 msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
 msgstr ""
+"Le répertoire d'ingestion n'est pas accessible en écriture."
+"Vérifiez les permissions de votre dossier /cwa-book-ingest."
 
 #: cps/editbooks.py:121
 msgid "Missing or invalid book id for format upload"
@@ -1565,7 +1570,7 @@ msgstr ""
 #: cps/helper.py:1067 cps/helper.py:1075
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
-msgstr ""
+msgstr "L'image de couverture dépasse la taille maximale de %(size)s Mo"
 
 #: cps/helper.py:1086
 msgid "Error Downloading Cover"

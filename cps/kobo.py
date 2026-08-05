@@ -836,7 +836,7 @@ def sync_shelves(sync_token, sync_results, only_kobo_shelves=False):
         for shelf in ub.session.query(ub.Shelf).filter(
             func.datetime(ub.Shelf.last_modified) > sync_token.tags_last_modified,
             ub.Shelf.user_id == current_user.id,
-            not ub.Shelf.kobo_sync
+            ub.Shelf.kobo_sync == False
         ):
             sync_results.append({
                 "DeletedTag": {

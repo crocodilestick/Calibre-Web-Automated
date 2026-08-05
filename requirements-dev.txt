@@ -11,6 +11,7 @@ pytest-xdist>=3.5.0
 
 # Integration testing
 testcontainers>=3.7.0
+docker>=7,<8                  # Required for testcontainers DockerCompose; explicit pin avoids CI cache issues
 requests>=2.31.0
 requests-mock>=1.11.0
 freezegun>=1.4.0

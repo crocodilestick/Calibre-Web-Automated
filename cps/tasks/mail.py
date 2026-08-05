@@ -259,10 +259,15 @@ class TaskEmail(CalibreTask):
             try:
                 if config.config_binariesdir and config.config_embed_metadata:
                     data_path, data_file = do_calibre_export(self.book_id, extension)
-                    datafile = os.path.join(data_path, data_file + "." + extension)
+                    if data_path and data_file:
+                        export_file = os.path.join(data_path, data_file + "." + extension)
+                        if os.path.isfile(export_file):
+                            datafile = export_file
+                        else:
+                            log.warning('Metadata export produced no file, sending without embedded metadata')
                 with open(datafile, 'rb') as file_:
                     data = file_.read()
-                if config.config_binariesdir and config.config_embed_metadata:
+                if config.config_binariesdir and config.config_embed_metadata and datafile != os.path.join(calibre_path, book_path, filename):
                     os.remove(datafile)
             except IOError as e:
                 log.error_or_exception(e, stacklevel=3)

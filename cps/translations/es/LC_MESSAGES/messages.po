@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-07-05 13:13+0000\n"
+"POT-Creation-Date: 2026-08-05 16:15+0200\n"
 "PO-Revision-Date: 2025-11-17 12:21-0300\n"
 "Last-Translator: minakmostoles <xxx@xxx.com>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -2730,7 +2730,7 @@ msgid "Duplicate scan completed: %(count)s groups auto-resolved"
 msgstr ""
 "Escaneo de duplicados completado: %(count)s grupos resueltos automáticamente"
 
-#: cps/tasks/mail.py:275
+#: cps/tasks/mail.py:295
 msgid "E-mail"
 msgstr "Correo electrónico"
 
@@ -6498,7 +6498,7 @@ msgstr "Cerrar sesión"
 msgid "Switch Theme"
 msgstr "Cambiar Tema"
 
-#: cps/templates/layout.html:166 cps/templates/read.html:78
+#: cps/templates/layout.html:166 cps/templates/read.html:79
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 msgid "Settings"
 msgstr "Ajustes"
@@ -6755,63 +6755,63 @@ msgstr "Catálogo de eBooks de Calibre-Web"
 msgid "epub Reader"
 msgstr "lector de epub"
 
-#: cps/templates/read.html:84 cps/templates/readcbr.html:104
+#: cps/templates/read.html:85 cps/templates/readcbr.html:104
 msgid "Light"
 msgstr "Claro"
 
-#: cps/templates/read.html:86 cps/templates/readcbr.html:105
+#: cps/templates/read.html:87 cps/templates/readcbr.html:105
 msgid "Dark"
 msgstr "Oscuro"
 
-#: cps/templates/read.html:88
+#: cps/templates/read.html:89
 msgid "Sepia"
 msgstr "Sepia"
 
-#: cps/templates/read.html:90
+#: cps/templates/read.html:91
 msgid "Black"
 msgstr "Negro"
 
-#: cps/templates/read.html:95
+#: cps/templates/read.html:96
 msgid "Reflow text when sidebars are open."
 msgstr "Reajustar el texto cuando las barras laterales están abiertas."
 
-#: cps/templates/read.html:100
+#: cps/templates/read.html:101
 msgid "Font Sizes"
 msgstr "Tamaños de letra"
 
-#: cps/templates/read.html:105
+#: cps/templates/read.html:106
 msgid "Font"
 msgstr "Fuente"
 
-#: cps/templates/read.html:106
+#: cps/templates/read.html:107
 msgid "Default"
 msgstr "Por defecto"
 
-#: cps/templates/read.html:107
+#: cps/templates/read.html:108
 msgid "Yahei"
 msgstr "Yahei"
 
-#: cps/templates/read.html:108
+#: cps/templates/read.html:109
 msgid "SimSun"
 msgstr "SimSun"
 
-#: cps/templates/read.html:109
+#: cps/templates/read.html:110
 msgid "KaiTi"
 msgstr "KaiTi"
 
-#: cps/templates/read.html:110
+#: cps/templates/read.html:111
 msgid "Arial"
 msgstr "Arial"
 
-#: cps/templates/read.html:113
+#: cps/templates/read.html:114
 msgid "Spread"
 msgstr "Extender"
 
-#: cps/templates/read.html:114
+#: cps/templates/read.html:115
 msgid "Two columns"
 msgstr "Dos columnas"
 
-#: cps/templates/read.html:115
+#: cps/templates/read.html:116
 msgid "One column"
 msgstr "Una columna"
 

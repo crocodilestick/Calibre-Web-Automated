@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-07-05 13:13+0000\n"
+"POT-Creation-Date: 2026-08-05 16:15+0200\n"
 "PO-Revision-Date: 2020-01-12 13:56+0100\n"
 "Last-Translator: Samuli Valavuo <svalavuo@gmail.com>\n"
 "Language-Team: \n"
@@ -2589,7 +2589,7 @@ msgstr ""
 msgid "Duplicate scan completed: %(count)s groups auto-resolved"
 msgstr ""
 
-#: cps/tasks/mail.py:275
+#: cps/tasks/mail.py:295
 #, fuzzy
 msgid "E-mail"
 msgstr "Sähköposti"
@@ -6079,7 +6079,7 @@ msgstr "Kirjaudu ulos"
 msgid "Switch Theme"
 msgstr "oletusteema"
 
-#: cps/templates/layout.html:166 cps/templates/read.html:78
+#: cps/templates/layout.html:166 cps/templates/read.html:79
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 #, fuzzy
 msgid "Settings"
@@ -6340,68 +6340,68 @@ msgstr "Calibre-Web e-kirjaluettelo"
 msgid "epub Reader"
 msgstr "PDF lukija"
 
-#: cps/templates/read.html:84 cps/templates/readcbr.html:104
+#: cps/templates/read.html:85 cps/templates/readcbr.html:104
 msgid "Light"
 msgstr "Vaalea"
 
-#: cps/templates/read.html:86 cps/templates/readcbr.html:105
+#: cps/templates/read.html:87 cps/templates/readcbr.html:105
 msgid "Dark"
 msgstr "Tumma"
 
-#: cps/templates/read.html:88
+#: cps/templates/read.html:89
 msgid "Sepia"
 msgstr ""
 
-#: cps/templates/read.html:90
+#: cps/templates/read.html:91
 #, fuzzy
 msgid "Black"
 msgstr "Palaa"
 
-#: cps/templates/read.html:95
+#: cps/templates/read.html:96
 msgid "Reflow text when sidebars are open."
 msgstr "Uudelleenjärjestä teksti kun sivut on auki."
 
-#: cps/templates/read.html:100
+#: cps/templates/read.html:101
 msgid "Font Sizes"
 msgstr ""
 
-#: cps/templates/read.html:105
+#: cps/templates/read.html:106
 msgid "Font"
 msgstr ""
 
-#: cps/templates/read.html:106
+#: cps/templates/read.html:107
 #, fuzzy
 msgid "Default"
 msgstr "Poista"
 
-#: cps/templates/read.html:107
+#: cps/templates/read.html:108
 msgid "Yahei"
 msgstr ""
 
-#: cps/templates/read.html:108
+#: cps/templates/read.html:109
 msgid "SimSun"
 msgstr ""
 
-#: cps/templates/read.html:109
+#: cps/templates/read.html:110
 #, fuzzy
 msgid "KaiTi"
 msgstr "Odottaa"
 
-#: cps/templates/read.html:110
+#: cps/templates/read.html:111
 #, fuzzy
 msgid "Arial"
 msgstr "Pystysuunta"
 
-#: cps/templates/read.html:113
+#: cps/templates/read.html:114
 #, fuzzy
 msgid "Spread"
 msgstr "Luettu"
 
-#: cps/templates/read.html:114
+#: cps/templates/read.html:115
 msgid "Two columns"
 msgstr ""
 
-#: cps/templates/read.html:115
+#: cps/templates/read.html:116
 msgid "One column"
 msgstr ""
 

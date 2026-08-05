@@ -16,6 +16,10 @@ permissions:
   contents: write
   actions: write
 
+concurrency:
+  group: update-translations-${{ github.ref }}
+  cancel-in-progress: false
+
 jobs:
   update-translations:
     runs-on: ubuntu-latest
@@ -36,23 +40,30 @@ jobs:
       - name: Install gettext
         run: sudo apt-get update && sudo apt-get install -y gettext
 
-      - name: Run update_translations.sh
-        run: bash scripts/update_translations.sh
-
-      - name: Commit translation updates
+      - name: Regenerate, commit, and push translation updates
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -f messages.pot cps/translations/*/LC_MESSAGES/messages.po
-          if git diff --cached --quiet; then
-            echo "No translation changes to commit"
-            echo "TRANSLATION_COMMITTED=0" >> $GITHUB_ENV
-          else
+          for i in 1 2 3 4 5; do
+            git fetch origin main
+            git reset --hard origin/main
+            bash scripts/update_translations.sh
+            git add -f messages.pot cps/translations/*/LC_MESSAGES/messages.po
+            if git diff --cached --quiet; then
+              echo "No translation changes to commit"
+              echo "TRANSLATION_COMMITTED=0" >> $GITHUB_ENV
+              exit 0
+            fi
             git commit -m "Update translations [skip ci]"
-            git push
-            echo "TRANSLATION_COMMITTED=1" >> $GITHUB_ENV
-            echo "TRANSLATION_COMMIT_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
-          fi
+            if git push; then
+              echo "TRANSLATION_COMMITTED=1" >> $GITHUB_ENV
+              echo "TRANSLATION_COMMIT_SHA=$(git rev-parse HEAD)" >> $GITHUB_ENV
+              exit 0
+            fi
+            echo "Push rejected, retrying against latest main (attempt $i)"
+          done
+          echo "Push failed after retries" >&2
+          exit 1
 
       - name: Select dev build SHA
         run: |

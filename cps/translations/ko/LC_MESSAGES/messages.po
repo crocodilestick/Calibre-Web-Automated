@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-07-05 13:13+0000\n"
+"POT-Creation-Date: 2026-08-05 16:15+0200\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -2564,7 +2564,7 @@ msgstr ""
 msgid "Duplicate scan completed: %(count)s groups auto-resolved"
 msgstr ""
 
-#: cps/tasks/mail.py:275
+#: cps/tasks/mail.py:295
 msgid "E-mail"
 msgstr "이메일"
 
@@ -3427,8 +3427,8 @@ msgid ""
 msgstr ""
 "이 경로들은 CWA 내부에서만 사용됩니다. 콜론 왼쪽 경로는 자유롭게 변경가능하"
 "나,\n"
-"        오른쪽 경로는 변경할 이유가 없습니다.<br><br>만약 <code>metadata."
-"db<code> 파일을 나머지 서재와 다른 위치에 두고 싶다면, \n"
+"        오른쪽 경로는 변경할 이유가 없습니다.<br><br>만약 "
+"<code>metadata.db<code> 파일을 나머지 서재와 다른 위치에 두고 싶다면, \n"
 "<b>아래의 ‘책 파일을 서재와 분리하기’ 옵션을 사용하고, 거기에 라이브러리의 나"
 "머지 경로를 입력하십시오.</b>"
 
@@ -6067,7 +6067,7 @@ msgstr "로그아웃"
 msgid "Switch Theme"
 msgstr "테마 변경"
 
-#: cps/templates/layout.html:166 cps/templates/read.html:78
+#: cps/templates/layout.html:166 cps/templates/read.html:79
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 msgid "Settings"
 msgstr "설정"
@@ -6312,63 +6312,63 @@ msgstr "Calibre-Web Automated 책 목록"
 msgid "epub Reader"
 msgstr "epub 리더"
 
-#: cps/templates/read.html:84 cps/templates/readcbr.html:104
+#: cps/templates/read.html:85 cps/templates/readcbr.html:104
 msgid "Light"
 msgstr "밝은색"
 
-#: cps/templates/read.html:86 cps/templates/readcbr.html:105
+#: cps/templates/read.html:87 cps/templates/readcbr.html:105
 msgid "Dark"
 msgstr "어두운색"
 
-#: cps/templates/read.html:88
+#: cps/templates/read.html:89
 msgid "Sepia"
 msgstr "세피아"
 
-#: cps/templates/read.html:90
+#: cps/templates/read.html:91
 msgid "Black"
 msgstr "검은색"
 
-#: cps/templates/read.html:95
+#: cps/templates/read.html:96
 msgid "Reflow text when sidebars are open."
 msgstr "사이드바가 열릴 경우 텍스트를 재정렬합니다."
 
-#: cps/templates/read.html:100
+#: cps/templates/read.html:101
 msgid "Font Sizes"
 msgstr "글자 크기"
 
-#: cps/templates/read.html:105
+#: cps/templates/read.html:106
 msgid "Font"
 msgstr "글꼴"
 
-#: cps/templates/read.html:106
+#: cps/templates/read.html:107
 msgid "Default"
 msgstr "기본값"
 
-#: cps/templates/read.html:107
+#: cps/templates/read.html:108
 msgid "Yahei"
 msgstr "Yahei"
 
-#: cps/templates/read.html:108
+#: cps/templates/read.html:109
 msgid "SimSun"
 msgstr "SimSun"
 
-#: cps/templates/read.html:109
+#: cps/templates/read.html:110
 msgid "KaiTi"
 msgstr "KaiTi"
 
-#: cps/templates/read.html:110
+#: cps/templates/read.html:111
 msgid "Arial"
 msgstr "Arial"
 
-#: cps/templates/read.html:113
+#: cps/templates/read.html:114
 msgid "Spread"
 msgstr "페이지 보기"
 
-#: cps/templates/read.html:114
+#: cps/templates/read.html:115
 msgid "Two columns"
 msgstr "두쪽 보기"
 
-#: cps/templates/read.html:115
+#: cps/templates/read.html:116
 msgid "One column"
 msgstr "한쪽 보기"
 

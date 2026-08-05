@@ -10,10 +10,10 @@ msgstr ""
 "Project-Id-Version: Calibre-Web (GPLV3)\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-07-05 13:13+0000\n"
+"POT-Creation-Date: 2026-08-05 16:15+0200\n"
 "PO-Revision-Date: 2023-12-20 22:00+0100\n"
-"Last-Translator: Michiel Cornelissen <michiel.cornelissen+gitbhun at proton."
-"me>\n"
+"Last-Translator: Michiel Cornelissen <michiel.cornelissen+gitbhun at "
+"proton.me>\n"
 "Language-Team: ed.driesen@telenet.be\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
@@ -2393,8 +2393,8 @@ msgstr "Kies e-mailadressen:"
 #, fuzzy
 msgid "Success! Book queued for sending to the selected address(es)!"
 msgstr ""
-"Het boek is in de wachtrij geplaatst om te worden verstuurd aan "
-"%(eReadermail)s"
+"Het boek is in de wachtrij geplaatst om te worden verstuurd aan %"
+"(eReadermail)s"
 
 #: cps/web.py:2065
 msgid "Please wait one minute to register next user"
@@ -2681,7 +2681,7 @@ msgstr ""
 msgid "Duplicate scan completed: %(count)s groups auto-resolved"
 msgstr ""
 
-#: cps/tasks/mail.py:275
+#: cps/tasks/mail.py:295
 msgid "E-mail"
 msgstr "E-mail"
 
@@ -6266,7 +6266,7 @@ msgstr "Afmelden"
 msgid "Switch Theme"
 msgstr "Standaard thema"
 
-#: cps/templates/layout.html:166 cps/templates/read.html:78
+#: cps/templates/layout.html:166 cps/templates/read.html:79
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 #, fuzzy
 msgid "Settings"
@@ -6523,69 +6523,69 @@ msgstr "Calibre-Web - e-boekcatalogus"
 msgid "epub Reader"
 msgstr "PDF lezer"
 
-#: cps/templates/read.html:84 cps/templates/readcbr.html:104
+#: cps/templates/read.html:85 cps/templates/readcbr.html:104
 msgid "Light"
 msgstr "Licht"
 
-#: cps/templates/read.html:86 cps/templates/readcbr.html:105
+#: cps/templates/read.html:87 cps/templates/readcbr.html:105
 msgid "Dark"
 msgstr "Donker"
 
-#: cps/templates/read.html:88
+#: cps/templates/read.html:89
 msgid "Sepia"
 msgstr "Sepia"
 
-#: cps/templates/read.html:90
+#: cps/templates/read.html:91
 #, fuzzy
 msgid "Black"
 msgstr "Annuleren"
 
-#: cps/templates/read.html:95
+#: cps/templates/read.html:96
 msgid "Reflow text when sidebars are open."
 msgstr "Tekstindeling automatisch aanpassen als het zijpaneel geopend is."
 
-#: cps/templates/read.html:100
+#: cps/templates/read.html:101
 msgid "Font Sizes"
 msgstr "Lettertypegrootte"
 
-#: cps/templates/read.html:105
+#: cps/templates/read.html:106
 msgid "Font"
 msgstr "Lettertype"
 
-#: cps/templates/read.html:106
+#: cps/templates/read.html:107
 #, fuzzy
 msgid "Default"
 msgstr "Verwijderen"
 
-#: cps/templates/read.html:107
+#: cps/templates/read.html:108
 msgid "Yahei"
 msgstr "Yahei"
 
-#: cps/templates/read.html:108
+#: cps/templates/read.html:109
 msgid "SimSun"
 msgstr "SimSun"
 
-#: cps/templates/read.html:109
+#: cps/templates/read.html:110
 #, fuzzy
 msgid "KaiTi"
 msgstr "Wachten"
 
-#: cps/templates/read.html:110
+#: cps/templates/read.html:111
 #, fuzzy
 msgid "Arial"
 msgstr "Verticaal"
 
-#: cps/templates/read.html:113
+#: cps/templates/read.html:114
 #, fuzzy
 msgid "Spread"
 msgstr "Gelezen"
 
-#: cps/templates/read.html:114
+#: cps/templates/read.html:115
 #, fuzzy
 msgid "Two columns"
 msgstr "Ongeldige gelezen kolom"
 
-#: cps/templates/read.html:115
+#: cps/templates/read.html:116
 #, fuzzy
 msgid "One column"
 msgstr "Ongeldige gelezen kolom"

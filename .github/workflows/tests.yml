@@ -145,7 +145,8 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           pip install -r requirements-dev.txt
-      
+          pip install --force-reinstall --no-cache-dir docker
+
       - name: Build Docker image
         uses: docker/build-push-action@v5
         with:

@@ -551,7 +551,7 @@ msgstr "Minimálne jeden LDAP používateľ sa nenachádza v databáze"
 #: cps/admin.py:2180
 #, python-brace-format
 msgid "{} User Successfully Imported"
-msgstr "Používateľ bol naimportovaný"
+msgstr "{} používateľ bol úspešne importovaný"
 
 #: cps/admin.py:2244
 msgid "Books path not valid"

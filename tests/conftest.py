@@ -783,9 +783,11 @@ def sample_ebook_path(tmp_path) -> Path:
     from pathlib import Path as PathLib
 
     # Add tests directory to path if not already there
+    # NOTE: append (not prepend) to avoid shadowing site-packages
+    # (e.g., tests/docker/ would shadow the `docker` SDK package)
     tests_dir = PathLib(__file__).parent
     if str(tests_dir) not in sys.path:
-        sys.path.insert(0, str(tests_dir))
+        sys.path.append(str(tests_dir))
 
     from fixtures.generate_synthetic import create_minimal_epub
 

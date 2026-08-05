@@ -945,11 +945,12 @@ def HandleStateRequest(book_uuid):
                 current_bookmark = kobo_reading_state.current_bookmark
                 current_bookmark.progress_percent = request_bookmark["ProgressPercent"]
                 current_bookmark.content_source_progress_percent = request_bookmark["ContentSourceProgressPercent"]
-                location = request_bookmark["Location"]
+                location = request_bookmark.get("Location")
                 if location:
                     current_bookmark.location_value = location["Value"]
                     current_bookmark.location_type = location["Type"]
                     current_bookmark.location_source = location["Source"]
+                current_bookmark.last_modified = datetime.now(timezone.utc)
                 update_results_response["CurrentBookmarkResult"] = {"Result": "Success"}
 
             request_statistics = request_reading_state["Statistics"]

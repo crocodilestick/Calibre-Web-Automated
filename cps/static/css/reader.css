@@ -46,6 +46,11 @@
     font-size: 16px;
 }
 
+#back-button {
+  width: 50px !important;
+  right: 50px;
+}
+
 .reader-error {
     padding: 24px;
     margin: 24px;

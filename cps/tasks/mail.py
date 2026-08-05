@@ -167,7 +167,22 @@ class TaskEmail(CalibreTask):
             elif hasattr(e, "message"):
                 text = e.message
             elif hasattr(e, "args"):
-                text = '\n'.join(e.args)
+                if isinstance(e, smtplib.SMTPRecipientsRefused):
+                    refused = []
+                    for recipient, status in e.recipients.items():
+                        code, msg = status
+                        if isinstance(msg, bytes):
+                            msg = msg.decode('utf-8', errors='ignore')
+                        refused.append(f"{recipient}: {code} {msg}")
+                    text = ", ".join(refused)
+                else:
+                    processed_args = []
+                    for arg in e.args:
+                        if isinstance(arg, bytes):
+                            processed_args.append(arg.decode('utf-8', errors='ignore'))
+                        else:
+                            processed_args.append(str(arg))
+                    text = '\n'.join(processed_args)
             else:
                 text = ''
             self._handleError('Smtplib Error sending e-mail: {}'.format(text))

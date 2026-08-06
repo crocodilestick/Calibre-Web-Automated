@@ -210,7 +210,7 @@ def track_opds_access():
         from scripts.cwa_db import CWA_DB
         from .cw_login import current_user
         import json as json_lib
-        
+
         # Only track if user is authenticated
         if current_user and hasattr(current_user, 'is_authenticated') and current_user.is_authenticated:
             cwa_db = CWA_DB()
@@ -683,8 +683,7 @@ def feed_magic_shelf(shelf_id):
 def opds_download_link(book_id, book_format):
     if not auth.current_user().role_download():
         return abort(401)
-    client = "kobo" if "Kobo" in request.headers.get('User-Agent') else ""
-    return get_download_link(book_id, book_format.lower(), client)
+    return get_download_link(book_id, book_format.lower())
 
 
 @opds.route("/ajax/book/<string:uuid>/<library>")

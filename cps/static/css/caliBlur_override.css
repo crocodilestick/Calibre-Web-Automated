@@ -225,3 +225,32 @@ a#advanced_search > span.hidden-sm {
     margin-bottom: 2rem;
     padding-left: 2rem;
 }
+
+/* "Normalize covers in books pages" user setting (off): preserve natural aspect
+   ratio, only constrain covers to a 150×225 bounding box. The .cover slot
+   stays 225px tall; flex layout anchors short covers at the bottom. */
+body.covers-natural .container-fluid .book .cover {
+    display: flex;
+    align-items: flex-end;
+    justify-content: left;
+}
+/* caliBlur forces the anchor to height: 100% via ID selectors; let it shrink to
+   the image so flex bottom-alignment actually moves the image down. */
+body.covers-natural #books > .cover > a,
+body.covers-natural #books_rand > .cover > a,
+body.covers-natural .book.isotope-item > .cover > a,
+body.covers-natural .container-fluid .book .cover > a {
+    height: auto;
+}
+/* Selectors mirror caliBlur.css's #books / #books_rand / .book.isotope-item rules
+   so we beat their ID-driven specificity. */
+body.covers-natural .container-fluid .book .cover span img,
+body.covers-natural .container-fluid .book .cover img,
+body.covers-natural #books .cover img,
+body.covers-natural #books_rand .cover img,
+body.covers-natural .book.isotope-item .cover img {
+    width: auto !important;
+    height: auto;
+    max-width: 150px;
+    max-height: 225px;
+}

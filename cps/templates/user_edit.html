@@ -274,6 +274,12 @@
           <option value="1" selected>caliBlur (Dark)</option>
         </select>
       </div>
+
+      <div style="margin-top: 20px;">
+        <input type="checkbox" id="normalize_covers" name="normalize_covers" {% if normalize_covers %}checked{% endif %} style="accent-color: var(--color-secondary);">
+        <label for="normalize_covers">{{_('Normalize covers in books pages')}}</label>
+        <p class="cwa-settings-tip">{{_('When enabled, all book covers are scaled to a uniform 150 × 225 size by stretching one dimension. When disabled, covers keep their natural aspect ratio and are only constrained to a maximum width of 150 and maximum height of 225.')}}</p>
+      </div>
     </div>
     {% else %}
     <div class="settings-container" style="max-width: none; margin-inline: 0rem;">

@@ -8,7 +8,6 @@ import os
 import json
 import mimetypes
 import chardet  # dependency of requests
-import copy
 import importlib
 import re
 import zipfile
@@ -43,6 +42,10 @@ from .redirect import get_redirect_location
 from .cw_babel import get_available_locale
 from .usermanagement import login_required_if_no_ano
 from .kobo_sync_status import remove_synced_book
+from .metadata_provider_settings import (
+    apply_user_metadata_provider_regions,
+    get_metadata_provider_context,
+)
 from . import magic_shelf
 from .render_template import render_title_template
 from .kobo_sync_status import change_archived_books
@@ -54,7 +57,6 @@ from .string_helper import strip_whitespaces
 
 # CWA Imports
 import sqlite3
-import time
 import time
 
 import sys
@@ -2432,6 +2434,8 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
         current_user.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
         current_user.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
         current_user.allow_additional_ereader_emails = to_save.get("allow_additional_ereader_emails") == "on"
+
+        apply_user_metadata_provider_regions(current_user, to_save)
         
         # Handle hidden magic shelf templates and custom shelves
         from . import magic_shelf
@@ -2648,6 +2652,7 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                                      kobo_support=kobo_support,
                                      hardcover_support=hardcover_support,
                                      registered_oauth=local_oauth_check,
+                                     **get_metadata_provider_context(current_user),
                                      oauth_status=oauth_status)
 
     val = 0
@@ -2774,6 +2779,7 @@ def profile():
                                  title=_(f"{current_user.name.capitalize()}'s Profile", name=current_user.name),
                                  page="me",
                                  registered_oauth=local_oauth_check,
+                                 **get_metadata_provider_context(current_user),
                                  oauth_status=oauth_status)
 
 

@@ -718,7 +718,13 @@ def get_database_stats():
 @opds.route("/opds/cover/<book_id>")
 @requires_basic_auth_if_no_ano
 def feed_get_cover(book_id):
-    return get_book_cover(book_id)
+    # feed.xml / json.txt link every book's cover AND thumbnail rel to this one
+    # route, and it's used for every book in every catalog page (i.e. mostly
+    # list/grid browsing, not single-cover detail views) -- MEDIUM is truthy
+    # (so it already hits the cache/on-demand generation in
+    # get_book_cover_internal) and keeps per-book cost down for that common
+    # case, while still being plenty for the occasional single-cover view.
+    return get_book_cover(book_id, constants.COVER_THUMBNAIL_MEDIUM)
 
 
 @opds.route("/opds/readbooks")

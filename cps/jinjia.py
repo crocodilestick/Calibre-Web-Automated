@@ -9,6 +9,7 @@
 
 from markupsafe import escape
 import datetime
+import json
 import mimetypes
 from uuid import uuid4
 
@@ -130,6 +131,20 @@ def formatseriesindex_filter(series_index):
             return series_index
     return 0
 '''
+
+
+@jinjia.app_template_filter('format_cc_number')
+def format_cc_number(value, display):
+    try:
+        display_dict = json.loads(display) if display else {}
+        number_format = display_dict.get('number_format', '')
+        if number_format:
+            return number_format.format(value)
+        if isinstance(value, float):
+            return formatfloat(value, display_dict.get('decimals', 2))
+    except (ValueError, KeyError):
+        pass
+    return value
 
 
 @jinjia.app_template_filter('escapedlink')

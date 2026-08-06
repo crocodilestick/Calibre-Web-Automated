@@ -5,6 +5,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 import os
+import re
 import json
 import mimetypes
 import chardet  # dependency of requests
@@ -51,6 +52,7 @@ from .services.worker import WorkerThread
 from .tasks_status import render_task_status
 from .usermanagement import user_login_required
 from .string_helper import strip_whitespaces
+from .template_formatter import evaluate_composite_template
 
 # CWA Imports
 import sqlite3
@@ -2904,6 +2906,25 @@ def show_book(book_id):
             entry.languages[lang_index].language_name = isoLanguages.get_language_name(get_locale(), entry.languages[
                 lang_index].lang_code)
         cc = calibre_db.get_cc_columns(config, filter_config_custom_read=True)
+        log.debug("show_book %d: cc columns=%r", book_id,
+                  [(c.id, c.label, c.datatype) for c in cc])
+        cc_link_cols = set(int(x) for x in (config.config_cc_link_columns or '').split(',') if x.strip())
+        # Pass all columns (including hidden) to composite evaluation so that
+        # templates referencing hidden columns still resolve correctly.
+        all_cc_for_composite = calibre_db.get_cc_columns(config, filter_config_custom_read=True, filter_hidden=False)
+        composite_vals = {}
+        for col in cc:
+            if col.datatype == 'composite':
+                try:
+                    display = col.get_display_dict()
+                    template = display.get('composite_template', '')
+                    contains_html = display.get('contains_html', False)
+                    composite_vals[col.id] = {
+                        'value': evaluate_composite_template(template, entry, all_cc_for_composite, column_name=col.name),
+                        'contains_html': contains_html,
+                    }
+                except Exception as ex:
+                    log.warning("Failed to set up composite column %r (id=%s): %s", col.name, col.id, ex)
         book_in_shelves = []
         shelves = ub.session.query(ub.BookShelf).filter(ub.BookShelf.book_id == book_id).all()
         for sh in shelves:
@@ -2954,6 +2975,8 @@ def show_book(book_id):
         return render_title_template('detail.html',
                                      entry=entry,
                                      cc=cc,
+                                     cc_link_cols=cc_link_cols,
+                                     composite_vals=composite_vals,
                                      is_xhr=request.headers.get('X-Requested-With') == 'XMLHttpRequest',
                                      title=entry.title,
                                      books_shelfs=book_in_shelves,

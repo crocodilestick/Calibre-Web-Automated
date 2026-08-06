@@ -442,7 +442,7 @@ class Books(Base):
         for col_id in cc_classes:
             val = getattr(self, 'custom_column_' + str(col_id), None)
             if val:
-                col_def = CalibreDB.session_factory().query(CustomColumns).filter(CustomColumns.id == col_id).first()
+                col_def = object_session(self).query(CustomColumns).filter(CustomColumns.id == col_id).first()
                 name = col_def.name if col_def else "Column {}".format(col_id)
                 values = val if isinstance(val, list) else [val]
                 for item in values:

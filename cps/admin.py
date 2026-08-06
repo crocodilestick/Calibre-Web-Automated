@@ -9,7 +9,6 @@ import os
 import re
 import json
 import operator
-import time
 import sys
 import string
 import requests
@@ -26,7 +25,7 @@ from flask import Blueprint, flash, redirect, url_for, abort, request, make_resp
 from markupsafe import Markup
 from .cw_login import current_user
 from flask_babel import gettext as _
-from flask_babel import get_locale, format_time, format_datetime, format_timedelta
+from flask_babel import get_locale, format_time, format_timedelta
 from sqlalchemy import and_
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.exc import IntegrityError, OperationalError, InvalidRequestError
@@ -39,6 +38,10 @@ from .helper import check_valid_domain, send_test_mail, reset_password, generate
     valid_email, check_username
 from .embed_helper import get_calibre_binarypath
 from .gdriveutils import is_gdrive_ready, gdrive_support
+from .metadata_provider_settings import (
+    apply_user_metadata_provider_regions,
+    get_metadata_provider_context,
+)
 from .render_template import render_title_template, get_sidebar_config
 from .services.worker import WorkerThread
 from .usermanagement import user_login_required
@@ -1688,6 +1691,7 @@ def new_user():
                                  config=config, translations=translations,
                                  languages=languages, title=_("Add New User"), page="newuser",
                                  kobo_support=kobo_support, registered_oauth=oauth_bb.oauth_check,
+                                 **get_metadata_provider_context(content),
                                  opds_root_order_string=opds_context["opds_root_order_string"],
                                  opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
                                  opds_root_labels=opds_context["opds_root_labels"],
@@ -1940,6 +1944,7 @@ def edit_user(user_id):
                                  hidden_custom_shelf_ids=hidden_custom_shelf_ids,
                                  hidden_custom_shelves=hidden_custom_shelves,
                                  visible_public_shelves=visible_public_shelves,
+                                 **get_metadata_provider_context(content),
                                  opds_root_order_string=opds_context["opds_root_order_string"],
                                  opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
                                  opds_root_labels=opds_context["opds_root_labels"],
@@ -2530,6 +2535,7 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
                                      translations=translations,
                                      languages=languages, title=_("Add new user"), page="newuser",
                                      kobo_support=kobo_support, registered_oauth=oauth_bb.oauth_check,
+                                     **get_metadata_provider_context(content),
                                      opds_root_order_string=opds_context["opds_root_order_string"],
                                      opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
                                      opds_root_labels=opds_context["opds_root_labels"],
@@ -2543,6 +2549,7 @@ def _handle_new_user(to_save, content, languages, translations, kobo_support):
         content.denied_column_value = config.config_denied_column_value
         # No default value for kobo sync shelf setting
         content.kobo_only_shelves_sync = to_save.get("kobo_only_shelves_sync", 0) == "on"
+        apply_user_metadata_provider_regions(content, to_save)
         ub.session.add(content)
         ub.session.commit()
         flash(_("User '%(user)s' created", user=content.name), category="success")
@@ -2635,6 +2642,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
     # Auto-send and metadata fetch settings
     content.auto_send_enabled = to_save.get("auto_send_enabled") == "on"
     content.auto_metadata_fetch = to_save.get("auto_metadata_fetch") == "on"
+    apply_user_metadata_provider_regions(content, to_save)
 
     # OPDS root order
     opds_order_raw = to_save.get("opds_root_order", "").strip()
@@ -2808,6 +2816,7 @@ def _handle_edit_user(to_save, content, languages, translations, kobo_support):
                                      content=content,
                                      config=config,
                                      registered_oauth=oauth_bb.oauth_check,
+                                     **get_metadata_provider_context(content),
                                      opds_root_order_string=opds_context["opds_root_order_string"],
                                      opds_hidden_entries_string=opds_context["opds_hidden_entries_string"],
                                      opds_root_labels=opds_context["opds_root_labels"],

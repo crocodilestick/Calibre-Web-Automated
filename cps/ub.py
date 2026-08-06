@@ -287,6 +287,7 @@ class User(UserBase, Base):
     auto_send_enabled = Column(Boolean, default=False)
     # Allow entering additional email addresses on send-to-eReader
     allow_additional_ereader_emails = Column(Boolean, default=True)
+    amazon_region = Column(String, default=None)
 
 
 if oauth_support:
@@ -335,6 +336,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.role = None
         self.name = None
         self.auto_send_enabled = False
+        self.amazon_region = None
         self.loadSettings()
 
     def loadSettings(self):
@@ -356,6 +358,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.kobo_only_shelves_sync = data.kobo_only_shelves_sync
         self.hardcover_token = data.hardcover_token
         self.auto_send_enabled = data.auto_send_enabled
+        self.amazon_region = data.amazon_region
     def role_admin(self):
         return False
 
@@ -926,6 +929,16 @@ def migrate_user_table(engine, _session):
         print(f"[Migration] Warning: Could not update duplicates sidebar setting: {e}")
         _session.rollback()
 
+    # Migration to add Amazon region setting
+    try:
+        _session.query(exists().where(User.amazon_region)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        with engine.connect() as conn:
+            trans = conn.begin()
+            conn.execute(text("ALTER TABLE user ADD column 'amazon_region' String DEFAULT ''"))
+            trans.commit()
+
 def migrate_oauth_provider_table(engine, _session):
     try:
         _session.query(exists().where(OAuthProvider.oauth_base_url)).scalar()
@@ -1015,6 +1028,21 @@ def migrate_config_table(engine, _session):
         except Exception as e:
             log.error("Failed to add config_ldap_auto_create_users column: %s", e)
             # Don't raise - let CWA continue without this feature
+            pass
+
+    # Add Amazon region configuration
+    try:
+        _session.execute(text("SELECT config_amazon_region FROM settings LIMIT 1"))
+        _session.commit()
+    except exc.OperationalError:
+        try:
+            _safe_session_rollback(_session, "settings.config_amazon_region")
+            _run_ddl_with_retry(
+                engine,
+                "ALTER TABLE settings ADD column 'config_amazon_region' String DEFAULT ''",
+            )
+        except Exception as e:
+            log.error("Failed to add config_amazon_region column: %s", e)
             pass
 
 

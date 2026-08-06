@@ -5,6 +5,7 @@
 # See CONTRIBUTORS for full list of authors.
 
 import os
+import posixpath
 import re
 import zipfile
 from xml.dom import minidom
@@ -13,6 +14,7 @@ from pathlib import Path
 import sys
 import sqlite3
 import subprocess
+from urllib.parse import unquote
 
 import logging
 import tempfile
@@ -348,6 +350,32 @@ class EPUBFixer:
             return None, 'EPUB'
         except Exception:
             return None, 'EPUB'
+
+    def _resolve_opf_path(self) -> str | None:
+        """Resolve the OPF path from container.xml or fallback to the first .opf entry."""
+        try:
+            if 'META-INF/container.xml' in self.files:
+                container_xml = minidom.parseString(self.files['META-INF/container.xml'])
+                for rootfile in container_xml.getElementsByTagName('rootfile'):
+                    if rootfile.getAttribute('media-type') == 'application/oebps-package+xml':
+                        opf_path = rootfile.getAttribute('full-path')
+                        if opf_path in self.files:
+                            return opf_path
+        except Exception:
+            pass
+
+        for filename in self.files.keys():
+            if filename.lower().endswith('.opf'):
+                return filename
+        return None
+
+    def _normalize_opf_href(self, opf_path: str, href: str) -> str:
+        """Normalize an OPF href to a ZIP path for comparison."""
+        opf_dir = posixpath.dirname(opf_path)
+        href = unquote(href or '')
+        if opf_dir:
+            return posixpath.normpath(posixpath.join(opf_dir, href))
+        return posixpath.normpath(href)
 
     def _get_metadata_db_path(self) -> str:
         """Get the path to metadata.db considering split library configuration."""
@@ -793,29 +821,40 @@ class EPUBFixer:
         # Remove font files from binary files
         font_extensions = ('.ttf', '.otf', '.woff', '.woff2', '.eot')
         fonts_removed = []
+        normalized_font_paths = set()
         
         for filename in list(self.binary_files.keys()):
             if filename.lower().endswith(font_extensions):
                 del self.binary_files[filename]
                 fonts_removed.append(filename)
+                normalized_font_paths.add(posixpath.normpath(filename))
         
         if fonts_removed:
             self.fixed_problems.append(f"Removed {len(fonts_removed)} embedded font file(s) for Kindle compatibility")
             
             # Also remove font references from OPF manifest
-            opf_path = 'content.opf'
-            if opf_path in self.files:
+            opf_path = self._resolve_opf_path()
+            if opf_path:
                 opf_content = self.files[opf_path]
-                for font_file in fonts_removed:
-                    # Remove manifest item for this font
-                    # Match: <item href="fonts/00001.ttf" id="..." media-type="..."/>
-                    pattern = re.compile(
-                        r'<item[^>]*href=["\']' + re.escape(font_file) + r'["\'][^>]*/?>',
-                        re.IGNORECASE
-                    )
-                    opf_content = pattern.sub('', opf_content)
-                
-                self.files[opf_path] = opf_content
+                try:
+                    dom = minidom.parseString(opf_content)
+                    manifest = dom.getElementsByTagName('manifest')
+                    removed_manifest_items = 0
+
+                    if manifest:
+                        items = manifest[0].getElementsByTagName('item')
+                        for item in list(items):
+                            href = item.getAttribute('href')
+                            normalized_href = self._normalize_opf_href(opf_path, href)
+                            if normalized_href in normalized_font_paths:
+                                item.parentNode.removeChild(item)
+                                removed_manifest_items += 1
+
+                    if removed_manifest_items:
+                        self.fixed_problems.append(f"Removed {removed_manifest_items} font manifest item(s) from OPF")
+                        self.files[opf_path] = dom.toxml()
+                except Exception as e:
+                    print_and_log(f"[cwa-kindle-epub-fixer] Warning: Could not update OPF manifest for fonts: {e}", log=self.manually_triggered)
         
         # Remove @font-face declarations from CSS files
         font_face_pattern = re.compile(r'@font-face\s*\{[^}]*\}', re.IGNORECASE | re.DOTALL)
@@ -831,17 +870,82 @@ class EPUBFixer:
     
     def remove_javascript(self):
         """Remove JavaScript code for Kindle compatibility (not supported)"""
-        script_pattern = re.compile(r'<script[^>]*>.*?</script>', re.IGNORECASE | re.DOTALL)
+        removed_scripts = 0
+        removed_handlers = 0
+        removed_js_urls = 0
+        removed_manifest_items = 0
+        removed_js_files = 0
+
+        # Remove JS references from OPF manifest and ZIP
+        opf_path = self._resolve_opf_path()
+        if opf_path:
+            opf_content = self.files[opf_path]
+            try:
+                dom = minidom.parseString(opf_content)
+                manifest = dom.getElementsByTagName('manifest')
+
+                if manifest:
+                    items = manifest[0].getElementsByTagName('item')
+                    for item in list(items):
+                        href = item.getAttribute('href')
+                        media_type = item.getAttribute('media-type')
+                        is_js = href.lower().endswith('.js') or 'javascript' in media_type.lower()
+
+                        if is_js:
+                            normalized_href = self._normalize_opf_href(opf_path, href)
+                            item.parentNode.removeChild(item)
+                            removed_manifest_items += 1
+
+                            if normalized_href in self.files:
+                                del self.files[normalized_href]
+                                removed_js_files += 1
+                            if normalized_href in self.binary_files:
+                                del self.binary_files[normalized_href]
+                                removed_js_files += 1
+
+                if removed_manifest_items:
+                    self.files[opf_path] = dom.toxml()
+            except Exception as e:
+                print_and_log(f"[cwa-kindle-epub-fixer] Warning: Could not update OPF manifest for JavaScript: {e}", log=self.manually_triggered)
         
         for filename in list(self.files.keys()):
             ext = filename.split('.')[-1]
             if ext in ['html', 'xhtml', 'htm']:
                 original_content = self.files[filename]
-                cleaned_content = script_pattern.sub('', original_content)
-                
+                try:
+                    dom = minidom.parseString(original_content)
+                except Exception as e:
+                    print_and_log(f"[cwa-kindle-epub-fixer] Warning: Could not parse {filename} for JavaScript removal: {e}", log=self.manually_triggered)
+                    continue
+
+                # Remove <script> tags
+                for script in list(dom.getElementsByTagName('script')):
+                    if script.parentNode:
+                        script.parentNode.removeChild(script)
+                        removed_scripts += 1
+
+                # Remove inline event handlers and javascript: URLs
+                for element in dom.getElementsByTagName('*'):
+                    if element.hasAttributes():
+                        for attr_name in list(element.attributes.keys()):
+                            attr_value = element.getAttribute(attr_name)
+                            if attr_name.lower().startswith('on'):
+                                element.removeAttribute(attr_name)
+                                removed_handlers += 1
+                            elif attr_value and attr_value.strip().lower().startswith('javascript:'):
+                                element.removeAttribute(attr_name)
+                                removed_js_urls += 1
+
+                cleaned_content = dom.toxml()
                 if cleaned_content != original_content:
                     self.files[filename] = cleaned_content
-                    self.fixed_problems.append(f"Removed JavaScript from {filename}")
+
+        if removed_scripts or removed_handlers or removed_js_urls or removed_manifest_items or removed_js_files:
+            self.fixed_problems.append(
+                f"Removed JavaScript: {removed_scripts} <script> tag(s), "
+                f"{removed_handlers} inline handler(s), {removed_js_urls} javascript: URL(s), "
+                f"{removed_manifest_items} OPF item(s), {removed_js_files} JS file(s)"
+            )
     
     def validate_images(self):
         """Validate images for Kindle compatibility and report issues"""
@@ -948,75 +1052,24 @@ class EPUBFixer:
         Amazon may reject books that already have an ASIN in their system.
         Also removes Calibre-specific metadata that's not needed for Kindle.
         """
-        opf_path = 'content.opf'
-        if opf_path not in self.files:
+        opf_path = self._resolve_opf_path()
+        if not opf_path or opf_path not in self.files:
             return
-        
+
         opf_content = self.files[opf_path]
-        
         try:
-            dom = minidom.parseString(opf_content)
-            package = dom.getElementsByTagName('package')[0]
-            metadata = dom.getElementsByTagName('metadata')[0]
-            
-            changes_made = False
-            
-            # Remove Calibre namespace from package tag
-            if package.hasAttribute('xmlns:calibre'):
-                package.removeAttribute('xmlns:calibre')
-                changes_made = True
-                print_and_log("[cwa-kindle-epub-fixer] Removing Calibre namespace from package tag", log=self.manually_triggered)
-            
-            # Remove Calibre namespace from metadata tag
-            if metadata.hasAttribute('xmlns:calibre'):
-                metadata.removeAttribute('xmlns:calibre')
-                changes_made = True
-            
-            # Remove Amazon/MOBI-ASIN identifiers using regex (preserve structure)
-            identifiers_removed = []
-            
-            # Match AMAZON and MOBI-ASIN identifiers
+            # Remove only Amazon/MOBI-ASIN identifiers to keep this safe for automated runs
             asin_pattern = re.compile(
-                r'<dc:identifier[^>]*opf:scheme=["\'](?:AMAZON|MOBI-ASIN|mobi-asin|calibre)["\'][^>]*>.*?</dc:identifier>',
+                r'<dc:identifier\b[^>]*(?:opf:scheme|scheme)=["\']\s*(AMAZON|MOBI-ASIN)\s*["\'][^>]*>.*?</dc:identifier>',
                 re.IGNORECASE | re.DOTALL
             )
-            
+
             matches = asin_pattern.findall(opf_content)
             if matches:
-                for match in matches:
-                    # Extract scheme and value for logging
-                    scheme_match = re.search(r'opf:scheme=["\']([^"\']+)["\']', match)
-                    if scheme_match:
-                        identifiers_removed.append(scheme_match.group(1))
-                
                 opf_content = asin_pattern.sub('', opf_content)
-                changes_made = True
-            
-            if identifiers_removed:
-                print_and_log(f"[cwa-kindle-epub-fixer] Removing Amazon/Calibre identifiers: {', '.join(identifiers_removed)}", log=self.manually_triggered)
-                self.fixed_problems.append(f"Removed {len(identifiers_removed)} Amazon/Calibre identifier(s)")
-            
-            # Remove Calibre-specific meta tags using regex (preserve structure)
-            calibre_meta_pattern = re.compile(
-                r'<meta[^>]*name=["\']calibre:[^"\']+["\'][^>]*/>',
-                re.IGNORECASE
-            )
-            
-            calibre_matches = calibre_meta_pattern.findall(opf_content)
-            if calibre_matches:
-                opf_content = calibre_meta_pattern.sub('', opf_content)
-                changes_made = True
-                print_and_log(f"[cwa-kindle-epub-fixer] Removing {len(calibre_matches)} Calibre meta tag(s)", log=self.manually_triggered)
-                self.fixed_problems.append(f"Removed {len(calibre_matches)} Calibre meta tag(s)")
-            
-            # Remove xmlns:calibre from metadata tag if present
-            if 'xmlns:calibre=' in opf_content:
-                opf_content = re.sub(r'\s*xmlns:calibre="[^"]*"', '', opf_content)
-                changes_made = True
-            
-            if changes_made:
                 self.files[opf_path] = opf_content
-            
+                self.fixed_problems.append(f"Removed {len(matches)} Amazon identifier(s)")
+                print_and_log("[cwa-kindle-epub-fixer] Removed Amazon/MOBI-ASIN identifiers from OPF", log=self.manually_triggered)
         except Exception as e:
             print_and_log(f"[cwa-kindle-epub-fixer] Warning: Could not strip Amazon identifiers: {e}", log=self.manually_triggered)
 
@@ -1104,6 +1157,17 @@ class EPUBFixer:
         self.fix_book_language(default_language, input_path)
         print_and_log("[cwa-kindle-epub-fixer] Checking for stray images...", log=self.manually_triggered)
         self.fix_stray_img()
+
+        # Kindle-specific fixes (enabled for testing)
+        print_and_log("[cwa-kindle-epub-fixer] Stripping embedded fonts for Kindle compatibility...", log=self.manually_triggered)
+        self.strip_embedded_fonts()
+        print_and_log("[cwa-kindle-epub-fixer] Removing JavaScript (not supported on Kindle)...", log=self.manually_triggered)
+        self.remove_javascript()
+        print_and_log("[cwa-kindle-epub-fixer] Validating images for Kindle compatibility...", log=self.manually_triggered)
+        self.validate_images()
+        print_and_log("[cwa-kindle-epub-fixer] Validating CSS syntax...", log=self.manually_triggered)
+        self.validate_css()
+        self.strip_amazon_identifiers()
 
         # Notify user and/or write to log
         self.export_issue_summary(input_path)

@@ -94,13 +94,6 @@ def generate_auth_token(user_id):
         ub.session.add(auth_token)
         ub.session_commit()
 
-    books = calibre_db.session.query(db.Books).join(db.Data).all()
-
-    for book in books:
-        formats = [data.format for data in book.data]
-        if 'KEPUB' not in formats and config.config_kepubifypath and 'EPUB' in formats:
-            helper.convert_book_format(book.id, config.config_calibre_dir, 'EPUB', 'KEPUB', current_user.name)
-
     return render_title_template(
         "generate_kobo_auth_url.html",
         title=_("Kobo Setup"),

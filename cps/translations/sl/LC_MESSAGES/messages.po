@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 13:50+0000\n"
+"POT-Creation-Date: 2026-08-06 13:54+0000\n"
 "PO-Revision-Date: 2025-08-11 07:03+0000\n"
 "Last-Translator: Andrej Kralj\n"
 "Language-Team: Slovenian\n"
@@ -143,7 +143,7 @@ msgstr "Stolpec po meri št. %(column)d ne obstaja v zbirki podatkov Calibre"
 msgid "Edit Users"
 msgstr "Urejanje uporabnikov"
 
-#: cps/admin.py:684 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:684 cps/opds.py:804 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Vse"
@@ -1271,17 +1271,17 @@ msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "Ups! Izbrana knjiga ni na voljo. Datoteka ne obstaja ali ni dostopna"
 
-#: cps/editbooks.py:877 cps/editbooks.py:1860
+#: cps/editbooks.py:885 cps/editbooks.py:1860
 msgid "User has no rights to upload cover"
 msgstr "Uporabnik nima pravice do nalaganja naslovnice"
 
-#: cps/editbooks.py:899 cps/editbooks.py:1237
+#: cps/editbooks.py:908 cps/editbooks.py:1237
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 "Identifikatorji niso občutljivi na velikost črk, prepisovanje starega "
 "identifikatorja"
 
-#: cps/editbooks.py:911 cps/editbooks.py:1211 cps/editbooks.py:1587
+#: cps/editbooks.py:920 cps/editbooks.py:1211 cps/editbooks.py:1587
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s' ni veljaven jezik"
@@ -2548,7 +2548,7 @@ msgstr "Ups! Račun za to e-pošto že obstaja."
 msgid "Invalid book ID."
 msgstr "Neveljavna vloga"
 
-#: cps/progress_syncing/protocols/kosync.py:454
+#: cps/progress_syncing/protocols/kosync.py:459
 msgid "KOReader Sync Plugin"
 msgstr "Vtičnik za sinhronizacijo KOReader"
 
@@ -3160,8 +3160,8 @@ msgstr "Nalaganje..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:152 cps/templates/layout.html:373
-#: cps/templates/layout.html:438 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:152 cps/templates/layout.html:380
+#: cps/templates/layout.html:445 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:573
 msgid "Close"
 msgstr "Zapri"
@@ -6074,7 +6074,7 @@ msgstr "Vnesi ime domene"
 msgid "Denied Domains (Blacklist)"
 msgstr "Zavrnjene domene (črni seznam)"
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:357
+#: cps/templates/feed.xml:22 cps/templates/layout.html:364
 msgid "Next"
 msgstr "Naslednji"
 
@@ -6441,29 +6441,33 @@ msgstr "O programu"
 msgid "Previous"
 msgstr "Prejšnji"
 
-#: cps/templates/layout.html:369
+#: cps/templates/layout.html:353
+msgid "Go to page"
+msgstr ""
+
+#: cps/templates/layout.html:376
 msgid "Book Details"
 msgstr "Podrobnosti o knjigi"
 
-#: cps/templates/layout.html:439
+#: cps/templates/layout.html:446
 #, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "Izbriši knjigo"
 
-#: cps/templates/layout.html:440
+#: cps/templates/layout.html:447
 msgid "You have unresolved duplicate books in your library"
 msgstr "V vaši knjižnici so nerazrešeni dvojniki knjig"
 
-#: cps/templates/layout.html:445
+#: cps/templates/layout.html:452
 #, fuzzy
 msgid "Duplicate Groups Found"
 msgstr "Ni bilo najdenih rezultatov"
 
-#: cps/templates/layout.html:453
+#: cps/templates/layout.html:460
 msgid "Remind Me Later"
 msgstr "Opomni me pozneje"
 
-#: cps/templates/layout.html:456
+#: cps/templates/layout.html:463
 msgid "View & Resolve Duplicates"
 msgstr "Ogled in razreševanje dvojnikov"
 

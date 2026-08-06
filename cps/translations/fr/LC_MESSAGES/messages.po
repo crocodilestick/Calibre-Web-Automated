@@ -26,7 +26,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 13:50+0000\n"
+"POT-Creation-Date: 2026-08-06 13:54+0000\n"
 "PO-Revision-Date: 2026-02-11 09:17+0000\n"
 "Last-Translator: Tex <tex@grosist.fr>\n"
 "Language-Team: French\n"
@@ -165,7 +165,7 @@ msgstr ""
 msgid "Edit Users"
 msgstr "Éditer les utilisateurs"
 
-#: cps/admin.py:684 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:684 cps/opds.py:804 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Tout"
@@ -1320,17 +1320,17 @@ msgstr ""
 "Erreur d'ouverture du livre numérique. Le fichier n'existe pas ou n'est pas "
 "accessible"
 
-#: cps/editbooks.py:877 cps/editbooks.py:1860
+#: cps/editbooks.py:885 cps/editbooks.py:1860
 msgid "User has no rights to upload cover"
 msgstr "L’utilisateur n’a pas les droits pour envoyer une couverture de livre"
 
-#: cps/editbooks.py:899 cps/editbooks.py:1237
+#: cps/editbooks.py:908 cps/editbooks.py:1237
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 "Les identificateurs ne sont pas sensibles à la casse, écrasant l’ancien "
 "identificateur"
 
-#: cps/editbooks.py:911 cps/editbooks.py:1211 cps/editbooks.py:1587
+#: cps/editbooks.py:920 cps/editbooks.py:1211 cps/editbooks.py:1587
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s n'est pas une langue valide"
@@ -2616,7 +2616,7 @@ msgstr "Un compte existant a été trouvé pour cette adresse de courriel."
 msgid "Invalid book ID."
 msgstr "Identifiant du livre invalide."
 
-#: cps/progress_syncing/protocols/kosync.py:454
+#: cps/progress_syncing/protocols/kosync.py:459
 msgid "KOReader Sync Plugin"
 msgstr "Plugin KOReader Sync"
 
@@ -3206,8 +3206,8 @@ msgstr "Téléversement en cours..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:152 cps/templates/layout.html:373
-#: cps/templates/layout.html:438 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:152 cps/templates/layout.html:380
+#: cps/templates/layout.html:445 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:573
 msgid "Close"
 msgstr "Fermer"
@@ -6189,7 +6189,7 @@ msgstr "Saisir le nom de domaine"
 msgid "Denied Domains (Blacklist)"
 msgstr "Domaines refusés (Liste noire)"
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:357
+#: cps/templates/feed.xml:22 cps/templates/layout.html:364
 msgid "Next"
 msgstr "Suivant"
 
@@ -6543,27 +6543,31 @@ msgstr "À propos"
 msgid "Previous"
 msgstr "Précédent"
 
-#: cps/templates/layout.html:369
+#: cps/templates/layout.html:353
+msgid "Go to page"
+msgstr ""
+
+#: cps/templates/layout.html:376
 msgid "Book Details"
 msgstr "Détails du livre"
 
-#: cps/templates/layout.html:439
+#: cps/templates/layout.html:446
 msgid "Duplicate Books Detected"
 msgstr "Livres en double détectés"
 
-#: cps/templates/layout.html:440
+#: cps/templates/layout.html:447
 msgid "You have unresolved duplicate books in your library"
 msgstr "Vous avez des livres en double non résolus dans votre bibliothèque"
 
-#: cps/templates/layout.html:445
+#: cps/templates/layout.html:452
 msgid "Duplicate Groups Found"
 msgstr "Groupes en double trouvés"
 
-#: cps/templates/layout.html:453
+#: cps/templates/layout.html:460
 msgid "Remind Me Later"
 msgstr "Rappelez-moi plus tard"
 
-#: cps/templates/layout.html:456
+#: cps/templates/layout.html:463
 msgid "View & Resolve Duplicates"
 msgstr "Afficher et résoudre les doublons"
 

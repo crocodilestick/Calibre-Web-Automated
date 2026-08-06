@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 13:50+0000\n"
+"POT-Creation-Date: 2026-08-06 13:54+0000\n"
 "PO-Revision-Date: 2026-02-16 03:01+0100\n"
 "Last-Translator: Kónya Márton <konyamarci52@proton.me>\n"
 "Language-Team: \n"
@@ -137,7 +137,7 @@ msgstr "A %(column)d egyéni oszlop nem létezik a Calibre adatbázisban"
 msgid "Edit Users"
 msgstr "Felhasználók szerkesztése"
 
-#: cps/admin.py:684 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:684 cps/opds.py:804 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Mind"
@@ -1253,17 +1253,17 @@ msgid ""
 msgstr ""
 "Hiba történt az e-könyv megnyitásakor. A fájl nem létezik vagy nem érhető el"
 
-#: cps/editbooks.py:877 cps/editbooks.py:1860
+#: cps/editbooks.py:885 cps/editbooks.py:1860
 msgid "User has no rights to upload cover"
 msgstr "A felhasználónak nincs joga borítót feltölteni"
 
-#: cps/editbooks.py:899 cps/editbooks.py:1237
+#: cps/editbooks.py:908 cps/editbooks.py:1237
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 "Az azonosítók nem különböztetnek meg a kis- és nagybetűket. A régi "
 "azonosítók felülírása"
 
-#: cps/editbooks.py:911 cps/editbooks.py:1211 cps/editbooks.py:1587
+#: cps/editbooks.py:920 cps/editbooks.py:1211 cps/editbooks.py:1587
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s nem érvényes nyelv"
@@ -2509,7 +2509,7 @@ msgstr "Már létezik felhasználó ehhez az e-mail címhez."
 msgid "Invalid book ID."
 msgstr "Érvénytelen könyv azonosító."
 
-#: cps/progress_syncing/protocols/kosync.py:454
+#: cps/progress_syncing/protocols/kosync.py:459
 msgid "KOReader Sync Plugin"
 msgstr "KOReader szinkronizáció plugin"
 
@@ -3107,8 +3107,8 @@ msgstr "Feltöltés..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:152 cps/templates/layout.html:373
-#: cps/templates/layout.html:438 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:152 cps/templates/layout.html:380
+#: cps/templates/layout.html:445 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:573
 msgid "Close"
 msgstr "Bezárás"
@@ -5797,7 +5797,7 @@ msgstr "Tartomány megadása"
 msgid "Denied Domains (Blacklist)"
 msgstr "Elutasított domainek (tiltólista)"
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:357
+#: cps/templates/feed.xml:22 cps/templates/layout.html:364
 msgid "Next"
 msgstr "Következő"
 
@@ -6133,27 +6133,31 @@ msgstr "Névjegy"
 msgid "Previous"
 msgstr "Előző"
 
-#: cps/templates/layout.html:369
+#: cps/templates/layout.html:353
+msgid "Go to page"
+msgstr ""
+
+#: cps/templates/layout.html:376
 msgid "Book Details"
 msgstr "Könyv részletei"
 
-#: cps/templates/layout.html:439
+#: cps/templates/layout.html:446
 msgid "Duplicate Books Detected"
 msgstr "Ismétlődő könyvek találva"
 
-#: cps/templates/layout.html:440
+#: cps/templates/layout.html:447
 msgid "You have unresolved duplicate books in your library"
 msgstr ""
 
-#: cps/templates/layout.html:445
+#: cps/templates/layout.html:452
 msgid "Duplicate Groups Found"
 msgstr "Ismétlődő csoport találva"
 
-#: cps/templates/layout.html:453
+#: cps/templates/layout.html:460
 msgid "Remind Me Later"
 msgstr "Emlékeztess később"
 
-#: cps/templates/layout.html:456
+#: cps/templates/layout.html:463
 msgid "View & Resolve Duplicates"
 msgstr "Ismétlődések megtekintése és megszüntetése"
 

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 13:50+0000\n"
+"POT-Creation-Date: 2026-08-06 13:54+0000\n"
 "PO-Revision-Date: 2026-05-17 20:18+0800\n"
 "Last-Translator: SkyLull <https://github.com/SkyLull>\n"
 "Language-Team: zh_Hans_TW <LL@li.org>\n"
@@ -131,7 +131,7 @@ msgstr "自訂欄位編號 %(column)d 在 Calibre 資料庫中不存在"
 msgid "Edit Users"
 msgstr "管理使用者"
 
-#: cps/admin.py:684 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:684 cps/opds.py:804 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "全部"
@@ -1176,15 +1176,15 @@ msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "糟糕！選擇書名無法開啟。文件不存在或者檔案不可存取"
 
-#: cps/editbooks.py:877 cps/editbooks.py:1860
+#: cps/editbooks.py:885 cps/editbooks.py:1860
 msgid "User has no rights to upload cover"
 msgstr "使用者沒有上傳封面的權限"
 
-#: cps/editbooks.py:899 cps/editbooks.py:1237
+#: cps/editbooks.py:908 cps/editbooks.py:1237
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr "識別碼不區分大小寫，將覆蓋舊識別碼"
 
-#: cps/editbooks.py:911 cps/editbooks.py:1211 cps/editbooks.py:1587
+#: cps/editbooks.py:920 cps/editbooks.py:1211 cps/editbooks.py:1587
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "「%(langname)s」 不是有效的語言"
@@ -2375,7 +2375,7 @@ msgstr "使用此電子郵件的帳號已經存在。"
 msgid "Invalid book ID."
 msgstr "無效書籍 ID。"
 
-#: cps/progress_syncing/protocols/kosync.py:454
+#: cps/progress_syncing/protocols/kosync.py:459
 msgid "KOReader Sync Plugin"
 msgstr "KOReader 同步插件"
 
@@ -2967,8 +2967,8 @@ msgstr "正在上傳..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:152 cps/templates/layout.html:373
-#: cps/templates/layout.html:438 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:152 cps/templates/layout.html:380
+#: cps/templates/layout.html:445 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:573
 msgid "Close"
 msgstr "關閉"
@@ -5714,7 +5714,7 @@ msgstr "輸入網域名稱"
 msgid "Denied Domains (Blacklist)"
 msgstr "禁止註冊的網域名（黑名單）"
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:357
+#: cps/templates/feed.xml:22 cps/templates/layout.html:364
 msgid "Next"
 msgstr "下一個"
 
@@ -6051,27 +6051,31 @@ msgstr "關於"
 msgid "Previous"
 msgstr "上一個"
 
-#: cps/templates/layout.html:369
+#: cps/templates/layout.html:353
+msgid "Go to page"
+msgstr ""
+
+#: cps/templates/layout.html:376
 msgid "Book Details"
 msgstr "書籍詳情"
 
-#: cps/templates/layout.html:439
+#: cps/templates/layout.html:446
 msgid "Duplicate Books Detected"
 msgstr "偵測到重複的書籍"
 
-#: cps/templates/layout.html:440
+#: cps/templates/layout.html:447
 msgid "You have unresolved duplicate books in your library"
 msgstr "您的書庫中有未解決的重複書籍"
 
-#: cps/templates/layout.html:445
+#: cps/templates/layout.html:452
 msgid "Duplicate Groups Found"
 msgstr "已找到重複群組"
 
-#: cps/templates/layout.html:453
+#: cps/templates/layout.html:460
 msgid "Remind Me Later"
 msgstr "稍後提醒"
 
-#: cps/templates/layout.html:456
+#: cps/templates/layout.html:463
 msgid "View & Resolve Duplicates"
 msgstr "檢視及解決重複"
 

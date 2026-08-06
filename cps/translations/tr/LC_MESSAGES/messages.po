@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 13:50+0000\n"
+"POT-Creation-Date: 2026-08-06 13:54+0000\n"
 "PO-Revision-Date: 2026-05-14 01:36+0300\n"
 "Last-Translator: İsmail Hakkı Şen <hakki@outlook.com>\n"
 "Language-Team: \n"
@@ -138,7 +138,7 @@ msgstr "Özel Sütun No %(column)d calibre veri tabanında bulunamadı"
 msgid "Edit Users"
 msgstr "Kullanıcıları Düzenle"
 
-#: cps/admin.py:684 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:684 cps/opds.py:804 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Tümü"
@@ -1228,16 +1228,16 @@ msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "Oops! Seçilen kitap geçersiz. Dosya bulunamadı veya erişilemez"
 
-#: cps/editbooks.py:877 cps/editbooks.py:1860
+#: cps/editbooks.py:885 cps/editbooks.py:1860
 msgid "User has no rights to upload cover"
 msgstr "Kullanıcının kitap kapak fotoğrafı yükleme yetkisi yok"
 
-#: cps/editbooks.py:899 cps/editbooks.py:1237
+#: cps/editbooks.py:908 cps/editbooks.py:1237
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr ""
 "Tanımlayıcılar harfe duyarlı değil, eski tanımlayıcının üzerine yazılıyor"
 
-#: cps/editbooks.py:911 cps/editbooks.py:1211 cps/editbooks.py:1587
+#: cps/editbooks.py:920 cps/editbooks.py:1211 cps/editbooks.py:1587
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "%(langname)s geçerli bir dil değil"
@@ -2493,7 +2493,7 @@ msgstr "Bu e-posta adresi için bir hesap mevcut."
 msgid "Invalid book ID."
 msgstr "Geçersiz kitap ID."
 
-#: cps/progress_syncing/protocols/kosync.py:454
+#: cps/progress_syncing/protocols/kosync.py:459
 msgid "KOReader Sync Plugin"
 msgstr "KOReader eşitleme eklentisi"
 
@@ -3087,8 +3087,8 @@ msgstr "Yükleniyor..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:152 cps/templates/layout.html:373
-#: cps/templates/layout.html:438 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:152 cps/templates/layout.html:380
+#: cps/templates/layout.html:445 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:573
 msgid "Close"
 msgstr "Kapat"
@@ -5980,7 +5980,7 @@ msgstr "Alan adı girin"
 msgid "Denied Domains (Blacklist)"
 msgstr "Yasaklı alan adları (kara liste)"
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:357
+#: cps/templates/feed.xml:22 cps/templates/layout.html:364
 msgid "Next"
 msgstr "Sonraki"
 
@@ -6331,27 +6331,31 @@ msgstr "Hakkında"
 msgid "Previous"
 msgstr "Önceki"
 
-#: cps/templates/layout.html:369
+#: cps/templates/layout.html:353
+msgid "Go to page"
+msgstr ""
+
+#: cps/templates/layout.html:376
 msgid "Book Details"
 msgstr "Kitap Detayları"
 
-#: cps/templates/layout.html:439
+#: cps/templates/layout.html:446
 msgid "Duplicate Books Detected"
 msgstr "Tekrarlı Kitaplar Tespit Edildi"
 
-#: cps/templates/layout.html:440
+#: cps/templates/layout.html:447
 msgid "You have unresolved duplicate books in your library"
 msgstr "Kütüphanenizde çözümlenmemiş, mükerrer kitaplar bulunmaktadır"
 
-#: cps/templates/layout.html:445
+#: cps/templates/layout.html:452
 msgid "Duplicate Groups Found"
 msgstr "Tekrarlı Gruplar Bulunduı"
 
-#: cps/templates/layout.html:453
+#: cps/templates/layout.html:460
 msgid "Remind Me Later"
 msgstr "Daha sonra hatırlat"
 
-#: cps/templates/layout.html:456
+#: cps/templates/layout.html:463
 msgid "View & Resolve Duplicates"
 msgstr "Tekrarlıları Görüntüle ve Çöz"
 

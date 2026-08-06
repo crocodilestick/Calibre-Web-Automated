@@ -854,7 +854,7 @@ def do_edit_book(book_id, upload_formats=None):
         title_author_error = None
         input_authors = [author.name for author in book.authors]
 
-        # Stage 1: Collect all metadata changes and apply them to the book object in the session
+        # Stage 1: Apply title/author changes before touching the remaining metadata fields.
         if "title" in to_save:
             title_change = handle_title_on_edit(book, to_save["title"])
 
@@ -862,6 +862,14 @@ def do_edit_book(book_id, upload_formats=None):
             new_input_authors, author_change = handle_author_on_edit(book, to_save["authors"])
             if author_change:
                 input_authors = new_input_authors
+            # Keep the filesystem path in sync before staging relationship-heavy metadata.
+            if title_change or author_change:
+                title_author_error = helper.update_dir_structure(book.id, config.get_book_path(), input_authors[0])
+                if title_author_error:
+                    flash(title_author_error, category="error")
+                    calibre_db.session.rollback()
+                    return render_edit_book(book_id)
+                modify_date = True
             modify_date |= edit_book_ratings(to_save, book)
         else:
             to_save, edit_error = upload_book_formats(upload_formats, book, book_id, book.has_cover)
@@ -890,6 +898,7 @@ def do_edit_book(book_id, upload_formats=None):
                     edit_error = True
                     flash(error, category="error")
 
+        # Stage 2: Apply the remaining metadata changes to the database session.
         modify_date |= edit_book_series_index(to_save.get("series_index"), book)
         modify_date |= edit_book_comments(Markup(to_save.get('comments')).unescape(), book)
 
@@ -929,16 +938,7 @@ def do_edit_book(book_id, upload_formats=None):
         else:
             book.pubdate = db.Books.DEFAULT_PUBDATE
 
-        # Stage 2: Perform filesystem operations if necessary
-        if title_change or author_change:
-            title_author_error = helper.update_dir_structure(book.id, config.get_book_path(), input_authors[0])
-            if title_author_error:
-                flash(title_author_error, category="error")
-                calibre_db.session.rollback()
-                return render_edit_book(book_id)
-            modify_date = True
-
-        # Stage 3: Commit all changes to the database
+        # Stage 3: Commit all changes to the database.
         if modify_date:
             book.last_modified = datetime.now(timezone.utc)
             kobo_sync_status.remove_synced_book(book.id, all=True)
@@ -1023,7 +1023,7 @@ def do_edit_book(book_id, upload_formats=None):
         except Exception as e:
             log.error_or_exception(f"Failed to write metadata change log for book {book.id}: {e}")
 
-        # Stage 4: Post-commit operations (like cloud sync)
+        # Stage 4: Post-commit operations.
         if config.config_use_google_drive:
             gdriveutils.updateGdriveCalibreFromLocal()
 

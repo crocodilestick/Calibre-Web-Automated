@@ -15,6 +15,7 @@ from sqlalchemy.exc import InvalidRequestError, OperationalError
 from sqlalchemy.sql.expression import func, true
 
 from . import calibre_db, config, db, logger, ub
+from .kobo_sync_status import set_kobo_visibility, recompute_kobo_visibility
 from .render_template import render_title_template
 from .usermanagement import login_required_if_no_ano, user_login_required
 from .services import hardcover
@@ -70,7 +71,9 @@ def add_to_shelf(shelf_id, book_id):
     try:
         ub.session.merge(shelf)
         ub.session.commit()
-        
+        if shelf.kobo_sync:
+            set_kobo_visibility([book_id], shelf.user_id, is_visible=True)
+
         # Track shelf activity
         try:
             from scripts.cwa_db import CWA_DB
@@ -160,6 +163,8 @@ def search_to_shelf(shelf_id):
         try:
             ub.session.merge(shelf)
             ub.session.commit()
+            if shelf.kobo_sync:
+                set_kobo_visibility(books_for_shelf, shelf.user_id, is_visible=True)
             flash(_("Books have been added to shelf: %(sname)s", sname=shelf.name), category="success")
         except (OperationalError, InvalidRequestError) as e:
             ub.session.rollback()
@@ -204,7 +209,9 @@ def remove_from_shelf(shelf_id, book_id):
             ub.session.delete(book_shelf)
             shelf.last_modified = datetime.now(timezone.utc)
             ub.session.commit()
-            
+            if shelf.kobo_sync:
+                recompute_kobo_visibility([book_id], shelf.user_id)
+
             # Track shelf activity
             try:
                 from scripts.cwa_db import CWA_DB
@@ -359,12 +366,22 @@ def create_edit_shelf(shelf, page_title, page, shelf_id=False):
             flash(_("Sorry you are not allowed to create a public shelf"), category="error")
             return redirect(url_for('web.index'))
         is_public = 1 if to_save.get("is_public") == "on" else 0
+        kobo_sync_flipped_book_ids = []
+        kobo_sync_new_value = None
         if config.config_kobo_sync:
+            previous_kobo_sync = bool(shelf.kobo_sync) if shelf_id else False
             shelf.kobo_sync = True if to_save.get("kobo_sync") else False
             if shelf.kobo_sync:
                 ub.session.query(ub.ShelfArchive).filter(ub.ShelfArchive.user_id == current_user.id).filter(
                     ub.ShelfArchive.uuid == shelf.uuid).delete()
                 ub.session_commit()
+            # Capture book IDs before commit so visibility can be updated after.
+            if shelf_id and previous_kobo_sync != bool(shelf.kobo_sync):
+                kobo_sync_new_value = bool(shelf.kobo_sync)
+                kobo_sync_flipped_book_ids = [row.book_id for row in (
+                    ub.session.query(ub.BookShelf.book_id)
+                    .filter(ub.BookShelf.shelf == shelf.id).all()
+                )]
         shelf_title = to_save.get("title", "")
         if check_shelf_is_unique(shelf_title, is_public, shelf_id):
             shelf.name = shelf_title
@@ -379,6 +396,13 @@ def create_edit_shelf(shelf, page_title, page, shelf_id=False):
                 flash_text = _("Shelf %(title)s changed", title=shelf_title)
             try:
                 ub.session.commit()
+                # Update KoboBookVisibility after commit so the new kobo_sync
+                # value is visible to the recompute query.
+                if kobo_sync_flipped_book_ids:
+                    if kobo_sync_new_value:
+                        set_kobo_visibility(kobo_sync_flipped_book_ids, shelf.user_id, is_visible=True)
+                    else:
+                        recompute_kobo_visibility(kobo_sync_flipped_book_ids, shelf.user_id)
                 log.info("Shelf {} {}".format(shelf_title, shelf_action))
                 flash(flash_text, category="success")
                 return redirect(url_for('shelf.show_shelf', shelf_id=shelf.id))
@@ -432,10 +456,22 @@ def delete_shelf_helper(cur_shelf):
     if not cur_shelf or not check_shelf_edit_permissions(cur_shelf):
         return False
     shelf_id = cur_shelf.id
+    was_kobo_sync = bool(cur_shelf.kobo_sync)
+    user_id = cur_shelf.user_id
+    # Capture before deletion; BookShelf rows are gone after commit.
+    if was_kobo_sync:
+        affected_book_ids = [r.book_id for r in (
+            ub.session.query(ub.BookShelf.book_id).filter(ub.BookShelf.shelf == shelf_id).all()
+        )]
+    else:
+        affected_book_ids = []
     ub.session.delete(cur_shelf)
     ub.session.query(ub.BookShelf).filter(ub.BookShelf.shelf == shelf_id).delete()
     ub.session.add(ub.ShelfArchive(uuid=cur_shelf.uuid, user_id=cur_shelf.user_id))
     ub.session_commit("successfully deleted Shelf {}".format(cur_shelf.name))
+    # Shelf rows are deleted; recompute checks only remaining kobo shelves.
+    if affected_book_ids:
+        recompute_kobo_visibility(affected_book_ids, user_id)
     return True
 
 
@@ -540,6 +576,7 @@ def add_selected_to_shelf():
         return jsonify({'status': 'error', 'message': 'You are not allowed to add books to this shelf'}), 403
 
     success_count = 0
+    added_book_ids = []
     errors = []
 
     if not book_ids:
@@ -565,6 +602,7 @@ def add_selected_to_shelf():
 
         new_entry = ub.BookShelf(shelf=shelf.id, book_id=book_id, order=maxOrder + 1)
         shelf.books.append(new_entry)
+        added_book_ids.append(book_id)
         success_count += 1
 
     if success_count > 0:
@@ -572,6 +610,8 @@ def add_selected_to_shelf():
         try:
             ub.session.merge(shelf)
             ub.session.commit()
+            if shelf.kobo_sync:
+                set_kobo_visibility(added_book_ids, shelf.user_id, is_visible=True)
             log.info(f"Successfully added {success_count} books to shelf: {shelf.name}")
         except (OperationalError, InvalidRequestError) as e:
             ub.session.rollback()

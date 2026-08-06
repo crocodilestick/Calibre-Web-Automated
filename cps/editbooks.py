@@ -24,7 +24,7 @@ from sqlalchemy.exc import OperationalError, IntegrityError, InterfaceError, Inv
 from sqlalchemy.orm.exc import StaleDataError
 from sqlalchemy.sql.expression import func
 
-from . import constants, logger, isoLanguages, gdriveutils, uploader, helper, kobo_sync_status
+from . import constants, logger, isoLanguages, gdriveutils, uploader, helper
 from .clean_html import clean_string
 from . import config, ub, db, calibre_db
 from .services.worker import WorkerThread
@@ -570,10 +570,8 @@ def edit_book_param(param, vals):
             log_key = 'rating'
             log_value = vals.get('value', '')
         elif param == 'is_archived':
-            is_archived = change_archived_books(book.id, vals['value'] == "True",
-                                                message="Book {} archive bit set to: {}".format(book.id, vals['value']))
-            if is_archived:
-                kobo_sync_status.remove_synced_book(book.id)
+            change_archived_books(book.id, vals['value'] == "True",
+                                  message="Book {} archive bit set to: {}".format(book.id, vals['value']))
             return ""
         elif param == 'read_status':
             ret = helper.edit_book_read_status(book.id, vals['value'] == "True")
@@ -686,10 +684,8 @@ def archive_selected_books():
     state = request.get_json().get('archive')
     if vals:
         for book_id in vals:
-            is_archived = change_archived_books(book_id, state,
-                                                message="Book {} archive bit set to: {}".format(book_id, state))
-            if is_archived:
-                kobo_sync_status.remove_synced_book(book_id)
+            change_archived_books(book_id, state,
+                                  message="Book {} archive bit set to: {}".format(book_id, state))
         return json.dumps({'success': True})
     return ""
 
@@ -941,7 +937,6 @@ def do_edit_book(book_id, upload_formats=None):
         # Stage 3: Commit all changes to the database
         if modify_date:
             book.last_modified = datetime.now(timezone.utc)
-            kobo_sync_status.remove_synced_book(book.id, all=True)
             calibre_db.set_metadata_dirty(book.id)
 
         try:
@@ -1386,8 +1381,8 @@ def delete_book_from_table(book_id, book_format, json_response, location=""):
                 else:
                     calibre_db.session.query(db.Data).filter(db.Data.book == book.id).\
                         filter(db.Data.format == book_format).delete()
-                    if book_format.upper() in ['KEPUB', 'EPUB', 'EPUB3']:
-                        kobo_sync_status.remove_synced_book(book.id, True)
+                    # Bump last_modified so that the new format can be picked up by Kobo devices
+                    book.last_modified = datetime.now(timezone.utc)
                 calibre_db.session.commit()
 
                 refreshed_duplicate_cache = False

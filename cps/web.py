@@ -1908,7 +1908,7 @@ def serve_book(book_id, book_format, anyname):
             log.error_or_exception(ex)
             return "File Not Found"
     else:
-        if book_format.upper() == 'EPUB':
+        if book_format.upper() in ('EPUB', 'KEPUB'):
             original_path = os.path.join(config.get_book_path(), book.path, data.name + "." + book_format)
             fixed_path = _repair_epub_container_if_needed(book_id, original_path)
             if fixed_path:
@@ -2845,10 +2845,11 @@ def read_book(book_id, book_format):
         except Exception as e:
             log.debug(f"Failed to log read activity: {e}")
     
-    if book_format.lower() == "epub":
-        log.debug("Start epub reader for %d", book_id)
+    if book_format.lower() in ("epub", "kepub"):
+        log.debug("Start epub reader for %d (%s)", book_id, book_format.lower())
         return render_title_template('read.html', bookid=book_id, title=book.title,
-                                     bookmark=bookmark, kosync_progress=kosync_progress)
+                                     bookmark=bookmark, kosync_progress=kosync_progress,
+                                     book_format=book_format.lower())
     elif book_format.lower() == "pdf":
         log.debug("Start pdf reader for %d", book_id)
         return render_title_template('readpdf.html', pdffile=book_id, title=book.title)

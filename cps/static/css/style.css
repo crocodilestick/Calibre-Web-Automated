@@ -783,3 +783,11 @@ select.cwa-settings-select {
   width: -webkit-fill-available;
   justify-content: space-evenly;
 }
+
+.series-section {
+    margin-bottom: 10px;
+}
+
+.series-section p {
+    margin-bottom: 5px;
+}

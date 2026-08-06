@@ -2,6 +2,7 @@
 {% block header %}
 <link href="{{ url_for('static', filename='css/libs/bootstrap-table.min.css') }}" rel="stylesheet">
 <link href="{{ url_for('static', filename='css/libs/bootstrap-editable.css') }}" rel="stylesheet">
+<link href="{{ url_for('static', filename='css/libs/bootstrap-select.min.css') }}" rel="stylesheet">
 <style>
   /* Mobile responsive styles for config_view_edit template - triggers below 768px */
   @media (max-width: 768px) {
@@ -11,11 +12,11 @@
       margin-left: 0 !important;
       margin-right: 0 !important;
     }
-    
+
     .form-control {
       font-size: 16px; /* Prevents zoom on iOS */
     }
-    
+
     /* Stack buttons vertically on mobile */
     .btn {
       display: block;
@@ -30,35 +31,35 @@
   <h2>{{title}}</h2>
   <form role="form" method="POST" autocomplete="off" style="margin-top: 3rem;">
     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-    
+
     <!-- View Configuration Card -->
     <div class="settings-container">
       <h4 class="settings-section-header">{{_('View Configuration')}}</h4>
-      
+
       <div class="form-group">
         <label for="config_calibre_web_title">{{_('Title')}}</label>
         <input type="text" class="form-control" name="config_calibre_web_title" id="config_calibre_web_title" value="{% if conf.config_calibre_web_title != None %}{{ conf.config_calibre_web_title }}{% endif %}" autocomplete="off" required>
         <p class="settings-explanation">{{_('The title displayed in the browser tab and navbar.')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_books_per_page">{{_('Books per Page')}}</label>
         <input type="number" min="1" max="200" class="form-control" name="config_books_per_page" id="config_books_per_page" value="{% if conf.config_books_per_page != None %}{{ conf.config_books_per_page }}{% endif %}" autocomplete="off">
         <p class="settings-explanation">{{_('Number of books to display per page in list views (1-200).')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_random_books">{{_('No. of Random Books to Display')}}</label>
         <input type="number" min="1" max="30" class="form-control" name="config_random_books" id="config_random_books" value="{% if conf.config_random_books != None %}{{ conf.config_random_books }}{% endif %}" autocomplete="off">
         <p class="settings-explanation">{{_('Number of random books shown on the home page (1-30).')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_authors_max">{{_('No. of Authors to Display Before Hiding (0=Disable Hiding)')}}</label>
         <input type="number" min="0" max="999" class="form-control" name="config_authors_max" id="config_authors_max" value="{% if conf.config_authors_max != None %}{{ conf.config_authors_max }}{% endif %}" autocomplete="off">
         <p class="settings-explanation">{{_('Maximum number of authors to show in book details before truncating. Set to 0 to disable.')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_theme">{{_('Default Theme')}}</label>
         <select name="config_theme" id="config_theme" class="form-control">
@@ -66,13 +67,13 @@
         </select>
         <p class="settings-explanation">{{_('Default theme for new users and anonymous browsing. Users can select their own preferred theme in their profile.')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_columns_to_ignore">{{_('Regular Expression for Ignoring Columns')}}</label>
         <input type="text" class="form-control" name="config_columns_to_ignore" id="config_columns_to_ignore" value="{% if conf.config_columns_to_ignore != None %}{{ conf.config_columns_to_ignore }}{% endif %}" autocomplete="off">
         <p class="settings-explanation">{{_('Regex pattern to hide custom columns from being displayed in the UI.')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_read_column">{{_('Link Read/Unread Status to Calibre Column')}}</label>
         <select name="config_read_column" id="config_read_column" class="form-control">
@@ -83,7 +84,38 @@
         </select>
         <p class="settings-explanation">{{_('Sync read/unread status with a Calibre boolean custom column.')}}</p>
       </div>
-      
+
+      <div class="form-group">
+        <label for="config_series2_column">{{_('Second Series Column')}}</label>
+        <select name="config_series2_column" id="config_series2_column" class="form-control" onchange="updateSeries2Label(this)">
+          <option value="0" data-name="" {% if conf.config_series2_column == 0 %}selected{% endif %}></option>
+          {% for series2Column in series2Columns %}
+          <option value="{{ series2Column.id }}" data-name="{{ series2Column.name }}" data-label="{{ series2Column.label }}" {% if series2Column.id == conf.config_series2_column %}selected{% endif %}>{{ series2Column.name }}</option>
+          {% endfor %}
+        </select>
+        <input type="hidden" name="config_series2_label" id="config_series2_label" value="">
+        <input type="hidden" name="config_series2_slug" id="config_series2_slug" value="">
+        <div class="checkbox">
+          <label>
+            <input type="checkbox" name="config_show_series2_on_book_list" id="config_show_series2_on_book_list" {% if conf.config_show_series2_on_book_list %}checked{% endif %} style="accent-color: var(--color-secondary);">
+            {{_('Show Second Series on book list pages')}}
+          </label>
+        </div>
+        {% set series2_icon = conf.config_series2_icon or 'glyphicon-bookmark' %}
+        <div id="series2_icon_group" {% if not conf.config_series2_column %}hidden{% endif %}>
+          <label for="config_series2_icon">{{_('Sidebar Icon')}}</label>
+          <select name="config_series2_icon" id="config_series2_icon"
+                  class="selectpicker" data-live-search="true" data-width="100%">
+            {% for icon_value, icon_label in series2Icons %}
+            <option value="{{ icon_value }}"
+                    data-content="<span class='glyphicon {{ icon_value }}'></span> {{ icon_label }}"
+                    {% if icon_value == series2_icon %}selected{% endif %}>{{ icon_label }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <p class="settings-explanation">{{_('Select a custom column of type "series" to use as a second series display.')}}</p>
+      </div>
+
       <div class="form-group">
         <label for="config_restricted_column">{{_('View Restrictions based on Calibre column')}}</label>
         <select name="config_restricted_column" id="config_restricted_column" class="form-control">
@@ -94,7 +126,7 @@
         </select>
         <p class="settings-explanation">{{_('Restrict book visibility based on values in a Calibre text custom column.')}}</p>
       </div>
-      
+
       <div class="form-group">
         <label for="config_title_regex">{{_('Regular Expression for Title Sorting')}}</label>
         <input type="text" class="form-control" name="config_title_regex" id="config_title_regex" value="{% if conf.config_title_regex != None %}{{ conf.config_title_regex }}{% endif %}" autocomplete="off">
@@ -221,6 +253,22 @@
 {{ restrict_modal() }}
 {% endblock %}
 {% block js %}
+<script src="{{ url_for('static', filename='js/libs/bootstrap-select.min.js') }}"></script>
+<script>
+function updateSeries2Label(sel) {
+  var opt = sel.options[sel.selectedIndex];
+  document.getElementById('config_series2_label').value = opt.getAttribute('data-name') || '';
+  document.getElementById('config_series2_slug').value = opt.getAttribute('data-label') || '';
+  var group = document.getElementById('series2_icon_group');
+  if (group) {
+    group.hidden = (sel.value === '0' || sel.value === '');
+  }
+}
+(function() {
+  var sel = document.getElementById('config_series2_column');
+  if (sel) { updateSeries2Label(sel); }
+})();
+</script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-table-editable.min.js') }}"></script>
 <script src="{{ url_for('static', filename='js/libs/bootstrap-table/bootstrap-editable.min.js') }}"></script>

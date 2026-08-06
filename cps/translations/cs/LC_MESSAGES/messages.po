@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: CWA\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 15:01+0000\n"
+"POT-Creation-Date: 2026-08-06 15:04+0000\n"
 "PO-Revision-Date: \n"
 "Last-Translator: PetriiCzech <petriiczech@gmail.com>\n"
 "Language-Team: \n"
@@ -1322,190 +1322,200 @@ msgstr ""
 "Doména zpětného volání není ověřena, postupujte podle pokynů k ověření "
 "domény v konzole pro vývojáře google"
 
-#: cps/helper.py:92
+#: cps/helper.py:94
 #, python-format
 msgid "%(format)s format not found for book id: %(book)d"
 msgstr "%(format)s formát pro knihu: %(book)d nenalezen"
 
-#: cps/helper.py:98 cps/tasks/convert.py:77
+#: cps/helper.py:100 cps/tasks/convert.py:77
 #, python-format
 msgid "%(format)s not found on Google Drive: %(fn)s"
 msgstr "%(format)s nenalezen na Google Drive: %(fn)s"
 
-#: cps/helper.py:103
+#: cps/helper.py:105
 #, python-format
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s nenalezen: %(fn)s"
 
-#: cps/helper.py:110 cps/helper.py:234 cps/templates/detail.html:516
+#: cps/helper.py:112 cps/helper.py:243 cps/templates/detail.html:516
 #: cps/templates/detail.html:520
 msgid "Send to eReader"
 msgstr "Poslat do čtečky knih"
 
-#: cps/helper.py:112 cps/helper.py:132 cps/helper.py:245
+#: cps/helper.py:114 cps/helper.py:141 cps/helper.py:254
 msgid "This Email has been sent via Calibre-Web Automated."
 msgstr "Tento e-mail byl odeslán přes Calibre-Web."
 
-#: cps/helper.py:130
+#: cps/helper.py:129
+#, fuzzy, python-format
+msgid "Conversion timed out for book id: %(book)d"
+msgstr "%(format)s formát pro knihu: %(book)d nenalezen"
+
+#: cps/helper.py:131
+#, fuzzy, python-format
+msgid "Conversion failed for book id: %(book)d"
+msgstr "%(format)s formát pro knihu: %(book)d nenalezen"
+
+#: cps/helper.py:139
 msgid "Calibre-Web Automated Test Email"
 msgstr "Calibre-Web zkušební e-mail"
 
-#: cps/helper.py:131
+#: cps/helper.py:140
 msgid "Test Email"
 msgstr "Zkušební e-mail"
 
-#: cps/helper.py:148
+#: cps/helper.py:157
 msgid "Get Started with Calibre-Web Automated"
 msgstr "Začínáme s Calibre-Web"
 
-#: cps/helper.py:153
+#: cps/helper.py:162
 #, python-format
 msgid "Registration Email for user: %(name)s"
 msgstr "Registrační e-mail pro uživatele: %(name)s"
 
-#: cps/helper.py:164 cps/helper.py:170
+#: cps/helper.py:173 cps/helper.py:179
 #, python-format
 msgid "Convert %(orig)s to %(format)s and send to eReader"
 msgstr "Převést %(orig)s do %(format)s a poslat do čtečky knih"
 
-#: cps/helper.py:189 cps/helper.py:193 cps/helper.py:197
+#: cps/helper.py:198 cps/helper.py:202 cps/helper.py:206
 #, python-format
 msgid "Send %(format)s to eReader"
 msgstr "Poslat %(format)s do čtečky knih"
 
-#: cps/helper.py:240
+#: cps/helper.py:249
 #, python-format
 msgid "%(book)s send to eReader"
 msgstr "Poslat do čtečky knih %(book)s"
 
-#: cps/helper.py:247
+#: cps/helper.py:256
 msgid "The requested file could not be read. Maybe wrong permissions?"
 msgstr "Požadovaný soubor nelze přečíst. Možná nesprávná oprávnění?"
 
-#: cps/helper.py:393
+#: cps/helper.py:402
 #, python-brace-format
 msgid "Read status could not set: {}"
 msgstr "Stav čtení se nepodařilo nastavit: {}"
 
-#: cps/helper.py:416
+#: cps/helper.py:425
 #, python-format
 msgid ""
 "Deleting bookfolder for book %(id)s failed, path has subfolders: %(path)s"
 msgstr ""
 "Smazání složky knihy %(id)s se nezdařilo, cesta obsahuje podsložky: %(path)s"
 
-#: cps/helper.py:428
+#: cps/helper.py:437
 #, python-format
 msgid "Deleting book %(id)s failed: %(message)s"
 msgstr "Mazání knihy selhalo %(id)s failed: %(message)s"
 
-#: cps/helper.py:439
+#: cps/helper.py:448
 #, python-format
 msgid ""
 "Deleting book %(id)s from database only, book path in database not valid: "
 "%(path)s"
 msgstr "Mazání knihy %(id)s, cesta ke knize není platná %(path)s"
 
-#: cps/helper.py:528
+#: cps/helper.py:537
 #, python-format
 msgid ""
 "Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr ""
 "Přejmenování autora z: '%(src)s' na '%(dest)s'  selhalo chybou: %(error)s"
 
-#: cps/helper.py:597 cps/helper.py:606
+#: cps/helper.py:606 cps/helper.py:615
 #, python-format
 msgid "File %(file)s not found on Google Drive"
 msgstr "Soubor %(file)s nenalezen na Google Drive"
 
-#: cps/helper.py:684
+#: cps/helper.py:693
 #, python-format
 msgid "Rename title from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr ""
 "Přejmenování názvu z: '%(src)s' na '%(dest)s'  selhalo chybou: %(error)s"
 
-#: cps/helper.py:723
+#: cps/helper.py:732
 #, python-format
 msgid "Book path %(path)s not found on Google Drive"
 msgstr "Cesta ke knize %(path)s nebyla nalezena na Google Drive"
 
-#: cps/helper.py:783
+#: cps/helper.py:792
 msgid "Found an existing account for this Email address"
 msgstr "Pro tuto e-mailovou adresu byl nalezen existující účet"
 
-#: cps/helper.py:791
+#: cps/helper.py:800
 msgid "This username is already taken"
 msgstr "Zadané uživatelské jméno je již použito"
 
-#: cps/helper.py:805
+#: cps/helper.py:814
 msgid "Invalid Email address format"
 msgstr "Neplatný formát e-mailové adresy"
 
-#: cps/helper.py:827
+#: cps/helper.py:836
 msgid "Password doesn't comply with password validation rules"
 msgstr "Heslo neodpovídá pravidlům pro ověřování hesla"
 
-#: cps/helper.py:1062
+#: cps/helper.py:1071
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr ""
 "Modul Pythonu 'advocate' není nainstalován, ale je potřeba pro nahrávání "
 "obálek"
 
-#: cps/helper.py:1067 cps/helper.py:1075
+#: cps/helper.py:1076 cps/helper.py:1084
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
 msgstr "Obrázek obálky překračuje maximální velikost %(size)s MB"
 
-#: cps/helper.py:1086
+#: cps/helper.py:1095
 msgid "Error Downloading Cover"
 msgstr "Chyba stahování obalu"
 
-#: cps/helper.py:1089
+#: cps/helper.py:1098
 msgid "Cover Format Error"
 msgstr "Chyba formátu obalu"
 
-#: cps/helper.py:1092
+#: cps/helper.py:1101
 msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
 msgstr ""
 "Pro nahrávání obalů nemáte povolen přístup k localhostu ani k místní síti"
 
-#: cps/helper.py:1108
+#: cps/helper.py:1117
 msgid "Failed to create path for cover"
 msgstr "Vytvoření cesty obalu selhalo"
 
-#: cps/helper.py:1124
+#: cps/helper.py:1133
 msgid "Cover-file is not a valid image file, or could not be stored"
 msgstr "Soubor obalu není platný, nebo nelze uložit"
 
-#: cps/helper.py:1141
+#: cps/helper.py:1150
 msgid "Only jpg/jpeg/png/webp/bmp files are supported as coverfile"
 msgstr ""
 "Jako soubor obálky jsou podporovány pouze soubory jpg/jpeg/png/webp/bmp"
 
-#: cps/helper.py:1155
+#: cps/helper.py:1164
 msgid "Invalid cover file content"
 msgstr "Neplatný obsah souboru obálky"
 
-#: cps/helper.py:1159
+#: cps/helper.py:1168
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Pouze jpg/jpeg jsou podporované soubory pro obal"
 
-#: cps/helper.py:1318 cps/helper.py:1557
+#: cps/helper.py:1327 cps/helper.py:1576
 msgid "Cover"
 msgstr "Obálka"
 
-#: cps/helper.py:1335
+#: cps/helper.py:1344
 msgid "UnRar binary file not found"
 msgstr "UnRar binární soubor nenalezen"
 
-#: cps/helper.py:1346
+#: cps/helper.py:1355
 msgid "Error executing UnRar"
 msgstr "Chyba provádění UnRar"
 
-#: cps/helper.py:1352
+#: cps/helper.py:1361
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
@@ -1514,33 +1524,33 @@ msgstr ""
 "Detekována nepodporovaná architektura: %(arch)s. CWA je optimalizováno pro "
 "x86_64 a aarch64."
 
-#: cps/helper.py:1361
+#: cps/helper.py:1370
 msgid "Could not find the specified directory"
 msgstr "Nelze najít zadaný adresář"
 
-#: cps/helper.py:1364
+#: cps/helper.py:1373
 msgid "Please specify a directory, not a file"
 msgstr "Zadejte prosím adresář, ne soubor"
 
-#: cps/helper.py:1378
+#: cps/helper.py:1387
 msgid "Calibre binaries not viable"
 msgstr "Databáze není zapisovatelná"
 
-#: cps/helper.py:1387
+#: cps/helper.py:1396
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr "Chybějící binární soubory Calibre: %(missing)s"
 
-#: cps/helper.py:1389
+#: cps/helper.py:1398
 #, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr "Chybějící oprávnění ke spuštění: %(missing)s"
 
-#: cps/helper.py:1394
+#: cps/helper.py:1403
 msgid "Error executing Calibre"
 msgstr "Chyba při spuštění Calibre"
 
-#: cps/helper.py:1559 cps/templates/admin.html:240
+#: cps/helper.py:1578 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr "Zařadit všechny knihy do fronty pro zálohování metadat"
 
@@ -1552,7 +1562,7 @@ msgstr ""
 "Pro získání platného api_endpointu pro zařízení kobo prosím použijte Calibre-"
 "Web Automated z jiného než lokálního hostitele"
 
-#: cps/kobo_auth.py:106
+#: cps/kobo_auth.py:99
 msgid "Kobo Setup"
 msgstr "Kobo nastavení"
 

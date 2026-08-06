@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 15:01+0000\n"
+"POT-Creation-Date: 2026-08-06 15:04+0000\n"
 "PO-Revision-Date: 2020-01-12 13:56+0100\n"
 "Last-Translator: Samuli Valavuo <svalavuo@gmail.com>\n"
 "Language-Team: \n"
@@ -1302,95 +1302,105 @@ msgstr ""
 "Paluuosoitteen domain ei ole varmistettu, seuraa ohjeita vamistaaksesi sen "
 "googlen kehittäjäkonsolissa"
 
-#: cps/helper.py:92
+#: cps/helper.py:94
 #, python-format
 msgid "%(format)s format not found for book id: %(book)d"
 msgstr "%(format)s tiedostomuotoa ei löytynyt kirjalle: %(book)d"
 
-#: cps/helper.py:98 cps/tasks/convert.py:77
+#: cps/helper.py:100 cps/tasks/convert.py:77
 #, python-format
 msgid "%(format)s not found on Google Drive: %(fn)s"
 msgstr "%(format)s ei löytynyt Google Drivesta: %(fn)s"
 
-#: cps/helper.py:103
+#: cps/helper.py:105
 #, python-format
 msgid "%(format)s not found: %(fn)s"
 msgstr "%(format)s ei löydy: %(fn)s"
 
-#: cps/helper.py:110 cps/helper.py:234 cps/templates/detail.html:516
+#: cps/helper.py:112 cps/helper.py:243 cps/templates/detail.html:516
 #: cps/templates/detail.html:520
 #, fuzzy
 msgid "Send to eReader"
 msgstr "Lähetä Kindleen"
 
-#: cps/helper.py:112 cps/helper.py:132 cps/helper.py:245
+#: cps/helper.py:114 cps/helper.py:141 cps/helper.py:254
 #, fuzzy
 msgid "This Email has been sent via Calibre-Web Automated."
 msgstr "Tämä sähköposti on lähetetty Calibre-Web:sta."
 
-#: cps/helper.py:130
+#: cps/helper.py:129
+#, fuzzy, python-format
+msgid "Conversion timed out for book id: %(book)d"
+msgstr "%(format)s tiedostomuotoa ei löytynyt kirjalle: %(book)d"
+
+#: cps/helper.py:131
+#, fuzzy, python-format
+msgid "Conversion failed for book id: %(book)d"
+msgstr "%(format)s tiedostomuotoa ei löytynyt kirjalle: %(book)d"
+
+#: cps/helper.py:139
 #, fuzzy
 msgid "Calibre-Web Automated Test Email"
 msgstr "Calibre-Web testisähköposti"
 
-#: cps/helper.py:131
+#: cps/helper.py:140
 #, fuzzy
 msgid "Test Email"
 msgstr "Testi sähköposti"
 
-#: cps/helper.py:148
+#: cps/helper.py:157
 #, fuzzy
 msgid "Get Started with Calibre-Web Automated"
 msgstr "Aloita Calibre-Web:in käyttö"
 
-#: cps/helper.py:153
+#: cps/helper.py:162
 #, fuzzy, python-format
 msgid "Registration Email for user: %(name)s"
 msgstr "Rekiströintisähköposti käyttäjälle: %(name)s"
 
-#: cps/helper.py:164 cps/helper.py:170
+#: cps/helper.py:173 cps/helper.py:179
 #, fuzzy, python-format
 msgid "Convert %(orig)s to %(format)s and send to eReader"
 msgstr "Muunna %(orig)s muotoon %(format)s ja lähetä Kindleen"
 
-#: cps/helper.py:189 cps/helper.py:193 cps/helper.py:197
+#: cps/helper.py:198 cps/helper.py:202 cps/helper.py:206
 #, fuzzy, python-format
 msgid "Send %(format)s to eReader"
 msgstr "Lähetä %(format)s Kindleen"
 
-#: cps/helper.py:240
+#: cps/helper.py:249
 #, fuzzy, python-format
 msgid "%(book)s send to eReader"
 msgstr "Lähetä Kindleen"
 
-#: cps/helper.py:247
+#: cps/helper.py:256
 msgid "The requested file could not be read. Maybe wrong permissions?"
 msgstr "Haettua tiedostoa ei pystytty lukemaan. Ehkä vaäärät oikeudet?"
 
-#: cps/helper.py:393
+#: cps/helper.py:402
 #, python-brace-format
 msgid "Read status could not set: {}"
 msgstr ""
 
-#: cps/helper.py:416
+#: cps/helper.py:425
 #, python-format
 msgid ""
 "Deleting bookfolder for book %(id)s failed, path has subfolders: %(path)s"
 msgstr ""
 
-#: cps/helper.py:428
+#: cps/helper.py:437
 #, python-format
 msgid "Deleting book %(id)s failed: %(message)s"
 msgstr ""
 
-#: cps/helper.py:439
+#: cps/helper.py:448
 #, python-format
 msgid ""
 "Deleting book %(id)s from database only, book path in database not valid: "
 "%(path)s"
 msgstr ""
 
-#: cps/helper.py:528
+#: cps/helper.py:537
 #, fuzzy, python-format
 msgid ""
 "Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
@@ -1398,130 +1408,130 @@ msgstr ""
 "Tiedon muuttaminen arvosta: '%(src)s' arvoon '%(dest)s' epäonnistui "
 "virheeseen: %(error)s"
 
-#: cps/helper.py:597 cps/helper.py:606
+#: cps/helper.py:606 cps/helper.py:615
 #, python-format
 msgid "File %(file)s not found on Google Drive"
 msgstr "Tiedostoa %(file)s ei löytynyt Google Drivesta"
 
-#: cps/helper.py:684
+#: cps/helper.py:693
 #, python-format
 msgid "Rename title from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr ""
 "Tiedon muuttaminen arvosta: '%(src)s' arvoon '%(dest)s' epäonnistui "
 "virheeseen: %(error)s"
 
-#: cps/helper.py:723
+#: cps/helper.py:732
 #, python-format
 msgid "Book path %(path)s not found on Google Drive"
 msgstr "Kirjan polkua %(path)s ei löytynyt Google Drivesta"
 
-#: cps/helper.py:783
+#: cps/helper.py:792
 msgid "Found an existing account for this Email address"
 msgstr ""
 
-#: cps/helper.py:791
+#: cps/helper.py:800
 msgid "This username is already taken"
 msgstr ""
 
-#: cps/helper.py:805
+#: cps/helper.py:814
 msgid "Invalid Email address format"
 msgstr ""
 
-#: cps/helper.py:827
+#: cps/helper.py:836
 msgid "Password doesn't comply with password validation rules"
 msgstr ""
 
-#: cps/helper.py:1062
+#: cps/helper.py:1071
 msgid ""
 "Python module 'advocate' is not installed but is needed for cover uploads"
 msgstr ""
 
-#: cps/helper.py:1067 cps/helper.py:1075
+#: cps/helper.py:1076 cps/helper.py:1084
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
 msgstr ""
 
-#: cps/helper.py:1086
+#: cps/helper.py:1095
 msgid "Error Downloading Cover"
 msgstr ""
 
-#: cps/helper.py:1089
+#: cps/helper.py:1098
 msgid "Cover Format Error"
 msgstr ""
 
-#: cps/helper.py:1092
+#: cps/helper.py:1101
 msgid ""
 "You are not allowed to access localhost or the local network for cover "
 "uploads"
 msgstr ""
 
-#: cps/helper.py:1108
+#: cps/helper.py:1117
 msgid "Failed to create path for cover"
 msgstr ""
 
-#: cps/helper.py:1124
+#: cps/helper.py:1133
 msgid "Cover-file is not a valid image file, or could not be stored"
 msgstr ""
 
-#: cps/helper.py:1141
+#: cps/helper.py:1150
 msgid "Only jpg/jpeg/png/webp/bmp files are supported as coverfile"
 msgstr ""
 
-#: cps/helper.py:1155
+#: cps/helper.py:1164
 msgid "Invalid cover file content"
 msgstr ""
 
-#: cps/helper.py:1159
+#: cps/helper.py:1168
 msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr ""
 
-#: cps/helper.py:1318 cps/helper.py:1557
+#: cps/helper.py:1327 cps/helper.py:1576
 #, fuzzy
 msgid "Cover"
 msgstr "Löydä"
 
-#: cps/helper.py:1335
+#: cps/helper.py:1344
 msgid "UnRar binary file not found"
 msgstr ""
 
-#: cps/helper.py:1346
+#: cps/helper.py:1355
 msgid "Error executing UnRar"
 msgstr ""
 
-#: cps/helper.py:1352
+#: cps/helper.py:1361
 #, python-format
 msgid ""
 "Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
 "aarch64."
 msgstr ""
 
-#: cps/helper.py:1361
+#: cps/helper.py:1370
 msgid "Could not find the specified directory"
 msgstr ""
 
-#: cps/helper.py:1364
+#: cps/helper.py:1373
 msgid "Please specify a directory, not a file"
 msgstr ""
 
-#: cps/helper.py:1378
+#: cps/helper.py:1387
 msgid "Calibre binaries not viable"
 msgstr ""
 
-#: cps/helper.py:1387
+#: cps/helper.py:1396
 #, python-format
 msgid "Missing calibre binaries: %(missing)s"
 msgstr ""
 
-#: cps/helper.py:1389
+#: cps/helper.py:1398
 #, python-format
 msgid "Missing executable permissions: %(missing)s"
 msgstr ""
 
-#: cps/helper.py:1394
+#: cps/helper.py:1403
 msgid "Error executing Calibre"
 msgstr ""
 
-#: cps/helper.py:1559 cps/templates/admin.html:240
+#: cps/helper.py:1578 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr ""
 
@@ -1531,7 +1541,7 @@ msgid ""
 "api_endpoint for kobo device"
 msgstr ""
 
-#: cps/kobo_auth.py:106
+#: cps/kobo_auth.py:99
 msgid "Kobo Setup"
 msgstr ""
 

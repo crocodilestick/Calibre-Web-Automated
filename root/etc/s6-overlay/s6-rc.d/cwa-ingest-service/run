@@ -1,5 +1,10 @@
 #!/usr/bin/with-contenv bash
 
+# Drop privileges to abc (LinuxServer PUID/PGID user)
+if [ "$(id -u)" = "0" ]; then
+    exec s6-setuidgid abc "$0" "$@"
+fi
+
 echo "========== STARTING CWA-INGEST SERVICE =========="
 
 WATCH_FOLDER=${WATCH_FOLDER:-$(grep -o '"ingest_folder": "[^"]*' /app/calibre-web-automated/dirs.json | grep -o '[^"]*$')}
@@ -538,7 +543,7 @@ if [ -n "$(get_stale_temp_interval_from_db)" ]; then
 fi
 
 ( set -o pipefail
-        s6-setuidgid abc inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" | \
+        inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" | \
         while read -r events filepath; do
                 handle_event "$filepath"
         done

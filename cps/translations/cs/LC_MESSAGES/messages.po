@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: CWA\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 13:54+0000\n"
+"POT-Creation-Date: 2026-08-06 15:01+0000\n"
 "PO-Revision-Date: \n"
 "Last-Translator: PetriiCzech <petriiczech@gmail.com>\n"
 "Language-Team: \n"
@@ -2471,7 +2471,7 @@ msgstr "Byl nalezen existující účet pro tuto e-mailovou adresu."
 msgid "Invalid book ID."
 msgstr "Neplatné ID knihy."
 
-#: cps/progress_syncing/protocols/kosync.py:459
+#: cps/progress_syncing/protocols/kosync.py:485
 msgid "KOReader Sync Plugin"
 msgstr "Synchronizační plugin KOReaderu"
 

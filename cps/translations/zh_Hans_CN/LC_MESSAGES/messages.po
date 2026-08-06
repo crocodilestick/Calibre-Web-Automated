@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 13:54+0000\n"
+"POT-Creation-Date: 2026-08-06 15:01+0000\n"
 "PO-Revision-Date: 2026-02-10 18:28+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -2378,7 +2378,7 @@ msgstr "哎呀！该电子邮箱已存在相关账户。"
 msgid "Invalid book ID."
 msgstr "无效的书籍编号。"
 
-#: cps/progress_syncing/protocols/kosync.py:459
+#: cps/progress_syncing/protocols/kosync.py:485
 msgid "KOReader Sync Plugin"
 msgstr "KOReader 同步插件"
 

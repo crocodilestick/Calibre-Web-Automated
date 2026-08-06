@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 13:54+0000\n"
+"POT-Creation-Date: 2026-08-06 15:01+0000\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -2437,7 +2437,7 @@ msgstr "이미 등록된 이메일 주소입니다."
 msgid "Invalid book ID."
 msgstr "잘못된 "
 
-#: cps/progress_syncing/protocols/kosync.py:459
+#: cps/progress_syncing/protocols/kosync.py:485
 msgid "KOReader Sync Plugin"
 msgstr "KOReader Sync 플러그인"
 

@@ -1,38 +1,114 @@
 name: Build & Push - Release - Split Strategy
-# Automatically builds/pushes multi-platform release images when a GitHub Release is published
+# Automatically builds and pushes a multi-platform release image when a GitHub Release is published
 
 on:
   release:
     types:
       - published
   workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Git ref (branch, tag, or SHA) to build'
+        required: false
+        default: ''
+      tag:
+        description: 'Release tag to publish'
+        required: false
+        default: ''
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
-  # --------------------------------------------------------------------------------
-  # JOB 1: Build Intel (amd64) on GitHub Runners
-  # --------------------------------------------------------------------------------
-  build-amd64:
+  prepare:
+    name: Prepare shared variables
     runs-on: ubuntu-latest
+    outputs:
+      build_ref: ${{ steps.vars.outputs.build_ref }}
+      release_tag: ${{ steps.vars.outputs.release_tag }}
+      lower_repo_name: ${{ steps.vars.outputs.lower_repo_name }}
+      build_date: ${{ steps.vars.outputs.build_date }}
+      has_dockerhub: ${{ steps.vars.outputs.has_dockerhub }}
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # --- 1. Calculate Variables ---
-      - name: Set repo name to lowercase
-        run: echo "LOWER_REPO_NAME=$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
-      - name: Determine Version
+      - name: Compute workflow variables
+        id: vars
+        env:
+          INPUT_REF: ${{ inputs.ref }}
+          INPUT_TAG: ${{ inputs.tag }}
+          EVENT_NAME: ${{ github.event_name }}
+          GITHUB_REF_VALUE: ${{ github.ref }}
+          RELEASE_TAG_NAME: ${{ github.event.release.tag_name }}
+          REPO_NAME: ${{ github.event.repository.name }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          DOCKERHUB_PA_TOKEN: ${{ secrets.DOCKERHUB_PA_TOKEN }}
+        shell: bash
         run: |
-          # If triggered by a release, use the tag (e.g., v1.0.0)
-          if [ -n "${{ github.event.release.tag_name }}" ]; then
-            echo "VERSION_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
+          set -euo pipefail
+
+          if [[ "${EVENT_NAME}" == "workflow_dispatch" && -n "${INPUT_REF}" ]]; then
+            build_ref="${INPUT_REF}"
           else
-            # If triggered manually, fallback to avoid build failure
-            echo "VERSION_TAG=manual-build" >> $GITHUB_ENV
+            build_ref="${GITHUB_REF_VALUE}"
           fi
 
-      # --- 2. Logins ---
+          if [[ "${EVENT_NAME}" == "workflow_dispatch" && -n "${INPUT_TAG}" ]]; then
+            release_tag="${INPUT_TAG}"
+          elif [[ -n "${RELEASE_TAG_NAME}" ]]; then
+            release_tag="${RELEASE_TAG_NAME}"
+          else
+            release_tag="manual-build"
+          fi
+
+          lower_repo_name="$(printf '%s' "${REPO_NAME}" | tr '[:upper:]' '[:lower:]')"
+          build_date="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+
+          if [[ -n "${DOCKERHUB_USERNAME}" && -n "${DOCKERHUB_PA_TOKEN}" ]]; then
+            has_dockerhub="true"
+          else
+            has_dockerhub="false"
+          fi
+
+          {
+            echo "build_ref=$build_ref"
+            echo "release_tag=$release_tag"
+            echo "lower_repo_name=$lower_repo_name"
+            echo "build_date=$build_date"
+            echo "has_dockerhub=$has_dockerhub"
+          } >> "$GITHUB_OUTPUT"
+
+  build:
+    name: Build ${{ matrix.platform }}
+    needs: prepare
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: linux/amd64
+            runs_on: '["ubuntu-latest"]'
+            artifact_name: digests-amd64
+            cache_from: type=gha,scope=release-amd64
+            cache_to: type=gha,mode=max,scope=release-amd64
+            needs_cache_rotate: 'false'
+          - platform: linux/arm64
+            runs_on: '["self-hosted","linux","ARM64"]'
+            artifact_name: digests-arm64
+            cache_from: type=local,src=/tmp/.buildx-cache
+            cache_to: type=local,dest=/tmp/.buildx-cache-new,mode=max
+            needs_cache_rotate: 'true'
+    runs-on: ${{ fromJSON(matrix.runs_on) }}
+    steps:
+      - name: Checkout correct ref
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.prepare.outputs.build_ref }}
+
       - name: DockerHub Login
+        if: needs.prepare.outputs.has_dockerhub == 'true'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -45,11 +121,29 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # --- 3. Build & Push (Digest Only) ---
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
         with:
           driver-opts: network=host
+
+      - name: Compute registry outputs
+        id: registry_outputs
+        env:
+          HAS_DOCKERHUB: ${{ needs.prepare.outputs.has_dockerhub }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          LOWER_REPO_NAME: ${{ needs.prepare.outputs.lower_repo_name }}
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo 'outputs<<EOF'
+            if [[ "$HAS_DOCKERHUB" == "true" ]]; then
+              echo "type=image,name=${DOCKERHUB_USERNAME}/calibre-web-automated,push-by-digest=true,name-canonical=true,push=true"
+            fi
+            echo "type=image,name=ghcr.io/${REPOSITORY_OWNER}/${LOWER_REPO_NAME},push-by-digest=true,name-canonical=true,push=true"
+            echo 'EOF'
+          } >> "$GITHUB_OUTPUT"
 
       - name: Build and push by digest
         id: build
@@ -57,100 +151,24 @@ jobs:
         with:
           provenance: false
           context: .
-          platforms: linux/amd64
-          # CACHE STRATEGY: Use GitHub Actions Cache (Ephemeral Runner)
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-          outputs: |
-            type=image,name=${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated,push-by-digest=true,name-canonical=true,push=true
-            type=image,name=ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }},push-by-digest=true,name-canonical=true,push=true
+          file: ./Dockerfile
+          platforms: ${{ matrix.platform }}
+          cache-from: ${{ matrix.cache_from }}
+          cache-to: ${{ matrix.cache_to }}
+          outputs: ${{ steps.registry_outputs.outputs.outputs }}
           build-args: |
-            BUILD_DATE=${{ github.event.repository.updated_at }}
-            VERSION=${{ env.VERSION_TAG }}
+            BUILD_DATE=${{ needs.prepare.outputs.build_date }}
+            VERSION=${{ needs.prepare.outputs.release_tag }}
 
-      # --- 4. Export Digest ---
-      - name: Export digest
-        run: |
-          mkdir -p /tmp/digests
-          digest="${{ steps.build.outputs.digest }}"
-          touch "/tmp/digests/${digest#sha256:}"
-
-      - name: Upload digest
-        uses: actions/upload-artifact@v4
-        with:
-          name: digests-amd64
-          path: /tmp/digests/*
-          if-no-files-found: error
-          retention-days: 1
-
-  # --------------------------------------------------------------------------------
-  # JOB 2: Build ARM (arm64 Only) on Oracle Runner
-  # --------------------------------------------------------------------------------
-  build-arm:
-    # Use your self-hosted runner labels here
-    runs-on: [self-hosted, linux, ARM64]
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      # --- 1. Calculate Variables ---
-      - name: Set repo name to lowercase
-        run: echo "LOWER_REPO_NAME=$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
-      - name: Determine Version
-        run: |
-          if [ -n "${{ github.event.release.tag_name }}" ]; then
-            echo "VERSION_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
-          else
-            echo "VERSION_TAG=manual-build" >> $GITHUB_ENV
-          fi
-
-      # --- 2. Logins ---
-      - name: DockerHub Login
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_PA_TOKEN }}
-
-      - name: GitHub Container Registry Login
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      # --- 3. Build & Push (Digest Only) ---
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-        with:
-          driver-opts: network=host
-
-      - name: Build and push by digest
-        id: build
-        uses: docker/build-push-action@v6
-        with:
-          provenance: false
-          context: .
-          platforms: linux/arm64
-          # CACHE STRATEGY: Use Local Disk Cache (Persistent Oracle Runner)
-          # Reuses the same cache folder as your DEV builds for speed
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new,mode=max
-          outputs: |
-            type=image,name=${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated,push-by-digest=true,name-canonical=true,push=true
-            type=image,name=ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }},push-by-digest=true,name-canonical=true,push=true
-          build-args: |
-            BUILD_DATE=${{ github.event.repository.updated_at }}
-            VERSION=${{ env.VERSION_TAG }}
-
-      # --- 4. Rotate Cache (Prevent Infinite Growth) ---
-      - name: Move cache
+      - name: Rotate local cache
+        if: matrix.needs_cache_rotate == 'true'
+        shell: bash
         run: |
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-      # --- 5. Export Digest ---
       - name: Export digest
+        shell: bash
         run: |
           rm -rf /tmp/digests
           mkdir -p /tmp/digests
@@ -160,46 +178,27 @@ jobs:
       - name: Upload digest
         uses: actions/upload-artifact@v4
         with:
-          name: digests-arm
+          name: ${{ matrix.artifact_name }}
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
 
-      # --- 6. Janitor: Clean up Docker Garbage ---
-      - name: Prune Docker Garbage
-        if: always() # Run even if build fails to keep disk clean
+      - name: Prune Docker garbage
+        if: always() && matrix.needs_cache_rotate == 'true'
+        shell: bash
         run: |
           echo "Pruning dangling images..."
           docker image prune -f
           echo "Pruning old build cache (older than 1 week)..."
           docker builder prune -f --filter "until=168h"
 
-  # --------------------------------------------------------------------------------
-  # JOB 3: Merge & Tag (Runs on GitHub)
-  # --------------------------------------------------------------------------------
   merge:
+    name: Merge & tag
+    needs: [prepare, build]
     runs-on: ubuntu-latest
-    needs: [build-amd64, build-arm]
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set repo name to lowercase
-        run: echo "LOWER_REPO_NAME=$(echo ${{ github.event.repository.name }} | tr '[:upper:]' '[:lower:]')" >> $GITHUB_ENV
-
-      # --- 1. Define Release Tags ---
-      - name: Determine Docker Tags
-        id: tag
-        run: |
-          # Use the Release Tag (e.g., v3.0.0)
-          if [ -n "${{ github.event.release.tag_name }}" ]; then
-            echo "RELEASE_TAG=${{ github.event.release.tag_name }}" >> $GITHUB_ENV
-          else
-            echo "RELEASE_TAG=manual-build" >> $GITHUB_ENV
-          fi
-
-      # --- 2. Logins ---
       - name: DockerHub Login
+        if: needs.prepare.outputs.has_dockerhub == 'true'
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -212,7 +211,6 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      # --- 3. Merge Digests ---
       - name: Download digests
         uses: actions/download-artifact@v4
         with:
@@ -225,15 +223,24 @@ jobs:
 
       - name: Create manifest list and push
         working-directory: /tmp/digests
+        env:
+          HAS_DOCKERHUB: ${{ needs.prepare.outputs.has_dockerhub }}
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+          RELEASE_TAG: ${{ needs.prepare.outputs.release_tag }}
+          LOWER_REPO_NAME: ${{ needs.prepare.outputs.lower_repo_name }}
+          REPOSITORY_OWNER: ${{ github.repository_owner }}
+        shell: bash
         run: |
-          # 1. Push to DockerHub (Specific Tag + Latest)
+          set -euo pipefail
+
+          if [[ "$HAS_DOCKERHUB" == "true" ]]; then
+            docker buildx imagetools create \
+              -t "${DOCKERHUB_USERNAME}/calibre-web-automated:${RELEASE_TAG}" \
+              -t "${DOCKERHUB_USERNAME}/calibre-web-automated:latest" \
+              $(printf "${DOCKERHUB_USERNAME}/calibre-web-automated@sha256:%s " *)
+          fi
+
           docker buildx imagetools create \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:${{ env.RELEASE_TAG }} \
-            -t ${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated:latest \
-            $(printf '${{ secrets.DOCKERHUB_USERNAME }}/calibre-web-automated@sha256:%s ' *)
-          
-          # 2. Push to GHCR (Specific Tag + Latest)
-          docker buildx imagetools create \
-            -t ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }}:${{ env.RELEASE_TAG }} \
-            -t ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }}:latest \
-            $(printf 'ghcr.io/${{ github.repository_owner }}/${{ env.LOWER_REPO_NAME }}@sha256:%s ' *)
+            -t "ghcr.io/${REPOSITORY_OWNER}/${LOWER_REPO_NAME}:${RELEASE_TAG}" \
+            -t "ghcr.io/${REPOSITORY_OWNER}/${LOWER_REPO_NAME}:latest" \
+            $(printf "ghcr.io/${REPOSITORY_OWNER}/${LOWER_REPO_NAME}@sha256:%s " *)

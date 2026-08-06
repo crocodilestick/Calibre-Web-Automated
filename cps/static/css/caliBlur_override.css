@@ -225,3 +225,32 @@ a#advanced_search > span.hidden-sm {
     margin-bottom: 2rem;
     padding-left: 2rem;
 }
+
+/* Page-jump dropdown on the pagination "…" separator */
+.pagination .page-jump > .dropdown-toggle {
+    cursor: pointer;
+}
+.pagination .page-jump-menu {
+    max-height: 70vh;
+    overflow-y: auto;
+    min-width: 70px;
+    padding: 4px 0;
+    background-color: #202c35;
+    border: solid 1px #2c3a45;
+}
+.pagination .page-jump-menu > li > a {
+    text-align: center;
+    padding: 6px 16px;
+    color: hsla(0, 0%, 100%, .8);
+}
+.pagination .page-jump-menu > li > a:focus,
+.pagination .page-jump-menu > li > a:hover {
+    background-color: #2c3a45;
+    color: #fff;
+}
+.pagination .page-jump-menu > li.active > a,
+.pagination .page-jump-menu > li.active > a:focus,
+.pagination .page-jump-menu > li.active > a:hover {
+    background-color: #E59029;
+    color: #fff;
+}

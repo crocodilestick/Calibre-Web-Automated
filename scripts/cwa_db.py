@@ -520,7 +520,7 @@ class CWA_DB:
                 cwa_settings[key] = default_value
 
         # Define which settings should remain as integers (not converted to boolean)
-        integer_settings = ['ingest_timeout_minutes', 'ingest_stale_temp_minutes', 'ingest_stale_temp_interval', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds', 'archived_cleanup_schedule_hour', 'cover_download_max_mb']
+        integer_settings = ['ingest_timeout_minutes', 'ingest_stale_temp_minutes', 'ingest_stale_temp_interval', 'auto_send_delay_minutes', 'hardcover_auto_fetch_batch_size', 'hardcover_auto_fetch_schedule_hour', 'duplicate_scan_hour', 'duplicate_scan_chunk_size', 'duplicate_scan_debounce_seconds', 'duplicate_auto_resolve_cooldown_minutes', 'archived_cleanup_schedule_hour', 'cover_download_max_mb']
         
         # Define which settings should remain as floats (not converted to boolean)
         float_settings = ['hardcover_auto_fetch_min_confidence', 'hardcover_auto_fetch_rate_limit']
@@ -556,6 +556,7 @@ class CWA_DB:
                 # Continue to next setting instead of failing completely
                 continue
         self.set_default_settings()
+        self.cwa_settings = self.get_cwa_settings()
 
 
     def enforce_add_entry_from_log(self, log_info: dict, trigger_type: str = "auto -log"):
@@ -2490,17 +2491,22 @@ class CWA_DB:
             print(f"[cwa-db] Error updating duplicate cache: {e}")
             return False
 
-    def log_duplicate_resolution(self, group_hash, group_title, group_author, kept_book_id, 
+    def log_duplicate_resolution(self, group_hash, group_title, group_author, kept_book_id,
                                  deleted_book_ids, strategy, trigger_type, user_id=None, notes=None):
         """Log a duplicate resolution to audit table"""
         import json
         try:
+            # Explicit local timestamp: the column's schema DEFAULT CURRENT_TIMESTAMP is
+            # UTC, but duplicate_scan.py's cooldown check compares against datetime.now()
+            # (local). Passing it explicitly keeps this table consistent with every other
+            # stats table (cwa_import, cwa_conversions, etc.), which all stamp local time.
+            timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             self.cur.execute("""
-                INSERT INTO cwa_duplicate_resolutions 
-                (group_hash, group_title, group_author, kept_book_id, deleted_book_ids, 
+                INSERT INTO cwa_duplicate_resolutions
+                (timestamp, group_hash, group_title, group_author, kept_book_id, deleted_book_ids,
                  strategy, trigger_type, user_id, notes)
-                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-            """, (group_hash, group_title, group_author, kept_book_id, 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            """, (timestamp, group_hash, group_title, group_author, kept_book_id,
                   json.dumps(deleted_book_ids), strategy, trigger_type, user_id, notes))
             self.con.commit()
             return True

@@ -199,8 +199,40 @@ class WebServer(object):
             rv = ['"{}"'.format(a) for a in rv]
         return rv
 
+    def _dev_py_watcher(self):
+        """Greenlet: poll cps/ for .py changes and trigger restart when DEBUG_ON=true."""
+        from gevent import sleep
+        import glob
+
+        watch_root = os.path.dirname(os.path.abspath(__file__))
+
+        def mtimes():
+            result = {}
+            for f in glob.glob(os.path.join(watch_root, '**', '*.py'), recursive=True):
+                try:
+                    result[f] = os.path.getmtime(f)
+                except OSError:
+                    pass
+            return result
+
+        baseline = mtimes()
+        while True:
+            sleep(1)
+            current = mtimes()
+            changed = [f for f in current if current[f] != baseline.get(f)]
+            changed += [f for f in baseline if f not in current]
+            if changed:
+                log.info("Dev reload: %s changed, restarting...", os.path.basename(changed[0]))
+                self.stop(restart=True)
+                return
+            baseline = current
+
     def _start_gevent(self):
         ssl_args = self.ssl_args or {}
+
+        if os.environ.get('DEBUG_ON', 'False').lower() == 'true':
+            from gevent import spawn
+            spawn(self._dev_py_watcher)
 
         try:
             sock, output = self._make_gevent_listener()

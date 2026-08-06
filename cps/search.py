@@ -181,10 +181,14 @@ def adv_search_serie(q, include_series_inputs, exclude_series_inputs):
     return q
 
 def adv_search_shelf(q, include_shelf_inputs, exclude_shelf_inputs):
-    q = q.outerjoin(ub.BookShelf, db.Books.id == ub.BookShelf.book_id)\
-        .filter(or_(ub.BookShelf.shelf == None, ub.BookShelf.shelf.notin_(exclude_shelf_inputs)))
-    if len(include_shelf_inputs) > 0:
-        q = q.filter(ub.BookShelf.shelf.in_(include_shelf_inputs))
+    for shelf_id in include_shelf_inputs:
+        q = q.filter(db.Books.id.in_(
+            ub.session.query(ub.BookShelf.book_id).filter(ub.BookShelf.shelf == shelf_id)
+        ))
+    for shelf_id in exclude_shelf_inputs:
+        q = q.filter(~db.Books.id.in_(
+            ub.session.query(ub.BookShelf.book_id).filter(ub.BookShelf.shelf == shelf_id)
+        ))
     return q
 
 def extend_search_term(searchterm,
@@ -353,7 +357,10 @@ def render_adv_search_results(term, offset=None, order=None, limit=None):
             log.debug_or_exception(ex)
             flash(_("Error on search for custom columns, please restart Calibre-Web"), category="error")
 
-    q = q.order_by(*sort)
+    # Collapse duplicate rows that may be produced by the browse outerjoins (e.g.
+    # the series listing at line 253). Without this, the SQL LIMIT below counts
+    # duplicate rows and a full page collapses to fewer distinct books.
+    q = q.group_by(db.Books.id).order_by(*sort)
     flask_session['query'] = json.dumps(term)
 
     # Perform a count query for pagination, which is much faster than fetching all results.

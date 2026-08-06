@@ -285,7 +285,7 @@ class LubimyCzytacParser:
                 for w in tags
                 if isinstance(w, str)
             ]
-        return None
+        return []
 
     def _parse_from_summary(self, attribute_name: str) -> Optional[str]:
         value = None

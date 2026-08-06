@@ -68,7 +68,7 @@ class Amazon(Metadata):
             try:
                 match = MetaRecord(
                     title = "",
-                    authors = "",
+                    authors = [],
                     source=MetaSourceInfo(
                         id=self.__id__,
                         description="Amazon Books",
@@ -104,7 +104,7 @@ class Amazon(Metadata):
                                 x.findAll(string=True))).strip()
                                     for x in soup2.findAll("span", attrs={"class": "author"})]
                 except (AttributeError, TypeError, StopIteration):
-                    match.authors = ""
+                    match.authors = []
                 try:
                     match.rating = int(
                         soup2.find(attrs={"id": "acrPopover"})["title"].split(" ")[0].split(".")[

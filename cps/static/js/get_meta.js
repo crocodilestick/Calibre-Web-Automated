@@ -93,7 +93,7 @@ $(function () {
     if (presentArray.length === 1 && presentArray[0] === "") {
       presentArray = [];
     }
-    $.each(book[attribute_name], function (i, el) {
+    $.each(book[attribute_name] || [], function (i, el) {
       if ($.inArray(el, presentArray) === -1) presentArray.push(el);
     });
     return presentArray;
@@ -153,7 +153,7 @@ $(function () {
       $("#series_index").val(book.series_index);
     }
     if (typeof book.identifiers !== "undefined") {
-      selectedIdentifiers = Object.keys(book.identifiers)
+      selectedIdentifiers = Object.keys(book.identifiers || {})
         .filter((key) => updateItems[key])
         .reduce((result, key) => {
           result[key] = book.identifiers[key];

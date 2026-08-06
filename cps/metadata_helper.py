@@ -45,7 +45,17 @@ def fetch_and_apply_metadata(book_id: int, user_enabled: bool = False) -> bool:
         if not book:
             log.error(f"Book with ID {book_id} not found")
             return False
-            
+
+        # Check for metadata-ignore sentinel in book description
+        ignore_sentinel = cwa_settings.get('auto_metadata_ignore_sentinel', '').strip()
+        if ignore_sentinel:
+            current_description = ""
+            if book.comments and len(book.comments) > 0:
+                current_description = book.comments[0].text or ""
+            if ignore_sentinel in current_description:
+                log.info(f"Skipping metadata fetch for book '{book.title}' - ignore sentinel found in description")
+                return False
+
         # Create search query from book title and author
         search_query = book.title
         if book.authors:

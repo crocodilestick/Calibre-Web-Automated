@@ -511,7 +511,8 @@ class CWA_DB:
             'archived_cleanup_schedule_hour': 3,
             'ingest_stale_temp_minutes': 120,
             'ingest_stale_temp_interval': 600,
-            'cover_download_max_mb': 15
+            'cover_download_max_mb': 15,
+            'auto_metadata_ignore_sentinel': ''
         }
         
         # Apply defaults for missing keys

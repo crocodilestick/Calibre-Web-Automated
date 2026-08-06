@@ -865,7 +865,7 @@ function initCharts() {
     searchSuccessChart = echarts.init(document.getElementById('search-success-chart'));
     
     // Fetch user profiles first, then update visualizations
-    fetch('/user_profiles.json')
+    fetch(getPath() + '/user_profiles.json')
         .then(response => response.json())
         .then(data => {
             userProfiles = data;

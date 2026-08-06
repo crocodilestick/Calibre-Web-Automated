@@ -1,4 +1,4 @@
-fetch('/user_profiles.json')
+fetch(getPath() + '/user_profiles.json')
   .then(response => response.json())
   .then(usernameToImage => {
     var usernameElement = document.querySelector('#top_user .hidden-sm');

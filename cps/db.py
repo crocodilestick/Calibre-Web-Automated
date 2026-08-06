@@ -404,15 +404,15 @@ class Books(Base):
     has_cover = Column(Integer, default=0)
     uuid = Column(String)
 
-    authors = relationship(Authors, secondary=books_authors_link, backref='books')
-    tags = relationship(Tags, secondary=books_tags_link, backref='books', order_by="Tags.name")
-    comments = relationship(Comments, backref='books')
-    data = relationship(Data, backref='books')
-    series = relationship(Series, secondary=books_series_link, backref='books')
-    ratings = relationship(Ratings, secondary=books_ratings_link, backref='books')
-    languages = relationship(Languages, secondary=books_languages_link, backref='books')
-    publishers = relationship(Publishers, secondary=books_publishers_link, backref='books')
-    identifiers = relationship(Identifiers, backref='books')
+    authors = relationship(Authors, secondary=books_authors_link, backref='books', lazy='subquery')
+    tags = relationship(Tags, secondary=books_tags_link, backref='books', order_by="Tags.name", lazy='subquery')
+    comments = relationship(Comments, backref='books', lazy='subquery')
+    data = relationship(Data, backref='books', lazy='subquery')
+    series = relationship(Series, secondary=books_series_link, backref='books', lazy='subquery')
+    ratings = relationship(Ratings, secondary=books_ratings_link, backref='books', lazy='subquery')
+    languages = relationship(Languages, secondary=books_languages_link, backref='books', lazy='subquery')
+    publishers = relationship(Publishers, secondary=books_publishers_link, backref='books', lazy='subquery')
+    identifiers = relationship(Identifiers, backref='books', lazy='subquery')
 
     def __init__(self, title, sort, author_sort, timestamp, pubdate, series_index, last_modified, path, has_cover,
                  authors, tags, languages=None):

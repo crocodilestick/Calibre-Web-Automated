@@ -1019,6 +1019,15 @@ def set_cwa_settings():
                     "KOReader sync disabled: checksum backfill will stop after container restart."
                 )
 
+            # If KOSync MD5 auth was just enabled, ensure the auth keys table exists
+            if bool(cwa_settings.get('kosync_md5_auth_enabled', 0)):
+                try:
+                    from .progress_syncing.models import ensure_kosync_auth_keys_table
+                    if ub.session and ub.session.bind is not None:
+                        ensure_kosync_auth_keys_table(ub.session.bind.raw_connection())
+                except Exception as e:
+                    log.error(f"Failed to initialize KOSync auth keys table: {e}")
+
         elif request.form['submit_button'] == "Apply Default Settings":
             cwa_db = CWA_DB()
             duplicate_criteria_changed = False

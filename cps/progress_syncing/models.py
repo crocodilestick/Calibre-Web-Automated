@@ -135,6 +135,7 @@ def ensure_app_db_tables(conn):
 
     Creates or validates tables that reference users:
     - kosync_progress: Stores reading progress from KOSync protocol
+    - kosync_auth_keys: Stores MD5 auth keys for KOSync x-auth-key authentication
 
     Args:
         conn: SQLAlchemy connection object or sqlite3 connection for app.db
@@ -145,6 +146,7 @@ def ensure_app_db_tables(conn):
         data loss. Manual migration is required for schema changes.
     """
     ensure_kosync_progress_table(conn)
+    ensure_kosync_auth_keys_table(conn)
 
 
 def ensure_checksum_table(conn):
@@ -402,6 +404,44 @@ def ensure_kosync_progress_table(conn):
         log.error(traceback.format_exc())
 
 
+def ensure_kosync_auth_keys_table(conn):
+    """
+    Ensure the kosync_auth_keys table exists with the correct schema.
+
+    This table stores MD5 auth keys for users who have registered via the
+    KOSync /users/create endpoint, enabling x-auth-user/x-auth-key authentication.
+
+    Args:
+        conn: SQLAlchemy connection object or sqlite3 connection
+    """
+    try:
+        is_sqlalchemy = hasattr(conn, 'execute') and hasattr(conn.execute.__self__, 'dialect')
+
+        def execute_sql(sql):
+            return _execute_sql_with_retry(conn, sql, is_sqlalchemy)
+
+        result = execute_sql("SELECT name FROM sqlite_master WHERE type='table' AND name='kosync_auth_keys'")
+        table_exists = result.fetchone() is not None
+
+        if not table_exists:
+            execute_sql("""
+                CREATE TABLE kosync_auth_keys (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    user_id INTEGER NOT NULL UNIQUE,
+                    auth_key TEXT NOT NULL,
+                    FOREIGN KEY (user_id) REFERENCES user(id) ON DELETE CASCADE
+                )
+            """)
+            execute_sql("CREATE UNIQUE INDEX idx_kosync_auth_user ON kosync_auth_keys(user_id)")
+            conn.commit()
+            log.info("Created kosync_auth_keys table")
+
+    except Exception as e:
+        log.error(f"Could not create kosync_auth_keys table: {e}")
+        import traceback
+        log.error(traceback.format_exc())
+
+
 class BookFormatChecksum(CalibreBase):
     """
     Stores partial MD5 checksums for book formats to support KOReader sync.
@@ -477,3 +517,28 @@ class KOSyncProgress(AppBase):
 
     def __repr__(self):
         return f'<KOSyncProgress user={self.user_id} doc={self.document}>'
+
+
+class KOSyncAuthKey(AppBase):
+    """
+    Stores MD5 auth keys for KOSync x-auth-user/x-auth-key authentication.
+
+    When KOSync MD5 auth is enabled, KOReader sends x-auth-user and x-auth-key
+    headers (where x-auth-key is the MD5 hash of the password). Since CWA stores
+    passwords as werkzeug hashes, we cannot derive the MD5 from them. Instead,
+    the MD5 is captured during user registration via POST /kosync/users/create
+    (where KOReader sends the plaintext password), verified against CWA auth,
+    and the MD5 is stored here for subsequent header-based authentication.
+
+    Fields:
+        user_id: Foreign key to the user
+        auth_key: MD5 hex digest of the user's password
+    """
+    __tablename__ = 'kosync_auth_keys'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id', ondelete='CASCADE'), nullable=False, unique=True)
+    auth_key = Column(String(32), nullable=False)
+
+    def __repr__(self):
+        return f'<KOSyncAuthKey user={self.user_id}>'

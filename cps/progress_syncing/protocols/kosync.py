@@ -37,6 +37,7 @@ Reference: https://github.com/koreader/koreader-sync-server
 """
 
 import base64
+import hmac
 from datetime import datetime, timezone
 from typing import Dict, Optional, Any, Tuple
 
@@ -48,8 +49,8 @@ from sqlalchemy.exc import SQLAlchemyError
 
 from ... import logger, ub, csrf, config, constants, services, usermanagement
 from ...render_template import render_title_template
-from ..models import KOSyncProgress
-from ..settings import is_koreader_sync_enabled
+from ..models import KOSyncProgress, KOSyncAuthKey
+from ..settings import is_koreader_sync_enabled, is_kosync_md5_auth_enabled
 
 log = logger.create()
 
@@ -125,24 +126,72 @@ def is_valid_key_field(field: Any, max_length: int = MAX_DOCUMENT_LENGTH) -> boo
     return is_valid_field(field) and ":" not in field and len(field) <= max_length
 
 
-def authenticate_user() -> Optional[ub.User]:
+def _authenticate_via_md5_headers() -> Optional[ub.User]:
+    """
+    Authenticate user using KOSync x-auth-user/x-auth-key headers.
+
+    KOReader's built-in sync plugin sends:
+        - x-auth-user: username
+        - x-auth-key: MD5 hex digest of the password
+
+    The MD5 auth key is stored during registration via POST /kosync/users/create.
+
+    Returns:
+        User object if authentication succeeds, None otherwise
+    """
+    username = request.headers.get('x-auth-user')
+    auth_key = request.headers.get('x-auth-key')
+
+    if not username or not auth_key:
+        return None
+
+    if not is_valid_key_field(username, max_length=MAX_DEVICE_LENGTH):
+        log.debug("Invalid x-auth-user format")
+        return None
+
+    try:
+        user = ub.session.query(ub.User).filter(
+            func.lower(ub.User.name) == username.lower()
+        ).first()
+    except SQLAlchemyError as e:
+        log.error(f"Database error during MD5 auth user lookup: {e}")
+        return None
+
+    if not user:
+        log.debug(f"MD5 auth: user not found: {username}")
+        return None
+
+    # Look up the stored auth key
+    try:
+        stored = ub.session.query(KOSyncAuthKey).filter(
+            KOSyncAuthKey.user_id == user.id
+        ).first()
+    except SQLAlchemyError as e:
+        log.error(f"Database error during auth key lookup: {e}")
+        return None
+
+    if not stored:
+        log.debug(f"MD5 auth: no auth key registered for user: {username}")
+        return None
+
+    # Constant-time comparison of MD5 keys
+    if hmac.compare_digest(stored.auth_key, auth_key):
+        log.info(f"User authenticated via MD5 auth key: {username}")
+        return user
+
+    log.debug(f"MD5 auth: invalid auth key for user: {username}")
+    return None
+
+
+def _authenticate_via_basic_auth() -> Optional[ub.User]:
     """
     Authenticate user using HTTP Basic Authentication (RFC 7617).
 
     Expects Authorization header with format: 'Basic <base64(username:password)>'
 
-    Security considerations:
-        - Uses constant-time password comparison via check_password_hash
-        - Case-insensitive username lookup for consistency with Calibre-Web
-        - Validates credential format before database lookup
-
     Returns:
         User object if authentication succeeds, None otherwise
     """
-    if config.config_allow_reverse_proxy_header_login:
-        if user := usermanagement.load_user_from_reverse_proxy_header(request):
-            return user
-
     auth_header = request.headers.get('Authorization')
 
     if not auth_header or not auth_header.startswith('Basic '):
@@ -204,6 +253,32 @@ def authenticate_user() -> Optional[ub.User]:
 
     log.debug(f"Invalid password for user: {username}")
     return None
+
+
+def authenticate_user() -> Optional[ub.User]:
+    """
+    Authenticate user for KOSync endpoints.
+
+    Tries authentication methods in order:
+        1. Reverse proxy header (if configured)
+        2. KOSync MD5 auth via x-auth-user/x-auth-key headers (if enabled)
+        3. HTTP Basic Authentication (RFC 7617)
+
+    Returns:
+        User object if authentication succeeds, None otherwise
+    """
+    if config.config_allow_reverse_proxy_header_login:
+        if user := usermanagement.load_user_from_reverse_proxy_header(request):
+            return user
+
+    # Try KOSync MD5 auth (x-auth-user / x-auth-key headers)
+    if is_kosync_md5_auth_enabled():
+        user = _authenticate_via_md5_headers()
+        if user:
+            return user
+
+    # Fall back to HTTP Basic Auth
+    return _authenticate_via_basic_auth()
 
 
 def create_sync_response(data: Dict[str, Any], status_code: int = 200) -> tuple:
@@ -458,6 +533,103 @@ def kosync_plugin_page():
 
 
 @csrf.exempt
+@kosync.route("/kosync/users/create", methods=["POST"])
+def register_user():
+    """
+    Register user for KOSync MD5 authentication (KOSync protocol).
+
+    KOReader's built-in sync plugin calls this endpoint with plaintext credentials
+    during initial setup. We verify the credentials against CWA's user database,
+    then store the MD5 hash of the password for subsequent x-auth-key authentication.
+
+    Request body:
+        {"username": "alice", "password": "secret"}
+
+    Returns:
+        201: {"username": "alice"} if registration succeeds (updates key if already registered)
+        401: Error if credentials are invalid
+        403: Error if MD5 auth is not enabled
+    """
+    blocked = _require_kosync_enabled()
+    if blocked:
+        return blocked
+
+    if not is_kosync_md5_auth_enabled():
+        return create_sync_response({
+            "error": ERROR_UNAUTHORIZED_USER,
+            "message": "KOSync MD5 authentication is not enabled"
+        }, 403)
+
+    data = request.get_json(force=True, silent=True)
+    if not data:
+        return create_sync_response({
+            "error": ERROR_INVALID_FIELDS,
+            "message": "Invalid request data"
+        }, 400)
+
+    username = data.get("username")
+    password = data.get("password")
+
+    if not username or not password:
+        return create_sync_response({
+            "error": ERROR_INVALID_FIELDS,
+            "message": "Missing username or password"
+        }, 400)
+
+    if not is_valid_key_field(username, max_length=MAX_DEVICE_LENGTH):
+        return create_sync_response({
+            "error": ERROR_INVALID_FIELDS,
+            "message": "Invalid username"
+        }, 400)
+
+    # Look up the user
+    try:
+        user = ub.session.query(ub.User).filter(
+            func.lower(ub.User.name) == username.lower()
+        ).first()
+    except SQLAlchemyError as e:
+        log.error(f"register_user: Database error during user lookup: {e}")
+        return create_sync_response({
+            "error": ERROR_INTERNAL,
+            "message": "Internal server error"
+        }, 500)
+
+    if not user:
+        return create_sync_response({
+            "error": ERROR_UNAUTHORIZED_USER,
+            "message": "Unauthorized"
+        }, 401)
+
+    # KOReader sends the password already MD5-hashed, so we store it directly.
+    # We cannot verify against CWA's werkzeug hash since we never receive the plaintext.
+    auth_key = password
+
+    try:
+        existing = ub.session.query(KOSyncAuthKey).filter(
+            KOSyncAuthKey.user_id == user.id
+        ).first()
+
+        if existing:
+            existing.auth_key = auth_key
+            log.info(f"Updated KOSync auth key for user: {username}")
+        else:
+            new_key = KOSyncAuthKey(user_id=user.id, auth_key=auth_key)
+            ub.session.add(new_key)
+            log.info(f"Registered KOSync auth key for user: {username}")
+
+        ub.session.commit()
+    except SQLAlchemyError as e:
+        log.error(f"register_user: Failed to store auth key: {e}")
+        ub.session.rollback()
+        return create_sync_response({
+            "error": ERROR_INTERNAL,
+            "message": "Failed to register user"
+        }, 500)
+
+    return create_sync_response({"username": user.name}, 201)
+
+
+@csrf.exempt
 @kosync.route("/kosync/users/auth", methods=["GET"])
 def auth_user():
     """
@@ -625,7 +797,7 @@ def update_progress():
         if not user:
             raise KOSyncError(ERROR_UNAUTHORIZED_USER, "Unauthorized")
 
-        data = request.get_json()
+        data = request.get_json(force=True, silent=True)
         if not data:
             raise KOSyncError(ERROR_INVALID_FIELDS, "Invalid request data")
 

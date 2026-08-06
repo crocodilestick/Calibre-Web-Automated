@@ -22,3 +22,13 @@ def is_koreader_sync_enabled() -> bool:
     except Exception:
         # Fail closed to avoid unexpected DB writes when setting is missing
         return False
+
+
+def is_kosync_md5_auth_enabled() -> bool:
+    """Return True if KOSync MD5 authentication (x-auth-user/x-auth-key) is enabled."""
+    try:
+        from cwa_db import CWA_DB
+        settings = CWA_DB().cwa_settings
+        return bool(settings.get('kosync_md5_auth_enabled', 0))
+    except Exception:
+        return False

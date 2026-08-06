@@ -63,7 +63,8 @@ def html2text(html: str) -> str:
     h2t.body_width = 0
     h2t.single_line_break = True
     h2t.emphasis_mark = "*"
-    return h2t.handle(html)
+    text = h2t.handle(html)
+    return re.sub(r"(?m)^(#{1,6})(?=\S)", r"\\\1", text)
 
 
 class LubimyCzytac(Metadata):
@@ -84,9 +85,17 @@ class LubimyCzytac(Metadata):
     SIBLINGS = "/following-sibling::dd"
 
     CONTAINER = "//section[@class='container book']"
-    PUBLISHER = f"{CONTAINER}//dt[contains(text(),'Wydawnictwo:')]{SIBLINGS}/a/text()"
+    PUBLISHER = (
+        f"{CONTAINER}//span[contains(concat(' ', normalize-space(@class), ' '), ' book__txt ') "
+        "and contains(normalize-space(.), 'Wydawnictwo:')]/a/text() "
+        f"| {CONTAINER}//dt[contains(text(),'Wydawnictwo:')]{SIBLINGS}/a/text()"
+    )
     LANGUAGES = f"{CONTAINER}//dt[contains(text(),'Język:')]{SIBLINGS}/text()"
-    DESCRIPTION = f"{CONTAINER}//div[@class='collapse-content']"
+    DESCRIPTION = (
+        f"{CONTAINER}//*[@id='book-description' "
+        "or contains(concat(' ', normalize-space(@class), ' '), ' book__description ') "
+        "or contains(concat(' ', normalize-space(@class), ' '), ' collapse-content ')]"
+    )
     SERIES = f"{CONTAINER}//span/a[contains(@href,'/cykl/')]/text()"
     TRANSLATOR = f"{CONTAINER}//dt[contains(text(),'Tłumacz:')]{SIBLINGS}/a/text()"
 
@@ -285,15 +294,21 @@ class LubimyCzytacParser:
                 for w in tags
                 if isinstance(w, str)
             ]
-        return None
+        return []
 
     def _parse_from_summary(self, attribute_name: str) -> Optional[str]:
-        value = None
-        summary_text = self._parse_xpath_node(xpath=LubimyCzytac.SUMMARY)
-        if summary_text:
+        summary_blocks = self._parse_xpath_node(
+            xpath=LubimyCzytac.SUMMARY, take_first=False
+        )
+        if not summary_blocks:
+            return None
+
+        for summary_text in summary_blocks:
             data = json.loads(summary_text)
-            value = data.get(attribute_name)
-        return value.strip() if value is not None else value
+            if data.get("@type") == "Book":
+                value = data.get(attribute_name)
+                return str(value).strip() if value is not None else None
+        return None
 
     def _parse_rating(self) -> Optional[str]:
         rating = self._parse_xpath_node(xpath=LubimyCzytac.RATING)

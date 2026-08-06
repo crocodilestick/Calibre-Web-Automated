@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 12:34+0000\n"
+"POT-Creation-Date: 2026-08-06 13:50+0000\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -114,160 +114,160 @@ msgstr "처리할 표지가 있는 책을 찾지 못했습니다."
 msgid "Failed to start thumbnail refresh: {}"
 msgstr "썸네일 새로고침 시작 실패: {}"
 
-#: cps/admin.py:538
+#: cps/admin.py:539
 msgid "Admin page"
 msgstr "관리자 페이지"
 
-#: cps/admin.py:558
+#: cps/admin.py:560
 msgid "Basic Configuration"
 msgstr "기본 설정"
 
-#: cps/admin.py:596
+#: cps/admin.py:598
 msgid "UI Configuration"
 msgstr "UI 설정"
 
-#: cps/admin.py:620 cps/admin.py:1302 cps/db.py:985 cps/search.py:153
+#: cps/admin.py:622 cps/admin.py:1304 cps/db.py:985 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "사용자 정의 열 번호 %(column)d이(가) calibre 데이터베이스에 없습니다."
 
-#: cps/admin.py:638 cps/templates/admin.html:55
+#: cps/admin.py:640 cps/templates/admin.html:55
 msgid "Edit Users"
 msgstr "사용자 관리"
 
-#: cps/admin.py:682 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:684 cps/opds.py:798 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "모두"
 
-#: cps/admin.py:709 cps/admin.py:1893
+#: cps/admin.py:711 cps/admin.py:1895
 msgid "User not found"
 msgstr "사용자를 찾을 수 없습니다."
 
-#: cps/admin.py:723
+#: cps/admin.py:725
 #, python-brace-format
 msgid "{} users deleted successfully"
 msgstr "{} 사용자를 삭제했습니다."
 
-#: cps/admin.py:746 cps/templates/config_view_edit.html:169
+#: cps/admin.py:748 cps/templates/config_view_edit.html:169
 #: cps/templates/user_edit.html:263 cps/templates/user_edit.html:285
 #: cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "모두 보기"
 
-#: cps/admin.py:767 cps/admin.py:773
+#: cps/admin.py:769 cps/admin.py:775
 msgid "Malformed request"
 msgstr "잘못된 요청입니다."
 
-#: cps/admin.py:785 cps/admin.py:2786
+#: cps/admin.py:787 cps/admin.py:2791
 msgid "Guest Name can't be changed"
 msgstr "게스트 이름은 변경할 수 없습니다."
 
-#: cps/admin.py:799
+#: cps/admin.py:801
 msgid "Guest can't have this role"
 msgstr "게스트는 이 권한을 가질 수 없습니다."
 
-#: cps/admin.py:811 cps/admin.py:2611
+#: cps/admin.py:813 cps/admin.py:2616
 msgid "No admin user remaining, can't remove admin role"
 msgstr "남아있는 관리자가 없어 권한을 삭제할 수 없습니다."
 
-#: cps/admin.py:815 cps/admin.py:829
+#: cps/admin.py:817 cps/admin.py:831
 msgid "Value has to be true or false"
 msgstr "true 또는 false여야 합니다."
 
-#: cps/admin.py:817
+#: cps/admin.py:819
 msgid "Invalid role"
 msgstr "잘못된 권한입니다."
 
-#: cps/admin.py:821
+#: cps/admin.py:823
 msgid "Guest can't have this view"
 msgstr "게스트는 사용할 수 없습니다."
 
-#: cps/admin.py:831
+#: cps/admin.py:833
 msgid "Invalid view"
 msgstr "잘못된 설정입니다."
 
-#: cps/admin.py:834
+#: cps/admin.py:836
 msgid "Guest's Locale is determined automatically and can't be set"
 msgstr "게스트의 언어는 자동으로 설정되며 변경할 수 없습니다."
 
-#: cps/admin.py:838
+#: cps/admin.py:840
 msgid "No Valid Locale Given"
 msgstr "올바른 언어가 아닙니다."
 
-#: cps/admin.py:849
+#: cps/admin.py:851
 msgid "No Valid Book Language Given"
 msgstr "제공된 책의 언어가 올바르지 않습니다."
 
-#: cps/admin.py:851 cps/editbooks.py:596
+#: cps/admin.py:853 cps/editbooks.py:596
 msgid "Parameter not found"
 msgstr "매개변수를 찾을 수 없습니다."
 
-#: cps/admin.py:888
+#: cps/admin.py:890
 msgid "Invalid Read Column"
 msgstr "읽기 항목이 유효하지 않습니다."
 
-#: cps/admin.py:894
+#: cps/admin.py:896
 msgid "Invalid Restricted Column"
 msgstr "제한된 항목이 유효하지 않습니다."
 
-#: cps/admin.py:914 cps/admin.py:2459
+#: cps/admin.py:916 cps/admin.py:2464
 msgid "Calibre-Web Automated configuration updated"
 msgstr "Calibre-Web Automated 설정이 업데이트되었습니다."
 
-#: cps/admin.py:926
+#: cps/admin.py:928
 msgid "Do you really want to delete the Kobo Token?"
 msgstr "Kobo 토큰을 삭제하시겠습니까?"
 
-#: cps/admin.py:928
+#: cps/admin.py:930
 msgid "Do you really want to delete this domain?"
 msgstr "이 도메인을 삭제하시겠습니까?"
 
-#: cps/admin.py:930
+#: cps/admin.py:932
 msgid "Do you really want to delete this user?"
 msgstr "이 사용자를 삭제하시겠습니까?"
 
-#: cps/admin.py:932
+#: cps/admin.py:934
 msgid "Are you sure you want to delete this shelf?"
 msgstr "이 서재를 삭제하시겠습니까?"
 
-#: cps/admin.py:934
+#: cps/admin.py:936
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr "선택한 사용자의 언어를 변경하시겠습니까?"
 
-#: cps/admin.py:936
+#: cps/admin.py:938
 msgid ""
 "Are you sure you want to change visible book languages for selected user(s)?"
 msgstr "선택한 사용자에 대해 표시되는 책 언어를 변경하시겠습니까?"
 
-#: cps/admin.py:938
+#: cps/admin.py:940
 msgid ""
 "Are you sure you want to change the selected role for the selected user(s)?"
 msgstr "선택한 사용자의 권한을 변경하시겠습니까?"
 
-#: cps/admin.py:940
+#: cps/admin.py:942
 msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
 "user(s)?"
 msgstr "선택한 사용자의 제한을 변경하시겠습니까?"
 
-#: cps/admin.py:942
+#: cps/admin.py:944
 msgid ""
 "Are you sure you want to change the selected visibility restrictions for the "
 "selected user(s)?"
 msgstr "선택한 사용자의 보기 제한을 변경하시겠습니까?"
 
-#: cps/admin.py:945
+#: cps/admin.py:947
 msgid ""
 "Are you sure you want to change shelf sync behavior for the selected user(s)?"
 msgstr "선택한 사용자의 책장 동기화 설정을 변경하시겠습니까?"
 
-#: cps/admin.py:947
+#: cps/admin.py:949
 msgid "Are you sure you want to change Calibre library location?"
 msgstr "Calibre 라이브러리 경로를 변경하시겠습니까?"
 
-#: cps/admin.py:949
+#: cps/admin.py:951
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
 "Thumbnails, this may take a while?"
@@ -275,7 +275,7 @@ msgstr ""
 "Calibre-Web Automated가 업데이트된 표지를 검색하고, 표지 미리보기를 갱신합니"
 "다. 시간이 걸릴 수 있습니다."
 
-#: cps/admin.py:952
+#: cps/admin.py:954
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
 "a full sync with your Kobo Reader?"
@@ -283,102 +283,102 @@ msgstr ""
 "Calibre-Web Automated의 동기화 데이터베이스를 삭제하여 Kobo Reader와 전체 동"
 "기화를 강제하시겠습니까?"
 
-#: cps/admin.py:1191 cps/admin.py:1197 cps/admin.py:1207 cps/admin.py:1217
+#: cps/admin.py:1193 cps/admin.py:1199 cps/admin.py:1209 cps/admin.py:1219
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
 #: cps/templates/user_table.html:58
 msgid "Deny"
 msgstr "거부"
 
-#: cps/admin.py:1193 cps/admin.py:1199 cps/admin.py:1209 cps/admin.py:1219
+#: cps/admin.py:1195 cps/admin.py:1201 cps/admin.py:1211 cps/admin.py:1221
 #: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44
 #: cps/templates/user_table.html:61
 msgid "Allow"
 msgstr "허용"
 
-#: cps/admin.py:1252
+#: cps/admin.py:1254
 #, python-brace-format
 msgid "{} sync entries deleted"
 msgstr "{} 동기화 항목이 삭제되었습니다."
 
-#: cps/admin.py:1293
+#: cps/admin.py:1295
 msgid "Tag not found"
 msgstr "태그를 찾을 수 없습니다."
 
-#: cps/admin.py:1311
+#: cps/admin.py:1313
 msgid "Invalid Action"
 msgstr "잘못된 작업입니다."
 
-#: cps/admin.py:1438
+#: cps/admin.py:1440
 msgid "client_secrets.json Is Not Configured For Web Application"
 msgstr "client_secrets.json이 설정되지 않았습니다."
 
-#: cps/admin.py:1577
+#: cps/admin.py:1579
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "올바른 로그 파일의 경로를 입력해주세요."
 
-#: cps/admin.py:1583
+#: cps/admin.py:1585
 msgid "Access Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "올바른 액섹스 로그 파일의 경로를 입력해주세요."
 
-#: cps/admin.py:1618
+#: cps/admin.py:1620
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
 msgstr "LDAP 공급자, 포트, DN 및 사용자 개체 식별자를 입력해주세요."
 
-#: cps/admin.py:1624
+#: cps/admin.py:1626
 msgid "Please Enter a LDAP Service Account and Password"
 msgstr "LDAP 서비스 계정과 비밀번호를 입력해주세요."
 
-#: cps/admin.py:1627
+#: cps/admin.py:1629
 msgid "Please Enter a LDAP Service Account"
 msgstr "LDAP 서비스 계정을 입력해주세요."
 
-#: cps/admin.py:1632
+#: cps/admin.py:1634
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP 그룹 개체 필터에는 하나의 \"%s\" 형식 식별자가 필요합니다."
 
-#: cps/admin.py:1634
+#: cps/admin.py:1636
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP 그룹 개체 필터에 맞지 않는 괄호가 있습니다."
 
-#: cps/admin.py:1638
+#: cps/admin.py:1640
 #, python-format
 msgid "LDAP User Object Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP 사용자 개체 필터에는 하나의 \"%s\" 형식 식별자가 필요합니다."
 
-#: cps/admin.py:1640
+#: cps/admin.py:1642
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP 사용자 개체 필터에 맞지 않는 괄호가 있습니다."
 
-#: cps/admin.py:1647
+#: cps/admin.py:1649
 #, python-format
 msgid "LDAP Member User Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP 구성원 사용자 필터에는 하나의 \"%s\" 형식 식별자가 필요합니다."
 
-#: cps/admin.py:1649
+#: cps/admin.py:1651
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"
 msgstr "LDAP 구성원 사용자 필터에 맞지 않는 괄호가 있습니다."
 
-#: cps/admin.py:1656
+#: cps/admin.py:1658
 msgid ""
 "LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter "
 "Correct Path"
 msgstr "LDAP CA인증서, 인증서 또는 키 경로가 유효하지 않습니다."
 
-#: cps/admin.py:1689 cps/templates/admin.html:57
+#: cps/admin.py:1691 cps/templates/admin.html:57
 msgid "Add New User"
 msgstr "사용자 생성"
 
-#: cps/admin.py:1704 cps/templates/admin.html:105
+#: cps/admin.py:1706 cps/templates/admin.html:105
 msgid "Edit Email Server Settings"
 msgstr "이메일 서버 설정"
 
-#: cps/admin.py:1723
+#: cps/admin.py:1725
 msgid "Success! Gmail Account Verified."
 msgstr "Gmail 계정 인증에 성공했습니다."
 
-#: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
-#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1046
+#: cps/admin.py:1745 cps/admin.py:1748 cps/admin.py:2234 cps/admin.py:2448
+#: cps/admin.py:2563 cps/admin.py:2834 cps/editbooks.py:1046
 #: cps/editbooks.py:1830 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2678
@@ -386,175 +386,175 @@ msgstr "Gmail 계정 인증에 성공했습니다."
 msgid "Oops! Database Error: %(error)s."
 msgstr "데이터베이스 오류가 발생했습니다: %(error)s."
 
-#: cps/admin.py:1753
+#: cps/admin.py:1755
 #, python-format
 msgid ""
 "Test e-mail queued for sending to %(email)s, please check Tasks for result"
 msgstr "%(email)s로 테스트 이메일을 전송했습니다."
 
-#: cps/admin.py:1756
+#: cps/admin.py:1758
 #, python-format
 msgid "There was an error sending the Test e-mail: %(res)s"
 msgstr "테스트 이메일 전송 중 오류가 발생했습니다: %(res)s"
 
-#: cps/admin.py:1758
+#: cps/admin.py:1760
 msgid "Please configure your e-mail address first..."
 msgstr "이메일 주소를 설정해주세요."
 
-#: cps/admin.py:1760
+#: cps/admin.py:1762
 msgid "Email Server Settings updated"
 msgstr "이메일 서버 설정이 업데이트되었습니다."
 
-#: cps/admin.py:1783 cps/templates/admin.html:201
+#: cps/admin.py:1785 cps/templates/admin.html:201
 msgid "Edit Scheduled Tasks Settings"
 msgstr "예약 작업 설정"
 
-#: cps/admin.py:1795
+#: cps/admin.py:1797
 msgid "Invalid start time for task specified"
 msgstr "작업 시작 시간이 올바르지 않습니다."
 
-#: cps/admin.py:1800
+#: cps/admin.py:1802
 msgid "Invalid duration for task specified"
 msgstr "작업 종료 시간이 올바르지 않습니다."
 
-#: cps/admin.py:1810
+#: cps/admin.py:1812
 msgid "Scheduled tasks settings updated"
 msgstr "예약 작업 설정이 업데이트되었습니다."
 
-#: cps/admin.py:1820 cps/admin.py:1964 cps/admin.py:2825 cps/web.py:2109
+#: cps/admin.py:1822 cps/admin.py:1966 cps/admin.py:2830 cps/web.py:2109
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "알 수 없는 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."
 
-#: cps/admin.py:1824
+#: cps/admin.py:1826
 msgid "Settings DB is not Writeable"
 msgstr "설정 데이터베이스에 저장할 수 없습니다."
 
-#: cps/admin.py:1843 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
+#: cps/admin.py:1845 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
 msgid "title"
 msgstr "제목"
 
-#: cps/admin.py:1949 cps/admin.py:2817
+#: cps/admin.py:1951 cps/admin.py:2822
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "사용자 %(nick)s 수정"
 
-#: cps/admin.py:1961
+#: cps/admin.py:1963
 #, python-format
 msgid "Success! Password for user %(user)s reset"
 msgstr "사용자 %(user)s의 비밀번호가 재설정되었습니다."
 
-#: cps/admin.py:1967
+#: cps/admin.py:1969
 msgid "Oops! Please configure the SMTP mail settings."
 msgstr "SMTP를 설정해주세요."
 
-#: cps/admin.py:1978
+#: cps/admin.py:1980
 msgid "Logfile viewer"
 msgstr "로그 파일 보기"
 
-#: cps/admin.py:2044
+#: cps/admin.py:2046
 msgid "Requesting update package"
 msgstr "업데이트 패키지 요청 중"
 
-#: cps/admin.py:2045
+#: cps/admin.py:2047
 msgid "Downloading update package"
 msgstr "업데이트 패키지 다운로드 중"
 
-#: cps/admin.py:2046
+#: cps/admin.py:2048
 msgid "Unzipping update package"
 msgstr "업데이트 패키지 압축 해제 중"
 
-#: cps/admin.py:2047
+#: cps/admin.py:2049
 msgid "Replacing files"
 msgstr "파일 적용 중"
 
-#: cps/admin.py:2048
+#: cps/admin.py:2050
 msgid "Database connections are closed"
 msgstr "데이터베이스 연결이 종료됩니다."
 
-#: cps/admin.py:2049
+#: cps/admin.py:2051
 msgid "Stopping server"
 msgstr "서버를 중지하고 있습니다."
 
-#: cps/admin.py:2050
+#: cps/admin.py:2052
 msgid "Update finished, please press okay and reload page"
 msgstr "업데이트가 완료되었습니다. 확인을 누르고 페이지를 새로고침해주세요."
 
-#: cps/admin.py:2051 cps/admin.py:2052 cps/admin.py:2053 cps/admin.py:2054
-#: cps/admin.py:2055 cps/admin.py:2056
+#: cps/admin.py:2053 cps/admin.py:2054 cps/admin.py:2055 cps/admin.py:2056
+#: cps/admin.py:2057 cps/admin.py:2058
 msgid "Update failed:"
 msgstr "업데이트 실패: "
 
-#: cps/admin.py:2051 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
+#: cps/admin.py:2053 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
 msgid "HTTP Error"
 msgstr "HTTP 오류가 발생했습니다."
 
-#: cps/admin.py:2052 cps/updater.py:396 cps/updater.py:633
+#: cps/admin.py:2054 cps/updater.py:396 cps/updater.py:633
 msgid "Connection error"
 msgstr "연결 오류가 발생했습니다."
 
-#: cps/admin.py:2053 cps/updater.py:398 cps/updater.py:635
+#: cps/admin.py:2055 cps/updater.py:398 cps/updater.py:635
 msgid "Timeout while establishing connection"
 msgstr "연결 시도 중 시간이 초과되었습니다."
 
-#: cps/admin.py:2054 cps/updater.py:400 cps/updater.py:637
+#: cps/admin.py:2056 cps/updater.py:400 cps/updater.py:637
 msgid "General error"
 msgstr "일반 오류가 발생했습니다."
 
-#: cps/admin.py:2055
+#: cps/admin.py:2057
 msgid "Update file could not be saved in temp dir"
 msgstr "임시 폴더에 업데이트 파일을 저장할 수 없습니다."
 
-#: cps/admin.py:2056
+#: cps/admin.py:2058
 msgid "Files could not be replaced during update"
 msgstr "업데이트 중 파일을 변경할 수 없습니다."
 
-#: cps/admin.py:2080
+#: cps/admin.py:2082
 msgid "Failed to extract at least One LDAP User"
 msgstr "최소 한 명의 LDAP 사용자 정보를 가져오지 못했습니다."
 
-#: cps/admin.py:2125
+#: cps/admin.py:2127
 msgid "Failed to Create at Least One LDAP User"
 msgstr "최소 한 명의 LDAP 사용자 정보를 생성하지 못했습니다."
 
-#: cps/admin.py:2138
+#: cps/admin.py:2140
 #, python-format
 msgid "Error: %(ldaperror)s"
 msgstr "오류: %(ldaperror)s"
 
-#: cps/admin.py:2142
+#: cps/admin.py:2144
 msgid "Error: No user returned in response of LDAP server"
 msgstr "오류: LDAP 서버에서 반환된 사용자가 없습니다."
 
-#: cps/admin.py:2178
+#: cps/admin.py:2180
 msgid "At Least One LDAP User Not Found in Database"
 msgstr "데이터베이스에서 찾을 수 없는 LDAP 사용자가 있습니다."
 
-#: cps/admin.py:2180
+#: cps/admin.py:2182
 #, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{} 명의 사용자를 가져왔습니다."
 
-#: cps/admin.py:2244
+#: cps/admin.py:2246
 msgid "Books path not valid"
 msgstr "책 경로가 유효하지 않습니다."
 
-#: cps/admin.py:2251
+#: cps/admin.py:2253
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr "데이터베이스 경로가 유효하지 않습니다."
 
-#: cps/admin.py:2279
+#: cps/admin.py:2281
 msgid "DB is not Writeable"
 msgstr "데이터베이스에 쓰기 권한이 없습니다."
 
-#: cps/admin.py:2292
+#: cps/admin.py:2294
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "키 파일 경로가 유효하지 않습니다."
 
-#: cps/admin.py:2296
+#: cps/admin.py:2298
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr "인증서 파일 경로가 유효하지 않습니다."
 
-#: cps/admin.py:2365
+#: cps/admin.py:2370
 msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
@@ -562,12 +562,12 @@ msgstr ""
 "리버스 프록시 인증을 활성화하지 않으면 사용자 자동 생성을 활성화할 수 없습니"
 "다"
 
-#: cps/admin.py:2368
+#: cps/admin.py:2373
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
 "사용자 자동 생성을 사용하려면 유효한 리버스 프록시 헤더 이름이 필요합니다"
 
-#: cps/admin.py:2387 cps/admin.py:2394
+#: cps/admin.py:2392 cps/admin.py:2399
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
@@ -575,7 +575,7 @@ msgstr ""
 "OAuth 리디렉션 호스트 형식이 올바르지 않습니다. 프로토콜을 포함한 전체 URL을 "
 "입력하세요 (예: https://your-domain.com)"
 
-#: cps/admin.py:2391
+#: cps/admin.py:2396
 msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
@@ -583,68 +583,68 @@ msgstr ""
 "OAuth 리디렉션 호스트에는 경로를 포함하면 안 됩니다. 기본 URL만 사용하세요 "
 "(예: https://your-domain.com)"
 
-#: cps/admin.py:2426
+#: cps/admin.py:2431
 msgid "Password length has to be between 1 and 40"
 msgstr "비밀번호는 1~40자 사이로 입력해주세요."
 
-#: cps/admin.py:2486
+#: cps/admin.py:2491
 msgid "Database Settings updated"
 msgstr "데이터베이스 설정이 업데이트되었습니다."
 
-#: cps/admin.py:2494
+#: cps/admin.py:2499
 msgid "Database Configuration"
 msgstr "데이터베이스 설정"
 
-#: cps/admin.py:2514 cps/web.py:2078
+#: cps/admin.py:2519 cps/web.py:2078
 msgid "Oops! Please complete all fields."
 msgstr "모든 항목을 입력해주세요."
 
-#: cps/admin.py:2523
+#: cps/admin.py:2528
 msgid "E-mail is not from valid domain"
 msgstr "이메일 주소가 올바르지 않습니다."
 
-#: cps/admin.py:2531
+#: cps/admin.py:2536
 msgid "Add new user"
 msgstr "새 사용자 생성"
 
-#: cps/admin.py:2548
+#: cps/admin.py:2553
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "사용자 '%(user)s'이(가) 생성되었습니다."
 
-#: cps/admin.py:2554
+#: cps/admin.py:2559
 msgid "Oops! An account already exists for this Email. or name."
 msgstr "이미 등록된 이메일 주소 또는 이름입니다."
 
-#: cps/admin.py:2584
+#: cps/admin.py:2589
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "사용자 '%(nick)s'이(가) 삭제되었습니다."
 
-#: cps/admin.py:2587
+#: cps/admin.py:2592
 msgid "Can't delete Guest User"
 msgstr "게스트 사용자는 삭제할 수 없습니다."
 
-#: cps/admin.py:2590
+#: cps/admin.py:2595
 msgid "No admin user remaining, can't delete user"
 msgstr "남은 관리자가 없어 사용자를 삭제할 수 없습니다."
 
-#: cps/admin.py:2780 cps/web.py:2413
+#: cps/admin.py:2785 cps/web.py:2413
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "이메일 주소는 비워둘 수 없고, 올바른 형식이어야 합니다."
 
-#: cps/admin.py:2821
+#: cps/admin.py:2826
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "사용자 '%(nick)s의 정보를 수정했습니다."
 
-#: cps/admin.py:2886
+#: cps/admin.py:2891
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr "연결 성공! OIDC 검색 엔드포인트에 접근할 수 있습니다.%(endpoints)s"
 
-#: cps/admin.py:2891
+#: cps/admin.py:2896
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
@@ -652,26 +652,26 @@ msgstr ""
 "연결 실패: OIDC 검색 엔드포인트를 찾을 수 없습니다 (404). 기본 URL이 올바른"
 "지 확인하세요."
 
-#: cps/admin.py:2893 cps/admin.py:2950
+#: cps/admin.py:2898 cps/admin.py:2955
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "연결 실패: 서버가 %(code)s 오류를 답신했습니다."
 
-#: cps/admin.py:2895
+#: cps/admin.py:2900
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
 msgstr ""
 "연결 실패: 서버에 연결할 수 없습니다. URL과 네트워크 연결 상태를 확인하세요."
 
-#: cps/admin.py:2897
+#: cps/admin.py:2902
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr ""
 "연결 실패: 요청 시간이 초과되었습니다. 서버 응답이 느리거나 접근할 수 없는 상"
 "태일 수 있습니다."
 
-#: cps/admin.py:2899
+#: cps/admin.py:2904
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
@@ -679,12 +679,12 @@ msgstr ""
 "연결 실패: 서버가 잘못된 JSON을 반환했습니다. OIDC 엔드포인트가 아닐 수 있습"
 "니다."
 
-#: cps/admin.py:2902
+#: cps/admin.py:2907
 #, python-format
 msgid "Connection failed: %(error)s"
 msgstr "연결 실패: %(error)s"
 
-#: cps/admin.py:2928
+#: cps/admin.py:2933
 #, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
@@ -693,28 +693,28 @@ msgstr ""
 "메타데이터에 필수 OIDC 필드가 없습니다: %(fields)s. 유효한 OIDC 메타데이터 엔"
 "드포인트가 아닐 수 있습니다."
 
-#: cps/admin.py:2939
+#: cps/admin.py:2944
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr ""
 "유효한 메타데이터 URL입니다! %(count)s개의 OAuth 엔드포인트를 찾았습니다."
 
-#: cps/admin.py:2941
+#: cps/admin.py:2946
 msgid " User info endpoint is available."
 msgstr " 사용자 정보 엔드포인트를 사용할 수 있습니다."
 
-#: cps/admin.py:2943
+#: cps/admin.py:2948
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 " 참고: 사용자 정보 엔드포인트를 찾을 수 없습니다. 인증 문제가 발생할 수 있습"
 "니다."
 
-#: cps/admin.py:2948
+#: cps/admin.py:2953
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr "메타데이터 URL을 찾을 수 없습니다 (404). URL이 올바른지 확인하세요."
 
-#: cps/admin.py:2952
+#: cps/admin.py:2957
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
@@ -722,48 +722,48 @@ msgstr ""
 "연결 실패: 메타데이터 URL에 연결할 수 없습니다. URL과 네트워크 연결 상태를 확"
 "인하세요."
 
-#: cps/admin.py:2954
+#: cps/admin.py:2959
 msgid "Connection failed: Request timed out."
 msgstr "연결 실패: 요청 시간 초과."
 
-#: cps/admin.py:2956
+#: cps/admin.py:2961
 msgid "Connection failed: Invalid JSON in response."
 msgstr "연결 실패: 응답에 잘못된 JSON이 포함되어 있습니다."
 
-#: cps/admin.py:2959
+#: cps/admin.py:2964
 msgid "An unknown error occurred."
 msgstr "알 수 없는 오류가 발생했습니다."
 
-#: cps/admin.py:2971
+#: cps/admin.py:2976
 msgid "Restore already in progress."
 msgstr "이미 복원이 진행 중입니다."
 
-#: cps/admin.py:2975
+#: cps/admin.py:2980
 msgid "Restore failed: Calibre library path is not configured."
 msgstr "복원 실패: Calibre 라이브러리 경로가 설정되지 않았습니다."
 
-#: cps/admin.py:2980
+#: cps/admin.py:2985
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr "복원 실패: %(path)s 에서 metadata.db를 찾을 수 없습니다"
 
-#: cps/admin.py:2985
+#: cps/admin.py:2990
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr "복원 실패: %(path)s 에서 app.db를 찾을 수 없습니다"
 
-#: cps/admin.py:3057 cps/admin.py:3097
+#: cps/admin.py:3062 cps/admin.py:3102
 #, python-format
 msgid "Restore failed: %(err)s"
 msgstr "복원 실패: %(err)s"
 
-#: cps/admin.py:3074
+#: cps/admin.py:3079
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
 "복원은 완료되었지만 app.db 정리에 실패했습니다. 자세한 내용은 로그를 확인하세"
 "요."
 
-#: cps/admin.py:3093
+#: cps/admin.py:3098
 #, python-format
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
@@ -1099,7 +1099,7 @@ msgstr "프로필 사진이 갱신되었습니다."
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA 프로필 사진 관리자 (개발중)"
 
-#: cps/db.py:1270 cps/templates/config_edit.html:294
+#: cps/db.py:1270 cps/templates/config_edit.html:295
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
@@ -2736,13 +2736,13 @@ msgstr "Calibre 데이터베이스 경로"
 msgid "Log Level"
 msgstr "로그 레벨"
 
-#: cps/templates/admin.html:122
-msgid "Port"
-msgstr "포트"
-
-#: cps/templates/admin.html:127
+#: cps/templates/admin.html:122 cps/templates/admin.html:127
 msgid "External Port"
 msgstr "외부 포트"
+
+#: cps/templates/admin.html:123
+msgid "Not set — reverse proxy detected"
+msgstr ""
 
 #: cps/templates/admin.html:134 cps/templates/config_view_edit.html:45
 msgid "Books per Page"
@@ -2768,7 +2768,7 @@ msgstr "매직 링크 원격 로그인"
 msgid "Reverse Proxy Login"
 msgstr "리버스 프록시 로그인"
 
-#: cps/templates/admin.html:159 cps/templates/config_edit.html:258
+#: cps/templates/admin.html:159 cps/templates/config_edit.html:259
 msgid "Reverse Proxy Header Name"
 msgstr "리버스 프록시 헤더 이름"
 
@@ -2922,7 +2922,7 @@ msgstr "예"
 #: cps/templates/book_table.html:231 cps/templates/book_table.html:251
 #: cps/templates/book_table.html:271 cps/templates/book_table.html:329
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:111
-#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:215
+#: cps/templates/config_edit.html:621 cps/templates/config_view_edit.html:215
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:938
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
@@ -3152,7 +3152,7 @@ msgid "Fetch Metadata"
 msgstr "메타데이터 가져오기"
 
 #: cps/templates/book_edit.html:252 cps/templates/config_db.html:110
-#: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:214
+#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:214
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:45
 #: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
 #: cps/templates/user_edit.html:553
@@ -3174,6 +3174,10 @@ msgstr "선택한 메타데이터 필드가 편집 양식에 적용되었습니�
 #: cps/templates/book_edit.html:288 cps/templates/book_edit.html:368
 msgid "Loading..."
 msgstr "불러오는 중"
+
+#: cps/templates/book_edit.html:312
+msgid "Apply"
+msgstr ""
 
 #: cps/templates/book_edit.html:369
 msgid "Search error!"
@@ -3488,11 +3492,11 @@ msgstr "Google 드라이브 API ID"
 msgid "Revoke"
 msgstr "취소"
 
-#: cps/templates/config_db.html:117
+#: cps/templates/config_db.html:118
 msgid "Last Resort: Restore Calibre Database (experimental)"
 msgstr "최후의 수단: Calibre 데이터베이스 복원 (실험적)"
 
-#: cps/templates/config_db.html:118
+#: cps/templates/config_db.html:119
 msgid ""
 "If your Calibre library is corrupted and cannot be opened, you can attempt "
 "to restore it from the OPF files in your library. This will <b>erase all per-"
@@ -3508,11 +3512,11 @@ msgstr ""
 "두 데이터베이스는 모두 /config/backup에 자동으로 백업됩니다.</b> 복원 로그도 "
 "백업과 함께 저장됩니다."
 
-#: cps/templates/config_db.html:121
+#: cps/templates/config_db.html:122
 msgid "Are you sure? This cannot be undone."
 msgstr "확실합니까? 이 작업은 되돌릴 수 없습니다."
 
-#: cps/templates/config_db.html:121
+#: cps/templates/config_db.html:122
 msgid "Restore Calibre Database (Last Resort)"
 msgstr "Calibre 데이터베이스 복원 (최후의 수단)"
 
@@ -3520,11 +3524,11 @@ msgstr "Calibre 데이터베이스 복원 (최후의 수단)"
 msgid "New db location is invalid, please enter valid path"
 msgstr "데이터베이스 경로가 올바르지 않습니다. 유효한 경로를 입력해주세요."
 
-#: cps/templates/config_edit.html:6 cps/templates/config_edit.html:272
+#: cps/templates/config_edit.html:6 cps/templates/config_edit.html:273
 msgid "Use Standard Authentication"
 msgstr "기본 인증 사용"
 
-#: cps/templates/config_edit.html:8 cps/templates/config_edit.html:274
+#: cps/templates/config_edit.html:8 cps/templates/config_edit.html:275
 msgid "Use LDAP Authentication"
 msgstr "LDAP 인증 사용"
 
@@ -3636,36 +3640,42 @@ msgstr "Kobo 스토어에 알 수 없는 요청 프록시 전달"
 msgid "Server External Port (for port forwarded API calls)"
 msgstr "서버 외부 포트 (포트 포워딩 API 호출용)"
 
-#: cps/templates/config_edit.html:216
+#: cps/templates/config_edit.html:213
+msgid ""
+"A reverse proxy was detected. Leave blank unless you need to override the "
+"port for direct access."
+msgstr ""
+
+#: cps/templates/config_edit.html:217
 msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
 msgstr ""
 "Kobo 읽기 진행 상황을 Hardcover와 동기화하기 (사용자별 API 키가 필요합니다)"
 
-#: cps/templates/config_edit.html:220
+#: cps/templates/config_edit.html:221
 msgid "Sync Kobo annotations to Hardcover (Requires API key per user)"
 msgstr "Kobo 주석을 Hardcover와 동기화 (사용자별 API 키 필요)"
 
-#: cps/templates/config_edit.html:227
+#: cps/templates/config_edit.html:228
 msgid "Use Goodreads"
 msgstr "Goodreads 사용"
 
-#: cps/templates/config_edit.html:231
+#: cps/templates/config_edit.html:232
 msgid "Goodreads API Key"
 msgstr "Goodreads API 키"
 
-#: cps/templates/config_edit.html:238
+#: cps/templates/config_edit.html:239
 msgid "Enable Hardcover Sync"
 msgstr "Kobo sync 활성화"
 
-#: cps/templates/config_edit.html:242
+#: cps/templates/config_edit.html:243
 msgid "Hardcover API Key"
 msgstr "Hardcover API 키"
 
-#: cps/templates/config_edit.html:248
+#: cps/templates/config_edit.html:249
 msgid "Allow Reverse Proxy Authentication"
 msgstr "리버스 프록시 인증 허용"
 
-#: cps/templates/config_edit.html:249
+#: cps/templates/config_edit.html:250
 msgid ""
 "Trusts the \"Remote-User\" header from a reverse proxy for authentication. "
 "This is an authentication method, distinct from the HTTPS security setting "
@@ -3674,11 +3684,11 @@ msgstr ""
 "리버스 프록시가 전달하는 \"Remote-User\" 헤더를 인증 수단으로 신뢰합니다. 이"
 "는 아래의 HTTPS 보안 설정과는 별개의 인증 방식입니다."
 
-#: cps/templates/config_edit.html:253
+#: cps/templates/config_edit.html:254
 msgid "Use via HTTPS"
 msgstr "HTTPS로 사용"
 
-#: cps/templates/config_edit.html:254
+#: cps/templates/config_edit.html:255
 msgid ""
 "Enables secure cookie settings (Secure, SameSite=Lax). Enable this ONLY if "
 "you are accessing the server via HTTPS, otherwise you will be locked out."
@@ -3686,11 +3696,11 @@ msgstr ""
 "보안 쿠키 설정(Secure, SameSite=Lax)을 활성화합니다. HTTPS로 서버에 접속하는 "
 "경우에만 활성화하세요. 그렇지 않으면 접속이 차단될 수 있습니다."
 
-#: cps/templates/config_edit.html:263
+#: cps/templates/config_edit.html:264
 msgid "Auto-create users from reverse proxy"
 msgstr "리버스 프록시로 사용자 자동 생성"
 
-#: cps/templates/config_edit.html:264
+#: cps/templates/config_edit.html:265
 msgid ""
 "Automatically create user accounts when valid reverse proxy headers are "
 "received. Only enable if your reverse proxy authentication is properly "
@@ -3699,89 +3709,89 @@ msgstr ""
 "유효한 리버스 프록시 헤더를 수신하면 사용자 계정을 자동으로 생성합니다. 리버"
 "스 프록시 인증이 안전하게 구성된 경우에만 활성화하세요."
 
-#: cps/templates/config_edit.html:270
+#: cps/templates/config_edit.html:271
 msgid "Login type"
 msgstr "로그인 방식"
 
-#: cps/templates/config_edit.html:277
+#: cps/templates/config_edit.html:278
 msgid "Use OAuth (requires HTTPS)"
 msgstr "OAuth 사용 (HTTPS 필요)"
 
-#: cps/templates/config_edit.html:284
+#: cps/templates/config_edit.html:285
 msgid "LDAP Server Host Name or IP Address"
 msgstr "LDAP 서버 호스트 이름 또는 IP 주소"
 
-#: cps/templates/config_edit.html:288
+#: cps/templates/config_edit.html:289
 msgid "LDAP Server Port"
 msgstr "LDAP 서버 포트"
 
-#: cps/templates/config_edit.html:292
+#: cps/templates/config_edit.html:293
 msgid "LDAP Encryption"
 msgstr "LDAP 암호화"
 
-#: cps/templates/config_edit.html:295
+#: cps/templates/config_edit.html:296
 msgid "TLS"
 msgstr "TLS"
 
-#: cps/templates/config_edit.html:296
+#: cps/templates/config_edit.html:297
 msgid "SSL"
 msgstr "SSL"
 
-#: cps/templates/config_edit.html:300
+#: cps/templates/config_edit.html:301
 msgid ""
 "LDAP CACertificate Path (Only needed for Client Certificate Authentication)"
 msgstr "LDAP CA 인증서 경로 (클라이언트 인증서 인증 시에만 필요)"
 
-#: cps/templates/config_edit.html:307
+#: cps/templates/config_edit.html:308
 msgid ""
 "LDAP Certificate Path (Only needed for Client Certificate Authentication)"
 msgstr "LDAP 인증서 경로 (클라이언트 인증서 인증 시에만 필요)"
 
-#: cps/templates/config_edit.html:314
+#: cps/templates/config_edit.html:315
 msgid "LDAP Keyfile Path (Only needed for Client Certificate Authentication)"
 msgstr "LDAP 키 파일 경로 (클라이언트 인증서 인증 시에만 필요)"
 
-#: cps/templates/config_edit.html:323
+#: cps/templates/config_edit.html:324
 msgid "LDAP Authentication"
 msgstr "LDAP 인증"
 
-#: cps/templates/config_edit.html:325
+#: cps/templates/config_edit.html:326
 msgid "Anonymous"
 msgstr "익명"
 
-#: cps/templates/config_edit.html:326
+#: cps/templates/config_edit.html:327
 msgid "Unauthenticated"
 msgstr "미인증"
 
-#: cps/templates/config_edit.html:327
+#: cps/templates/config_edit.html:328
 msgid "Simple"
 msgstr "단순 인증"
 
-#: cps/templates/config_edit.html:332
+#: cps/templates/config_edit.html:333
 msgid "LDAP Administrator Username"
 msgstr "LDAP 관리자 아이디"
 
-#: cps/templates/config_edit.html:338
+#: cps/templates/config_edit.html:339
 msgid "LDAP Administrator Password"
 msgstr "LDAP 관리자 비밀번호"
 
-#: cps/templates/config_edit.html:343
+#: cps/templates/config_edit.html:344
 msgid "LDAP Distinguished Name (DN)"
 msgstr "LDAP 식별 이름 (DN)"
 
-#: cps/templates/config_edit.html:347
+#: cps/templates/config_edit.html:348
 msgid "LDAP User Object Filter"
 msgstr "LDAP 사용자 객체 필터"
 
-#: cps/templates/config_edit.html:352
+#: cps/templates/config_edit.html:353
 msgid "LDAP Server is OpenLDAP?"
 msgstr "OpenLDAP 서버인 경우 체크"
 
-#: cps/templates/config_edit.html:356
+#: cps/templates/config_edit.html:357
 msgid "Auto-create users from LDAP"
 msgstr "LDAP로 사용자 자동 생성"
 
-#: cps/templates/config_edit.html:357
+#: cps/templates/config_edit.html:358
 msgid ""
 "Automatically create user accounts when LDAP authentication succeeds for new "
 "users. Recommended for enterprise environments."
@@ -3789,43 +3799,43 @@ msgstr ""
 "새 사용자의 LDAP 인증이 성공하면 계정을 자동으로 생성합니다. 기업 환경에 권장"
 "됩니다."
 
-#: cps/templates/config_edit.html:359
+#: cps/templates/config_edit.html:360
 msgid "Following Settings are Needed For User Import"
 msgstr "사용자를 가져오기 위해 다음 설정이 필요합니다."
 
-#: cps/templates/config_edit.html:361
+#: cps/templates/config_edit.html:362
 msgid "LDAP Group Object Filter"
 msgstr "LDAP 그룹 객체 필터"
 
-#: cps/templates/config_edit.html:365
+#: cps/templates/config_edit.html:366
 msgid "LDAP Group Name"
 msgstr "LDAP 그룹 이름"
 
-#: cps/templates/config_edit.html:369
+#: cps/templates/config_edit.html:370
 msgid "LDAP Group Members Field"
 msgstr "LDAP 그룹 구성원 필드"
 
-#: cps/templates/config_edit.html:373
+#: cps/templates/config_edit.html:374
 msgid "LDAP Member User Filter Detection"
 msgstr "LDAP 사용자 감지 필터"
 
-#: cps/templates/config_edit.html:375
+#: cps/templates/config_edit.html:376
 msgid "Autodetect"
 msgstr "자동 감지"
 
-#: cps/templates/config_edit.html:376
+#: cps/templates/config_edit.html:377
 msgid "Custom Filter"
 msgstr "사용자 지정 필터"
 
-#: cps/templates/config_edit.html:381
+#: cps/templates/config_edit.html:382
 msgid "LDAP Member User Filter"
 msgstr "LDAP 구성원 사용자 필터"
 
-#: cps/templates/config_edit.html:391
+#: cps/templates/config_edit.html:392
 msgid "Important:"
 msgstr "중요:"
 
-#: cps/templates/config_edit.html:391
+#: cps/templates/config_edit.html:392
 msgid ""
 "OAuth authentication requires this server to be accessed via HTTPS. If you "
 "are using HTTP, login will fail."
@@ -3833,27 +3843,27 @@ msgstr ""
 "OAuth 인증을 사용하려면 이 서버에 HTTPS로 접속해야 합니다. HTTP를 사용하면 로"
 "그인이 실패합니다."
 
-#: cps/templates/config_edit.html:394
+#: cps/templates/config_edit.html:395
 msgid "Generic OAuth Provider"
 msgstr "범용 OAuth 제공자"
 
-#: cps/templates/config_edit.html:398
+#: cps/templates/config_edit.html:399
 msgid "OAuth Metadata URL (for auto-discovery)"
 msgstr "OAuth 메타데이터 URL (자동 검색용)"
 
-#: cps/templates/config_edit.html:402
+#: cps/templates/config_edit.html:403
 msgid "Test Metadata"
 msgstr "메타데이터 시험"
 
-#: cps/templates/config_edit.html:405
+#: cps/templates/config_edit.html:406
 msgid "Leave empty to use manual configuration below"
 msgstr "수동으로 설정하려면 이하를 빈칸으로 두십시오"
 
-#: cps/templates/config_edit.html:411
+#: cps/templates/config_edit.html:412
 msgid "Use Manual Endpoint URLs (override auto-discovery)"
 msgstr "수동 엔드포인트 URL 사용 (자동 검색 무시)"
 
-#: cps/templates/config_edit.html:412
+#: cps/templates/config_edit.html:413
 msgid ""
 "Check this to manually configure individual OAuth endpoints instead of using "
 "auto-discovery"
@@ -3861,43 +3871,43 @@ msgstr ""
 "자동 검색 대신, 개별 OAuth 엔드포인트를 수동으로 설정하려면 이 항목을 체크하"
 "십시오."
 
-#: cps/templates/config_edit.html:417
+#: cps/templates/config_edit.html:418
 msgid "Manual Endpoint Configuration"
 msgstr "수동 엔드포인트 설정"
 
-#: cps/templates/config_edit.html:420
+#: cps/templates/config_edit.html:421
 msgid "OAuth Base URL"
 msgstr "OAuth 기본 URL"
 
-#: cps/templates/config_edit.html:425
+#: cps/templates/config_edit.html:426
 msgid "Authorization Endpoint"
 msgstr "인증 엔드포인트"
 
-#: cps/templates/config_edit.html:430
+#: cps/templates/config_edit.html:431
 msgid "Token Endpoint"
 msgstr "토큰 엔드포인트"
 
-#: cps/templates/config_edit.html:435
+#: cps/templates/config_edit.html:436
 msgid "UserInfo Endpoint"
 msgstr "UserInfo 엔드포인트"
 
-#: cps/templates/config_edit.html:443
+#: cps/templates/config_edit.html:444
 msgid "Test Connection"
 msgstr "연결 확인"
 
-#: cps/templates/config_edit.html:452
+#: cps/templates/config_edit.html:453
 msgid "OAuth Scopes"
 msgstr "OAuth 범위"
 
-#: cps/templates/config_edit.html:454
+#: cps/templates/config_edit.html:455
 msgid "Space-separated list of OAuth scopes"
 msgstr "공백으로 구분된 OAuth 범위 목록"
 
-#: cps/templates/config_edit.html:459
+#: cps/templates/config_edit.html:460
 msgid "OAuth Redirect Host"
 msgstr "OAuth 리디렉션 호스트"
 
-#: cps/templates/config_edit.html:462
+#: cps/templates/config_edit.html:463
 msgid ""
 "Set a consistent hostname for OAuth redirects to prevent \"invalid redirect "
 "URI\" errors. Include protocol (https://). Leave empty to use automatic "
@@ -3907,7 +3917,7 @@ msgstr ""
 "트 이름을 설정하세요. 프로토콜(https://)을 포함해야 합니다. 비워두면 자동으"
 "로 감지합니다."
 
-#: cps/templates/config_edit.html:464
+#: cps/templates/config_edit.html:465
 msgid ""
 "Required if: accessing via multiple hostnames, behind reverse proxy, or "
 "getting \"invalid redirect URI\" errors."
@@ -3915,39 +3925,39 @@ msgstr ""
 "다음의 경우 필요합니다: 여러 호스트 이름으로 접속, 리버스 프록시 사용, 또는 "
 "\"잘못된 리디렉션 URI\" 오류 발생 시."
 
-#: cps/templates/config_edit.html:469
+#: cps/templates/config_edit.html:470
 msgid "OAuth Client Id"
 msgstr "OAuth 클라이언트 ID"
 
-#: cps/templates/config_edit.html:473
+#: cps/templates/config_edit.html:474
 msgid "OAuth Client Secret"
 msgstr "OAuth 클라이언트 비밀키"
 
-#: cps/templates/config_edit.html:478
+#: cps/templates/config_edit.html:479
 msgid "Field Mapping Configuration"
 msgstr "필드 매핑 설정"
 
-#: cps/templates/config_edit.html:480
+#: cps/templates/config_edit.html:481
 msgid "Username Field"
 msgstr "사용자명 필드"
 
-#: cps/templates/config_edit.html:482
+#: cps/templates/config_edit.html:483
 msgid "JWT field to extract username from"
 msgstr "JWT에서 사용자 이름을 추출할 필드"
 
-#: cps/templates/config_edit.html:485
+#: cps/templates/config_edit.html:486
 msgid "Email Field"
 msgstr "이메일 필드"
 
-#: cps/templates/config_edit.html:487
+#: cps/templates/config_edit.html:488
 msgid "JWT field to extract email from"
 msgstr "이메일을 추출할 JWT 필드"
 
-#: cps/templates/config_edit.html:490
+#: cps/templates/config_edit.html:491
 msgid "OAuth group for Admin"
 msgstr "관리자용 OAuth 그룹"
 
-#: cps/templates/config_edit.html:492
+#: cps/templates/config_edit.html:493
 msgid ""
 "Name of the OAuth group that grants admin privileges. Leave empty to disable "
 "group-based admin management, or use the global setting in Security Settings "
@@ -3957,54 +3967,54 @@ msgstr ""
 "리가 비활성화되며, 더 세밀한 제어가 필요하면 보안 설정의 전역 설정을 사용하세"
 "요."
 
-#: cps/templates/config_edit.html:495
+#: cps/templates/config_edit.html:496
 msgid "Login Button Text"
 msgstr "로그인 버튼 문자"
 
-#: cps/templates/config_edit.html:501
+#: cps/templates/config_edit.html:502
 #, python-format
 msgid "Obtain %(provider)s OAuth Credential"
 msgstr "%(provider)s OAuth 인증 정보 받기"
 
-#: cps/templates/config_edit.html:504
+#: cps/templates/config_edit.html:505
 #, python-format
 msgid "%(provider)s OAuth Client Id"
 msgstr "%(provider)s OAuth 클라이언트 ID"
 
-#: cps/templates/config_edit.html:508
+#: cps/templates/config_edit.html:509
 #, python-format
 msgid "%(provider)s OAuth Client Secret"
 msgstr "%(provider)s OAuth 클라이언트 비밀키"
 
-#: cps/templates/config_edit.html:519
+#: cps/templates/config_edit.html:520
 msgid "External binaries"
 msgstr "외부 바이너리 설정"
 
-#: cps/templates/config_edit.html:520
+#: cps/templates/config_edit.html:521
 msgid "Path to Calibre Binaries"
 msgstr "Calibre 바이너리 경로"
 
-#: cps/templates/config_edit.html:528
+#: cps/templates/config_edit.html:529
 msgid "Calibre E-Book Converter Settings"
 msgstr "Calibre E-Book 컨버터 설정"
 
-#: cps/templates/config_edit.html:531
+#: cps/templates/config_edit.html:532
 msgid "Path to Kepubify E-Book Converter"
 msgstr "Kepubify 전자책 컨버터 경로"
 
-#: cps/templates/config_edit.html:539
+#: cps/templates/config_edit.html:540
 msgid "Location of Unrar binary"
 msgstr "UnRar 바이너리 경로"
 
-#: cps/templates/config_edit.html:550
+#: cps/templates/config_edit.html:551
 msgid "Security Settings"
 msgstr "보안 설정"
 
-#: cps/templates/config_edit.html:553
+#: cps/templates/config_edit.html:554
 msgid "Disable Standard Login (Username/Password)"
 msgstr "일반 로그인 비활성화 (아이디/비밀번호)"
 
-#: cps/templates/config_edit.html:554
+#: cps/templates/config_edit.html:555
 msgid ""
 "Hides the standard login form. Users must log in via OAuth or LDAP. Ensure "
 "you have a working alternative login method before enabling."
@@ -4012,11 +4022,11 @@ msgstr ""
 "일반 로그인 양식을 숨깁니다. 사용자는 OAuth나 LDAP으로만 로그인할 수 있습니"
 "다. 활성화하기 전에 대체 로그인 방법이 정상 작동하는지 확인하세요."
 
-#: cps/templates/config_edit.html:558
+#: cps/templates/config_edit.html:559
 msgid "Enable OAuth Group-Based Admin Role Management"
 msgstr "OAuth 그룹 기반 관리자 역할 관리 활성화"
 
-#: cps/templates/config_edit.html:559
+#: cps/templates/config_edit.html:560
 msgid ""
 "When enabled, admin privileges are automatically granted or revoked based on "
 "OAuth group membership. Disable this to manually manage admin roles in the "
@@ -4027,59 +4037,59 @@ msgstr ""
 "다. 비활성화하면 사용자 관리 패널에서 관리자 역할을 수동으로 관리하며, OAuth "
 "로그인이 로컬 역할 설정을 덮어쓰지 않습니다."
 
-#: cps/templates/config_edit.html:563
+#: cps/templates/config_edit.html:564
 msgid "Limit failed login attempts"
 msgstr "로그인 실패 횟수 제한"
 
-#: cps/templates/config_edit.html:567
+#: cps/templates/config_edit.html:568
 msgid "Configure Backend for Limiter"
 msgstr "Flask-Limiter 데이터베이스 주소"
 
-#: cps/templates/config_edit.html:571
+#: cps/templates/config_edit.html:572
 msgid "Options for Limiter Backend"
 msgstr "Flask-Limiter 옵션"
 
-#: cps/templates/config_edit.html:577
+#: cps/templates/config_edit.html:578
 msgid "Check if file extensions matches file content on upload"
 msgstr "업로드 시 파일 형식 일치 검사"
 
-#: cps/templates/config_edit.html:580
+#: cps/templates/config_edit.html:581
 msgid "Session protection"
 msgstr "세션 보호"
 
-#: cps/templates/config_edit.html:582
+#: cps/templates/config_edit.html:583
 msgid "Basic"
 msgstr "기본"
 
-#: cps/templates/config_edit.html:583
+#: cps/templates/config_edit.html:584
 msgid "Strong"
 msgstr "강력"
 
-#: cps/templates/config_edit.html:588
+#: cps/templates/config_edit.html:589
 msgid "User Password policy"
 msgstr "비밀번호 강도 규칙 사용"
 
-#: cps/templates/config_edit.html:592
+#: cps/templates/config_edit.html:593
 msgid "Minimum password length"
 msgstr "최소 비밀번호 길이"
 
-#: cps/templates/config_edit.html:597
+#: cps/templates/config_edit.html:598
 msgid "Enforce number"
 msgstr "숫자 필수"
 
-#: cps/templates/config_edit.html:601
+#: cps/templates/config_edit.html:602
 msgid "Enforce lowercase characters"
 msgstr "소문자 필수"
 
-#: cps/templates/config_edit.html:605
+#: cps/templates/config_edit.html:606
 msgid "Enforce uppercase characters"
 msgstr "대문자 필수"
 
-#: cps/templates/config_edit.html:609
+#: cps/templates/config_edit.html:610
 msgid "Enforce characters (needed For Chinese/Japanese/Korean Characters)"
 msgstr "한자/일본어/한국어 문자 필수"
 
-#: cps/templates/config_edit.html:613
+#: cps/templates/config_edit.html:614
 msgid "Enforce special characters"
 msgstr "특수문자 필수"
 
@@ -7198,6 +7208,9 @@ msgstr "선택한 서재 Kobo 동기화"
 #: cps/templates/user_table.html:157
 msgid "Show Read/Unread Section"
 msgstr "읽음/읽지 않음 표시"
+
+#~ msgid "Port"
+#~ msgstr "포트"
 
 #~ msgid "Standard Theme"
 #~ msgstr "기본 테마"

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 12:34+0000\n"
+"POT-Creation-Date: 2026-08-06 13:50+0000\n"
 "PO-Revision-Date: 2025-08-11 07:03+0000\n"
 "Last-Translator: Andrej Kralj\n"
 "Language-Team: Slovenian\n"
@@ -121,145 +121,145 @@ msgstr "Ni bilo najdenih knjig z ovitki za obdelavo."
 msgid "Failed to start thumbnail refresh: {}"
 msgstr "Napaka pri zagonu osveževanja sličic: {}"
 
-#: cps/admin.py:538
+#: cps/admin.py:539
 msgid "Admin page"
 msgstr "Administrativna stran"
 
-#: cps/admin.py:558
+#: cps/admin.py:560
 msgid "Basic Configuration"
 msgstr "Osnovne nastavitve"
 
-#: cps/admin.py:596
+#: cps/admin.py:598
 msgid "UI Configuration"
 msgstr "Nastavitve uporabniškega vmesnika"
 
-#: cps/admin.py:620 cps/admin.py:1302 cps/db.py:985 cps/search.py:153
+#: cps/admin.py:622 cps/admin.py:1304 cps/db.py:985 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "Stolpec po meri št. %(column)d ne obstaja v zbirki podatkov Calibre"
 
-#: cps/admin.py:638 cps/templates/admin.html:55
+#: cps/admin.py:640 cps/templates/admin.html:55
 msgid "Edit Users"
 msgstr "Urejanje uporabnikov"
 
-#: cps/admin.py:682 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:684 cps/opds.py:798 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Vse"
 
-#: cps/admin.py:709 cps/admin.py:1893
+#: cps/admin.py:711 cps/admin.py:1895
 msgid "User not found"
 msgstr "Ne najdem uporabnika"
 
-#: cps/admin.py:723
+#: cps/admin.py:725
 #, python-brace-format
 msgid "{} users deleted successfully"
 msgstr "{} uporabnikov uspešno izbrisanih"
 
-#: cps/admin.py:746 cps/templates/config_view_edit.html:169
+#: cps/admin.py:748 cps/templates/config_view_edit.html:169
 #: cps/templates/user_edit.html:263 cps/templates/user_edit.html:285
 #: cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "Pokaži vse"
 
-#: cps/admin.py:767 cps/admin.py:773
+#: cps/admin.py:769 cps/admin.py:775
 msgid "Malformed request"
 msgstr "Napačno oblikovana zahteva"
 
-#: cps/admin.py:785 cps/admin.py:2786
+#: cps/admin.py:787 cps/admin.py:2791
 msgid "Guest Name can't be changed"
 msgstr "Imena gosta ni mogoče spremeniti"
 
-#: cps/admin.py:799
+#: cps/admin.py:801
 msgid "Guest can't have this role"
 msgstr "Gost ne more imeti te vloge"
 
-#: cps/admin.py:811 cps/admin.py:2611
+#: cps/admin.py:813 cps/admin.py:2616
 msgid "No admin user remaining, can't remove admin role"
 msgstr "Ni več nobenega admin uporabnika, ne morem odstraniti vloge admin"
 
-#: cps/admin.py:815 cps/admin.py:829
+#: cps/admin.py:817 cps/admin.py:831
 msgid "Value has to be true or false"
 msgstr "Vrednost mora biti true ali false"
 
-#: cps/admin.py:817
+#: cps/admin.py:819
 msgid "Invalid role"
 msgstr "Neveljavna vloga"
 
-#: cps/admin.py:821
+#: cps/admin.py:823
 msgid "Guest can't have this view"
 msgstr "Gost ne more imeti tega pogleda"
 
-#: cps/admin.py:831
+#: cps/admin.py:833
 msgid "Invalid view"
 msgstr "Nepravilen pogled"
 
-#: cps/admin.py:834
+#: cps/admin.py:836
 msgid "Guest's Locale is determined automatically and can't be set"
 msgstr "Lokalni jezik gosta se določi samodejno in ga ni mogoče nastaviti."
 
-#: cps/admin.py:838
+#: cps/admin.py:840
 msgid "No Valid Locale Given"
 msgstr "Ni navedenega veljavnega lokalnega jezika"
 
-#: cps/admin.py:849
+#: cps/admin.py:851
 msgid "No Valid Book Language Given"
 msgstr "Ni navedenega veljavnega jezika knjige"
 
-#: cps/admin.py:851 cps/editbooks.py:596
+#: cps/admin.py:853 cps/editbooks.py:596
 msgid "Parameter not found"
 msgstr "Parameter ni najden"
 
-#: cps/admin.py:888
+#: cps/admin.py:890
 msgid "Invalid Read Column"
 msgstr "Nepravilen stolpec za branje"
 
-#: cps/admin.py:894
+#: cps/admin.py:896
 msgid "Invalid Restricted Column"
 msgstr "Neveljavni stolpec za omejitev"
 
-#: cps/admin.py:914 cps/admin.py:2459
+#: cps/admin.py:916 cps/admin.py:2464
 #, fuzzy
 msgid "Calibre-Web Automated configuration updated"
 msgstr "Posodobljena nastavitev Calibre-Web"
 
-#: cps/admin.py:926
+#: cps/admin.py:928
 msgid "Do you really want to delete the Kobo Token?"
 msgstr "Ali res želite izbrisati žeton Kobo?"
 
-#: cps/admin.py:928
+#: cps/admin.py:930
 msgid "Do you really want to delete this domain?"
 msgstr "Ali res želite izbrisati to domeno?"
 
-#: cps/admin.py:930
+#: cps/admin.py:932
 msgid "Do you really want to delete this user?"
 msgstr "Ali res želite izbrisati tega uporabnika?"
 
-#: cps/admin.py:932
+#: cps/admin.py:934
 msgid "Are you sure you want to delete this shelf?"
 msgstr "Ste prepričani, da želite izbrisati to polico?"
 
-#: cps/admin.py:934
+#: cps/admin.py:936
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr ""
 "Ali ste prepričani, da želite spremeniti lokalne jezike izbranih uporabnikov?"
 
-#: cps/admin.py:936
+#: cps/admin.py:938
 msgid ""
 "Are you sure you want to change visible book languages for selected user(s)?"
 msgstr ""
 "Ste prepričani, da želite spremeniti vidne jezike knjig za izbrane "
 "uporabnike?"
 
-#: cps/admin.py:938
+#: cps/admin.py:940
 msgid ""
 "Are you sure you want to change the selected role for the selected user(s)?"
 msgstr ""
 "Ali ste prepričani, da želite spremeniti izbrano vlogo za izbranega(-e) "
 "uporabnika(-e)?"
 
-#: cps/admin.py:940
+#: cps/admin.py:942
 msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
 "user(s)?"
@@ -267,7 +267,7 @@ msgstr ""
 "Ali ste prepričani, da želite spremeniti izbrane omejitve za izbranega(-e) "
 "uporabnika(-e)?"
 
-#: cps/admin.py:942
+#: cps/admin.py:944
 msgid ""
 "Are you sure you want to change the selected visibility restrictions for the "
 "selected user(s)?"
@@ -275,18 +275,18 @@ msgstr ""
 "Ali ste prepričani, da želite spremeniti izbrane omejitve vidljivosti za "
 "izbranega(-e) uporabnika(-e)?"
 
-#: cps/admin.py:945
+#: cps/admin.py:947
 msgid ""
 "Are you sure you want to change shelf sync behavior for the selected user(s)?"
 msgstr ""
 "Ali ste prepričani, da želite spremeniti obnašanje sinhronizacije police za "
 "izbranega(-e) uporabnika(-e)?"
 
-#: cps/admin.py:947
+#: cps/admin.py:949
 msgid "Are you sure you want to change Calibre library location?"
 msgstr "Ste prepričani, da želite spremeniti lokacijo knjižnice Calibre?"
 
-#: cps/admin.py:949
+#: cps/admin.py:951
 #, fuzzy
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
@@ -295,7 +295,7 @@ msgstr ""
 "Calibre-Web bo poiskal posodobljene naslovnice in posodobil sličice "
 "naslovnic, kar lahko traja nekaj časa."
 
-#: cps/admin.py:952
+#: cps/admin.py:954
 #, fuzzy
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
@@ -304,86 +304,86 @@ msgstr ""
 "Ali ste prepričani, da želite izbrisati sinhronizacijsko podatkovno bazo "
 "Calibre-Web, da bi vsilili popolno sinhronizacijo z bralnikom Kobo?"
 
-#: cps/admin.py:1191 cps/admin.py:1197 cps/admin.py:1207 cps/admin.py:1217
+#: cps/admin.py:1193 cps/admin.py:1199 cps/admin.py:1209 cps/admin.py:1219
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
 #: cps/templates/user_table.html:58
 msgid "Deny"
 msgstr "Onemogoči"
 
-#: cps/admin.py:1193 cps/admin.py:1199 cps/admin.py:1209 cps/admin.py:1219
+#: cps/admin.py:1195 cps/admin.py:1201 cps/admin.py:1211 cps/admin.py:1221
 #: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44
 #: cps/templates/user_table.html:61
 msgid "Allow"
 msgstr "Omogoči"
 
-#: cps/admin.py:1252
+#: cps/admin.py:1254
 #, python-brace-format
 msgid "{} sync entries deleted"
 msgstr "{} izbrisanih vnosov za sinhronizacijo"
 
-#: cps/admin.py:1293
+#: cps/admin.py:1295
 msgid "Tag not found"
 msgstr "Oznaka ni bila najdena"
 
-#: cps/admin.py:1311
+#: cps/admin.py:1313
 msgid "Invalid Action"
 msgstr "Neveljavno dejanje"
 
-#: cps/admin.py:1438
+#: cps/admin.py:1440
 msgid "client_secrets.json Is Not Configured For Web Application"
 msgstr "Client_secrets.json ni nastavljen za spletno aplikacijo"
 
-#: cps/admin.py:1577
+#: cps/admin.py:1579
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "Lokacija dnevniške datoteke ni veljavna, vnesite pravilno pot"
 
-#: cps/admin.py:1583
+#: cps/admin.py:1585
 msgid "Access Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "Lokacija dnevniške datoteke dostopa ni veljavna, vnesite pravilno pot"
 
-#: cps/admin.py:1618
+#: cps/admin.py:1620
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
 msgstr "Vnesite ponudnika LDAP, vrata, DN in identifikator objekta uporabnika"
 
-#: cps/admin.py:1624
+#: cps/admin.py:1626
 msgid "Please Enter a LDAP Service Account and Password"
 msgstr "Vnesite račun in geslo storitve LDAP"
 
-#: cps/admin.py:1627
+#: cps/admin.py:1629
 msgid "Please Enter a LDAP Service Account"
 msgstr "Vnesite račun storitve LDAP"
 
-#: cps/admin.py:1632
+#: cps/admin.py:1634
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
 msgstr ""
 "Filter predmetov skupine LDAP mora imeti en identifikator oblike \"%s\""
 
-#: cps/admin.py:1634
+#: cps/admin.py:1636
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
 msgstr "Filter predmeta skupine LDAP ima neusklajene oklepaje"
 
-#: cps/admin.py:1638
+#: cps/admin.py:1640
 #, python-format
 msgid "LDAP User Object Filter needs to Have One \"%s\" Format Identifier"
 msgstr ""
 "Filter uporabniškega objekta LDAP mora imeti en identifikator oblike \"%s\""
 
-#: cps/admin.py:1640
+#: cps/admin.py:1642
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
 msgstr "Filter objekta uporabnika LDAP ima neusklajene oklepaje"
 
-#: cps/admin.py:1647
+#: cps/admin.py:1649
 #, python-format
 msgid "LDAP Member User Filter needs to Have One \"%s\" Format Identifier"
 msgstr ""
 "Filter za uporabnike članov LDAP mora imeti en identifikator oblike \"%s\""
 
-#: cps/admin.py:1649
+#: cps/admin.py:1651
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"
 msgstr "Filter uporabnika člana LDAP ima neusklajene oklepaje"
 
-#: cps/admin.py:1656
+#: cps/admin.py:1658
 msgid ""
 "LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter "
 "Correct Path"
@@ -391,20 +391,20 @@ msgstr ""
 "LDAP CACcertifikat, lokacija certifikata ali ključa ni veljavna, vnesite "
 "pravilno pot"
 
-#: cps/admin.py:1689 cps/templates/admin.html:57
+#: cps/admin.py:1691 cps/templates/admin.html:57
 msgid "Add New User"
 msgstr "Dodajanje novega uporabnika"
 
-#: cps/admin.py:1704 cps/templates/admin.html:105
+#: cps/admin.py:1706 cps/templates/admin.html:105
 msgid "Edit Email Server Settings"
 msgstr "Urejanje nastavitev e-poštnega strežnika"
 
-#: cps/admin.py:1723
+#: cps/admin.py:1725
 msgid "Success! Gmail Account Verified."
 msgstr "Uspeh! Račun Gmail je potrjen."
 
-#: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
-#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1046
+#: cps/admin.py:1745 cps/admin.py:1748 cps/admin.py:2234 cps/admin.py:2448
+#: cps/admin.py:2563 cps/admin.py:2834 cps/editbooks.py:1046
 #: cps/editbooks.py:1830 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2678
@@ -412,7 +412,7 @@ msgstr "Uspeh! Račun Gmail je potrjen."
 msgid "Oops! Database Error: %(error)s."
 msgstr "Ups! Napaka podatkovne baze: %(error)s."
 
-#: cps/admin.py:1753
+#: cps/admin.py:1755
 #, python-format
 msgid ""
 "Test e-mail queued for sending to %(email)s, please check Tasks for result"
@@ -420,171 +420,171 @@ msgstr ""
 "Testno e-poštno sporočilo je v čakalni vrsti za pošiljanje na %(email)s "
 "naslovov, za rezultat preverite opravila"
 
-#: cps/admin.py:1756
+#: cps/admin.py:1758
 #, python-format
 msgid "There was an error sending the Test e-mail: %(res)s"
 msgstr ""
 "Pri pošiljanju testnega e-poštnega sporočila je prišlo do napake: %(res)s"
 
-#: cps/admin.py:1758
+#: cps/admin.py:1760
 msgid "Please configure your e-mail address first..."
 msgstr "Najprej nastavite vaš e-poštni naslov..."
 
-#: cps/admin.py:1760
+#: cps/admin.py:1762
 msgid "Email Server Settings updated"
 msgstr "Posodobljene nastavitve e-poštnega strežnika"
 
-#: cps/admin.py:1783 cps/templates/admin.html:201
+#: cps/admin.py:1785 cps/templates/admin.html:201
 msgid "Edit Scheduled Tasks Settings"
 msgstr "Urejanje nastavitev načrtovanih opravil"
 
-#: cps/admin.py:1795
+#: cps/admin.py:1797
 msgid "Invalid start time for task specified"
 msgstr "Nepravilen začetni čas za določeno nalogo"
 
-#: cps/admin.py:1800
+#: cps/admin.py:1802
 msgid "Invalid duration for task specified"
 msgstr "Nepravilno trajanje za določeno nalogo"
 
-#: cps/admin.py:1810
+#: cps/admin.py:1812
 msgid "Scheduled tasks settings updated"
 msgstr "Posodobljene nastavitve načrtovanih opravil"
 
-#: cps/admin.py:1820 cps/admin.py:1964 cps/admin.py:2825 cps/web.py:2109
+#: cps/admin.py:1822 cps/admin.py:1966 cps/admin.py:2830 cps/web.py:2109
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "Ups! Zgodila se je neznana napaka. Prosimo, poskusite znova pozneje."
 
-#: cps/admin.py:1824
+#: cps/admin.py:1826
 msgid "Settings DB is not Writeable"
 msgstr "DB nastavitev ni mogoče zapisati"
 
-#: cps/admin.py:1843 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
+#: cps/admin.py:1845 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
 #, fuzzy
 msgid "title"
 msgstr "Naslov"
 
-#: cps/admin.py:1949 cps/admin.py:2817
+#: cps/admin.py:1951 cps/admin.py:2822
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "Urejanje uporabnika %(nick)s"
 
-#: cps/admin.py:1961
+#: cps/admin.py:1963
 #, python-format
 msgid "Success! Password for user %(user)s reset"
 msgstr "Uspeh! Ponastavitev gesla za uporabnika %(user)s"
 
-#: cps/admin.py:1967
+#: cps/admin.py:1969
 msgid "Oops! Please configure the SMTP mail settings."
 msgstr "Ups! Nastavite nastavitve pošte SMTP."
 
-#: cps/admin.py:1978
+#: cps/admin.py:1980
 msgid "Logfile viewer"
 msgstr "Pregledovalnik dnevniške datoteke"
 
-#: cps/admin.py:2044
+#: cps/admin.py:2046
 msgid "Requesting update package"
 msgstr "Zahteva za paket posodobitev"
 
-#: cps/admin.py:2045
+#: cps/admin.py:2047
 msgid "Downloading update package"
 msgstr "Prenos paketa posodobitev"
 
-#: cps/admin.py:2046
+#: cps/admin.py:2048
 msgid "Unzipping update package"
 msgstr "Razpakiranje paketa posodobitev"
 
-#: cps/admin.py:2047
+#: cps/admin.py:2049
 msgid "Replacing files"
 msgstr "Zamenjava datotek"
 
-#: cps/admin.py:2048
+#: cps/admin.py:2050
 msgid "Database connections are closed"
 msgstr "Povezave do zbirke podatkov so zaprte"
 
-#: cps/admin.py:2049
+#: cps/admin.py:2051
 msgid "Stopping server"
 msgstr "Ustavitev strežnika"
 
-#: cps/admin.py:2050
+#: cps/admin.py:2052
 msgid "Update finished, please press okay and reload page"
 msgstr "Posodobitev je končana, pritisnite OK in ponovno naložite stran"
 
-#: cps/admin.py:2051 cps/admin.py:2052 cps/admin.py:2053 cps/admin.py:2054
-#: cps/admin.py:2055 cps/admin.py:2056
+#: cps/admin.py:2053 cps/admin.py:2054 cps/admin.py:2055 cps/admin.py:2056
+#: cps/admin.py:2057 cps/admin.py:2058
 msgid "Update failed:"
 msgstr "Posodobitev ni uspela:"
 
-#: cps/admin.py:2051 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
+#: cps/admin.py:2053 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
 msgid "HTTP Error"
 msgstr "Napaka HTTP"
 
-#: cps/admin.py:2052 cps/updater.py:396 cps/updater.py:633
+#: cps/admin.py:2054 cps/updater.py:396 cps/updater.py:633
 msgid "Connection error"
 msgstr "Napaka povezave"
 
-#: cps/admin.py:2053 cps/updater.py:398 cps/updater.py:635
+#: cps/admin.py:2055 cps/updater.py:398 cps/updater.py:635
 msgid "Timeout while establishing connection"
 msgstr "Potek časa pri vzpostavljanju povezave"
 
-#: cps/admin.py:2054 cps/updater.py:400 cps/updater.py:637
+#: cps/admin.py:2056 cps/updater.py:400 cps/updater.py:637
 msgid "General error"
 msgstr "Splošna napaka"
 
-#: cps/admin.py:2055
+#: cps/admin.py:2057
 msgid "Update file could not be saved in temp dir"
 msgstr "Datoteke posodobitve ni bilo mogoče shraniti v začasno mapo"
 
-#: cps/admin.py:2056
+#: cps/admin.py:2058
 msgid "Files could not be replaced during update"
 msgstr "Datotek med posodabljanjem ni bilo mogoče zamenjati"
 
-#: cps/admin.py:2080
+#: cps/admin.py:2082
 msgid "Failed to extract at least One LDAP User"
 msgstr "Nisem uspel izpisati vsaj enega uporabnika LDAP"
 
-#: cps/admin.py:2125
+#: cps/admin.py:2127
 msgid "Failed to Create at Least One LDAP User"
 msgstr "Nisem uspel ustvariti vsaj enega uporabnika LDAP"
 
-#: cps/admin.py:2138
+#: cps/admin.py:2140
 #, python-format
 msgid "Error: %(ldaperror)s"
 msgstr "Napaka: %(ldaperror)s"
 
-#: cps/admin.py:2142
+#: cps/admin.py:2144
 msgid "Error: No user returned in response of LDAP server"
 msgstr "Napaka: V odzivu strežnika LDAP ni vrnjenega nobenega uporabnika"
 
-#: cps/admin.py:2178
+#: cps/admin.py:2180
 msgid "At Least One LDAP User Not Found in Database"
 msgstr "V podatkovni zbirki ni najden vsaj en uporabnik LDAP"
 
-#: cps/admin.py:2180
+#: cps/admin.py:2182
 #, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{} Uporabnik je bil uspešno uvožen"
 
-#: cps/admin.py:2244
+#: cps/admin.py:2246
 msgid "Books path not valid"
 msgstr "Pot do knjig ni veljavna"
 
-#: cps/admin.py:2251
+#: cps/admin.py:2253
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr "Lokacija do DB ni veljavna, vnesite pravilno pot"
 
-#: cps/admin.py:2279
+#: cps/admin.py:2281
 msgid "DB is not Writeable"
 msgstr "V DB ni mogoče zapisati"
 
-#: cps/admin.py:2292
+#: cps/admin.py:2294
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "Lokacija datoteka Keyfile ni veljavna, vnesite pravilno pot"
 
-#: cps/admin.py:2296
+#: cps/admin.py:2298
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr "Lokacija datoteke Certfile ni veljavna, vnesite pravilno pot"
 
-#: cps/admin.py:2365
+#: cps/admin.py:2370
 msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
@@ -592,13 +592,13 @@ msgstr ""
 "Samodejnega ustvarjanja uporabnikov ni mogoče omogočiti brez omogočene "
 "avtentikacije preko povratnega proksija"
 
-#: cps/admin.py:2368
+#: cps/admin.py:2373
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
 "Samodejno ustvarjanje uporabnikov zahteva veljavno ime glave povratnega "
 "proksija"
 
-#: cps/admin.py:2387 cps/admin.py:2394
+#: cps/admin.py:2392 cps/admin.py:2399
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
@@ -606,7 +606,7 @@ msgstr ""
 "Neveljavna oblika gostitelja za preusmeritev OAuth. Vključite celoten URL s "
 "protokolom (npr. https://vasa-domena.si)"
 
-#: cps/admin.py:2391
+#: cps/admin.py:2396
 msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
@@ -614,69 +614,69 @@ msgstr ""
 "Gostitelj preusmeritve OAuth ne sme vsebovati poti. Uporabite le osnovni URL "
 "(npr. https://vasa-domena.si)"
 
-#: cps/admin.py:2426
+#: cps/admin.py:2431
 msgid "Password length has to be between 1 and 40"
 msgstr "Dolžina gesla mora biti med 1 in 40"
 
-#: cps/admin.py:2486
+#: cps/admin.py:2491
 msgid "Database Settings updated"
 msgstr "Posodobljene nastavitve zbirke podatkov"
 
-#: cps/admin.py:2494
+#: cps/admin.py:2499
 msgid "Database Configuration"
 msgstr "Nastavitev zbirke podatkov"
 
-#: cps/admin.py:2514 cps/web.py:2078
+#: cps/admin.py:2519 cps/web.py:2078
 msgid "Oops! Please complete all fields."
 msgstr "Ups! Izpolnite vsa polja."
 
-#: cps/admin.py:2523
+#: cps/admin.py:2528
 msgid "E-mail is not from valid domain"
 msgstr "E-pošta ni iz veljavne domene"
 
-#: cps/admin.py:2531
+#: cps/admin.py:2536
 msgid "Add new user"
 msgstr "Dodajanje novega uporabnika"
 
-#: cps/admin.py:2548
+#: cps/admin.py:2553
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "Ustvarjen uporabnik '%(user)s'"
 
-#: cps/admin.py:2554
+#: cps/admin.py:2559
 msgid "Oops! An account already exists for this Email. or name."
 msgstr "Ups! Za to e-pošto že obstaja račun ali ime."
 
-#: cps/admin.py:2584
+#: cps/admin.py:2589
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "Uporabnik '%(nick)s' je izbrisan"
 
-#: cps/admin.py:2587
+#: cps/admin.py:2592
 msgid "Can't delete Guest User"
 msgstr "Ne morem izbrisati uporabnika gosta"
 
-#: cps/admin.py:2590
+#: cps/admin.py:2595
 msgid "No admin user remaining, can't delete user"
 msgstr ""
 "Ni preostalega uporabnika administratorja, uporabnika ni mogoče izbrisati"
 
-#: cps/admin.py:2780 cps/web.py:2413
+#: cps/admin.py:2785 cps/web.py:2413
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "E-pošta ne sme biti prazna in mora biti veljavna."
 
-#: cps/admin.py:2821
+#: cps/admin.py:2826
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "Uporabnik '%(nick)s' je posodobljen"
 
-#: cps/admin.py:2886
+#: cps/admin.py:2891
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr "Povezava uspešna! OIDC odkritna točka je dostopna. %(endpoints)s"
 
-#: cps/admin.py:2891
+#: cps/admin.py:2896
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
@@ -684,12 +684,12 @@ msgstr ""
 "Povezava ni uspela: OIDC odkritna točka ni bila najdena (404). Preverite, "
 "ali je osnovni URL pravilen."
 
-#: cps/admin.py:2893 cps/admin.py:2950
+#: cps/admin.py:2898 cps/admin.py:2955
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "Povezava ni uspela: Strežnik je vrnil kodo stanja %(code)s"
 
-#: cps/admin.py:2895
+#: cps/admin.py:2900
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
@@ -697,14 +697,14 @@ msgstr ""
 "Povezava ni uspela: Ni se bilo mogoče povezati s strežnikom. Preverite URL "
 "in omrežno povezavo."
 
-#: cps/admin.py:2897
+#: cps/admin.py:2902
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr ""
 "Povezava ni uspela: Zahteva je potekla. Strežnik je morda počasen ali "
 "nedosegljiv."
 
-#: cps/admin.py:2899
+#: cps/admin.py:2904
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
@@ -712,12 +712,12 @@ msgstr ""
 "Povezava ni uspela: Strežnik je vrnil neveljaven JSON. To morda ni končna "
 "točka OIDC."
 
-#: cps/admin.py:2902
+#: cps/admin.py:2907
 #, fuzzy, python-format
 msgid "Connection failed: %(error)s"
 msgstr "Napaka povezave"
 
-#: cps/admin.py:2928
+#: cps/admin.py:2933
 #, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
@@ -726,26 +726,26 @@ msgstr ""
 "V metapodatkih manjkajo zahtevana polja OIDC: %(fields)s. To morda ni "
 "veljavna končna točka metapodatkov OIDC."
 
-#: cps/admin.py:2939
+#: cps/admin.py:2944
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr "URL metapodatkov je veljaven! Najdenih %(count)s OAuth končnih točk."
 
-#: cps/admin.py:2941
+#: cps/admin.py:2946
 #, fuzzy
 msgid " User info endpoint is available."
 msgstr "Informacije o izdaji niso na voljo"
 
-#: cps/admin.py:2943
+#: cps/admin.py:2948
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 
-#: cps/admin.py:2948
+#: cps/admin.py:2953
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr "URL metapodatkov ni bil najden (404). Preverite, ali je URL pravilen."
 
-#: cps/admin.py:2952
+#: cps/admin.py:2957
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
@@ -753,50 +753,50 @@ msgstr ""
 "Povezava ni uspela: Ni se bilo mogoče povezati z URL-jem metapodatkov. "
 "Preverite URL in omrežno povezavo."
 
-#: cps/admin.py:2954
+#: cps/admin.py:2959
 msgid "Connection failed: Request timed out."
 msgstr "Povezava ni uspela: Čas za zahtevo se je iztekel."
 
-#: cps/admin.py:2956
+#: cps/admin.py:2961
 msgid "Connection failed: Invalid JSON in response."
 msgstr "Povezava ni uspela: Neveljaven JSON v odgovoru."
 
-#: cps/admin.py:2959
+#: cps/admin.py:2964
 #, fuzzy
 msgid "An unknown error occurred."
 msgstr "Zgodila se je neznana napaka. Prosimo, poskusite znova pozneje."
 
-#: cps/admin.py:2971
+#: cps/admin.py:2976
 #, fuzzy
 msgid "Restore already in progress."
 msgstr "Napaka povezave"
 
-#: cps/admin.py:2975
+#: cps/admin.py:2980
 msgid "Restore failed: Calibre library path is not configured."
 msgstr "Obnova ni uspela: Pot do knjižnice Calibre ni nastavljena."
 
-#: cps/admin.py:2980
+#: cps/admin.py:2985
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr "Obnova ni uspela: metadata.db ni bil najden na %(path)s"
 
-#: cps/admin.py:2985
+#: cps/admin.py:2990
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr "Obnova ni uspela: app.db ni bil najden na %(path)s"
 
-#: cps/admin.py:3057 cps/admin.py:3097
+#: cps/admin.py:3062 cps/admin.py:3102
 #, fuzzy, python-format
 msgid "Restore failed: %(err)s"
 msgstr "Napaka povezave"
 
-#: cps/admin.py:3074
+#: cps/admin.py:3079
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
 "Obnova končana, vendar čiščenje app.db ni uspelo. Za podrobnosti glejte "
 "dnevnike."
 
-#: cps/admin.py:3093
+#: cps/admin.py:3098
 #, python-format
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
@@ -1157,7 +1157,7 @@ msgstr "{} uporabnikov uspešno izbrisanih"
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA Upravljanje profilnih slik (v teku)"
 
-#: cps/db.py:1270 cps/templates/config_edit.html:294
+#: cps/db.py:1270 cps/templates/config_edit.html:295
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
@@ -2859,13 +2859,13 @@ msgstr "Imenik zbirk podatkov Calibre"
 msgid "Log Level"
 msgstr "Raven dnevnika"
 
-#: cps/templates/admin.html:122
-msgid "Port"
-msgstr "Vrata"
-
-#: cps/templates/admin.html:127
+#: cps/templates/admin.html:122 cps/templates/admin.html:127
 msgid "External Port"
 msgstr "Zunanja vrata"
+
+#: cps/templates/admin.html:123
+msgid "Not set — reverse proxy detected"
+msgstr ""
 
 #: cps/templates/admin.html:134 cps/templates/config_view_edit.html:45
 msgid "Books per Page"
@@ -2891,7 +2891,7 @@ msgstr "Prijava v oddaljeno prijavo Magic Link"
 msgid "Reverse Proxy Login"
 msgstr "Prijava za povratni posredniški strežnik"
 
-#: cps/templates/admin.html:159 cps/templates/config_edit.html:258
+#: cps/templates/admin.html:159 cps/templates/config_edit.html:259
 msgid "Reverse Proxy Header Name"
 msgstr "Ime glave povratnega posredniškega strežnika"
 
@@ -3055,7 +3055,7 @@ msgstr "V redu"
 #: cps/templates/book_table.html:231 cps/templates/book_table.html:251
 #: cps/templates/book_table.html:271 cps/templates/book_table.html:329
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:111
-#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:215
+#: cps/templates/config_edit.html:621 cps/templates/config_view_edit.html:215
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:938
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
@@ -3288,7 +3288,7 @@ msgid "Fetch Metadata"
 msgstr "Pridobivanje metapodatkov"
 
 #: cps/templates/book_edit.html:252 cps/templates/config_db.html:110
-#: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:214
+#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:214
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:45
 #: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
 #: cps/templates/user_edit.html:553
@@ -3310,6 +3310,10 @@ msgstr "Izbrana polja metapodatkov so bila uporabljena v obrazcu za urejanje."
 #: cps/templates/book_edit.html:288 cps/templates/book_edit.html:368
 msgid "Loading..."
 msgstr "Nalaganje..."
+
+#: cps/templates/book_edit.html:312
+msgid "Apply"
+msgstr ""
 
 #: cps/templates/book_edit.html:369
 msgid "Search error!"
@@ -3613,12 +3617,12 @@ msgstr "Metapodatki Watch ID kanala"
 msgid "Revoke"
 msgstr "Preklic"
 
-#: cps/templates/config_db.html:117
+#: cps/templates/config_db.html:118
 #, fuzzy
 msgid "Last Resort: Restore Calibre Database (experimental)"
 msgstr "Ponovna povezava podatkovne zbirke Calibre"
 
-#: cps/templates/config_db.html:118
+#: cps/templates/config_db.html:119
 msgid ""
 "If your Calibre library is corrupted and cannot be opened, you can attempt "
 "to restore it from the OPF files in your library. This will <b>erase all per-"
@@ -3635,12 +3639,12 @@ msgstr ""
 "varnostno kopirani v /config/backup pred kakršnim koli uničujočim dejanjem.</"
 "b> Dnevnik obnove bo shranjen poleg varnostnih kopij."
 
-#: cps/templates/config_db.html:121
+#: cps/templates/config_db.html:122
 #, fuzzy
 msgid "Are you sure? This cannot be undone."
 msgstr "Ste prepričani, da želite izklopiti?"
 
-#: cps/templates/config_db.html:121
+#: cps/templates/config_db.html:122
 #, fuzzy
 msgid "Restore Calibre Database (Last Resort)"
 msgstr "Ponovna povezava podatkovne zbirke Calibre"
@@ -3649,11 +3653,11 @@ msgstr "Ponovna povezava podatkovne zbirke Calibre"
 msgid "New db location is invalid, please enter valid path"
 msgstr "Nova lokacija db je neveljavna, vnesite veljavno pot"
 
-#: cps/templates/config_edit.html:6 cps/templates/config_edit.html:272
+#: cps/templates/config_edit.html:6 cps/templates/config_edit.html:273
 msgid "Use Standard Authentication"
 msgstr "Uporaba standardnega preverjanja pristnosti"
 
-#: cps/templates/config_edit.html:8 cps/templates/config_edit.html:274
+#: cps/templates/config_edit.html:8 cps/templates/config_edit.html:275
 msgid "Use LDAP Authentication"
 msgstr "Uporaba overjanja LDAP"
 
@@ -3773,41 +3777,47 @@ msgstr "Posredovanje neznanih zahtev do trgovine Kobo"
 msgid "Server External Port (for port forwarded API calls)"
 msgstr "Zunanja vrata strežnika (za posredovane klice API)"
 
-#: cps/templates/config_edit.html:216
+#: cps/templates/config_edit.html:213
+msgid ""
+"A reverse proxy was detected. Leave blank unless you need to override the "
+"port for direct access."
+msgstr ""
+
+#: cps/templates/config_edit.html:217
 msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
 msgstr ""
 "Sinhronizacija napredka branja Kobo s knjigo (zahteva ključ API za "
 "uporabnika)"
 
-#: cps/templates/config_edit.html:220
+#: cps/templates/config_edit.html:221
 #, fuzzy
 msgid "Sync Kobo annotations to Hardcover (Requires API key per user)"
 msgstr ""
 "Sinhronizacija napredka branja Kobo s knjigo (zahteva ključ API za "
 "uporabnika)"
 
-#: cps/templates/config_edit.html:227
+#: cps/templates/config_edit.html:228
 msgid "Use Goodreads"
 msgstr "Uporabi Goodreads"
 
-#: cps/templates/config_edit.html:231
+#: cps/templates/config_edit.html:232
 msgid "Goodreads API Key"
 msgstr "Ključ API Goodreads"
 
-#: cps/templates/config_edit.html:238
+#: cps/templates/config_edit.html:239
 #, fuzzy
 msgid "Enable Hardcover Sync"
 msgstr "Omogoči sinhronizacijo s Kobo"
 
-#: cps/templates/config_edit.html:242
+#: cps/templates/config_edit.html:243
 msgid "Hardcover API Key"
 msgstr "Hardcover API ključ"
 
-#: cps/templates/config_edit.html:248
+#: cps/templates/config_edit.html:249
 msgid "Allow Reverse Proxy Authentication"
 msgstr "Omogočanje avtentikacije povratnega posrednika"
 
-#: cps/templates/config_edit.html:249
+#: cps/templates/config_edit.html:250
 msgid ""
 "Trusts the \"Remote-User\" header from a reverse proxy for authentication. "
 "This is an authentication method, distinct from the HTTPS security setting "
@@ -3816,11 +3826,11 @@ msgstr ""
 "Zaupa glavi \"Remote-User\" iz povratnega proksija za avtentikacijo. To je "
 "metoda prijave, ki se razlikuje od spodnje varnostne nastavitve HTTPS."
 
-#: cps/templates/config_edit.html:253
+#: cps/templates/config_edit.html:254
 msgid "Use via HTTPS"
 msgstr "Uporaba preko HTTPS"
 
-#: cps/templates/config_edit.html:254
+#: cps/templates/config_edit.html:255
 msgid ""
 "Enables secure cookie settings (Secure, SameSite=Lax). Enable this ONLY if "
 "you are accessing the server via HTTPS, otherwise you will be locked out."
@@ -3828,11 +3838,11 @@ msgstr ""
 "Omogoči nastavitve varnih piškotkov (Secure, SameSite=Lax). To omogočite LE, "
 "če do strežnika dostopate preko HTTPS, sicer vam bo dostop onemogočen."
 
-#: cps/templates/config_edit.html:263
+#: cps/templates/config_edit.html:264
 msgid "Auto-create users from reverse proxy"
 msgstr "Samodejno ustvari uporabnike iz povratnega proksija"
 
-#: cps/templates/config_edit.html:264
+#: cps/templates/config_edit.html:265
 msgid ""
 "Automatically create user accounts when valid reverse proxy headers are "
 "received. Only enable if your reverse proxy authentication is properly "
@@ -3842,95 +3852,95 @@ msgstr ""
 "povratnega proksija. Omogočite le, če je vaša avtentikacija povratnega "
 "proksija pravilno zavarovana."
 
-#: cps/templates/config_edit.html:270
+#: cps/templates/config_edit.html:271
 msgid "Login type"
 msgstr "Vrsta prijave"
 
-#: cps/templates/config_edit.html:277
+#: cps/templates/config_edit.html:278
 msgid "Use OAuth (requires HTTPS)"
 msgstr "Uporabi OAuth (zahteva HTTPS)"
 
-#: cps/templates/config_edit.html:284
+#: cps/templates/config_edit.html:285
 msgid "LDAP Server Host Name or IP Address"
 msgstr "Gostiteljsko ime ali naslov IP strežnika LDAP"
 
-#: cps/templates/config_edit.html:288
+#: cps/templates/config_edit.html:289
 msgid "LDAP Server Port"
 msgstr "Vrata strežnika LDAP"
 
-#: cps/templates/config_edit.html:292
+#: cps/templates/config_edit.html:293
 msgid "LDAP Encryption"
 msgstr "Šifriranje LDAP"
 
-#: cps/templates/config_edit.html:295
+#: cps/templates/config_edit.html:296
 msgid "TLS"
 msgstr "TLS"
 
-#: cps/templates/config_edit.html:296
+#: cps/templates/config_edit.html:297
 msgid "SSL"
 msgstr "SSL"
 
-#: cps/templates/config_edit.html:300
+#: cps/templates/config_edit.html:301
 msgid ""
 "LDAP CACertificate Path (Only needed for Client Certificate Authentication)"
 msgstr ""
 "Pot do CACcertifikata LDAP (potrebna samo za preverjanje pristnosti "
 "odjemalčevega certifikata)"
 
-#: cps/templates/config_edit.html:307
+#: cps/templates/config_edit.html:308
 msgid ""
 "LDAP Certificate Path (Only needed for Client Certificate Authentication)"
 msgstr ""
 "Pot potrdila LDAP (potrebna samo za preverjanje pristnosti potrdila "
 "odjemalca)"
 
-#: cps/templates/config_edit.html:314
+#: cps/templates/config_edit.html:315
 msgid "LDAP Keyfile Path (Only needed for Client Certificate Authentication)"
 msgstr ""
 "Pot do datoteke ključa LDAP (potrebna samo za preverjanje pristnosti "
 "odjemalčevega potrdila)"
 
-#: cps/templates/config_edit.html:323
+#: cps/templates/config_edit.html:324
 msgid "LDAP Authentication"
 msgstr "Preverjanje pristnosti LDAP"
 
-#: cps/templates/config_edit.html:325
+#: cps/templates/config_edit.html:326
 msgid "Anonymous"
 msgstr "Anonimno"
 
-#: cps/templates/config_edit.html:326
+#: cps/templates/config_edit.html:327
 msgid "Unauthenticated"
 msgstr "Neavtentificirano"
 
-#: cps/templates/config_edit.html:327
+#: cps/templates/config_edit.html:328
 msgid "Simple"
 msgstr "Enostavno"
 
-#: cps/templates/config_edit.html:332
+#: cps/templates/config_edit.html:333
 msgid "LDAP Administrator Username"
 msgstr "Uporabniško ime skrbnika LDAP"
 
-#: cps/templates/config_edit.html:338
+#: cps/templates/config_edit.html:339
 msgid "LDAP Administrator Password"
 msgstr "Geslo skrbnika LDAP"
 
-#: cps/templates/config_edit.html:343
+#: cps/templates/config_edit.html:344
 msgid "LDAP Distinguished Name (DN)"
 msgstr "Razpoznavno ime (DN) LDAP"
 
-#: cps/templates/config_edit.html:347
+#: cps/templates/config_edit.html:348
 msgid "LDAP User Object Filter"
 msgstr "Filtriranje predmeta uporabnika LDAP"
 
-#: cps/templates/config_edit.html:352
+#: cps/templates/config_edit.html:353
 msgid "LDAP Server is OpenLDAP?"
 msgstr "Strežnik LDAP je OpenLDAP?"
 
-#: cps/templates/config_edit.html:356
+#: cps/templates/config_edit.html:357
 msgid "Auto-create users from LDAP"
 msgstr "Samodejno ustvari uporabnike iz LDAP"
 
-#: cps/templates/config_edit.html:357
+#: cps/templates/config_edit.html:358
 msgid ""
 "Automatically create user accounts when LDAP authentication succeeds for new "
 "users. Recommended for enterprise environments."
@@ -3938,43 +3948,43 @@ msgstr ""
 "Samodejno ustvari uporabniške račune, ko je avtentikacija LDAP za nove "
 "uporabnike uspešna. Priporočljivo za podjetniška okolja."
 
-#: cps/templates/config_edit.html:359
+#: cps/templates/config_edit.html:360
 msgid "Following Settings are Needed For User Import"
 msgstr "Za uvoz uporabnika so potrebne naslednje nastavitve"
 
-#: cps/templates/config_edit.html:361
+#: cps/templates/config_edit.html:362
 msgid "LDAP Group Object Filter"
 msgstr "Filter objektov skupine LDAP"
 
-#: cps/templates/config_edit.html:365
+#: cps/templates/config_edit.html:366
 msgid "LDAP Group Name"
 msgstr "Ime skupine LDAP"
 
-#: cps/templates/config_edit.html:369
+#: cps/templates/config_edit.html:370
 msgid "LDAP Group Members Field"
 msgstr "Polje člani skupine LDAP"
 
-#: cps/templates/config_edit.html:373
+#: cps/templates/config_edit.html:374
 msgid "LDAP Member User Filter Detection"
 msgstr "Zaznavanje filtrov za uporabnike članov LDAP"
 
-#: cps/templates/config_edit.html:375
+#: cps/templates/config_edit.html:376
 msgid "Autodetect"
 msgstr "Samodejno zaznavanje"
 
-#: cps/templates/config_edit.html:376
+#: cps/templates/config_edit.html:377
 msgid "Custom Filter"
 msgstr "Filter po meri"
 
-#: cps/templates/config_edit.html:381
+#: cps/templates/config_edit.html:382
 msgid "LDAP Member User Filter"
 msgstr "Filtriranje uporabnikov članov LDAP"
 
-#: cps/templates/config_edit.html:391
+#: cps/templates/config_edit.html:392
 msgid "Important:"
 msgstr "Pomembno:"
 
-#: cps/templates/config_edit.html:391
+#: cps/templates/config_edit.html:392
 msgid ""
 "OAuth authentication requires this server to be accessed via HTTPS. If you "
 "are using HTTP, login will fail."
@@ -3982,28 +3992,28 @@ msgstr ""
 "Avtentikacija OAuth zahteva dostop do strežnika preko HTTPS. Če uporabljate "
 "HTTP, prijava ne bo uspela."
 
-#: cps/templates/config_edit.html:394
+#: cps/templates/config_edit.html:395
 msgid "Generic OAuth Provider"
 msgstr "Splošni ponudnik OAuth"
 
-#: cps/templates/config_edit.html:398
+#: cps/templates/config_edit.html:399
 msgid "OAuth Metadata URL (for auto-discovery)"
 msgstr "URL metapodatkov OAuth (za samodejno odkrivanje)"
 
-#: cps/templates/config_edit.html:402
+#: cps/templates/config_edit.html:403
 #, fuzzy
 msgid "Test Metadata"
 msgstr "Pridobivanje metapodatkov"
 
-#: cps/templates/config_edit.html:405
+#: cps/templates/config_edit.html:406
 msgid "Leave empty to use manual configuration below"
 msgstr "Pustite prazno za ročno konfiguracijo spodaj"
 
-#: cps/templates/config_edit.html:411
+#: cps/templates/config_edit.html:412
 msgid "Use Manual Endpoint URLs (override auto-discovery)"
 msgstr "Uporabi ročne URL-je končnih točk (povozi samodejno odkrivanje)"
 
-#: cps/templates/config_edit.html:412
+#: cps/templates/config_edit.html:413
 msgid ""
 "Check this to manually configure individual OAuth endpoints instead of using "
 "auto-discovery"
@@ -4011,47 +4021,47 @@ msgstr ""
 "Označite to za ročno nastavitev posameznih končnih točk OAuth namesto "
 "uporabe samodejnega odkrivanja"
 
-#: cps/templates/config_edit.html:417
+#: cps/templates/config_edit.html:418
 #, fuzzy
 msgid "Manual Endpoint Configuration"
 msgstr "Urejanje nastavitev uporabniškega vmesnika"
 
-#: cps/templates/config_edit.html:420
+#: cps/templates/config_edit.html:421
 msgid "OAuth Base URL"
 msgstr "Osnovni URL OAuth"
 
-#: cps/templates/config_edit.html:425
+#: cps/templates/config_edit.html:426
 msgid "Authorization Endpoint"
 msgstr "Končna točka za avtorizacijo"
 
-#: cps/templates/config_edit.html:430
+#: cps/templates/config_edit.html:431
 #, fuzzy
 msgid "Token Endpoint"
 msgstr "ne najdem žetona"
 
-#: cps/templates/config_edit.html:435
+#: cps/templates/config_edit.html:436
 msgid "UserInfo Endpoint"
 msgstr "Končna točka UserInfo"
 
-#: cps/templates/config_edit.html:443
+#: cps/templates/config_edit.html:444
 #, fuzzy
 msgid "Test Connection"
 msgstr "Napaka povezave"
 
-#: cps/templates/config_edit.html:452
+#: cps/templates/config_edit.html:453
 #, fuzzy
 msgid "OAuth Scopes"
 msgstr "Nastavitve OAuth"
 
-#: cps/templates/config_edit.html:454
+#: cps/templates/config_edit.html:455
 msgid "Space-separated list of OAuth scopes"
 msgstr "Seznam obsegov (scopes) OAuth, ločenih s presledkom"
 
-#: cps/templates/config_edit.html:459
+#: cps/templates/config_edit.html:460
 msgid "OAuth Redirect Host"
 msgstr "Gostitelj za preusmeritev OAuth"
 
-#: cps/templates/config_edit.html:462
+#: cps/templates/config_edit.html:463
 msgid ""
 "Set a consistent hostname for OAuth redirects to prevent \"invalid redirect "
 "URI\" errors. Include protocol (https://). Leave empty to use automatic "
@@ -4061,7 +4071,7 @@ msgstr ""
 "napake \"neveljaven preusmeritveni URI\". Vključite protokol (https://). "
 "Pustite prazno za samodejno zaznavanje."
 
-#: cps/templates/config_edit.html:464
+#: cps/templates/config_edit.html:465
 msgid ""
 "Required if: accessing via multiple hostnames, behind reverse proxy, or "
 "getting \"invalid redirect URI\" errors."
@@ -4069,44 +4079,44 @@ msgstr ""
 "Zahtevano, če: dostopate preko več imen gostiteljev, ste za povratnim "
 "proksijem ali prejemate napake \"neveljaven preusmeritveni URI\"."
 
-#: cps/templates/config_edit.html:469
+#: cps/templates/config_edit.html:470
 #, fuzzy
 msgid "OAuth Client Id"
 msgstr "%(provider)s Id odjemalca OAuth"
 
-#: cps/templates/config_edit.html:473
+#: cps/templates/config_edit.html:474
 #, fuzzy
 msgid "OAuth Client Secret"
 msgstr "%(provider)s skrivnost odjemalca OAuth"
 
-#: cps/templates/config_edit.html:478
+#: cps/templates/config_edit.html:479
 #, fuzzy
 msgid "Field Mapping Configuration"
 msgstr "Prikaži nastavitve"
 
-#: cps/templates/config_edit.html:480
+#: cps/templates/config_edit.html:481
 #, fuzzy
 msgid "Username Field"
 msgstr "Uporabniško ime"
 
-#: cps/templates/config_edit.html:482
+#: cps/templates/config_edit.html:483
 msgid "JWT field to extract username from"
 msgstr "Polje JWT za pridobitev uporabniškega imena"
 
-#: cps/templates/config_edit.html:485
+#: cps/templates/config_edit.html:486
 #, fuzzy
 msgid "Email Field"
 msgstr "Storitev e-pošte"
 
-#: cps/templates/config_edit.html:487
+#: cps/templates/config_edit.html:488
 msgid "JWT field to extract email from"
 msgstr "Polje JWT za pridobitev e-pošte"
 
-#: cps/templates/config_edit.html:490
+#: cps/templates/config_edit.html:491
 msgid "OAuth group for Admin"
 msgstr "OAuth skupina za skrbnika"
 
-#: cps/templates/config_edit.html:492
+#: cps/templates/config_edit.html:493
 msgid ""
 "Name of the OAuth group that grants admin privileges. Leave empty to disable "
 "group-based admin management, or use the global setting in Security Settings "
@@ -4116,55 +4126,55 @@ msgstr ""
 "onemogočanje upravljanja skrbnikov na podlagi skupin ali uporabite splošno "
 "nastavitev v Varnostnih nastavitvah za večji nadzor."
 
-#: cps/templates/config_edit.html:495
+#: cps/templates/config_edit.html:496
 msgid "Login Button Text"
 msgstr "Besedilo gumba za prijavo"
 
-#: cps/templates/config_edit.html:501
+#: cps/templates/config_edit.html:502
 #, python-format
 msgid "Obtain %(provider)s OAuth Credential"
 msgstr "Pridobitev %(provider)s poverilnice OAuth"
 
-#: cps/templates/config_edit.html:504
+#: cps/templates/config_edit.html:505
 #, python-format
 msgid "%(provider)s OAuth Client Id"
 msgstr "%(provider)s Id odjemalca OAuth"
 
-#: cps/templates/config_edit.html:508
+#: cps/templates/config_edit.html:509
 #, python-format
 msgid "%(provider)s OAuth Client Secret"
 msgstr "%(provider)s skrivnost odjemalca OAuth"
 
-#: cps/templates/config_edit.html:519
+#: cps/templates/config_edit.html:520
 msgid "External binaries"
 msgstr "Zunanje binarne datoteke"
 
-#: cps/templates/config_edit.html:520
+#: cps/templates/config_edit.html:521
 msgid "Path to Calibre Binaries"
 msgstr "Pot do binarnih datotek Calibre"
 
-#: cps/templates/config_edit.html:528
+#: cps/templates/config_edit.html:529
 #, fuzzy
 msgid "Calibre E-Book Converter Settings"
 msgstr "Nastavitve pretvornika e-knjig Calibre"
 
-#: cps/templates/config_edit.html:531
+#: cps/templates/config_edit.html:532
 msgid "Path to Kepubify E-Book Converter"
 msgstr "Pot do Kepubify pretvornika e-knjig"
 
-#: cps/templates/config_edit.html:539
+#: cps/templates/config_edit.html:540
 msgid "Location of Unrar binary"
 msgstr "Lokacija binarnega programa Unrar"
 
-#: cps/templates/config_edit.html:550
+#: cps/templates/config_edit.html:551
 msgid "Security Settings"
 msgstr "Varnostne nastavitve"
 
-#: cps/templates/config_edit.html:553
+#: cps/templates/config_edit.html:554
 msgid "Disable Standard Login (Username/Password)"
 msgstr "Onemogoči standardno prijavo (uporabniško ime/geslo)"
 
-#: cps/templates/config_edit.html:554
+#: cps/templates/config_edit.html:555
 msgid ""
 "Hides the standard login form. Users must log in via OAuth or LDAP. Ensure "
 "you have a working alternative login method before enabling."
@@ -4173,11 +4183,11 @@ msgstr ""
 "OAuth ali LDAP. Preden to omogočite, se prepričajte, da imate delujoč "
 "alternativni način prijave."
 
-#: cps/templates/config_edit.html:558
+#: cps/templates/config_edit.html:559
 msgid "Enable OAuth Group-Based Admin Role Management"
 msgstr "Omogoči upravljanje skrbniških vlog na podlagi skupin OAuth"
 
-#: cps/templates/config_edit.html:559
+#: cps/templates/config_edit.html:560
 msgid ""
 "When enabled, admin privileges are automatically granted or revoked based on "
 "OAuth group membership. Disable this to manually manage admin roles in the "
@@ -4189,61 +4199,61 @@ msgstr ""
 "skrbniških vlog na plošči za upravljanje uporabnikov, s čimer preprečite, da "
 "bi prijave preko OAuth povozile lokalne dodelitve vlog."
 
-#: cps/templates/config_edit.html:563
+#: cps/templates/config_edit.html:564
 msgid "Limit failed login attempts"
 msgstr "Omejitev neuspelih poskusov prijave"
 
-#: cps/templates/config_edit.html:567
+#: cps/templates/config_edit.html:568
 msgid "Configure Backend for Limiter"
 msgstr "Nastavitev zalednega sistema za omejitve"
 
-#: cps/templates/config_edit.html:571
+#: cps/templates/config_edit.html:572
 msgid "Options for Limiter Backend"
 msgstr "Možnosti za omejitev zalednega sistema"
 
-#: cps/templates/config_edit.html:577
+#: cps/templates/config_edit.html:578
 msgid "Check if file extensions matches file content on upload"
 msgstr ""
 "Preveri ali se končnice datotek ujemajo z vsebino datoteke pri nalaganju"
 
-#: cps/templates/config_edit.html:580
+#: cps/templates/config_edit.html:581
 #, fuzzy
 msgid "Session protection"
 msgstr "Zaščita seje"
 
-#: cps/templates/config_edit.html:582
+#: cps/templates/config_edit.html:583
 msgid "Basic"
 msgstr "Osnovna"
 
-#: cps/templates/config_edit.html:583
+#: cps/templates/config_edit.html:584
 msgid "Strong"
 msgstr "Močna"
 
-#: cps/templates/config_edit.html:588
+#: cps/templates/config_edit.html:589
 msgid "User Password policy"
 msgstr "Pravilnik o geslih uporabnikov"
 
-#: cps/templates/config_edit.html:592
+#: cps/templates/config_edit.html:593
 msgid "Minimum password length"
 msgstr "Najmanjša dolžina gesla"
 
-#: cps/templates/config_edit.html:597
+#: cps/templates/config_edit.html:598
 msgid "Enforce number"
 msgstr "Obvezna uporaba številk"
 
-#: cps/templates/config_edit.html:601
+#: cps/templates/config_edit.html:602
 msgid "Enforce lowercase characters"
 msgstr "Obvezna uporaba malih črk"
 
-#: cps/templates/config_edit.html:605
+#: cps/templates/config_edit.html:606
 msgid "Enforce uppercase characters"
 msgstr "Obvezna uporaba velikih črk"
 
-#: cps/templates/config_edit.html:609
+#: cps/templates/config_edit.html:610
 msgid "Enforce characters (needed For Chinese/Japanese/Korean Characters)"
 msgstr "Obvezna uporaba znakov (potrebno za kitajske/japonske/korejske znake)"
 
-#: cps/templates/config_edit.html:613
+#: cps/templates/config_edit.html:614
 msgid "Enforce special characters"
 msgstr "Obvezna uporaba posebnih znakov"
 
@@ -7507,6 +7517,9 @@ msgstr "Usklajevanje izbrane police s Kobo"
 #: cps/templates/user_table.html:157
 msgid "Show Read/Unread Section"
 msgstr "Prikaži razdelek Prebrano/neprebrano"
+
+#~ msgid "Port"
+#~ msgstr "Vrata"
 
 #~ msgid "Scanning for duplicates"
 #~ msgstr "Iskanje dvojnikov"

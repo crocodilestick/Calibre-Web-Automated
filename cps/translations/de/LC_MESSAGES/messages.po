@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 12:34+0000\n"
+"POT-Creation-Date: 2026-08-06 13:50+0000\n"
 "PO-Revision-Date: 2026-07-20 20:00+0000\n"
 "Last-Translator: Krux86Language-Team: German\n"
 "Language: de\n"
@@ -110,19 +110,19 @@ msgstr "Keine Bücher mit Covern zum Verarbeiten gefunden."
 msgid "Failed to start thumbnail refresh: {}"
 msgstr "Vorschaubild-Aktualisierung fehlgeschlagen: {}"
 
-#: cps/admin.py:538
+#: cps/admin.py:539
 msgid "Admin page"
 msgstr "Admin Seite"
 
-#: cps/admin.py:558
+#: cps/admin.py:560
 msgid "Basic Configuration"
 msgstr "Basiskonfiguration"
 
-#: cps/admin.py:596
+#: cps/admin.py:598
 msgid "UI Configuration"
 msgstr "Ansichtseinstellungen"
 
-#: cps/admin.py:620 cps/admin.py:1302 cps/db.py:985 cps/search.py:153
+#: cps/admin.py:622 cps/admin.py:1304 cps/db.py:985 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -130,128 +130,128 @@ msgstr ""
 "Benutzerdefinierte Spalte Nr. %(column)d ist nicht in Calibre Datenbank "
 "vorhanden"
 
-#: cps/admin.py:638 cps/templates/admin.html:55
+#: cps/admin.py:640 cps/templates/admin.html:55
 msgid "Edit Users"
 msgstr "Benutzer bearbeiten"
 
-#: cps/admin.py:682 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:684 cps/opds.py:798 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Alle"
 
-#: cps/admin.py:709 cps/admin.py:1893
+#: cps/admin.py:711 cps/admin.py:1895
 msgid "User not found"
 msgstr "Benutzer nicht gefunden"
 
-#: cps/admin.py:723
+#: cps/admin.py:725
 #, python-brace-format
 msgid "{} users deleted successfully"
 msgstr "{} Benutzer erfolgreich gelöscht"
 
-#: cps/admin.py:746 cps/templates/config_view_edit.html:169
+#: cps/admin.py:748 cps/templates/config_view_edit.html:169
 #: cps/templates/user_edit.html:263 cps/templates/user_edit.html:285
 #: cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "Zeige alle"
 
-#: cps/admin.py:767 cps/admin.py:773
+#: cps/admin.py:769 cps/admin.py:775
 msgid "Malformed request"
 msgstr "Fehlerhafte Anfrage"
 
-#: cps/admin.py:785 cps/admin.py:2786
+#: cps/admin.py:787 cps/admin.py:2791
 msgid "Guest Name can't be changed"
 msgstr "Name 'Guest' kann nicht geändert werden"
 
-#: cps/admin.py:799
+#: cps/admin.py:801
 msgid "Guest can't have this role"
 msgstr "Benutzer 'Guest' darf diese Rolle nicht besitzen"
 
-#: cps/admin.py:811 cps/admin.py:2611
+#: cps/admin.py:813 cps/admin.py:2616
 msgid "No admin user remaining, can't remove admin role"
 msgstr ""
 "Kein verbleibender Admin-Benutzer, Admin-Rolle kann nicht entfernt werden"
 
-#: cps/admin.py:815 cps/admin.py:829
+#: cps/admin.py:817 cps/admin.py:831
 msgid "Value has to be true or false"
 msgstr "Wert muss true oder false sein"
 
-#: cps/admin.py:817
+#: cps/admin.py:819
 msgid "Invalid role"
 msgstr "Ungültige Rolle"
 
-#: cps/admin.py:821
+#: cps/admin.py:823
 msgid "Guest can't have this view"
 msgstr "Benutzer 'Guest' darf diese Ansicht nicht besitzen"
 
-#: cps/admin.py:831
+#: cps/admin.py:833
 msgid "Invalid view"
 msgstr "Ungültige Ansicht"
 
-#: cps/admin.py:834
+#: cps/admin.py:836
 msgid "Guest's Locale is determined automatically and can't be set"
 msgstr ""
 "Sprache von 'Guest' wird automatisch bestimmt und kann nicht eingestellt "
 "werden"
 
-#: cps/admin.py:838
+#: cps/admin.py:840
 msgid "No Valid Locale Given"
 msgstr "Keine gültige Sprache gewählt"
 
-#: cps/admin.py:849
+#: cps/admin.py:851
 msgid "No Valid Book Language Given"
 msgstr "Keine gültige Buchsprache gewählt"
 
-#: cps/admin.py:851 cps/editbooks.py:596
+#: cps/admin.py:853 cps/editbooks.py:596
 msgid "Parameter not found"
 msgstr "Parameter wurde nicht gefunden"
 
-#: cps/admin.py:888
+#: cps/admin.py:890
 msgid "Invalid Read Column"
 msgstr "Ungültige Gelesen Spalte"
 
-#: cps/admin.py:894
+#: cps/admin.py:896
 msgid "Invalid Restricted Column"
 msgstr "Ungültiger Spaltenname für Einschränkung"
 
-#: cps/admin.py:914 cps/admin.py:2459
+#: cps/admin.py:916 cps/admin.py:2464
 msgid "Calibre-Web Automated configuration updated"
 msgstr "Konfiguration von Calibre-Web Automated wurde aktualisiert"
 
-#: cps/admin.py:926
+#: cps/admin.py:928
 msgid "Do you really want to delete the Kobo Token?"
 msgstr "Möchten Sie den Kobo Token wirklich löschen?"
 
-#: cps/admin.py:928
+#: cps/admin.py:930
 msgid "Do you really want to delete this domain?"
 msgstr "Möchten Sie diese Domain wirklich löschen?"
 
-#: cps/admin.py:930
+#: cps/admin.py:932
 msgid "Do you really want to delete this user?"
 msgstr "Möchten Sie diesen Benutzer wirklich löschen?"
 
-#: cps/admin.py:932
+#: cps/admin.py:934
 msgid "Are you sure you want to delete this shelf?"
 msgstr "Möchten Sie dieses Regal wirklich löschen?"
 
-#: cps/admin.py:934
+#: cps/admin.py:936
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr ""
 "Möchten Sie die Anzeigesprache der ausgewählten Benutzer wirklich ändern?"
 
-#: cps/admin.py:936
+#: cps/admin.py:938
 msgid ""
 "Are you sure you want to change visible book languages for selected user(s)?"
 msgstr ""
 "Möchten Sie die Büchersprachen für die ausgewählten Benutzer wirklich ändern?"
 
-#: cps/admin.py:938
+#: cps/admin.py:940
 msgid ""
 "Are you sure you want to change the selected role for the selected user(s)?"
 msgstr ""
 "Möchten Sie die ausgewählte Rolle für die ausgewählten Benutzer wirklich "
 "verändern?"
 
-#: cps/admin.py:940
+#: cps/admin.py:942
 msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
 "user(s)?"
@@ -259,7 +259,7 @@ msgstr ""
 "Möchten Sie die ausgewählten Sichtbarkeitsbeschränkungen der ausgewählten "
 "Benutzer wirklich ändern?"
 
-#: cps/admin.py:942
+#: cps/admin.py:944
 msgid ""
 "Are you sure you want to change the selected visibility restrictions for the "
 "selected user(s)?"
@@ -267,18 +267,18 @@ msgstr ""
 "Möchten Sie die Sichtbarkeiten für die ausgewählten Benutzer wirklich "
 "verändern?"
 
-#: cps/admin.py:945
+#: cps/admin.py:947
 msgid ""
 "Are you sure you want to change shelf sync behavior for the selected user(s)?"
 msgstr ""
 "Möchten Sie die Synchronisation von Regalen für die ausgewählten Benutzer "
 "wirklich verändern?"
 
-#: cps/admin.py:947
+#: cps/admin.py:949
 msgid "Are you sure you want to change Calibre library location?"
 msgstr "Ort der Calibre Datenbank editieren?"
 
-#: cps/admin.py:949
+#: cps/admin.py:951
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
 "Thumbnails, this may take a while?"
@@ -286,7 +286,7 @@ msgstr ""
 "Calibre-Web Automated wird nach neuen Covern suchen und Cover-"
 "Miniaturansichten aktualisieren, dies kann eine Weile dauern?"
 
-#: cps/admin.py:952
+#: cps/admin.py:954
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
 "a full sync with your Kobo Reader?"
@@ -294,104 +294,104 @@ msgstr ""
 "Möchten Sie die Synchronisationsdatenbank von Calibre-Web Automated wirklich "
 "löschen, um eine komplette Synchronisation zu erzwingen?"
 
-#: cps/admin.py:1191 cps/admin.py:1197 cps/admin.py:1207 cps/admin.py:1217
+#: cps/admin.py:1193 cps/admin.py:1199 cps/admin.py:1209 cps/admin.py:1219
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
 #: cps/templates/user_table.html:58
 msgid "Deny"
 msgstr "Verbieten"
 
-#: cps/admin.py:1193 cps/admin.py:1199 cps/admin.py:1209 cps/admin.py:1219
+#: cps/admin.py:1195 cps/admin.py:1201 cps/admin.py:1211 cps/admin.py:1221
 #: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44
 #: cps/templates/user_table.html:61
 msgid "Allow"
 msgstr "Erlauben"
 
-#: cps/admin.py:1252
+#: cps/admin.py:1254
 #, python-brace-format
 msgid "{} sync entries deleted"
 msgstr "{} Synchronisationseinträge gelöscht"
 
-#: cps/admin.py:1293
+#: cps/admin.py:1295
 msgid "Tag not found"
 msgstr "Tag nicht gefunden"
 
-#: cps/admin.py:1311
+#: cps/admin.py:1313
 msgid "Invalid Action"
 msgstr "Ungültige Aktion"
 
-#: cps/admin.py:1438
+#: cps/admin.py:1440
 msgid "client_secrets.json Is Not Configured For Web Application"
 msgstr "client_secrets.json ist nicht für Web Anwendungen konfiguriert"
 
-#: cps/admin.py:1577
+#: cps/admin.py:1579
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "Logdatei Pfad ist ungültig, bitte einen gültigen Pfad eingeben"
 
-#: cps/admin.py:1583
+#: cps/admin.py:1585
 msgid "Access Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "Zugriffs-Logdatei Pfad ist ungültig, bitte einen gültigen Pfad angeben"
 
-#: cps/admin.py:1618
+#: cps/admin.py:1620
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
 msgstr ""
 "Bitte einen LDAP-Server, -Port, -DN und -Benutzerobjektidentifikator eingeben"
 
-#: cps/admin.py:1624
+#: cps/admin.py:1626
 msgid "Please Enter a LDAP Service Account and Password"
 msgstr "Bitte einen LDAP-Service-Account und Passwort eingeben"
 
-#: cps/admin.py:1627
+#: cps/admin.py:1629
 msgid "Please Enter a LDAP Service Account"
 msgstr "Bitte einen LDAP-Service-Account eingeben"
 
-#: cps/admin.py:1632
+#: cps/admin.py:1634
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP-Gruppenobjektfilter benötigt genau eine \"%s\" Formatkennung"
 
-#: cps/admin.py:1634
+#: cps/admin.py:1636
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP-Gruppenobjektfilter hat ungleiche Anzahl von Klammern"
 
-#: cps/admin.py:1638
+#: cps/admin.py:1640
 #, python-format
 msgid "LDAP User Object Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP-Benutzerobjektfilter benötigt genau eine \"%s\" Formatkennung"
 
-#: cps/admin.py:1640
+#: cps/admin.py:1642
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP-Benutzerobjektfilter hat eine ungleiche Anzahl von Klammern"
 
-#: cps/admin.py:1647
+#: cps/admin.py:1649
 #, python-format
 msgid "LDAP Member User Filter needs to Have One \"%s\" Format Identifier"
 msgstr "Der LDAP-Mitgliederfilter benötigt genau eine \"%s\" Formatkennung"
 
-#: cps/admin.py:1649
+#: cps/admin.py:1651
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"
 msgstr "LDAP-Mitgliederfilter hat eine ungleiche Anzahl von Klammern"
 
-#: cps/admin.py:1656
+#: cps/admin.py:1658
 msgid ""
 "LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter "
 "Correct Path"
 msgstr ""
 "LDAP-CA-Zertifikat, -Zertifikat oder -Schlüsseldatei ist kein gültiger Pfad"
 
-#: cps/admin.py:1689 cps/templates/admin.html:57
+#: cps/admin.py:1691 cps/templates/admin.html:57
 msgid "Add New User"
 msgstr "Neuen Benutzer hinzufügen"
 
-#: cps/admin.py:1704 cps/templates/admin.html:105
+#: cps/admin.py:1706 cps/templates/admin.html:105
 msgid "Edit Email Server Settings"
 msgstr "Einstellungen für den E-Mail-Server"
 
-#: cps/admin.py:1723
+#: cps/admin.py:1725
 msgid "Success! Gmail Account Verified."
 msgstr "Erfolg! G-Mail-Konto verifiziert."
 
-#: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
-#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1046
+#: cps/admin.py:1745 cps/admin.py:1748 cps/admin.py:2234 cps/admin.py:2448
+#: cps/admin.py:2563 cps/admin.py:2834 cps/editbooks.py:1046
 #: cps/editbooks.py:1830 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2678
@@ -399,7 +399,7 @@ msgstr "Erfolg! G-Mail-Konto verifiziert."
 msgid "Oops! Database Error: %(error)s."
 msgstr "Ups! Datenbankfehler: %(error)s."
 
-#: cps/admin.py:1753
+#: cps/admin.py:1755
 #, python-format
 msgid ""
 "Test e-mail queued for sending to %(email)s, please check Tasks for result"
@@ -407,173 +407,173 @@ msgstr ""
 "Test-E-Mail an %(email)s wurde zum Senden in die Warteschlange eingereiht, "
 "für das Ergebnis bitte Aufgaben überprüfen"
 
-#: cps/admin.py:1756
+#: cps/admin.py:1758
 #, python-format
 msgid "There was an error sending the Test e-mail: %(res)s"
 msgstr "Es trat ein Fehler beim Versenden der Test-E-Mail auf: %(res)s"
 
-#: cps/admin.py:1758
+#: cps/admin.py:1760
 msgid "Please configure your e-mail address first..."
 msgstr "Bitte zuerst E-Mail-Adresse konfigurieren..."
 
-#: cps/admin.py:1760
+#: cps/admin.py:1762
 msgid "Email Server Settings updated"
 msgstr "Einstellungen des E-Mail-Servers aktualisiert"
 
-#: cps/admin.py:1783 cps/templates/admin.html:201
+#: cps/admin.py:1785 cps/templates/admin.html:201
 msgid "Edit Scheduled Tasks Settings"
 msgstr "Einstellungen für Geplante Aufgaben"
 
-#: cps/admin.py:1795
+#: cps/admin.py:1797
 msgid "Invalid start time for task specified"
 msgstr "Ungültigen Startzeitpunkt für Aufgaben spezifiziert"
 
-#: cps/admin.py:1800
+#: cps/admin.py:1802
 msgid "Invalid duration for task specified"
 msgstr "Ungültige Laufzeit für Aufgaben spezifiziert"
 
-#: cps/admin.py:1810
+#: cps/admin.py:1812
 msgid "Scheduled tasks settings updated"
 msgstr "Einstellungen für geplante Aufgaben aktualisiert"
 
-#: cps/admin.py:1820 cps/admin.py:1964 cps/admin.py:2825 cps/web.py:2109
+#: cps/admin.py:1822 cps/admin.py:1966 cps/admin.py:2830 cps/web.py:2109
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr ""
 "Ups! Es ist ein unbekannter Fehler aufgetreten. Bitte später erneut "
 "versuchen."
 
-#: cps/admin.py:1824
+#: cps/admin.py:1826
 msgid "Settings DB is not Writeable"
 msgstr "Einstellungsdatenbank ist nicht schreibbar"
 
-#: cps/admin.py:1843 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
+#: cps/admin.py:1845 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
 msgid "title"
 msgstr "Titel"
 
-#: cps/admin.py:1949 cps/admin.py:2817
+#: cps/admin.py:1951 cps/admin.py:2822
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "Benutzer %(nick)s bearbeiten"
 
-#: cps/admin.py:1961
+#: cps/admin.py:1963
 #, python-format
 msgid "Success! Password for user %(user)s reset"
 msgstr "Erfolg! Passwort für Benutzer %(user)s wurde zurückgesetzt"
 
-#: cps/admin.py:1967
+#: cps/admin.py:1969
 msgid "Oops! Please configure the SMTP mail settings."
 msgstr "Ups! Bitte die SMTP-Einstellungen des E-Mail-Server konfigurieren."
 
-#: cps/admin.py:1978
+#: cps/admin.py:1980
 msgid "Logfile viewer"
 msgstr "Logdatei Anzeige"
 
-#: cps/admin.py:2044
+#: cps/admin.py:2046
 msgid "Requesting update package"
 msgstr "Fordere Aktualisierungspaket an"
 
-#: cps/admin.py:2045
+#: cps/admin.py:2047
 msgid "Downloading update package"
 msgstr "Lade Update herunter"
 
-#: cps/admin.py:2046
+#: cps/admin.py:2048
 msgid "Unzipping update package"
 msgstr "Entpacke Aktualisierungspaket"
 
-#: cps/admin.py:2047
+#: cps/admin.py:2049
 msgid "Replacing files"
 msgstr "Ersetze Dateien"
 
-#: cps/admin.py:2048
+#: cps/admin.py:2050
 msgid "Database connections are closed"
 msgstr "Schließe Datenbankverbindungen"
 
-#: cps/admin.py:2049
+#: cps/admin.py:2051
 msgid "Stopping server"
 msgstr "Stoppe den Server"
 
-#: cps/admin.py:2050
+#: cps/admin.py:2052
 msgid "Update finished, please press okay and reload page"
 msgstr ""
 "Aktualisierung abgeschlossen, bitte okay drücken und die Seite neu laden"
 
-#: cps/admin.py:2051 cps/admin.py:2052 cps/admin.py:2053 cps/admin.py:2054
-#: cps/admin.py:2055 cps/admin.py:2056
+#: cps/admin.py:2053 cps/admin.py:2054 cps/admin.py:2055 cps/admin.py:2056
+#: cps/admin.py:2057 cps/admin.py:2058
 msgid "Update failed:"
 msgstr "Aktualisierung fehlgeschlagen:"
 
-#: cps/admin.py:2051 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
+#: cps/admin.py:2053 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
 msgid "HTTP Error"
 msgstr "HTTP Fehler"
 
-#: cps/admin.py:2052 cps/updater.py:396 cps/updater.py:633
+#: cps/admin.py:2054 cps/updater.py:396 cps/updater.py:633
 msgid "Connection error"
 msgstr "Verbindungsfehler"
 
-#: cps/admin.py:2053 cps/updater.py:398 cps/updater.py:635
+#: cps/admin.py:2055 cps/updater.py:398 cps/updater.py:635
 msgid "Timeout while establishing connection"
 msgstr "Zeitüberschreitung beim Verbindungsaufbau"
 
-#: cps/admin.py:2054 cps/updater.py:400 cps/updater.py:637
+#: cps/admin.py:2056 cps/updater.py:400 cps/updater.py:637
 msgid "General error"
 msgstr "Allgemeiner Fehler"
 
-#: cps/admin.py:2055
+#: cps/admin.py:2057
 msgid "Update file could not be saved in temp dir"
 msgstr ""
 "Aktualisierungsdatei konnte nicht in temporärem Ordner gespeichert werden"
 
-#: cps/admin.py:2056
+#: cps/admin.py:2058
 msgid "Files could not be replaced during update"
 msgstr "Dateien konnten während des Updates nicht ausgetauscht werden"
 
-#: cps/admin.py:2080
+#: cps/admin.py:2082
 msgid "Failed to extract at least One LDAP User"
 msgstr "Mindestens ein LDAP Benutzer konnte nicht extrahiert werden"
 
-#: cps/admin.py:2125
+#: cps/admin.py:2127
 msgid "Failed to Create at Least One LDAP User"
 msgstr "Mindestens ein LDAP Benutzer konnte nicht erzeugt werden"
 
-#: cps/admin.py:2138
+#: cps/admin.py:2140
 #, python-format
 msgid "Error: %(ldaperror)s"
 msgstr "Fehler: %(ldaperror)s"
 
-#: cps/admin.py:2142
+#: cps/admin.py:2144
 msgid "Error: No user returned in response of LDAP server"
 msgstr "Fehler: Keine Benutzerinformationen von LDAP Server empfangen"
 
-#: cps/admin.py:2178
+#: cps/admin.py:2180
 msgid "At Least One LDAP User Not Found in Database"
 msgstr "Mindestens ein LDAP Benutzer wurde nicht in der Datenbank gefudnen"
 
-#: cps/admin.py:2180
+#: cps/admin.py:2182
 #, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{} Benutzer erfolgreich importiert"
 
-#: cps/admin.py:2244
+#: cps/admin.py:2246
 msgid "Books path not valid"
 msgstr "Bücherpfad ungültig"
 
-#: cps/admin.py:2251
+#: cps/admin.py:2253
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr "DB Pfad ist nicht gültig, bitte einen gültigen Pfad angeben"
 
-#: cps/admin.py:2279
+#: cps/admin.py:2281
 msgid "DB is not Writeable"
 msgstr "Datenbank ist nicht beschreibbar"
 
-#: cps/admin.py:2292
+#: cps/admin.py:2294
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "Schlüsseldatei ist ungültig, bitte einen gültigen Pfad angeben"
 
-#: cps/admin.py:2296
+#: cps/admin.py:2298
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr "Zertifikatsdatei ist ungültig, bitte einen gültigen Pfad angeben"
 
-#: cps/admin.py:2365
+#: cps/admin.py:2370
 msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
@@ -581,12 +581,12 @@ msgstr ""
 "Benutzer-Auto-Erstellung erfordert eine aktivierte Reverse-Proxy-"
 "Authentifizierung"
 
-#: cps/admin.py:2368
+#: cps/admin.py:2373
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
 "Benutzer-Auto-Erstellung erfordert einen gültigen Reverse-Proxy-Header-Namen"
 
-#: cps/admin.py:2387 cps/admin.py:2394
+#: cps/admin.py:2392 cps/admin.py:2399
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
@@ -594,7 +594,7 @@ msgstr ""
 "Ungültiges Format für OAuth-Redirect-Host. Bitte die vollständige URL mit "
 "Protokoll angeben (z. B. https://deine-domain.de)"
 
-#: cps/admin.py:2391
+#: cps/admin.py:2396
 msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
@@ -602,71 +602,71 @@ msgstr ""
 "OAuth-Redirect-Host sollte keinen Pfad enthalten. Nur die Basis-URL "
 "verwenden (z. B. https://deine-domain.de)"
 
-#: cps/admin.py:2426
+#: cps/admin.py:2431
 msgid "Password length has to be between 1 and 40"
 msgstr "Passwortlänge muss zwischen 1 und 40 Zeichen liegen"
 
-#: cps/admin.py:2486
+#: cps/admin.py:2491
 msgid "Database Settings updated"
 msgstr "Datenbankeinstellung aktualisiert"
 
-#: cps/admin.py:2494
+#: cps/admin.py:2499
 msgid "Database Configuration"
 msgstr "Datenbank-Konfiguration"
 
-#: cps/admin.py:2514 cps/web.py:2078
+#: cps/admin.py:2519 cps/web.py:2078
 msgid "Oops! Please complete all fields."
 msgstr "Ups! Bitte alle Felder ausfüllen."
 
-#: cps/admin.py:2523
+#: cps/admin.py:2528
 msgid "E-mail is not from valid domain"
 msgstr "E-Mail bezieht sich nicht auf eine gültige Domain"
 
-#: cps/admin.py:2531
+#: cps/admin.py:2536
 msgid "Add new user"
 msgstr "Neuen Benutzer hinzufügen"
 
-#: cps/admin.py:2548
+#: cps/admin.py:2553
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "Benutzer '%(user)s' angelegt"
 
-#: cps/admin.py:2554
+#: cps/admin.py:2559
 msgid "Oops! An account already exists for this Email. or name."
 msgstr ""
 "Ups! Es existiert bereits ein Account für diese E-Mail-Adresse oder diesen "
 "Benutzernamen."
 
-#: cps/admin.py:2584
+#: cps/admin.py:2589
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "Benutzer '%(nick)s' gelöscht"
 
-#: cps/admin.py:2587
+#: cps/admin.py:2592
 msgid "Can't delete Guest User"
 msgstr "Benutzer 'Guest' kann nicht gelöscht werden"
 
-#: cps/admin.py:2590
+#: cps/admin.py:2595
 msgid "No admin user remaining, can't delete user"
 msgstr "Kein verbleibender Admin-Benutzer, Benutzer kann nicht gelöscht werden"
 
-#: cps/admin.py:2780 cps/web.py:2413
+#: cps/admin.py:2785 cps/web.py:2413
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "E-Mail kann nicht leer sein und muss gültig sein"
 
-#: cps/admin.py:2821
+#: cps/admin.py:2826
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "Benutzer '%(nick)s' aktualisiert"
 
-#: cps/admin.py:2886
+#: cps/admin.py:2891
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr ""
 "Verbindung erfolgreich! OIDC-Discovery-Endpunkt ist erreichbar.%(endpoints)s"
 
-#: cps/admin.py:2891
+#: cps/admin.py:2896
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
@@ -674,12 +674,12 @@ msgstr ""
 "Verbindung fehlgeschlagen: OIDC-Discovery-Endpunkt nicht gefunden (404). "
 "Prüfen Sie, ob die Basis-URL korrekt ist."
 
-#: cps/admin.py:2893 cps/admin.py:2950
+#: cps/admin.py:2898 cps/admin.py:2955
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "Verbindung fehlgeschlagen: Server lieferte den Status-Code %(code)s"
 
-#: cps/admin.py:2895
+#: cps/admin.py:2900
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
@@ -687,14 +687,14 @@ msgstr ""
 "Verbindung fehlgeschlagen: Verbindung zum Server nicht möglich. Überprüfen "
 "Sie die URL und die Netzwerkverbindung."
 
-#: cps/admin.py:2897
+#: cps/admin.py:2902
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr ""
 "Verbindung Fehlgeschlagen: Zeitüberschreitung der Anfrage. Der Server könnte "
 "langsam oder unerreichbar sein."
 
-#: cps/admin.py:2899
+#: cps/admin.py:2904
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
@@ -702,12 +702,12 @@ msgstr ""
 "Verbindung fehlgeschlagen: Ungültiges JSON in der Antwort. Dies ist "
 "möglicherweise kein OIDC"
 
-#: cps/admin.py:2902
+#: cps/admin.py:2907
 #, python-format
 msgid "Connection failed: %(error)s"
 msgstr "Verbindungsfehler: %(error)s"
 
-#: cps/admin.py:2928
+#: cps/admin.py:2933
 #, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
@@ -716,27 +716,27 @@ msgstr ""
 "Den Metadaten fehlen erforderliche OIDC-Felder: %(fields)s. Dies ist "
 "möglicherweise kein gültiger OIDC-Metadaten-Endpunkt."
 
-#: cps/admin.py:2939
+#: cps/admin.py:2944
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr "Metadaten-URL ist gültig! %(count)s OAuth-Endpunkte gefunden."
 
-#: cps/admin.py:2941
+#: cps/admin.py:2946
 msgid " User info endpoint is available."
 msgstr " User-Info-Endpunkt ist verfügbar."
 
-#: cps/admin.py:2943
+#: cps/admin.py:2948
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 " Hinweis: User-Info-Endpunkt nicht gefunden – dies kann zu "
 "Authentifizierungsproblemen führen."
 
-#: cps/admin.py:2948
+#: cps/admin.py:2953
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr "Metadaten-URL nicht gefunden (404). Bitte URL auf Korrektheit prüfen."
 
-#: cps/admin.py:2952
+#: cps/admin.py:2957
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
@@ -744,50 +744,50 @@ msgstr ""
 "Verbindung fehlgeschlagen: Verbindung zur Metadaten-URL nicht möglich. "
 "Überprüfen Sie die URL und die Netzwerkverbindung."
 
-#: cps/admin.py:2954
+#: cps/admin.py:2959
 msgid "Connection failed: Request timed out."
 msgstr "Verbindung Fehlgeschlagen: Zeitüberschreitung der Anfrage."
 
-#: cps/admin.py:2956
+#: cps/admin.py:2961
 msgid "Connection failed: Invalid JSON in response."
 msgstr "Verbindung fehlgeschlagen: Ungültiges JSON in der Antwort."
 
-#: cps/admin.py:2959
+#: cps/admin.py:2964
 msgid "An unknown error occurred."
 msgstr "Ein unbekannter Fehler ist aufgetreten."
 
-#: cps/admin.py:2971
+#: cps/admin.py:2976
 msgid "Restore already in progress."
 msgstr "Wiederherstellung wird bereits ausgeführt."
 
-#: cps/admin.py:2975
+#: cps/admin.py:2980
 msgid "Restore failed: Calibre library path is not configured."
 msgstr ""
 "Wiederherstellung fehlgeschlagen: Calibre-Bibliothekspfad nicht konfiguriert."
 
-#: cps/admin.py:2980
+#: cps/admin.py:2985
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr ""
 "Wiederherstellung fehlgeschlagen: metadata.db unter %(path)s nicht gefunden"
 
-#: cps/admin.py:2985
+#: cps/admin.py:2990
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr "Wiederherstellung fehlgeschlagen: app.db unter %(path)s nicht gefunden"
 
-#: cps/admin.py:3057 cps/admin.py:3097
+#: cps/admin.py:3062 cps/admin.py:3102
 #, python-format
 msgid "Restore failed: %(err)s"
 msgstr "Wiederherstellung fehlgeschlagen: %(err)s"
 
-#: cps/admin.py:3074
+#: cps/admin.py:3079
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
 "Wiederherstellung abgeschlossen, aber app.db-Bereinigung fehlgeschlagen. "
 "Details siehe Protokoll."
 
-#: cps/admin.py:3093
+#: cps/admin.py:3098
 #, python-format
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
@@ -1134,7 +1134,7 @@ msgstr "Profilbild erfolgreich aktualisiert."
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA-Profilbildverwaltung (Laufende Arbeiten)"
 
-#: cps/db.py:1270 cps/templates/config_edit.html:294
+#: cps/db.py:1270 cps/templates/config_edit.html:295
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
@@ -2833,13 +2833,13 @@ msgstr "Ordner der Calibre Datenbank"
 msgid "Log Level"
 msgstr "Log-Level"
 
-#: cps/templates/admin.html:122
-msgid "Port"
-msgstr "Port"
-
-#: cps/templates/admin.html:127
+#: cps/templates/admin.html:122 cps/templates/admin.html:127
 msgid "External Port"
 msgstr "Externer Port"
+
+#: cps/templates/admin.html:123
+msgid "Not set — reverse proxy detected"
+msgstr ""
 
 #: cps/templates/admin.html:134 cps/templates/config_view_edit.html:45
 msgid "Books per Page"
@@ -2865,7 +2865,7 @@ msgstr "Magischer Link für Remote-Anmeldung"
 msgid "Reverse Proxy Login"
 msgstr "Reverse Proxy Login"
 
-#: cps/templates/admin.html:159 cps/templates/config_edit.html:258
+#: cps/templates/admin.html:159 cps/templates/config_edit.html:259
 msgid "Reverse Proxy Header Name"
 msgstr "Reverse Proxy Header Name"
 
@@ -3019,7 +3019,7 @@ msgstr "OK"
 #: cps/templates/book_table.html:231 cps/templates/book_table.html:251
 #: cps/templates/book_table.html:271 cps/templates/book_table.html:329
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:111
-#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:215
+#: cps/templates/config_edit.html:621 cps/templates/config_view_edit.html:215
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:938
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
@@ -3251,7 +3251,7 @@ msgid "Fetch Metadata"
 msgstr "Metadaten laden"
 
 #: cps/templates/book_edit.html:252 cps/templates/config_db.html:110
-#: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:214
+#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:214
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:45
 #: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
 #: cps/templates/user_edit.html:553
@@ -3274,6 +3274,10 @@ msgstr ""
 #: cps/templates/book_edit.html:288 cps/templates/book_edit.html:368
 msgid "Loading..."
 msgstr "Lade..."
+
+#: cps/templates/book_edit.html:312
+msgid "Apply"
+msgstr ""
 
 #: cps/templates/book_edit.html:369
 msgid "Search error!"
@@ -3594,11 +3598,11 @@ msgstr "Metadaten Überwachungs-ID"
 msgid "Revoke"
 msgstr "Widerrufen"
 
-#: cps/templates/config_db.html:117
+#: cps/templates/config_db.html:118
 msgid "Last Resort: Restore Calibre Database (experimental)"
 msgstr "Letzter Ausweg: Calibre-Datenbank wiederherstellen (experimentell)"
 
-#: cps/templates/config_db.html:118
+#: cps/templates/config_db.html:119
 msgid ""
 "If your Calibre library is corrupted and cannot be opened, you can attempt "
 "to restore it from the OPF files in your library. This will <b>erase all per-"
@@ -3616,11 +3620,11 @@ msgstr ""
 "automatisch ein Backup unter /config/backup erstellt.</b> Ein Protokoll der "
 "Wiederherstellung wird zusammen mit den Backups gespeichert."
 
-#: cps/templates/config_db.html:121
+#: cps/templates/config_db.html:122
 msgid "Are you sure? This cannot be undone."
 msgstr "Sind Sie sicher? Dies kann nicht rückgängig gemacht werden."
 
-#: cps/templates/config_db.html:121
+#: cps/templates/config_db.html:122
 msgid "Restore Calibre Database (Last Resort)"
 msgstr "Calibre-Datenbank wiederherstellen (Letzter Ausweg)"
 
@@ -3628,11 +3632,11 @@ msgstr "Calibre-Datenbank wiederherstellen (Letzter Ausweg)"
 msgid "New db location is invalid, please enter valid path"
 msgstr "Neuer Datenbankpfad ist ungültig, bitte einen gültigen Pfad eingeben"
 
-#: cps/templates/config_edit.html:6 cps/templates/config_edit.html:272
+#: cps/templates/config_edit.html:6 cps/templates/config_edit.html:273
 msgid "Use Standard Authentication"
 msgstr "Benutze Standardauthentifizierung"
 
-#: cps/templates/config_edit.html:8 cps/templates/config_edit.html:274
+#: cps/templates/config_edit.html:8 cps/templates/config_edit.html:275
 msgid "Use LDAP Authentication"
 msgstr "Benutze LDAP-Authentifizierung"
 
@@ -3747,39 +3751,45 @@ msgstr "unbekannte Anfragen an den Kobo Store weiterleiten"
 msgid "Server External Port (for port forwarded API calls)"
 msgstr "Externer Server-Port (für Portweiterleitung von API-Aufrufen)"
 
-#: cps/templates/config_edit.html:216
+#: cps/templates/config_edit.html:213
+msgid ""
+"A reverse proxy was detected. Leave blank unless you need to override the "
+"port for direct access."
+msgstr ""
+
+#: cps/templates/config_edit.html:217
 msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
 msgstr ""
 "Kobo-Lesefortschritt mit Hardcover synchronisieren (erfordert einen API-"
 "Schlüssel pro Benutzer)"
 
-#: cps/templates/config_edit.html:220
+#: cps/templates/config_edit.html:221
 msgid "Sync Kobo annotations to Hardcover (Requires API key per user)"
 msgstr ""
 "Kobo-Anmerkungen mit Hardcover synchronisieren (erfordert einen API-"
 "Schlüssel pro Benutzer)"
 
-#: cps/templates/config_edit.html:227
+#: cps/templates/config_edit.html:228
 msgid "Use Goodreads"
 msgstr "Benutze Goodreads"
 
-#: cps/templates/config_edit.html:231
+#: cps/templates/config_edit.html:232
 msgid "Goodreads API Key"
 msgstr "Öffentlicher Goodreads API Schlüssel"
 
-#: cps/templates/config_edit.html:238
+#: cps/templates/config_edit.html:239
 msgid "Enable Hardcover Sync"
 msgstr "Hardcover-Synchronisation einschalten"
 
-#: cps/templates/config_edit.html:242
+#: cps/templates/config_edit.html:243
 msgid "Hardcover API Key"
 msgstr "Hardcover API-Schlüssel"
 
-#: cps/templates/config_edit.html:248
+#: cps/templates/config_edit.html:249
 msgid "Allow Reverse Proxy Authentication"
 msgstr "Reverse Proxy Authentifizierung zulassen"
 
-#: cps/templates/config_edit.html:249
+#: cps/templates/config_edit.html:250
 msgid ""
 "Trusts the \"Remote-User\" header from a reverse proxy for authentication. "
 "This is an authentication method, distinct from the HTTPS security setting "
@@ -3789,11 +3799,11 @@ msgstr ""
 "Authentifizierung. Dies ist eine Authentifizierungsmethode, die sich von der "
 "unten stehenden HTTPS-Sicherheitseinstellung unterscheidet."
 
-#: cps/templates/config_edit.html:253
+#: cps/templates/config_edit.html:254
 msgid "Use via HTTPS"
 msgstr "Über HTTPS nutzen"
 
-#: cps/templates/config_edit.html:254
+#: cps/templates/config_edit.html:255
 msgid ""
 "Enables secure cookie settings (Secure, SameSite=Lax). Enable this ONLY if "
 "you are accessing the server via HTTPS, otherwise you will be locked out."
@@ -3802,11 +3812,11 @@ msgstr ""
 "Sie dies NUR, wenn Sie über HTTPS auf den Server zugreifen, andernfalls "
 "werden Sie ausgesperrt."
 
-#: cps/templates/config_edit.html:263
+#: cps/templates/config_edit.html:264
 msgid "Auto-create users from reverse proxy"
 msgstr "Benutzer automatisch über Reverse-Proxy erstellen"
 
-#: cps/templates/config_edit.html:264
+#: cps/templates/config_edit.html:265
 msgid ""
 "Automatically create user accounts when valid reverse proxy headers are "
 "received. Only enable if your reverse proxy authentication is properly "
@@ -3816,94 +3826,94 @@ msgstr ""
 "empfangen werden. Nur aktivieren, wenn Ihre Reverse-Proxy-Authentifizierung "
 "ordnungsgemäß abgesichert ist."
 
-#: cps/templates/config_edit.html:270
+#: cps/templates/config_edit.html:271
 msgid "Login type"
 msgstr "Anmeldetyp"
 
-#: cps/templates/config_edit.html:277
+#: cps/templates/config_edit.html:278
 msgid "Use OAuth (requires HTTPS)"
 msgstr "OAuth verwenden (erfordert HTTPS)"
 
-#: cps/templates/config_edit.html:284
+#: cps/templates/config_edit.html:285
 msgid "LDAP Server Host Name or IP Address"
 msgstr "LDAP-Server Hostname oder IP-Adresse"
 
-#: cps/templates/config_edit.html:288
+#: cps/templates/config_edit.html:289
 msgid "LDAP Server Port"
 msgstr "LDAP-Server-Port"
 
-#: cps/templates/config_edit.html:292
+#: cps/templates/config_edit.html:293
 msgid "LDAP Encryption"
 msgstr "LDAP-Verschlüsselung"
 
-#: cps/templates/config_edit.html:295
+#: cps/templates/config_edit.html:296
 msgid "TLS"
 msgstr "TLS"
 
-#: cps/templates/config_edit.html:296
+#: cps/templates/config_edit.html:297
 msgid "SSL"
 msgstr "SSL"
 
-#: cps/templates/config_edit.html:300
+#: cps/templates/config_edit.html:301
 msgid ""
 "LDAP CACertificate Path (Only needed for Client Certificate Authentication)"
 msgstr ""
 "LDAP-CA-Zertifikatspfad (nur für Client-Zertifikatsauthentifizierung "
 "benötigt)"
 
-#: cps/templates/config_edit.html:307
+#: cps/templates/config_edit.html:308
 msgid ""
 "LDAP Certificate Path (Only needed for Client Certificate Authentication)"
 msgstr ""
 "LDAP-Zertifikatspfad (nur für Client-Zertifikatsauthentifizierung benötigt)"
 
-#: cps/templates/config_edit.html:314
+#: cps/templates/config_edit.html:315
 msgid "LDAP Keyfile Path (Only needed for Client Certificate Authentication)"
 msgstr ""
 "LDAP-Schlüsseldateipfad (nur für Client-Zertifikatsauthentifizierung "
 "benötigt)"
 
-#: cps/templates/config_edit.html:323
+#: cps/templates/config_edit.html:324
 msgid "LDAP Authentication"
 msgstr "LDAP-Authentifizierung"
 
-#: cps/templates/config_edit.html:325
+#: cps/templates/config_edit.html:326
 msgid "Anonymous"
 msgstr "Anonym"
 
-#: cps/templates/config_edit.html:326
+#: cps/templates/config_edit.html:327
 msgid "Unauthenticated"
 msgstr "Nicht authentifiziert"
 
-#: cps/templates/config_edit.html:327
+#: cps/templates/config_edit.html:328
 msgid "Simple"
 msgstr "Einfach"
 
-#: cps/templates/config_edit.html:332
+#: cps/templates/config_edit.html:333
 msgid "LDAP Administrator Username"
 msgstr "LDAP-Administrator-Benutzername"
 
-#: cps/templates/config_edit.html:338
+#: cps/templates/config_edit.html:339
 msgid "LDAP Administrator Password"
 msgstr "LDAP-Administrator-Passwort"
 
-#: cps/templates/config_edit.html:343
+#: cps/templates/config_edit.html:344
 msgid "LDAP Distinguished Name (DN)"
 msgstr "LDAP-Distinguished Name (DN)"
 
-#: cps/templates/config_edit.html:347
+#: cps/templates/config_edit.html:348
 msgid "LDAP User Object Filter"
 msgstr "LDAP-Benutzerobjektfilter"
 
-#: cps/templates/config_edit.html:352
+#: cps/templates/config_edit.html:353
 msgid "LDAP Server is OpenLDAP?"
 msgstr "Ist der LDAP-Server ein OpenLDAP-Server?"
 
-#: cps/templates/config_edit.html:356
+#: cps/templates/config_edit.html:357
 msgid "Auto-create users from LDAP"
 msgstr "Benutzer automatisch über LDAP erstellen"
 
-#: cps/templates/config_edit.html:357
+#: cps/templates/config_edit.html:358
 msgid ""
 "Automatically create user accounts when LDAP authentication succeeds for new "
 "users. Recommended for enterprise environments."
@@ -3911,44 +3921,44 @@ msgstr ""
 "Benutzerkonten automatisch erstellen, wenn die LDAP-Authentifizierung für "
 "neue Benutzer erfolgreich ist. Empfohlen für Unternehmensumgebungen."
 
-#: cps/templates/config_edit.html:359
+#: cps/templates/config_edit.html:360
 msgid "Following Settings are Needed For User Import"
 msgstr ""
 "Die nachfolgenden Einstellungen werden nur für den Benutzerimport benötigt"
 
-#: cps/templates/config_edit.html:361
+#: cps/templates/config_edit.html:362
 msgid "LDAP Group Object Filter"
 msgstr "LDAP-Gruppenobjektfilter"
 
-#: cps/templates/config_edit.html:365
+#: cps/templates/config_edit.html:366
 msgid "LDAP Group Name"
 msgstr "LDAP-Gruppenname"
 
-#: cps/templates/config_edit.html:369
+#: cps/templates/config_edit.html:370
 msgid "LDAP Group Members Field"
 msgstr "LDAP-Gruppenmitgliedsfeld"
 
-#: cps/templates/config_edit.html:373
+#: cps/templates/config_edit.html:374
 msgid "LDAP Member User Filter Detection"
 msgstr "LDAP-Mitgliederfiltererkennung"
 
-#: cps/templates/config_edit.html:375
+#: cps/templates/config_edit.html:376
 msgid "Autodetect"
 msgstr "Automatisch erkennen"
 
-#: cps/templates/config_edit.html:376
+#: cps/templates/config_edit.html:377
 msgid "Custom Filter"
 msgstr "Benutzerdefinierter Filter"
 
-#: cps/templates/config_edit.html:381
+#: cps/templates/config_edit.html:382
 msgid "LDAP Member User Filter"
 msgstr "LDAP-Mitgliederfilter"
 
-#: cps/templates/config_edit.html:391
+#: cps/templates/config_edit.html:392
 msgid "Important:"
 msgstr "Wichtig:"
 
-#: cps/templates/config_edit.html:391
+#: cps/templates/config_edit.html:392
 msgid ""
 "OAuth authentication requires this server to be accessed via HTTPS. If you "
 "are using HTTP, login will fail."
@@ -3956,27 +3966,27 @@ msgstr ""
 "Die OAuth-Authentifizierung erfordert, dass auf diesen Server über HTTPS "
 "zugegriffen wird. Wenn Sie HTTP verwenden, wird die Anmeldung fehlschlagen."
 
-#: cps/templates/config_edit.html:394
+#: cps/templates/config_edit.html:395
 msgid "Generic OAuth Provider"
 msgstr "Generischer OAuth-Anbieter"
 
-#: cps/templates/config_edit.html:398
+#: cps/templates/config_edit.html:399
 msgid "OAuth Metadata URL (for auto-discovery)"
 msgstr "OAuth-Metadaten-URL (für Autoerkennung)"
 
-#: cps/templates/config_edit.html:402
+#: cps/templates/config_edit.html:403
 msgid "Test Metadata"
 msgstr "Metadaten testen"
 
-#: cps/templates/config_edit.html:405
+#: cps/templates/config_edit.html:406
 msgid "Leave empty to use manual configuration below"
 msgstr "Freilassen, um die manuelle Konfiguration von unten zu nutzen"
 
-#: cps/templates/config_edit.html:411
+#: cps/templates/config_edit.html:412
 msgid "Use Manual Endpoint URLs (override auto-discovery)"
 msgstr "Nutze manuelle Endpunkt-URLs (überschreibt Autoerkennung)"
 
-#: cps/templates/config_edit.html:412
+#: cps/templates/config_edit.html:413
 msgid ""
 "Check this to manually configure individual OAuth endpoints instead of using "
 "auto-discovery"
@@ -3984,43 +3994,43 @@ msgstr ""
 "Hake dies an, um manuell individuelle OAuth Endpunkte zu konfigurieren "
 "anstatt automatische Erkennung zu nutzen"
 
-#: cps/templates/config_edit.html:417
+#: cps/templates/config_edit.html:418
 msgid "Manual Endpoint Configuration"
 msgstr "Manuelle Endpunktkonfiguration"
 
-#: cps/templates/config_edit.html:420
+#: cps/templates/config_edit.html:421
 msgid "OAuth Base URL"
 msgstr "OAuth-Basis-URL"
 
-#: cps/templates/config_edit.html:425
+#: cps/templates/config_edit.html:426
 msgid "Authorization Endpoint"
 msgstr "Autorisierungsendpunkt"
 
-#: cps/templates/config_edit.html:430
+#: cps/templates/config_edit.html:431
 msgid "Token Endpoint"
 msgstr "Token Endpunkt"
 
-#: cps/templates/config_edit.html:435
+#: cps/templates/config_edit.html:436
 msgid "UserInfo Endpoint"
 msgstr "UserInfo Endpunkt"
 
-#: cps/templates/config_edit.html:443
+#: cps/templates/config_edit.html:444
 msgid "Test Connection"
 msgstr "Verbindung testen"
 
-#: cps/templates/config_edit.html:452
+#: cps/templates/config_edit.html:453
 msgid "OAuth Scopes"
 msgstr "OAuth-Scopes"
 
-#: cps/templates/config_edit.html:454
+#: cps/templates/config_edit.html:455
 msgid "Space-separated list of OAuth scopes"
 msgstr "Leerzeichen-separierte Liste von OAuth Scopes"
 
-#: cps/templates/config_edit.html:459
+#: cps/templates/config_edit.html:460
 msgid "OAuth Redirect Host"
 msgstr "OAuth-Redirect-Host"
 
-#: cps/templates/config_edit.html:462
+#: cps/templates/config_edit.html:463
 msgid ""
 "Set a consistent hostname for OAuth redirects to prevent \"invalid redirect "
 "URI\" errors. Include protocol (https://). Leave empty to use automatic "
@@ -4030,7 +4040,7 @@ msgstr ""
 "vom Typ „Ungültige Weiterleitungs-URI“ zu vermeiden. Geben Sie das Protokoll "
 "(https://) mit an. Leer lassen, um die automatische Erkennung zu nutzen."
 
-#: cps/templates/config_edit.html:464
+#: cps/templates/config_edit.html:465
 msgid ""
 "Required if: accessing via multiple hostnames, behind reverse proxy, or "
 "getting \"invalid redirect URI\" errors."
@@ -4038,39 +4048,39 @@ msgstr ""
 "Erforderlich, falls: Zugriff über mehrere Hostnamen, hinter einem Reverse-"
 "Proxy oder bei Fehlern vom Typ „Ungültige Weiterleitungs-URI“."
 
-#: cps/templates/config_edit.html:469
+#: cps/templates/config_edit.html:470
 msgid "OAuth Client Id"
 msgstr "OAuth-Client-ID"
 
-#: cps/templates/config_edit.html:473
+#: cps/templates/config_edit.html:474
 msgid "OAuth Client Secret"
 msgstr "OAuth-Client-Geheimnis"
 
-#: cps/templates/config_edit.html:478
+#: cps/templates/config_edit.html:479
 msgid "Field Mapping Configuration"
 msgstr "Feldzuordnungskonfiguration"
 
-#: cps/templates/config_edit.html:480
+#: cps/templates/config_edit.html:481
 msgid "Username Field"
 msgstr "Benutzernamefeld"
 
-#: cps/templates/config_edit.html:482
+#: cps/templates/config_edit.html:483
 msgid "JWT field to extract username from"
 msgstr "JWT-Feld, von dem der Benutzername extrahiert wird"
 
-#: cps/templates/config_edit.html:485
+#: cps/templates/config_edit.html:486
 msgid "Email Field"
 msgstr "E-Mail-Feld"
 
-#: cps/templates/config_edit.html:487
+#: cps/templates/config_edit.html:488
 msgid "JWT field to extract email from"
 msgstr "JWT-Feld, von dem die E-Mail-Adresse extrahiert wird"
 
-#: cps/templates/config_edit.html:490
+#: cps/templates/config_edit.html:491
 msgid "OAuth group for Admin"
 msgstr "OAuth-Gruppe für Admins"
 
-#: cps/templates/config_edit.html:492
+#: cps/templates/config_edit.html:493
 msgid ""
 "Name of the OAuth group that grants admin privileges. Leave empty to disable "
 "group-based admin management, or use the global setting in Security Settings "
@@ -4081,54 +4091,54 @@ msgstr ""
 "für mehr Kontrolle die globalen Einstellungen in den "
 "Sicherheitseinstellungen."
 
-#: cps/templates/config_edit.html:495
+#: cps/templates/config_edit.html:496
 msgid "Login Button Text"
 msgstr "Anmelde-Button-Text"
 
-#: cps/templates/config_edit.html:501
+#: cps/templates/config_edit.html:502
 #, python-format
 msgid "Obtain %(provider)s OAuth Credential"
 msgstr "Erhalte %(provider)s OAuth-Berechtigungen"
 
-#: cps/templates/config_edit.html:504
+#: cps/templates/config_edit.html:505
 #, python-format
 msgid "%(provider)s OAuth Client Id"
 msgstr "%(provider)s OAuth Client Id"
 
-#: cps/templates/config_edit.html:508
+#: cps/templates/config_edit.html:509
 #, python-format
 msgid "%(provider)s OAuth Client Secret"
 msgstr "%(provider)s OAuth Client Secret"
 
-#: cps/templates/config_edit.html:519
+#: cps/templates/config_edit.html:520
 msgid "External binaries"
 msgstr "Externe Programme"
 
-#: cps/templates/config_edit.html:520
+#: cps/templates/config_edit.html:521
 msgid "Path to Calibre Binaries"
 msgstr "Pfad zum Calibre-Programm"
 
-#: cps/templates/config_edit.html:528
+#: cps/templates/config_edit.html:529
 msgid "Calibre E-Book Converter Settings"
 msgstr "Calibre E-Book Konverter Einstellungen"
 
-#: cps/templates/config_edit.html:531
+#: cps/templates/config_edit.html:532
 msgid "Path to Kepubify E-Book Converter"
 msgstr "Pfad zum Kepubify E-Book Konverter"
 
-#: cps/templates/config_edit.html:539
+#: cps/templates/config_edit.html:540
 msgid "Location of Unrar binary"
 msgstr "Pfad zum UnRar-Programm"
 
-#: cps/templates/config_edit.html:550
+#: cps/templates/config_edit.html:551
 msgid "Security Settings"
 msgstr "Sicherheitseinstellungen"
 
-#: cps/templates/config_edit.html:553
+#: cps/templates/config_edit.html:554
 msgid "Disable Standard Login (Username/Password)"
 msgstr "Standardanmeldung deaktivieren (Benutzername/Passwort)"
 
-#: cps/templates/config_edit.html:554
+#: cps/templates/config_edit.html:555
 msgid ""
 "Hides the standard login form. Users must log in via OAuth or LDAP. Ensure "
 "you have a working alternative login method before enabling."
@@ -4137,11 +4147,11 @@ msgstr ""
 "oder LDAP anmelden. Stellen Sie sicher, dass Sie eine funktionierende "
 "alternative Anmeldemethode haben, bevor Sie dies aktivieren."
 
-#: cps/templates/config_edit.html:558
+#: cps/templates/config_edit.html:559
 msgid "Enable OAuth Group-Based Admin Role Management"
 msgstr "Gruppenbasierte OAuth-Admin-Rollenverwaltung aktivieren"
 
-#: cps/templates/config_edit.html:559
+#: cps/templates/config_edit.html:560
 msgid ""
 "When enabled, admin privileges are automatically granted or revoked based on "
 "OAuth group membership. Disable this to manually manage admin roles in the "
@@ -4153,61 +4163,61 @@ msgstr ""
 "Admin-Rollen manuell in der Benutzerverwaltung zu verwalten und zu "
 "verhindern, dass OAuth-Logins lokale Rollenzuweisungen überschreiben."
 
-#: cps/templates/config_edit.html:563
+#: cps/templates/config_edit.html:564
 msgid "Limit failed login attempts"
 msgstr "Fehlgeschlagene Anmeldeversuche begrenzen"
 
-#: cps/templates/config_edit.html:567
+#: cps/templates/config_edit.html:568
 msgid "Configure Backend for Limiter"
 msgstr "Backend für Limiter konfigurieren"
 
-#: cps/templates/config_edit.html:571
+#: cps/templates/config_edit.html:572
 msgid "Options for Limiter Backend"
 msgstr "Optionen für das Limiter Backend"
 
-#: cps/templates/config_edit.html:577
+#: cps/templates/config_edit.html:578
 msgid "Check if file extensions matches file content on upload"
 msgstr "Überprüfe bei Upload ob Dateiinhalt zur Endung passt"
 
-#: cps/templates/config_edit.html:580
+#: cps/templates/config_edit.html:581
 msgid "Session protection"
 msgstr "Sessionschutz"
 
-#: cps/templates/config_edit.html:582
+#: cps/templates/config_edit.html:583
 msgid "Basic"
 msgstr "Einfach"
 
-#: cps/templates/config_edit.html:583
+#: cps/templates/config_edit.html:584
 msgid "Strong"
 msgstr "Stark"
 
-#: cps/templates/config_edit.html:588
+#: cps/templates/config_edit.html:589
 msgid "User Password policy"
 msgstr "Passwortregeln"
 
-#: cps/templates/config_edit.html:592
+#: cps/templates/config_edit.html:593
 msgid "Minimum password length"
 msgstr "Minimale Passwortlänge"
 
-#: cps/templates/config_edit.html:597
+#: cps/templates/config_edit.html:598
 msgid "Enforce number"
 msgstr "Erzwinge Zahl"
 
-#: cps/templates/config_edit.html:601
+#: cps/templates/config_edit.html:602
 msgid "Enforce lowercase characters"
 msgstr "Erzwinge Kleinbuchstaben"
 
-#: cps/templates/config_edit.html:605
+#: cps/templates/config_edit.html:606
 msgid "Enforce uppercase characters"
 msgstr "Erzwinge Großbuchstaben"
 
-#: cps/templates/config_edit.html:609
+#: cps/templates/config_edit.html:610
 msgid "Enforce characters (needed For Chinese/Japanese/Korean Characters)"
 msgstr ""
 "Zeichen erzwingen (erforderlich für chinesische/japanische/koreanische "
 "Zeichen)"
 
-#: cps/templates/config_edit.html:613
+#: cps/templates/config_edit.html:614
 msgid "Enforce special characters"
 msgstr "Erzwinge Spezialzeichen"
 
@@ -7457,6 +7467,9 @@ msgstr "Ausgewählte Regale mit Kobo synchronisieren"
 #: cps/templates/user_table.html:157
 msgid "Show Read/Unread Section"
 msgstr "Zeige Gelesen/Ungelesen-Abschnitt"
+
+#~ msgid "Port"
+#~ msgstr "Port"
 
 #~ msgid "Scanning for duplicates"
 #~ msgstr "Suche nach Duplikaten"

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 12:34+0000\n"
+"POT-Creation-Date: 2026-08-06 13:50+0000\n"
 "PO-Revision-Date: 2026-05-17 20:18+0800\n"
 "Last-Translator: SkyLull <https://github.com/SkyLull>\n"
 "Language-Team: zh_Hans_TW <LL@li.org>\n"
@@ -109,160 +109,160 @@ msgstr "找不到有封面的書籍可供處理。"
 msgid "Failed to start thumbnail refresh: {}"
 msgstr "啟動縮圖重新整理失敗：{}"
 
-#: cps/admin.py:538
+#: cps/admin.py:539
 msgid "Admin page"
 msgstr "管理頁面"
 
-#: cps/admin.py:558
+#: cps/admin.py:560
 msgid "Basic Configuration"
 msgstr "基本設定"
 
-#: cps/admin.py:596
+#: cps/admin.py:598
 msgid "UI Configuration"
 msgstr "介面設定"
 
-#: cps/admin.py:620 cps/admin.py:1302 cps/db.py:985 cps/search.py:153
+#: cps/admin.py:622 cps/admin.py:1304 cps/db.py:985 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "自訂欄位編號 %(column)d 在 Calibre 資料庫中不存在"
 
-#: cps/admin.py:638 cps/templates/admin.html:55
+#: cps/admin.py:640 cps/templates/admin.html:55
 msgid "Edit Users"
 msgstr "管理使用者"
 
-#: cps/admin.py:682 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:684 cps/opds.py:798 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "全部"
 
-#: cps/admin.py:709 cps/admin.py:1893
+#: cps/admin.py:711 cps/admin.py:1895
 msgid "User not found"
 msgstr "找不到使用者"
 
-#: cps/admin.py:723
+#: cps/admin.py:725
 #, python-brace-format
 msgid "{} users deleted successfully"
 msgstr "成功刪除 {} 個使用者"
 
-#: cps/admin.py:746 cps/templates/config_view_edit.html:169
+#: cps/admin.py:748 cps/templates/config_view_edit.html:169
 #: cps/templates/user_edit.html:263 cps/templates/user_edit.html:285
 #: cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "顯示全部"
 
-#: cps/admin.py:767 cps/admin.py:773
+#: cps/admin.py:769 cps/admin.py:775
 msgid "Malformed request"
 msgstr "格式錯誤的請求"
 
-#: cps/admin.py:785 cps/admin.py:2786
+#: cps/admin.py:787 cps/admin.py:2791
 msgid "Guest Name can't be changed"
 msgstr "遊客名稱無法更改"
 
-#: cps/admin.py:799
+#: cps/admin.py:801
 msgid "Guest can't have this role"
 msgstr "遊客無法擁有此角色"
 
-#: cps/admin.py:811 cps/admin.py:2611
+#: cps/admin.py:813 cps/admin.py:2616
 msgid "No admin user remaining, can't remove admin role"
 msgstr "管理員帳戶不存在，無法刪除管理員角色"
 
-#: cps/admin.py:815 cps/admin.py:829
+#: cps/admin.py:817 cps/admin.py:831
 msgid "Value has to be true or false"
 msgstr "值必須是 true 或 false"
 
-#: cps/admin.py:817
+#: cps/admin.py:819
 msgid "Invalid role"
 msgstr "無效角色"
 
-#: cps/admin.py:821
+#: cps/admin.py:823
 msgid "Guest can't have this view"
 msgstr "遊客無法擁有此視圖"
 
-#: cps/admin.py:831
+#: cps/admin.py:833
 msgid "Invalid view"
 msgstr "無效檢視"
 
-#: cps/admin.py:834
+#: cps/admin.py:836
 msgid "Guest's Locale is determined automatically and can't be set"
 msgstr "遊客的在地化設定是自動偵測而無法變更的"
 
-#: cps/admin.py:838
+#: cps/admin.py:840
 msgid "No Valid Locale Given"
 msgstr "無可用在地化"
 
-#: cps/admin.py:849
+#: cps/admin.py:851
 msgid "No Valid Book Language Given"
 msgstr "無有效書籍語言"
 
-#: cps/admin.py:851 cps/editbooks.py:596
+#: cps/admin.py:853 cps/editbooks.py:596
 msgid "Parameter not found"
 msgstr "參數未找到"
 
-#: cps/admin.py:888
+#: cps/admin.py:890
 msgid "Invalid Read Column"
 msgstr "無效的閱讀列"
 
-#: cps/admin.py:894
+#: cps/admin.py:896
 msgid "Invalid Restricted Column"
 msgstr "無效的限制列"
 
-#: cps/admin.py:914 cps/admin.py:2459
+#: cps/admin.py:916 cps/admin.py:2464
 msgid "Calibre-Web Automated configuration updated"
 msgstr "Calibre-Web Automated 設定已更新"
 
-#: cps/admin.py:926
+#: cps/admin.py:928
 msgid "Do you really want to delete the Kobo Token?"
 msgstr "您確定刪除 Kobo 權杖嗎？"
 
-#: cps/admin.py:928
+#: cps/admin.py:930
 msgid "Do you really want to delete this domain?"
 msgstr "您確定要刪除此網域嗎？"
 
-#: cps/admin.py:930
+#: cps/admin.py:932
 msgid "Do you really want to delete this user?"
 msgstr "您確定要刪除此使用者嗎？"
 
-#: cps/admin.py:932
+#: cps/admin.py:934
 msgid "Are you sure you want to delete this shelf?"
 msgstr "您確定要刪除此書架嗎？"
 
-#: cps/admin.py:934
+#: cps/admin.py:936
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr "您確定要修改選定使用者的本地化設定嗎？"
 
-#: cps/admin.py:936
+#: cps/admin.py:938
 msgid ""
 "Are you sure you want to change visible book languages for selected user(s)?"
 msgstr "您確定要修改選定使用者的可見書籍語言嗎？"
 
-#: cps/admin.py:938
+#: cps/admin.py:940
 msgid ""
 "Are you sure you want to change the selected role for the selected user(s)?"
 msgstr "您確定要修改選定使用者的選定角色嗎？"
 
-#: cps/admin.py:940
+#: cps/admin.py:942
 msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
 "user(s)?"
 msgstr "您確定要修改選定使用者的選定限制嗎？"
 
-#: cps/admin.py:942
+#: cps/admin.py:944
 msgid ""
 "Are you sure you want to change the selected visibility restrictions for the "
 "selected user(s)?"
 msgstr "您確定要修改選定使用者的選定可視化限制嗎？"
 
-#: cps/admin.py:945
+#: cps/admin.py:947
 msgid ""
 "Are you sure you want to change shelf sync behavior for the selected user(s)?"
 msgstr "您確定要更改所選使用者的書架同步行為嗎？"
 
-#: cps/admin.py:947
+#: cps/admin.py:949
 msgid "Are you sure you want to change Calibre library location?"
 msgstr "您確定要更改 Calibre 儲存庫位置嗎？"
 
-#: cps/admin.py:949
+#: cps/admin.py:951
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
 "Thumbnails, this may take a while?"
@@ -270,109 +270,109 @@ msgstr ""
 "Calibre-Web Automated 將搜尋更新的封面並更新封面縮圖，這可能需要一些時間，確"
 "定繼續？"
 
-#: cps/admin.py:952
+#: cps/admin.py:954
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
 "a full sync with your Kobo Reader?"
 msgstr ""
 "確定要刪除 Calibre-Web Automated 的同步資料庫以強制與 Kobo 閱讀器完整同步嗎？"
 
-#: cps/admin.py:1191 cps/admin.py:1197 cps/admin.py:1207 cps/admin.py:1217
+#: cps/admin.py:1193 cps/admin.py:1199 cps/admin.py:1209 cps/admin.py:1219
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
 #: cps/templates/user_table.html:58
 msgid "Deny"
 msgstr "拒絕"
 
-#: cps/admin.py:1193 cps/admin.py:1199 cps/admin.py:1209 cps/admin.py:1219
+#: cps/admin.py:1195 cps/admin.py:1201 cps/admin.py:1211 cps/admin.py:1221
 #: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44
 #: cps/templates/user_table.html:61
 msgid "Allow"
 msgstr "允許"
 
-#: cps/admin.py:1252
+#: cps/admin.py:1254
 #, python-brace-format
 msgid "{} sync entries deleted"
 msgstr "已刪除 {} 筆同步紀錄"
 
-#: cps/admin.py:1293
+#: cps/admin.py:1295
 msgid "Tag not found"
 msgstr "標籤未找到"
 
-#: cps/admin.py:1311
+#: cps/admin.py:1313
 msgid "Invalid Action"
 msgstr "無效操作"
 
-#: cps/admin.py:1438
+#: cps/admin.py:1440
 msgid "client_secrets.json Is Not Configured For Web Application"
 msgstr "client_secrets.json 未為 Web 應用程式設定"
 
-#: cps/admin.py:1577
+#: cps/admin.py:1579
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "紀錄檔路徑無效，請輸入正確的路徑"
 
-#: cps/admin.py:1583
+#: cps/admin.py:1585
 msgid "Access Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "存取紀錄路徑無效，請輸入正確的路徑"
 
-#: cps/admin.py:1618
+#: cps/admin.py:1620
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
 msgstr "請輸入 LDAP 主機、連接埠、DN和使用者物件識別碼"
 
-#: cps/admin.py:1624
+#: cps/admin.py:1626
 msgid "Please Enter a LDAP Service Account and Password"
 msgstr "請輸入一個 LDAP 服務帳號和密碼 "
 
-#: cps/admin.py:1627
+#: cps/admin.py:1629
 msgid "Please Enter a LDAP Service Account"
 msgstr "請輸入一個 LDAP 服務帳號"
 
-#: cps/admin.py:1632
+#: cps/admin.py:1634
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP 群組對象過濾器需要一個具有「%s」格式的識別碼號"
 
-#: cps/admin.py:1634
+#: cps/admin.py:1636
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP 群組對象過濾器的括號不匹配"
 
-#: cps/admin.py:1638
+#: cps/admin.py:1640
 #, python-format
 msgid "LDAP User Object Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP 使用者物件過濾器需要一個具有「%s」的格式識別碼"
 
-#: cps/admin.py:1640
+#: cps/admin.py:1642
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
 msgstr "LDAP 使用者物件過濾器的括號不匹配"
 
-#: cps/admin.py:1647
+#: cps/admin.py:1649
 #, python-format
 msgid "LDAP Member User Filter needs to Have One \"%s\" Format Identifier"
 msgstr "LDAP 成員使用者過濾器需要有一個「%s」格式識別碼號"
 
-#: cps/admin.py:1649
+#: cps/admin.py:1651
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"
 msgstr "LDAP 成員使用者過濾器中有不匹配的括號"
 
-#: cps/admin.py:1656
+#: cps/admin.py:1658
 msgid ""
 "LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter "
 "Correct Path"
 msgstr "LDAP CA 證書、證書或密鑰位置無效，請輸入正確的路徑"
 
-#: cps/admin.py:1689 cps/templates/admin.html:57
+#: cps/admin.py:1691 cps/templates/admin.html:57
 msgid "Add New User"
 msgstr "新增使用者"
 
-#: cps/admin.py:1704 cps/templates/admin.html:105
+#: cps/admin.py:1706 cps/templates/admin.html:105
 msgid "Edit Email Server Settings"
 msgstr "編輯郵件伺服器設定"
 
-#: cps/admin.py:1723
+#: cps/admin.py:1725
 msgid "Success! Gmail Account Verified."
 msgstr "成功！Gmail 帳號已驗證。"
 
-#: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
-#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1046
+#: cps/admin.py:1745 cps/admin.py:1748 cps/admin.py:2234 cps/admin.py:2448
+#: cps/admin.py:2563 cps/admin.py:2834 cps/editbooks.py:1046
 #: cps/editbooks.py:1830 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2678
@@ -380,185 +380,185 @@ msgstr "成功！Gmail 帳號已驗證。"
 msgid "Oops! Database Error: %(error)s."
 msgstr "資料庫錯誤：%(error)s。"
 
-#: cps/admin.py:1753
+#: cps/admin.py:1755
 #, python-format
 msgid ""
 "Test e-mail queued for sending to %(email)s, please check Tasks for result"
 msgstr "傳送給 %(email)s 的測試郵件已排入隊列。請檢查任務結果"
 
-#: cps/admin.py:1756
+#: cps/admin.py:1758
 #, python-format
 msgid "There was an error sending the Test e-mail: %(res)s"
 msgstr "傳送測試郵件時出錯：%(res)s"
 
-#: cps/admin.py:1758
+#: cps/admin.py:1760
 msgid "Please configure your e-mail address first..."
 msgstr "請先設定您的電子郵件地址..."
 
-#: cps/admin.py:1760
+#: cps/admin.py:1762
 msgid "Email Server Settings updated"
 msgstr "郵件伺服器設定已更新"
 
-#: cps/admin.py:1783 cps/templates/admin.html:201
+#: cps/admin.py:1785 cps/templates/admin.html:201
 msgid "Edit Scheduled Tasks Settings"
 msgstr "編輯排程任務設定"
 
-#: cps/admin.py:1795
+#: cps/admin.py:1797
 msgid "Invalid start time for task specified"
 msgstr "指定的任務開始時間無效"
 
-#: cps/admin.py:1800
+#: cps/admin.py:1802
 msgid "Invalid duration for task specified"
 msgstr "指定的任務持續時間無效"
 
-#: cps/admin.py:1810
+#: cps/admin.py:1812
 msgid "Scheduled tasks settings updated"
 msgstr "排程任務設定已更新"
 
-#: cps/admin.py:1820 cps/admin.py:1964 cps/admin.py:2825 cps/web.py:2109
+#: cps/admin.py:1822 cps/admin.py:1966 cps/admin.py:2830 cps/web.py:2109
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "發生一個未知錯誤，請稍後再試。"
 
-#: cps/admin.py:1824
+#: cps/admin.py:1826
 msgid "Settings DB is not Writeable"
 msgstr "設定資料庫無法寫入"
 
-#: cps/admin.py:1843 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
+#: cps/admin.py:1845 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
 msgid "title"
 msgstr "標題"
 
-#: cps/admin.py:1949 cps/admin.py:2817
+#: cps/admin.py:1951 cps/admin.py:2822
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "編輯使用者 %(nick)s"
 
-#: cps/admin.py:1961
+#: cps/admin.py:1963
 #, python-format
 msgid "Success! Password for user %(user)s reset"
 msgstr "成功！使用者 %(user)s 的密碼已重設"
 
-#: cps/admin.py:1967
+#: cps/admin.py:1969
 msgid "Oops! Please configure the SMTP mail settings."
 msgstr "糟糕！請先設定 SMTP 電子郵件設定。"
 
-#: cps/admin.py:1978
+#: cps/admin.py:1980
 msgid "Logfile viewer"
 msgstr "紀錄檔檢視器"
 
-#: cps/admin.py:2044
+#: cps/admin.py:2046
 msgid "Requesting update package"
 msgstr "正在請求更新包"
 
-#: cps/admin.py:2045
+#: cps/admin.py:2047
 msgid "Downloading update package"
 msgstr "正在下載更新包"
 
-#: cps/admin.py:2046
+#: cps/admin.py:2048
 msgid "Unzipping update package"
 msgstr "正在解壓更新包"
 
-#: cps/admin.py:2047
+#: cps/admin.py:2049
 msgid "Replacing files"
 msgstr "正在替換檔案"
 
-#: cps/admin.py:2048
+#: cps/admin.py:2050
 msgid "Database connections are closed"
 msgstr "資料庫連接已關閉"
 
-#: cps/admin.py:2049
+#: cps/admin.py:2051
 msgid "Stopping server"
 msgstr "正在關閉伺服器"
 
-#: cps/admin.py:2050
+#: cps/admin.py:2052
 msgid "Update finished, please press okay and reload page"
 msgstr "更新完成，請點擊確定並重新整理頁面"
 
-#: cps/admin.py:2051 cps/admin.py:2052 cps/admin.py:2053 cps/admin.py:2054
-#: cps/admin.py:2055 cps/admin.py:2056
+#: cps/admin.py:2053 cps/admin.py:2054 cps/admin.py:2055 cps/admin.py:2056
+#: cps/admin.py:2057 cps/admin.py:2058
 msgid "Update failed:"
 msgstr "更新失敗："
 
-#: cps/admin.py:2051 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
+#: cps/admin.py:2053 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
 msgid "HTTP Error"
 msgstr "HTTP 錯誤"
 
-#: cps/admin.py:2052 cps/updater.py:396 cps/updater.py:633
+#: cps/admin.py:2054 cps/updater.py:396 cps/updater.py:633
 msgid "Connection error"
 msgstr "連線錯誤"
 
-#: cps/admin.py:2053 cps/updater.py:398 cps/updater.py:635
+#: cps/admin.py:2055 cps/updater.py:398 cps/updater.py:635
 msgid "Timeout while establishing connection"
 msgstr "建立連接超時"
 
-#: cps/admin.py:2054 cps/updater.py:400 cps/updater.py:637
+#: cps/admin.py:2056 cps/updater.py:400 cps/updater.py:637
 msgid "General error"
 msgstr "一般錯誤"
 
-#: cps/admin.py:2055
+#: cps/admin.py:2057
 msgid "Update file could not be saved in temp dir"
 msgstr "更新檔案無法儲存至暫存目錄"
 
-#: cps/admin.py:2056
+#: cps/admin.py:2058
 msgid "Files could not be replaced during update"
 msgstr "更新時不能取代檔案"
 
-#: cps/admin.py:2080
+#: cps/admin.py:2082
 msgid "Failed to extract at least One LDAP User"
 msgstr "未能提取至少一個 LDAP 使用者"
 
-#: cps/admin.py:2125
+#: cps/admin.py:2127
 msgid "Failed to Create at Least One LDAP User"
 msgstr "未能建立至少一個 LDAP 使用者"
 
-#: cps/admin.py:2138
+#: cps/admin.py:2140
 #, python-format
 msgid "Error: %(ldaperror)s"
 msgstr "錯誤：%(ldaperror)s"
 
-#: cps/admin.py:2142
+#: cps/admin.py:2144
 msgid "Error: No user returned in response of LDAP server"
 msgstr "錯誤：在 LDAP 伺服器的回應中沒有使用者"
 
-#: cps/admin.py:2178
+#: cps/admin.py:2180
 msgid "At Least One LDAP User Not Found in Database"
 msgstr "資料庫中沒有找到至少一個 LDAP 使用者"
 
-#: cps/admin.py:2180
+#: cps/admin.py:2182
 #, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{} 位使用者已成功匯入"
 
-#: cps/admin.py:2244
+#: cps/admin.py:2246
 msgid "Books path not valid"
 msgstr "無效的書本路徑"
 
-#: cps/admin.py:2251
+#: cps/admin.py:2253
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr "資料庫路徑無效，請輸入正確的路徑"
 
-#: cps/admin.py:2279
+#: cps/admin.py:2281
 msgid "DB is not Writeable"
 msgstr "資料庫不可寫入"
 
-#: cps/admin.py:2292
+#: cps/admin.py:2294
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "密鑰檔案路徑無效，請輸入正確的路徑"
 
-#: cps/admin.py:2296
+#: cps/admin.py:2298
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr "證書檔案路徑無效，請輸入正確的路徑"
 
-#: cps/admin.py:2365
+#: cps/admin.py:2370
 msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
 msgstr "未啟用反向代理驗證時無法啟用自動建立使用者"
 
-#: cps/admin.py:2368
+#: cps/admin.py:2373
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr "自動建立使用者需要有效的反向代理標頭名稱"
 
-#: cps/admin.py:2387 cps/admin.py:2394
+#: cps/admin.py:2392 cps/admin.py:2399
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
@@ -566,7 +566,7 @@ msgstr ""
 "無效的 OAuth 重新導向主機格式。請包含完整的 URL 及協定（例如 https://your-"
 "domain.com）"
 
-#: cps/admin.py:2391
+#: cps/admin.py:2396
 msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
@@ -574,101 +574,101 @@ msgstr ""
 "OAuth 重新導向主機不應包含路徑。請僅使用根 URL（例如 https://your-domain."
 "com）"
 
-#: cps/admin.py:2426
+#: cps/admin.py:2431
 msgid "Password length has to be between 1 and 40"
 msgstr "密碼長度必須介於 1 到 40 字元之間"
 
-#: cps/admin.py:2486
+#: cps/admin.py:2491
 msgid "Database Settings updated"
 msgstr "資料庫設定已更新"
 
-#: cps/admin.py:2494
+#: cps/admin.py:2499
 msgid "Database Configuration"
 msgstr "資料庫設定"
 
-#: cps/admin.py:2514 cps/web.py:2078
+#: cps/admin.py:2519 cps/web.py:2078
 msgid "Oops! Please complete all fields."
 msgstr "請填寫所有欄位！"
 
-#: cps/admin.py:2523
+#: cps/admin.py:2528
 msgid "E-mail is not from valid domain"
 msgstr "電子郵件不在有效網域中"
 
-#: cps/admin.py:2531
+#: cps/admin.py:2536
 msgid "Add new user"
 msgstr "新增使用者"
 
-#: cps/admin.py:2548
+#: cps/admin.py:2553
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "使用者「%(user)s」已建立"
 
-#: cps/admin.py:2554
+#: cps/admin.py:2559
 msgid "Oops! An account already exists for this Email. or name."
 msgstr "使用此電子郵件或使用者名稱的帳號已經存在。"
 
-#: cps/admin.py:2584
+#: cps/admin.py:2589
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "使用者「%(nick)s」已刪除"
 
-#: cps/admin.py:2587
+#: cps/admin.py:2592
 msgid "Can't delete Guest User"
 msgstr "無法刪除訪客使用者"
 
-#: cps/admin.py:2590
+#: cps/admin.py:2595
 msgid "No admin user remaining, can't delete user"
 msgstr "管理員帳戶不存在，無法刪除使用者"
 
-#: cps/admin.py:2780 cps/web.py:2413
+#: cps/admin.py:2785 cps/web.py:2413
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "電子郵件地址不得為空，且須為有效地址"
 
-#: cps/admin.py:2821
+#: cps/admin.py:2826
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "使用者「%(nick)s」已更新"
 
-#: cps/admin.py:2886
+#: cps/admin.py:2891
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr "連線成功！OIDC 探索端點可存取。%(endpoints)s"
 
-#: cps/admin.py:2891
+#: cps/admin.py:2896
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
 msgstr "連線失敗：找不到 OIDC 探索端點（404）。請檢查根 URL 是否正確。"
 
-#: cps/admin.py:2893 cps/admin.py:2950
+#: cps/admin.py:2898 cps/admin.py:2955
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "連線失敗：伺服器回傳狀態碼 %(code)s"
 
-#: cps/admin.py:2895
+#: cps/admin.py:2900
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
 msgstr "連線失敗：無法連線至伺服器。請檢查 URL 及網路連線。"
 
-#: cps/admin.py:2897
+#: cps/admin.py:2902
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr "連線失敗：請求逾時。伺服器可能反應緩慢或無法連線。"
 
-#: cps/admin.py:2899
+#: cps/admin.py:2904
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
 msgstr "連線失敗：伺服器回傳無效的 JSON。這可能不是 OIDC 端點。"
 
-#: cps/admin.py:2902
+#: cps/admin.py:2907
 #, python-format
 msgid "Connection failed: %(error)s"
 msgstr "連線失敗：%(error)s"
 
-#: cps/admin.py:2928
+#: cps/admin.py:2933
 #, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
@@ -677,70 +677,70 @@ msgstr ""
 "中繼資料缺少必要的 OIDC 欄位：%(fields)s。這可能不是有效的 OIDC 中繼資料端"
 "點。"
 
-#: cps/admin.py:2939
+#: cps/admin.py:2944
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr "中繼資料 URL 有效！找到 %(count)s 個 OAuth 端點。"
 
-#: cps/admin.py:2941
+#: cps/admin.py:2946
 msgid " User info endpoint is available."
 msgstr " 使用者資訊端點可使用。"
 
-#: cps/admin.py:2943
+#: cps/admin.py:2948
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr " 注意：找不到使用者資訊端點——這可能會導致驗證問題。"
 
-#: cps/admin.py:2948
+#: cps/admin.py:2953
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr "找不到中繼資料 URL（404）。請確認 URL 是否正確。"
 
-#: cps/admin.py:2952
+#: cps/admin.py:2957
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
 msgstr "連線失敗：無法連線至中繼資料 URL。請檢查 URL 及網路連線。"
 
-#: cps/admin.py:2954
+#: cps/admin.py:2959
 msgid "Connection failed: Request timed out."
 msgstr "連線失敗：請求逾時。"
 
-#: cps/admin.py:2956
+#: cps/admin.py:2961
 msgid "Connection failed: Invalid JSON in response."
 msgstr "連線失敗：回應中的 JSON 無效。"
 
-#: cps/admin.py:2959
+#: cps/admin.py:2964
 msgid "An unknown error occurred."
 msgstr "發生了一個未知錯誤。"
 
-#: cps/admin.py:2971
+#: cps/admin.py:2976
 msgid "Restore already in progress."
 msgstr "還原已在進行中。"
 
-#: cps/admin.py:2975
+#: cps/admin.py:2980
 msgid "Restore failed: Calibre library path is not configured."
 msgstr "還原失敗：未設定 Calibre 書庫路徑。"
 
-#: cps/admin.py:2980
+#: cps/admin.py:2985
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr "還原失敗：在 %(path)s 找不到 metadata.db"
 
-#: cps/admin.py:2985
+#: cps/admin.py:2990
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr "還原失敗：在 %(path)s 找不到 app.db"
 
-#: cps/admin.py:3057 cps/admin.py:3097
+#: cps/admin.py:3062 cps/admin.py:3102
 #, python-format
 msgid "Restore failed: %(err)s"
 msgstr "回復失敗：%(err)s"
 
-#: cps/admin.py:3074
+#: cps/admin.py:3079
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr "還原完成但 app.db 清理失敗。請查看紀錄以了解詳情。"
 
-#: cps/admin.py:3093
+#: cps/admin.py:3098
 #, python-format
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
@@ -1070,7 +1070,7 @@ msgstr "個人檔案圖片更新成功。"
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA 個人頭像管理（開發中）"
 
-#: cps/db.py:1270 cps/templates/config_edit.html:294
+#: cps/db.py:1270 cps/templates/config_edit.html:295
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
@@ -2676,13 +2676,13 @@ msgstr "Calibre 資料庫路徑"
 msgid "Log Level"
 msgstr "紀錄層級"
 
-#: cps/templates/admin.html:122
-msgid "Port"
-msgstr "連接埠"
-
-#: cps/templates/admin.html:127
+#: cps/templates/admin.html:122 cps/templates/admin.html:127
 msgid "External Port"
 msgstr "外部連接埠"
+
+#: cps/templates/admin.html:123
+msgid "Not set — reverse proxy detected"
+msgstr ""
 
 #: cps/templates/admin.html:134 cps/templates/config_view_edit.html:45
 msgid "Books per Page"
@@ -2708,7 +2708,7 @@ msgstr "魔法連結遠端登入"
 msgid "Reverse Proxy Login"
 msgstr "反向代理登入"
 
-#: cps/templates/admin.html:159 cps/templates/config_edit.html:258
+#: cps/templates/admin.html:159 cps/templates/config_edit.html:259
 msgid "Reverse Proxy Header Name"
 msgstr "反向代理標頭名稱"
 
@@ -2862,7 +2862,7 @@ msgstr "確定"
 #: cps/templates/book_table.html:231 cps/templates/book_table.html:251
 #: cps/templates/book_table.html:271 cps/templates/book_table.html:329
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:111
-#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:215
+#: cps/templates/config_edit.html:621 cps/templates/config_view_edit.html:215
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:938
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
@@ -3092,7 +3092,7 @@ msgid "Fetch Metadata"
 msgstr "取得中繼資料"
 
 #: cps/templates/book_edit.html:252 cps/templates/config_db.html:110
-#: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:214
+#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:214
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:45
 #: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
 #: cps/templates/user_edit.html:553
@@ -3114,6 +3114,10 @@ msgstr "已將所選中繼資料欄位套用至編輯表單。"
 #: cps/templates/book_edit.html:288 cps/templates/book_edit.html:368
 msgid "Loading..."
 msgstr "載入中..."
+
+#: cps/templates/book_edit.html:312
+msgid "Apply"
+msgstr ""
 
 #: cps/templates/book_edit.html:369
 msgid "Search error!"
@@ -3424,11 +3428,11 @@ msgstr "中繼資料監視通道 ID"
 msgid "Revoke"
 msgstr "撤銷"
 
-#: cps/templates/config_db.html:117
+#: cps/templates/config_db.html:118
 msgid "Last Resort: Restore Calibre Database (experimental)"
 msgstr "最終手段：還原 Calibre 資料庫（實驗性）"
 
-#: cps/templates/config_db.html:118
+#: cps/templates/config_db.html:119
 msgid ""
 "If your Calibre library is corrupted and cannot be opened, you can attempt "
 "to restore it from the OPF files in your library. This will <b>erase all per-"
@@ -3442,11 +3446,11 @@ msgstr ""
 "會影響使用者帳號或設定。<b>在執行任何破壞性操作前，兩個資料庫都會自動備份至 /"
 "config/backup。</b>還原紀錄將與備份一同儲存。"
 
-#: cps/templates/config_db.html:121
+#: cps/templates/config_db.html:122
 msgid "Are you sure? This cannot be undone."
 msgstr "您確定嗎？此動作無法回溯！"
 
-#: cps/templates/config_db.html:121
+#: cps/templates/config_db.html:122
 msgid "Restore Calibre Database (Last Resort)"
 msgstr "還原 Calibre 資料庫（最終手段）"
 
@@ -3454,11 +3458,11 @@ msgstr "還原 Calibre 資料庫（最終手段）"
 msgid "New db location is invalid, please enter valid path"
 msgstr "新資料庫路徑無效，請輸入有效的路徑"
 
-#: cps/templates/config_edit.html:6 cps/templates/config_edit.html:272
+#: cps/templates/config_edit.html:6 cps/templates/config_edit.html:273
 msgid "Use Standard Authentication"
 msgstr "使用標準認證"
 
-#: cps/templates/config_edit.html:8 cps/templates/config_edit.html:274
+#: cps/templates/config_edit.html:8 cps/templates/config_edit.html:275
 msgid "Use LDAP Authentication"
 msgstr "使用LDAP認證"
 
@@ -3570,35 +3574,41 @@ msgstr "代理未知請求到Kobo商店"
 msgid "Server External Port (for port forwarded API calls)"
 msgstr "伺服器擴展連接埠（用於轉發的 API 調用的連接埠）"
 
-#: cps/templates/config_edit.html:216
+#: cps/templates/config_edit.html:213
+msgid ""
+"A reverse proxy was detected. Leave blank unless you need to override the "
+"port for direct access."
+msgstr ""
+
+#: cps/templates/config_edit.html:217
 msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
 msgstr "同步 Kobo 閱讀進度至 Hardcover（每位使用者皆各自需要 API 金鑰）"
 
-#: cps/templates/config_edit.html:220
+#: cps/templates/config_edit.html:221
 msgid "Sync Kobo annotations to Hardcover (Requires API key per user)"
 msgstr "同步 Kobo 標註至 Hardcover（每位使用者皆各自需要 API 金鑰）"
 
-#: cps/templates/config_edit.html:227
+#: cps/templates/config_edit.html:228
 msgid "Use Goodreads"
 msgstr "使用 Goodreads"
 
-#: cps/templates/config_edit.html:231
+#: cps/templates/config_edit.html:232
 msgid "Goodreads API Key"
 msgstr "Goodreads API Key"
 
-#: cps/templates/config_edit.html:238
+#: cps/templates/config_edit.html:239
 msgid "Enable Hardcover Sync"
 msgstr "啟用 Hardcover 同步"
 
-#: cps/templates/config_edit.html:242
+#: cps/templates/config_edit.html:243
 msgid "Hardcover API Key"
 msgstr "Hardcover API 金鑰"
 
-#: cps/templates/config_edit.html:248
+#: cps/templates/config_edit.html:249
 msgid "Allow Reverse Proxy Authentication"
 msgstr "允許反向代理認證方式"
 
-#: cps/templates/config_edit.html:249
+#: cps/templates/config_edit.html:250
 msgid ""
 "Trusts the \"Remote-User\" header from a reverse proxy for authentication. "
 "This is an authentication method, distinct from the HTTPS security setting "
@@ -3607,11 +3617,11 @@ msgstr ""
 "信任來自反向代理的「Remote-User」標頭進行驗證。這是一種驗證方式，與下方的 "
 "HTTPS 安全設定不同。"
 
-#: cps/templates/config_edit.html:253
+#: cps/templates/config_edit.html:254
 msgid "Use via HTTPS"
 msgstr "透過 HTTPS 使用"
 
-#: cps/templates/config_edit.html:254
+#: cps/templates/config_edit.html:255
 msgid ""
 "Enables secure cookie settings (Secure, SameSite=Lax). Enable this ONLY if "
 "you are accessing the server via HTTPS, otherwise you will be locked out."
@@ -3619,11 +3629,11 @@ msgstr ""
 "啟用安全 Cookie 設定（Secure, SameSite=Lax）。僅在透過 HTTPS 存取伺服器時啟"
 "用，否則您將被鎖定。"
 
-#: cps/templates/config_edit.html:263
+#: cps/templates/config_edit.html:264
 msgid "Auto-create users from reverse proxy"
 msgstr "從反向代理自動建立使用者"
 
-#: cps/templates/config_edit.html:264
+#: cps/templates/config_edit.html:265
 msgid ""
 "Automatically create user accounts when valid reverse proxy headers are "
 "received. Only enable if your reverse proxy authentication is properly "
@@ -3632,199 +3642,199 @@ msgstr ""
 "收到有效的反向代理標頭時自動建立使用者帳號。請僅在反向代理驗證已妥善保護時啟"
 "用。"
 
-#: cps/templates/config_edit.html:270
+#: cps/templates/config_edit.html:271
 msgid "Login type"
 msgstr "登入類型"
 
-#: cps/templates/config_edit.html:277
+#: cps/templates/config_edit.html:278
 msgid "Use OAuth (requires HTTPS)"
 msgstr "使用 OAuth（需要 HTTPS）"
 
-#: cps/templates/config_edit.html:284
+#: cps/templates/config_edit.html:285
 msgid "LDAP Server Host Name or IP Address"
 msgstr "LDAP 伺服器主機名或 IP 地址"
 
-#: cps/templates/config_edit.html:288
+#: cps/templates/config_edit.html:289
 msgid "LDAP Server Port"
 msgstr "LDAP 伺服器連接埠"
 
-#: cps/templates/config_edit.html:292
+#: cps/templates/config_edit.html:293
 msgid "LDAP Encryption"
 msgstr "LDAP 加密"
 
-#: cps/templates/config_edit.html:295
+#: cps/templates/config_edit.html:296
 msgid "TLS"
 msgstr "TLS"
 
-#: cps/templates/config_edit.html:296
+#: cps/templates/config_edit.html:297
 msgid "SSL"
 msgstr "SSL"
 
-#: cps/templates/config_edit.html:300
+#: cps/templates/config_edit.html:301
 msgid ""
 "LDAP CACertificate Path (Only needed for Client Certificate Authentication)"
 msgstr "LDAP CA 證書路徑(僅用於客戶端證書認證)"
 
-#: cps/templates/config_edit.html:307
+#: cps/templates/config_edit.html:308
 msgid ""
 "LDAP Certificate Path (Only needed for Client Certificate Authentication)"
 msgstr "LDAP 證書路徑(僅用於客戶端證書認證)"
 
-#: cps/templates/config_edit.html:314
+#: cps/templates/config_edit.html:315
 msgid "LDAP Keyfile Path (Only needed for Client Certificate Authentication)"
 msgstr "LDAP 密鑰檔案路徑(僅用於客戶端證書認證)"
 
-#: cps/templates/config_edit.html:323
+#: cps/templates/config_edit.html:324
 msgid "LDAP Authentication"
 msgstr "LDAP 驗證方式"
 
-#: cps/templates/config_edit.html:325
+#: cps/templates/config_edit.html:326
 msgid "Anonymous"
 msgstr "匿名"
 
-#: cps/templates/config_edit.html:326
+#: cps/templates/config_edit.html:327
 msgid "Unauthenticated"
 msgstr "未驗證"
 
-#: cps/templates/config_edit.html:327
+#: cps/templates/config_edit.html:328
 msgid "Simple"
 msgstr "簡易"
 
-#: cps/templates/config_edit.html:332
+#: cps/templates/config_edit.html:333
 msgid "LDAP Administrator Username"
 msgstr "LDAP 管理員使用者名稱"
 
-#: cps/templates/config_edit.html:338
+#: cps/templates/config_edit.html:339
 msgid "LDAP Administrator Password"
 msgstr "LDAP 管理員密碼"
 
-#: cps/templates/config_edit.html:343
+#: cps/templates/config_edit.html:344
 msgid "LDAP Distinguished Name (DN)"
 msgstr "LDAP 專有名稱（DN）"
 
-#: cps/templates/config_edit.html:347
+#: cps/templates/config_edit.html:348
 msgid "LDAP User Object Filter"
 msgstr "LDAP 使用者物件過濾器"
 
-#: cps/templates/config_edit.html:352
+#: cps/templates/config_edit.html:353
 msgid "LDAP Server is OpenLDAP?"
 msgstr "LDAP 伺服器是 OpenLDAP 嗎？"
 
-#: cps/templates/config_edit.html:356
+#: cps/templates/config_edit.html:357
 msgid "Auto-create users from LDAP"
 msgstr "從 LDAP 自動建立使用者"
 
-#: cps/templates/config_edit.html:357
+#: cps/templates/config_edit.html:358
 msgid ""
 "Automatically create user accounts when LDAP authentication succeeds for new "
 "users. Recommended for enterprise environments."
 msgstr "當新使用者的 LDAP 驗證成功時自動建立使用者帳號。建議用於企業環境。"
 
-#: cps/templates/config_edit.html:359
+#: cps/templates/config_edit.html:360
 msgid "Following Settings are Needed For User Import"
 msgstr "使用者匯入需要以下設定"
 
-#: cps/templates/config_edit.html:361
+#: cps/templates/config_edit.html:362
 msgid "LDAP Group Object Filter"
 msgstr "LDAP 群組對象過濾器"
 
-#: cps/templates/config_edit.html:365
+#: cps/templates/config_edit.html:366
 msgid "LDAP Group Name"
 msgstr "LDAP 群組名"
 
-#: cps/templates/config_edit.html:369
+#: cps/templates/config_edit.html:370
 msgid "LDAP Group Members Field"
 msgstr "LDAP 群組成員欄位"
 
-#: cps/templates/config_edit.html:373
+#: cps/templates/config_edit.html:374
 msgid "LDAP Member User Filter Detection"
 msgstr "LDAP 成員使用者過濾器檢測"
 
-#: cps/templates/config_edit.html:375
+#: cps/templates/config_edit.html:376
 msgid "Autodetect"
 msgstr "自動偵測"
 
-#: cps/templates/config_edit.html:376
+#: cps/templates/config_edit.html:377
 msgid "Custom Filter"
 msgstr "自訂篩選器"
 
-#: cps/templates/config_edit.html:381
+#: cps/templates/config_edit.html:382
 msgid "LDAP Member User Filter"
 msgstr "LDAP 成員使用者過濾器"
 
-#: cps/templates/config_edit.html:391
+#: cps/templates/config_edit.html:392
 msgid "Important:"
 msgstr "重要:"
 
-#: cps/templates/config_edit.html:391
+#: cps/templates/config_edit.html:392
 msgid ""
 "OAuth authentication requires this server to be accessed via HTTPS. If you "
 "are using HTTP, login will fail."
 msgstr "OAuth 驗證需要透過 HTTPS 存取此伺服器。如果使用 HTTP，登入將會失敗。"
 
-#: cps/templates/config_edit.html:394
+#: cps/templates/config_edit.html:395
 msgid "Generic OAuth Provider"
 msgstr "通用 OAuth 提供者"
 
-#: cps/templates/config_edit.html:398
+#: cps/templates/config_edit.html:399
 msgid "OAuth Metadata URL (for auto-discovery)"
 msgstr "OAuth 中繼資料 URL（用於自動探索）"
 
-#: cps/templates/config_edit.html:402
+#: cps/templates/config_edit.html:403
 msgid "Test Metadata"
 msgstr "測試中繼資料"
 
-#: cps/templates/config_edit.html:405
+#: cps/templates/config_edit.html:406
 msgid "Leave empty to use manual configuration below"
 msgstr "留空以使用下方的手動設定"
 
-#: cps/templates/config_edit.html:411
+#: cps/templates/config_edit.html:412
 msgid "Use Manual Endpoint URLs (override auto-discovery)"
 msgstr "使用手動端點 URL（覆寫自動探索）"
 
-#: cps/templates/config_edit.html:412
+#: cps/templates/config_edit.html:413
 msgid ""
 "Check this to manually configure individual OAuth endpoints instead of using "
 "auto-discovery"
 msgstr "勾選此選項以手動設定個別 OAuth 端點，而不使用自動探索"
 
-#: cps/templates/config_edit.html:417
+#: cps/templates/config_edit.html:418
 msgid "Manual Endpoint Configuration"
 msgstr "編輯手動端點設定"
 
-#: cps/templates/config_edit.html:420
+#: cps/templates/config_edit.html:421
 msgid "OAuth Base URL"
 msgstr "OAuth 基礎 URL"
 
-#: cps/templates/config_edit.html:425
+#: cps/templates/config_edit.html:426
 msgid "Authorization Endpoint"
 msgstr "授權端點"
 
-#: cps/templates/config_edit.html:430
+#: cps/templates/config_edit.html:431
 msgid "Token Endpoint"
 msgstr "權杖端點"
 
-#: cps/templates/config_edit.html:435
+#: cps/templates/config_edit.html:436
 msgid "UserInfo Endpoint"
 msgstr "UserInfo 端點"
 
-#: cps/templates/config_edit.html:443
+#: cps/templates/config_edit.html:444
 msgid "Test Connection"
 msgstr "測試連線"
 
-#: cps/templates/config_edit.html:452
+#: cps/templates/config_edit.html:453
 msgid "OAuth Scopes"
 msgstr "OAuth 範圍"
 
-#: cps/templates/config_edit.html:454
+#: cps/templates/config_edit.html:455
 msgid "Space-separated list of OAuth scopes"
 msgstr "以空格分隔的 OAuth 範圍清單"
 
-#: cps/templates/config_edit.html:459
+#: cps/templates/config_edit.html:460
 msgid "OAuth Redirect Host"
 msgstr "OAuth 重新導向主機"
 
-#: cps/templates/config_edit.html:462
+#: cps/templates/config_edit.html:463
 msgid ""
 "Set a consistent hostname for OAuth redirects to prevent \"invalid redirect "
 "URI\" errors. Include protocol (https://). Leave empty to use automatic "
@@ -3833,7 +3843,7 @@ msgstr ""
 "設定一致的主機名稱用於 OAuth 重新導向，以避免「無效的重新導向 URI」錯誤。包含"
 "協定（https://）。留空以使用自動偵測。"
 
-#: cps/templates/config_edit.html:464
+#: cps/templates/config_edit.html:465
 msgid ""
 "Required if: accessing via multiple hostnames, behind reverse proxy, or "
 "getting \"invalid redirect URI\" errors."
@@ -3841,39 +3851,39 @@ msgstr ""
 "在以下情況需要：透過多個主機名稱存取、位於反向代理後方，或出現「無效的重新導"
 "向 URI」錯誤。"
 
-#: cps/templates/config_edit.html:469
+#: cps/templates/config_edit.html:470
 msgid "OAuth Client Id"
 msgstr "OAuth 客戶端 Id"
 
-#: cps/templates/config_edit.html:473
+#: cps/templates/config_edit.html:474
 msgid "OAuth Client Secret"
 msgstr "OAuth 客戶端密鑰"
 
-#: cps/templates/config_edit.html:478
+#: cps/templates/config_edit.html:479
 msgid "Field Mapping Configuration"
 msgstr "欄位對應設定"
 
-#: cps/templates/config_edit.html:480
+#: cps/templates/config_edit.html:481
 msgid "Username Field"
 msgstr "使用者名稱欄位"
 
-#: cps/templates/config_edit.html:482
+#: cps/templates/config_edit.html:483
 msgid "JWT field to extract username from"
 msgstr "用於擷取使用者名稱的 JWT 欄位"
 
-#: cps/templates/config_edit.html:485
+#: cps/templates/config_edit.html:486
 msgid "Email Field"
 msgstr "電子郵件欄位"
 
-#: cps/templates/config_edit.html:487
+#: cps/templates/config_edit.html:488
 msgid "JWT field to extract email from"
 msgstr "用於擷取電子郵件的 JWT 欄位"
 
-#: cps/templates/config_edit.html:490
+#: cps/templates/config_edit.html:491
 msgid "OAuth group for Admin"
 msgstr "管理員的 OAuth 群組"
 
-#: cps/templates/config_edit.html:492
+#: cps/templates/config_edit.html:493
 msgid ""
 "Name of the OAuth group that grants admin privileges. Leave empty to disable "
 "group-based admin management, or use the global setting in Security Settings "
@@ -3882,54 +3892,54 @@ msgstr ""
 "授予管理員權限的 OAuth 群組名稱。留空以停用基於群組的自動管理員管理，或在安全"
 "設定中使用全域設定以取得更多控制。"
 
-#: cps/templates/config_edit.html:495
+#: cps/templates/config_edit.html:496
 msgid "Login Button Text"
 msgstr "登入按鈕文字"
 
-#: cps/templates/config_edit.html:501
+#: cps/templates/config_edit.html:502
 #, python-format
 msgid "Obtain %(provider)s OAuth Credential"
 msgstr "獲取 %(provider)s OAuth 憑證"
 
-#: cps/templates/config_edit.html:504
+#: cps/templates/config_edit.html:505
 #, python-format
 msgid "%(provider)s OAuth Client Id"
 msgstr "%(provider)s OAuth 客戶端 Id"
 
-#: cps/templates/config_edit.html:508
+#: cps/templates/config_edit.html:509
 #, python-format
 msgid "%(provider)s OAuth Client Secret"
 msgstr "%(provider)s OAuth 客戶端密鑰"
 
-#: cps/templates/config_edit.html:519
+#: cps/templates/config_edit.html:520
 msgid "External binaries"
 msgstr "外部程式"
 
-#: cps/templates/config_edit.html:520
+#: cps/templates/config_edit.html:521
 msgid "Path to Calibre Binaries"
 msgstr "Calibre 執行檔路徑"
 
-#: cps/templates/config_edit.html:528
+#: cps/templates/config_edit.html:529
 msgid "Calibre E-Book Converter Settings"
 msgstr "Calibre 電子書轉換器設定"
 
-#: cps/templates/config_edit.html:531
+#: cps/templates/config_edit.html:532
 msgid "Path to Kepubify E-Book Converter"
 msgstr "Kepubify 電子書轉換器路徑"
 
-#: cps/templates/config_edit.html:539
+#: cps/templates/config_edit.html:540
 msgid "Location of Unrar binary"
 msgstr "UnRar 執行檔路徑"
 
-#: cps/templates/config_edit.html:550
+#: cps/templates/config_edit.html:551
 msgid "Security Settings"
 msgstr "安全設定"
 
-#: cps/templates/config_edit.html:553
+#: cps/templates/config_edit.html:554
 msgid "Disable Standard Login (Username/Password)"
 msgstr "停用標準登入（使用者名稱/密碼）"
 
-#: cps/templates/config_edit.html:554
+#: cps/templates/config_edit.html:555
 msgid ""
 "Hides the standard login form. Users must log in via OAuth or LDAP. Ensure "
 "you have a working alternative login method before enabling."
@@ -3937,11 +3947,11 @@ msgstr ""
 "隱藏標準登入表單。使用者必須透過 OAuth 或 LDAP 登入。啟用前請確保有可用的替代"
 "登入方式。"
 
-#: cps/templates/config_edit.html:558
+#: cps/templates/config_edit.html:559
 msgid "Enable OAuth Group-Based Admin Role Management"
 msgstr "啟用 OAuth 群組管理員角色管理"
 
-#: cps/templates/config_edit.html:559
+#: cps/templates/config_edit.html:560
 msgid ""
 "When enabled, admin privileges are automatically granted or revoked based on "
 "OAuth group membership. Disable this to manually manage admin roles in the "
@@ -3951,59 +3961,59 @@ msgstr ""
 "啟用時，管理員權限將根據 OAuth 群組成員資格自動授予或撤銷。停用此選項以在使用"
 "者管理面板中手動管理管理員角色，防止 OAuth 登入覆寫本機的角色指派。"
 
-#: cps/templates/config_edit.html:563
+#: cps/templates/config_edit.html:564
 msgid "Limit failed login attempts"
 msgstr "限制登入失敗次數"
 
-#: cps/templates/config_edit.html:567
+#: cps/templates/config_edit.html:568
 msgid "Configure Backend for Limiter"
 msgstr "設定速率限制後端"
 
-#: cps/templates/config_edit.html:571
+#: cps/templates/config_edit.html:572
 msgid "Options for Limiter Backend"
 msgstr "速率限制後端選項"
 
-#: cps/templates/config_edit.html:577
+#: cps/templates/config_edit.html:578
 msgid "Check if file extensions matches file content on upload"
 msgstr "上傳時檢查副檔名是否與檔案內容相符"
 
-#: cps/templates/config_edit.html:580
+#: cps/templates/config_edit.html:581
 msgid "Session protection"
 msgstr "工作階段保護"
 
-#: cps/templates/config_edit.html:582
+#: cps/templates/config_edit.html:583
 msgid "Basic"
 msgstr "基本"
 
-#: cps/templates/config_edit.html:583
+#: cps/templates/config_edit.html:584
 msgid "Strong"
 msgstr "強"
 
-#: cps/templates/config_edit.html:588
+#: cps/templates/config_edit.html:589
 msgid "User Password policy"
 msgstr "使用者密碼原則"
 
-#: cps/templates/config_edit.html:592
+#: cps/templates/config_edit.html:593
 msgid "Minimum password length"
 msgstr "密碼最小長度"
 
-#: cps/templates/config_edit.html:597
+#: cps/templates/config_edit.html:598
 msgid "Enforce number"
 msgstr "強制包含數字"
 
-#: cps/templates/config_edit.html:601
+#: cps/templates/config_edit.html:602
 msgid "Enforce lowercase characters"
 msgstr "強制使用小寫字元"
 
-#: cps/templates/config_edit.html:605
+#: cps/templates/config_edit.html:606
 msgid "Enforce uppercase characters"
 msgstr "強制使用大寫字元"
 
-#: cps/templates/config_edit.html:609
+#: cps/templates/config_edit.html:610
 msgid "Enforce characters (needed For Chinese/Japanese/Korean Characters)"
 msgstr "強制使用字元（中文/日文/韓文字元需要）"
 
-#: cps/templates/config_edit.html:613
+#: cps/templates/config_edit.html:614
 msgid "Enforce special characters"
 msgstr "強制使用特殊字元"
 
@@ -7066,6 +7076,9 @@ msgstr "同步所選書架到 Kobo"
 #: cps/templates/user_table.html:157
 msgid "Show Read/Unread Section"
 msgstr "顯示已讀/未讀段落"
+
+#~ msgid "Port"
+#~ msgstr "連接埠"
 
 #~ msgid "Scanning for duplicates"
 #~ msgstr "正在掃描重複項目"

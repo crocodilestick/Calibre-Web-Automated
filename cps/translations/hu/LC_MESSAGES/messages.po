@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 12:34+0000\n"
+"POT-Creation-Date: 2026-08-06 13:50+0000\n"
 "PO-Revision-Date: 2026-02-16 03:01+0100\n"
 "Last-Translator: Kónya Márton <konyamarci52@proton.me>\n"
 "Language-Team: \n"
@@ -115,145 +115,145 @@ msgstr "Nem található könyv borítóval a feldolgozáshoz."
 msgid "Failed to start thumbnail refresh: {}"
 msgstr "Nem sikerült elindítani a címlapkép frissítést: {}"
 
-#: cps/admin.py:538
+#: cps/admin.py:539
 msgid "Admin page"
 msgstr "Admin oldal"
 
-#: cps/admin.py:558
+#: cps/admin.py:560
 msgid "Basic Configuration"
 msgstr "Alapvető beállítások"
 
-#: cps/admin.py:596
+#: cps/admin.py:598
 msgid "UI Configuration"
 msgstr "Felhasználói felület beállításai"
 
-#: cps/admin.py:620 cps/admin.py:1302 cps/db.py:985 cps/search.py:153
+#: cps/admin.py:622 cps/admin.py:1304 cps/db.py:985 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "A %(column)d egyéni oszlop nem létezik a Calibre adatbázisban"
 
-#: cps/admin.py:638 cps/templates/admin.html:55
+#: cps/admin.py:640 cps/templates/admin.html:55
 msgid "Edit Users"
 msgstr "Felhasználók szerkesztése"
 
-#: cps/admin.py:682 cps/opds.py:798 cps/templates/grid.html:14
+#: cps/admin.py:684 cps/opds.py:798 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Mind"
 
-#: cps/admin.py:709 cps/admin.py:1893
+#: cps/admin.py:711 cps/admin.py:1895
 msgid "User not found"
 msgstr "Felhasználó nem található"
 
-#: cps/admin.py:723
+#: cps/admin.py:725
 #, python-brace-format
 msgid "{} users deleted successfully"
 msgstr "{} felhasználók sikeresen törölve"
 
-#: cps/admin.py:746 cps/templates/config_view_edit.html:169
+#: cps/admin.py:748 cps/templates/config_view_edit.html:169
 #: cps/templates/user_edit.html:263 cps/templates/user_edit.html:285
 #: cps/templates/user_table.html:81
 msgid "Show All"
 msgstr "Minden megjelenítése"
 
-#: cps/admin.py:767 cps/admin.py:773
+#: cps/admin.py:769 cps/admin.py:775
 msgid "Malformed request"
 msgstr "Hibás kérés"
 
-#: cps/admin.py:785 cps/admin.py:2786
+#: cps/admin.py:787 cps/admin.py:2791
 msgid "Guest Name can't be changed"
 msgstr "A Guest felhasználó neve nem módosítható"
 
-#: cps/admin.py:799
+#: cps/admin.py:801
 msgid "Guest can't have this role"
 msgstr "Vendég felhasználó nem veheti fel ezt a szerepet"
 
-#: cps/admin.py:811 cps/admin.py:2611
+#: cps/admin.py:813 cps/admin.py:2616
 msgid "No admin user remaining, can't remove admin role"
 msgstr "Nincs admin felhasználó, nem lehet eltávolítani az Admin szerepet"
 
-#: cps/admin.py:815 cps/admin.py:829
+#: cps/admin.py:817 cps/admin.py:831
 msgid "Value has to be true or false"
 msgstr "Az érték csak igaz vagy hamis lehet"
 
-#: cps/admin.py:817
+#: cps/admin.py:819
 msgid "Invalid role"
 msgstr "Érvénytelen szerep"
 
-#: cps/admin.py:821
+#: cps/admin.py:823
 msgid "Guest can't have this view"
 msgstr "Vendég felhasználó nem kaphatja meg ezt a nézetet"
 
-#: cps/admin.py:831
+#: cps/admin.py:833
 msgid "Invalid view"
 msgstr "Érvénytelen nézet"
 
-#: cps/admin.py:834
+#: cps/admin.py:836
 msgid "Guest's Locale is determined automatically and can't be set"
 msgstr "A Vendég felhasználó nyelvi beállítása automatikus, nem szerkeszthető"
 
-#: cps/admin.py:838
+#: cps/admin.py:840
 msgid "No Valid Locale Given"
 msgstr "Nincs érvényes nyelv megadva"
 
-#: cps/admin.py:849
+#: cps/admin.py:851
 msgid "No Valid Book Language Given"
 msgstr "Hiányzik a könyv érvényes nyelve"
 
-#: cps/admin.py:851 cps/editbooks.py:596
+#: cps/admin.py:853 cps/editbooks.py:596
 msgid "Parameter not found"
 msgstr "Paraméter nem található"
 
-#: cps/admin.py:888
+#: cps/admin.py:890
 msgid "Invalid Read Column"
 msgstr "Érvénytelen olvasva/olvasatlan állapot oszlop"
 
-#: cps/admin.py:894
+#: cps/admin.py:896
 msgid "Invalid Restricted Column"
 msgstr "Érvénytelen korlátozások oszlop"
 
-#: cps/admin.py:914 cps/admin.py:2459
+#: cps/admin.py:916 cps/admin.py:2464
 msgid "Calibre-Web Automated configuration updated"
 msgstr "A Calibre-Web Automated konfigurációja frissítve"
 
-#: cps/admin.py:926
+#: cps/admin.py:928
 msgid "Do you really want to delete the Kobo Token?"
 msgstr "Tényleg törölni szeretné a Kobo tokent?"
 
-#: cps/admin.py:928
+#: cps/admin.py:930
 msgid "Do you really want to delete this domain?"
 msgstr "Tényleg törölni szeretné ezt a domaint?"
 
-#: cps/admin.py:930
+#: cps/admin.py:932
 msgid "Do you really want to delete this user?"
 msgstr "Tényleg törölni szeretné ezt a felhasználót?"
 
-#: cps/admin.py:932
+#: cps/admin.py:934
 msgid "Are you sure you want to delete this shelf?"
 msgstr "Valóban törölni akarja ezt a polcot?"
 
-#: cps/admin.py:934
+#: cps/admin.py:936
 msgid "Are you sure you want to change locales of selected user(s)?"
 msgstr ""
 "Biztosan meg szeretné változtatni a nyelvi beállításait a kiválasztott "
 "felhasználóknak?"
 
-#: cps/admin.py:936
+#: cps/admin.py:938
 msgid ""
 "Are you sure you want to change visible book languages for selected user(s)?"
 msgstr ""
 "Biztosan meg akarja változtatni a kiválasztott felhasználó(k)nál a megjelenő "
 "könyvnyelveket?"
 
-#: cps/admin.py:938
+#: cps/admin.py:940
 msgid ""
 "Are you sure you want to change the selected role for the selected user(s)?"
 msgstr ""
 "Biztosan meg akarja változtatni a kiválasztott felhasználó(k) kiválasztott "
 "szerepét?"
 
-#: cps/admin.py:940
+#: cps/admin.py:942
 msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
 "user(s)?"
@@ -261,7 +261,7 @@ msgstr ""
 "Biztosan módosítani szeretné a kiválasztott felhasználó(k)ra vonatkozó "
 "korlátozásokat?"
 
-#: cps/admin.py:942
+#: cps/admin.py:944
 msgid ""
 "Are you sure you want to change the selected visibility restrictions for the "
 "selected user(s)?"
@@ -269,18 +269,18 @@ msgstr ""
 "Biztosan módosítani szeretné a kiválasztott felhasználó(k) láthatósági "
 "korlátozásait?"
 
-#: cps/admin.py:945
+#: cps/admin.py:947
 msgid ""
 "Are you sure you want to change shelf sync behavior for the selected user(s)?"
 msgstr ""
 "Biztosan módosítani szeretné a kiválasztott felhasználó(k) "
 "polcszinkronizálási módját?"
 
-#: cps/admin.py:947
+#: cps/admin.py:949
 msgid "Are you sure you want to change Calibre library location?"
 msgstr "Biztosan meg akarja változtatni a Calibre könyvtár helyét?"
 
-#: cps/admin.py:949
+#: cps/admin.py:951
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
 "Thumbnails, this may take a while?"
@@ -288,7 +288,7 @@ msgstr ""
 "A Calibre-Web megkeresi a legújabb borítókat és frissíti a borító "
 "miniatűrjeit. Ez egy kis időbe telhet."
 
-#: cps/admin.py:952
+#: cps/admin.py:954
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
 "a full sync with your Kobo Reader?"
@@ -296,93 +296,93 @@ msgstr ""
 "Biztosan törölni szeretné a Calibre-Web szinkronizálási adatbázisát, hogy "
 "teljes szinkronizálást hajtson végre a Kobo Reader készülékével?"
 
-#: cps/admin.py:1191 cps/admin.py:1197 cps/admin.py:1207 cps/admin.py:1217
+#: cps/admin.py:1193 cps/admin.py:1199 cps/admin.py:1209 cps/admin.py:1219
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
 #: cps/templates/user_table.html:58
 msgid "Deny"
 msgstr "Elutasítás"
 
-#: cps/admin.py:1193 cps/admin.py:1199 cps/admin.py:1209 cps/admin.py:1219
+#: cps/admin.py:1195 cps/admin.py:1201 cps/admin.py:1211 cps/admin.py:1221
 #: cps/templates/modal_dialogs.html:28 cps/templates/user_table.html:44
 #: cps/templates/user_table.html:61
 msgid "Allow"
 msgstr "Engedélyezés"
 
-#: cps/admin.py:1252
+#: cps/admin.py:1254
 #, python-brace-format
 msgid "{} sync entries deleted"
 msgstr "{} szinkronizált bejegyzés törölve"
 
-#: cps/admin.py:1293
+#: cps/admin.py:1295
 msgid "Tag not found"
 msgstr "Címke nem található"
 
-#: cps/admin.py:1311
+#: cps/admin.py:1313
 msgid "Invalid Action"
 msgstr "Érvénytelen művelet"
 
-#: cps/admin.py:1438
+#: cps/admin.py:1440
 msgid "client_secrets.json Is Not Configured For Web Application"
 msgstr "client_secrets.json fájl nincs beállítva a webalkalmazáshoz"
 
-#: cps/admin.py:1577
+#: cps/admin.py:1579
 msgid "Logfile Location is not Valid, Please Enter Correct Path"
 msgstr "A naplófájl helye nem érvényes, kérjük, adja meg a helyes elérési utat"
 
-#: cps/admin.py:1583
+#: cps/admin.py:1585
 msgid "Access Logfile Location is not Valid, Please Enter Correct Path"
 msgstr ""
 "A hozzáférési naplófájl helye nem érvényes, kérjük, adja meg a helyes "
 "elérési utat"
 
-#: cps/admin.py:1618
+#: cps/admin.py:1620
 msgid "Please Enter a LDAP Provider, Port, DN and User Object Identifier"
 msgstr ""
 "Kérjük, adja meg az LDAP szolgáltatót, a portot, a DN-t és a felhasználói "
 "objektum azonosítót"
 
-#: cps/admin.py:1624
+#: cps/admin.py:1626
 msgid "Please Enter a LDAP Service Account and Password"
 msgstr "Kérjük, adja meg az LDAP-szolgáltatási fiókot és jelszót"
 
-#: cps/admin.py:1627
+#: cps/admin.py:1629
 msgid "Please Enter a LDAP Service Account"
 msgstr "Kérjük, adja meg LDAP-szolgáltatási fiókját"
 
-#: cps/admin.py:1632
+#: cps/admin.py:1634
 #, python-format
 msgid "LDAP Group Object Filter Needs to Have One \"%s\" Format Identifier"
 msgstr ""
 "Az LDAP csoport objektumszűrőnek egy \"%s\" formátumazonosítóval kell "
 "rendelkeznie"
 
-#: cps/admin.py:1634
+#: cps/admin.py:1636
 msgid "LDAP Group Object Filter Has Unmatched Parenthesis"
 msgstr "Az LDAP csoport objektumszűrőjében nincs megfelelő zárójel"
 
-#: cps/admin.py:1638
+#: cps/admin.py:1640
 #, python-format
 msgid "LDAP User Object Filter needs to Have One \"%s\" Format Identifier"
 msgstr ""
 "Az LDAP felhasználói objektumszűrőnek rendelkeznie kell egy \"%s\" "
 "formátumazonosítóval"
 
-#: cps/admin.py:1640
+#: cps/admin.py:1642
 msgid "LDAP User Object Filter Has Unmatched Parenthesis"
 msgstr "Az LDAP felhasználói objektumszűrőben nincs megfelelő zárójel"
 
-#: cps/admin.py:1647
+#: cps/admin.py:1649
 #, python-format
 msgid "LDAP Member User Filter needs to Have One \"%s\" Format Identifier"
 msgstr ""
 "Az LDAP-tag felhasználói szűrőnek egy \"%s\" formátumú azonosítóval kell "
 "rendelkeznie"
 
-#: cps/admin.py:1649
+#: cps/admin.py:1651
 msgid "LDAP Member User Filter Has Unmatched Parenthesis"
 msgstr "Az LDAP-tag felhasználói szűrőben nincs megfelelő zárójel"
 
-#: cps/admin.py:1656
+#: cps/admin.py:1658
 msgid ""
 "LDAP CACertificate, Certificate or Key Location is not Valid, Please Enter "
 "Correct Path"
@@ -390,20 +390,20 @@ msgstr ""
 "LDAP CACertificate, tanúsítvány vagy kulcs helye érvénytelen. Kérjük, adja "
 "meg a helyes elérési utat"
 
-#: cps/admin.py:1689 cps/templates/admin.html:57
+#: cps/admin.py:1691 cps/templates/admin.html:57
 msgid "Add New User"
 msgstr "Új felhasználó hozzáadása"
 
-#: cps/admin.py:1704 cps/templates/admin.html:105
+#: cps/admin.py:1706 cps/templates/admin.html:105
 msgid "Edit Email Server Settings"
 msgstr "E-mail szerver beállításainak szerkesztése"
 
-#: cps/admin.py:1723
+#: cps/admin.py:1725
 msgid "Success! Gmail Account Verified."
 msgstr "Siker! A Gmail-fiók hitelesítve."
 
-#: cps/admin.py:1743 cps/admin.py:1746 cps/admin.py:2232 cps/admin.py:2443
-#: cps/admin.py:2558 cps/admin.py:2829 cps/editbooks.py:1046
+#: cps/admin.py:1745 cps/admin.py:1748 cps/admin.py:2234 cps/admin.py:2448
+#: cps/admin.py:2563 cps/admin.py:2834 cps/editbooks.py:1046
 #: cps/editbooks.py:1830 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2678
@@ -411,7 +411,7 @@ msgstr "Siker! A Gmail-fiók hitelesítve."
 msgid "Oops! Database Error: %(error)s."
 msgstr "Hoppá! Adatbázis hiba: %(error)s."
 
-#: cps/admin.py:1753
+#: cps/admin.py:1755
 #, python-format
 msgid ""
 "Test e-mail queued for sending to %(email)s, please check Tasks for result"
@@ -419,171 +419,171 @@ msgstr ""
 "A %(email)s címre küldendő teszt e-mail sorba állítva. Kérjük, ellenőrizze a "
 "Feladatok menüpontban az eredményt"
 
-#: cps/admin.py:1756
+#: cps/admin.py:1758
 #, python-format
 msgid "There was an error sending the Test e-mail: %(res)s"
 msgstr "Hiba történt a teszt levél küldése során: %(res)s"
 
-#: cps/admin.py:1758
+#: cps/admin.py:1760
 msgid "Please configure your e-mail address first..."
 msgstr "Kérjük, először állítsa be az e-mail címét..."
 
-#: cps/admin.py:1760
+#: cps/admin.py:1762
 msgid "Email Server Settings updated"
 msgstr "Az e-mail kiszolgáló beállításai frissítve"
 
-#: cps/admin.py:1783 cps/templates/admin.html:201
+#: cps/admin.py:1785 cps/templates/admin.html:201
 msgid "Edit Scheduled Tasks Settings"
 msgstr "Ütemezett feladatok beállításainak szerkesztése"
 
-#: cps/admin.py:1795
+#: cps/admin.py:1797
 msgid "Invalid start time for task specified"
 msgstr "A feladat megadott kezdési ideje érvénytelen"
 
-#: cps/admin.py:1800
+#: cps/admin.py:1802
 msgid "Invalid duration for task specified"
 msgstr "A feladat időtartama érvénytelen"
 
-#: cps/admin.py:1810
+#: cps/admin.py:1812
 msgid "Scheduled tasks settings updated"
 msgstr "Az ütemezett feladatok beállításai frissültek"
 
-#: cps/admin.py:1820 cps/admin.py:1964 cps/admin.py:2825 cps/web.py:2109
+#: cps/admin.py:1822 cps/admin.py:1966 cps/admin.py:2830 cps/web.py:2109
 msgid "Oops! An unknown error occurred. Please try again later."
 msgstr "Ismeretlen hiba történt. Később próbálja újra!"
 
-#: cps/admin.py:1824
+#: cps/admin.py:1826
 msgid "Settings DB is not Writeable"
 msgstr "A beállítások adatbázisa nem írható"
 
-#: cps/admin.py:1843 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
+#: cps/admin.py:1845 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
 msgid "title"
 msgstr "cím"
 
-#: cps/admin.py:1949 cps/admin.py:2817
+#: cps/admin.py:1951 cps/admin.py:2822
 #, python-format
 msgid "Edit User %(nick)s"
 msgstr "A felhasználó szerkesztése: %(nick)s"
 
-#: cps/admin.py:1961
+#: cps/admin.py:1963
 #, python-format
 msgid "Success! Password for user %(user)s reset"
 msgstr "%(user)s felhasználó jelszava sikeresen alaphelyzetbe állítva"
 
-#: cps/admin.py:1967
+#: cps/admin.py:1969
 msgid "Oops! Please configure the SMTP mail settings."
 msgstr "Hoppá! Kérjük, állítsa be az SMTP levelezési beállításokat."
 
-#: cps/admin.py:1978
+#: cps/admin.py:1980
 msgid "Logfile viewer"
 msgstr "Naplófájl-megtekintő"
 
-#: cps/admin.py:2044
+#: cps/admin.py:2046
 msgid "Requesting update package"
 msgstr "Frissítési csomag kérése"
 
-#: cps/admin.py:2045
+#: cps/admin.py:2047
 msgid "Downloading update package"
 msgstr "Frissítési csomag letöltése"
 
-#: cps/admin.py:2046
+#: cps/admin.py:2048
 msgid "Unzipping update package"
 msgstr "Frissítési csomag kitömörítése"
 
-#: cps/admin.py:2047
+#: cps/admin.py:2049
 msgid "Replacing files"
 msgstr "Fájlok cserélése"
 
-#: cps/admin.py:2048
+#: cps/admin.py:2050
 msgid "Database connections are closed"
 msgstr "Adatbázis kapcsolatok lezárva"
 
-#: cps/admin.py:2049
+#: cps/admin.py:2051
 msgid "Stopping server"
 msgstr "Szerver leállítása"
 
-#: cps/admin.py:2050
+#: cps/admin.py:2052
 msgid "Update finished, please press okay and reload page"
 msgstr "A frissítés települt, kattinton az OK-ra és az oldal újra tölt"
 
-#: cps/admin.py:2051 cps/admin.py:2052 cps/admin.py:2053 cps/admin.py:2054
-#: cps/admin.py:2055 cps/admin.py:2056
+#: cps/admin.py:2053 cps/admin.py:2054 cps/admin.py:2055 cps/admin.py:2056
+#: cps/admin.py:2057 cps/admin.py:2058
 msgid "Update failed:"
 msgstr "A frissítés nem sikerült:"
 
-#: cps/admin.py:2051 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
+#: cps/admin.py:2053 cps/updater.py:394 cps/updater.py:629 cps/updater.py:631
 msgid "HTTP Error"
 msgstr "HTTP hiba"
 
-#: cps/admin.py:2052 cps/updater.py:396 cps/updater.py:633
+#: cps/admin.py:2054 cps/updater.py:396 cps/updater.py:633
 msgid "Connection error"
 msgstr "Kapcsolódási hiba"
 
-#: cps/admin.py:2053 cps/updater.py:398 cps/updater.py:635
+#: cps/admin.py:2055 cps/updater.py:398 cps/updater.py:635
 msgid "Timeout while establishing connection"
 msgstr "Időtúllépés a kapcsolódás során"
 
-#: cps/admin.py:2054 cps/updater.py:400 cps/updater.py:637
+#: cps/admin.py:2056 cps/updater.py:400 cps/updater.py:637
 msgid "General error"
 msgstr "Általános hiba"
 
-#: cps/admin.py:2055
+#: cps/admin.py:2057
 msgid "Update file could not be saved in temp dir"
 msgstr "A frissítési fájl nem menthető a temp könyvtárba"
 
-#: cps/admin.py:2056
+#: cps/admin.py:2058
 msgid "Files could not be replaced during update"
 msgstr "A fájlok frissítés közben nem cserélhetők ki"
 
-#: cps/admin.py:2080
+#: cps/admin.py:2082
 msgid "Failed to extract at least One LDAP User"
 msgstr "Legalább egy LDAP-felhasználó kibontása nem sikerült"
 
-#: cps/admin.py:2125
+#: cps/admin.py:2127
 msgid "Failed to Create at Least One LDAP User"
 msgstr "Nem sikerült legalább egy LDAP-felhasználót létrehozni"
 
-#: cps/admin.py:2138
+#: cps/admin.py:2140
 #, python-format
 msgid "Error: %(ldaperror)s"
 msgstr "Hiba: %(ldaperror)s"
 
-#: cps/admin.py:2142
+#: cps/admin.py:2144
 msgid "Error: No user returned in response of LDAP server"
 msgstr "Hiba: Az LDAP-kiszolgáló nem adott vissza felhasználót"
 
-#: cps/admin.py:2178
+#: cps/admin.py:2180
 msgid "At Least One LDAP User Not Found in Database"
 msgstr "Legalább egy LDAP-felhasználó nem található az adatbázisban"
 
-#: cps/admin.py:2180
+#: cps/admin.py:2182
 #, python-brace-format
 msgid "{} User Successfully Imported"
 msgstr "{} felhasználó sikeresen importálva"
 
-#: cps/admin.py:2244
+#: cps/admin.py:2246
 msgid "Books path not valid"
 msgstr "A könyvek elérési útvonala érvénytelen"
 
-#: cps/admin.py:2251
+#: cps/admin.py:2253
 msgid "DB Location is not Valid, Please Enter Correct Path"
 msgstr ""
 "Az adatbázis helye nem érvényes, kérjük, adja meg a helyes elérési utat"
 
-#: cps/admin.py:2279
+#: cps/admin.py:2281
 msgid "DB is not Writeable"
 msgstr "Az adatbázis nem írható"
 
-#: cps/admin.py:2292
+#: cps/admin.py:2294
 msgid "Keyfile Location is not Valid, Please Enter Correct Path"
 msgstr "A kulcsfájl helye nem érvényes, kérjük, adja meg a helyes elérési utat"
 
-#: cps/admin.py:2296
+#: cps/admin.py:2298
 msgid "Certfile Location is not Valid, Please Enter Correct Path"
 msgstr ""
 "A tanúsítványfájl helye nem érvényes, kérjük, adja meg a helyes elérési utat"
 
-#: cps/admin.py:2365
+#: cps/admin.py:2370
 msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
@@ -591,13 +591,13 @@ msgstr ""
 "Felhasználók automatikus létrehozása nem engedélyezhető reverse proxy "
 "autentikáció engedélyezése nélkül"
 
-#: cps/admin.py:2368
+#: cps/admin.py:2373
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
 "Felhasználók automatikus létrehozása érvényes reverse proxy header nevet "
 "igényel"
 
-#: cps/admin.py:2387 cps/admin.py:2394
+#: cps/admin.py:2392 cps/admin.py:2399
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
@@ -605,7 +605,7 @@ msgstr ""
 "Érvénytelen OAuth átirányítási cím formátum. A teljes URL-t adja meg "
 "protokollal együtt (pl.: https://your-domain.com)"
 
-#: cps/admin.py:2391
+#: cps/admin.py:2396
 msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
@@ -613,69 +613,69 @@ msgstr ""
 "OAuth átirányítási cím nem tartalmazhatja az elérési útvonalat. Csak az alap "
 "URL-t adja meg (pl.: https://your-domain.com)"
 
-#: cps/admin.py:2426
+#: cps/admin.py:2431
 msgid "Password length has to be between 1 and 40"
 msgstr "A jelszó hossza 1 és 40 karakter között kell legyen"
 
-#: cps/admin.py:2486
+#: cps/admin.py:2491
 msgid "Database Settings updated"
 msgstr "Adatbázis beállítások frissítve"
 
-#: cps/admin.py:2494
+#: cps/admin.py:2499
 msgid "Database Configuration"
 msgstr "Adatbázis beállítások"
 
-#: cps/admin.py:2514 cps/web.py:2078
+#: cps/admin.py:2519 cps/web.py:2078
 msgid "Oops! Please complete all fields."
 msgstr "Az összes mezőt ki kell tölteni!"
 
-#: cps/admin.py:2523
+#: cps/admin.py:2528
 msgid "E-mail is not from valid domain"
 msgstr "Az e-mail tartománya nem érvényes"
 
-#: cps/admin.py:2531
+#: cps/admin.py:2536
 msgid "Add new user"
 msgstr "Új felhasználó hozzáadása"
 
-#: cps/admin.py:2548
+#: cps/admin.py:2553
 #, python-format
 msgid "User '%(user)s' created"
 msgstr "A következő felhasználó létrehozva: %(user)s"
 
-#: cps/admin.py:2554
+#: cps/admin.py:2559
 msgid "Oops! An account already exists for this Email. or name."
 msgstr ""
 "Már létezik felhasználó ehhez az e-mail címhez vagy felhasználói névhez."
 
-#: cps/admin.py:2584
+#: cps/admin.py:2589
 #, python-format
 msgid "User '%(nick)s' deleted"
 msgstr "A felhasználó törölve: %(nick)s"
 
-#: cps/admin.py:2587
+#: cps/admin.py:2592
 msgid "Can't delete Guest User"
 msgstr "A vendég felhasználó nem törölhető"
 
-#: cps/admin.py:2590
+#: cps/admin.py:2595
 msgid "No admin user remaining, can't delete user"
 msgstr "Nem marad admin felhasználó, nem lehet felhasználót törölni"
 
-#: cps/admin.py:2780 cps/web.py:2413
+#: cps/admin.py:2785 cps/web.py:2413
 msgid "Email can't be empty and has to be a valid Email"
 msgstr "Az e-mail nem lehet üres, és érvényes e-mail címnek kell lennie"
 
-#: cps/admin.py:2821
+#: cps/admin.py:2826
 #, python-format
 msgid "User '%(nick)s' updated"
 msgstr "A felhasználó frissítve: %(nick)s"
 
-#: cps/admin.py:2886
+#: cps/admin.py:2891
 #, python-format
 msgid ""
 "Connection successful! OIDC discovery endpoint is accessible.%(endpoints)s"
 msgstr "Kapcsolódás sikeres! OIDC felfedezési végpont elérhető.%(endpoints)s"
 
-#: cps/admin.py:2891
+#: cps/admin.py:2896
 msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
@@ -683,12 +683,12 @@ msgstr ""
 "Kapcsolódás sikertelen: OIDC felfedezési végpont nem található (404). "
 "Ellenőrizze az alap URL-t."
 
-#: cps/admin.py:2893 cps/admin.py:2950
+#: cps/admin.py:2898 cps/admin.py:2955
 #, python-format
 msgid "Connection failed: Server returned status code %(code)s"
 msgstr "Sikertelen kapcsolódás: a szerver által visszaadott státusz %(code)s"
 
-#: cps/admin.py:2895
+#: cps/admin.py:2900
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
@@ -696,14 +696,14 @@ msgstr ""
 "Sikertelen kapcsolódás: Nem érhető el a szerver. Ellenőrizze az URL-t és a "
 "hálózati kapcsolatot."
 
-#: cps/admin.py:2897
+#: cps/admin.py:2902
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
 msgstr ""
 "Sikertelen kapcsolódás: Időtúllépés. A szerver lehet túl lassú vagy "
 "elérhetetlen."
 
-#: cps/admin.py:2899
+#: cps/admin.py:2904
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
@@ -711,12 +711,12 @@ msgstr ""
 "Sikertelen kapcsolódás: Érvénytelen JSON a válaszban. Lehet, hogy nem OIDC "
 "végpont."
 
-#: cps/admin.py:2902
+#: cps/admin.py:2907
 #, python-format
 msgid "Connection failed: %(error)s"
 msgstr "Sikertelen kapcsolódás: %(error)s"
 
-#: cps/admin.py:2928
+#: cps/admin.py:2933
 #, python-format
 msgid ""
 "Metadata is missing required OIDC fields: %(fields)s. This may not be a "
@@ -725,27 +725,27 @@ msgstr ""
 "Metaadatokból hiányzó OIDC mezők: %(fields)s. Lehet, hogy nem érvényes OIDC "
 "metaadat végpont."
 
-#: cps/admin.py:2939
+#: cps/admin.py:2944
 #, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
 msgstr "Metaadat URL érvényes! %(count)s OAuth végpont található."
 
-#: cps/admin.py:2941
+#: cps/admin.py:2946
 msgid " User info endpoint is available."
 msgstr "Felhasználó információ végpont elérhető."
 
-#: cps/admin.py:2943
+#: cps/admin.py:2948
 msgid ""
 " Note: User info endpoint not found - this may cause authentication issues."
 msgstr ""
 " Megjegyzés: Felhasználó infó végpont nem található, ami hitelesítési "
 "gondokat okozhat."
 
-#: cps/admin.py:2948
+#: cps/admin.py:2953
 msgid "Metadata URL not found (404). Please check the URL is correct."
 msgstr "Metaadat URL nem található (404). Ellenőrizze az URL helyességét."
 
-#: cps/admin.py:2952
+#: cps/admin.py:2957
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
@@ -753,51 +753,51 @@ msgstr ""
 "Sikertelen kapcsolódás: Nem lehet kapcsolódni a metaadat URL-hez. "
 "Ellenőrizze a hálózati kapcsolatot."
 
-#: cps/admin.py:2954
+#: cps/admin.py:2959
 msgid "Connection failed: Request timed out."
 msgstr "Sikertelen kapcsolódás: Időtúllépés."
 
-#: cps/admin.py:2956
+#: cps/admin.py:2961
 msgid "Connection failed: Invalid JSON in response."
 msgstr "Sikertelen kapcsolódás: Érvénytelen JSON a válaszban."
 
-#: cps/admin.py:2959
+#: cps/admin.py:2964
 msgid "An unknown error occurred."
 msgstr "Ismeretlen hiba történt."
 
-#: cps/admin.py:2971
+#: cps/admin.py:2976
 msgid "Restore already in progress."
 msgstr "Visszaállítás már folyamatban."
 
-#: cps/admin.py:2975
+#: cps/admin.py:2980
 msgid "Restore failed: Calibre library path is not configured."
 msgstr "Visszaállítás sikertelen: Calibre könyvtár útvonal nincs beállítva."
 
-#: cps/admin.py:2980
+#: cps/admin.py:2985
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
 msgstr ""
 "Visszaállítás sikertelen: metadadat.db nem található ezen az útvonalon: "
 "%(path)s"
 
-#: cps/admin.py:2985
+#: cps/admin.py:2990
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
 msgstr ""
 "Visszaállítás sikertelen: app.db nem található ezen az útvonalon: %(path)s"
 
-#: cps/admin.py:3057 cps/admin.py:3097
+#: cps/admin.py:3062 cps/admin.py:3102
 #, python-format
 msgid "Restore failed: %(err)s"
 msgstr "Visszaállítás sikertelen: %(err)s"
 
-#: cps/admin.py:3074
+#: cps/admin.py:3079
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
 "Visszaállítás sikeres de az app.db tisztítás nem sikerült. Tekintse meg a "
 "naplófájlokat a részletekért."
 
-#: cps/admin.py:3093
+#: cps/admin.py:3098
 #, python-format
 msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
@@ -1140,7 +1140,7 @@ msgstr "Profilkép sikeresen frissítve."
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA Profilkép Menedzsment (WIP)"
 
-#: cps/db.py:1270 cps/templates/config_edit.html:294
+#: cps/db.py:1270 cps/templates/config_edit.html:295
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
@@ -2816,13 +2816,13 @@ msgstr "Calibre adatbázis mappa"
 msgid "Log Level"
 msgstr "Naplózási szint"
 
-#: cps/templates/admin.html:122
-msgid "Port"
-msgstr "Port"
-
-#: cps/templates/admin.html:127
+#: cps/templates/admin.html:122 cps/templates/admin.html:127
 msgid "External Port"
 msgstr "Külső port"
+
+#: cps/templates/admin.html:123
+msgid "Not set — reverse proxy detected"
+msgstr ""
 
 #: cps/templates/admin.html:134 cps/templates/config_view_edit.html:45
 msgid "Books per Page"
@@ -2848,7 +2848,7 @@ msgstr "Varászhivatkozás távoli belépés"
 msgid "Reverse Proxy Login"
 msgstr "Reverse proxy belépés"
 
-#: cps/templates/admin.html:159 cps/templates/config_edit.html:258
+#: cps/templates/admin.html:159 cps/templates/config_edit.html:259
 msgid "Reverse Proxy Header Name"
 msgstr "Reverse Proxy fejlécnév"
 
@@ -3002,7 +3002,7 @@ msgstr "OK"
 #: cps/templates/book_table.html:231 cps/templates/book_table.html:251
 #: cps/templates/book_table.html:271 cps/templates/book_table.html:329
 #: cps/templates/book_table.html:365 cps/templates/config_db.html:111
-#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:215
+#: cps/templates/config_edit.html:621 cps/templates/config_view_edit.html:215
 #: cps/templates/cwa_convert_library.html:23
 #: cps/templates/cwa_epub_fixer.html:40 cps/templates/detail.html:938
 #: cps/templates/duplicates.html:696 cps/templates/duplicates.html:719
@@ -3234,7 +3234,7 @@ msgid "Fetch Metadata"
 msgstr "Metaadatok beszerzése"
 
 #: cps/templates/book_edit.html:252 cps/templates/config_db.html:110
-#: cps/templates/config_edit.html:619 cps/templates/config_view_edit.html:214
+#: cps/templates/config_edit.html:620 cps/templates/config_view_edit.html:214
 #: cps/templates/email_edit.html:65 cps/templates/schedule_edit.html:45
 #: cps/templates/shelf_edit.html:25 cps/templates/shelf_order.html:41
 #: cps/templates/user_edit.html:553
@@ -3256,6 +3256,10 @@ msgstr "A kiválasztott metaadatok bekerültek a szerkesztő űrlapba."
 #: cps/templates/book_edit.html:288 cps/templates/book_edit.html:368
 msgid "Loading..."
 msgstr "Betöltés..."
+
+#: cps/templates/book_edit.html:312
+msgid "Apply"
+msgstr ""
 
 #: cps/templates/book_edit.html:369
 msgid "Search error!"
@@ -3575,11 +3579,11 @@ msgstr "Metadata Watch Channel ID"
 msgid "Revoke"
 msgstr "Visszavonás"
 
-#: cps/templates/config_db.html:117
+#: cps/templates/config_db.html:118
 msgid "Last Resort: Restore Calibre Database (experimental)"
 msgstr "Végső lehetőség: Calibre adatbázis helyreállítása (kísérleti)"
 
-#: cps/templates/config_db.html:118
+#: cps/templates/config_db.html:119
 msgid ""
 "If your Calibre library is corrupted and cannot be opened, you can attempt "
 "to restore it from the OPF files in your library. This will <b>erase all per-"
@@ -3589,11 +3593,11 @@ msgid ""
 "destructive action.</b> A restore log will be saved alongside the backups."
 msgstr ""
 
-#: cps/templates/config_db.html:121
+#: cps/templates/config_db.html:122
 msgid "Are you sure? This cannot be undone."
 msgstr "Biztos benne? A művelet nem visszavonható."
 
-#: cps/templates/config_db.html:121
+#: cps/templates/config_db.html:122
 msgid "Restore Calibre Database (Last Resort)"
 msgstr "Calibra adatbázis helyreállítása (Végső lehetőség)"
 
@@ -3601,11 +3605,11 @@ msgstr "Calibra adatbázis helyreállítása (Végső lehetőség)"
 msgid "New db location is invalid, please enter valid path"
 msgstr "Új adatbázis útvonal helytelen, érvényes útvonalat adjon meg"
 
-#: cps/templates/config_edit.html:6 cps/templates/config_edit.html:272
+#: cps/templates/config_edit.html:6 cps/templates/config_edit.html:273
 msgid "Use Standard Authentication"
 msgstr "Alap bejelentkezés használata"
 
-#: cps/templates/config_edit.html:8 cps/templates/config_edit.html:274
+#: cps/templates/config_edit.html:8 cps/templates/config_edit.html:275
 msgid "Use LDAP Authentication"
 msgstr "LDAP bejelentkezés használata"
 
@@ -3717,223 +3721,229 @@ msgstr "Az ismeretlen kérések Kobo Áruházba irányítása"
 msgid "Server External Port (for port forwarded API calls)"
 msgstr "Szerver külső port (port továbbított API hívásokhoz)"
 
-#: cps/templates/config_edit.html:216
+#: cps/templates/config_edit.html:213
+msgid ""
+"A reverse proxy was detected. Leave blank unless you need to override the "
+"port for direct access."
+msgstr ""
+
+#: cps/templates/config_edit.html:217
 msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
 msgstr ""
 "Kobo olvasási állapot szinkronizációja Hardcoverbe (API kulcs "
 "felhasználónként szükséges)"
 
-#: cps/templates/config_edit.html:220
+#: cps/templates/config_edit.html:221
 msgid "Sync Kobo annotations to Hardcover (Requires API key per user)"
 msgstr ""
 "Kobo kiemelések szinkronizációja Hardcoverbe (API-kulcs felhasználónként "
 "szükséges)"
 
-#: cps/templates/config_edit.html:227
+#: cps/templates/config_edit.html:228
 msgid "Use Goodreads"
 msgstr "Goodreads használata"
 
-#: cps/templates/config_edit.html:231
+#: cps/templates/config_edit.html:232
 msgid "Goodreads API Key"
 msgstr "Goodreads API-kulcs"
 
-#: cps/templates/config_edit.html:238
+#: cps/templates/config_edit.html:239
 msgid "Enable Hardcover Sync"
 msgstr "Hardcover szinkronizáció engedélyezése"
 
-#: cps/templates/config_edit.html:242
+#: cps/templates/config_edit.html:243
 msgid "Hardcover API Key"
 msgstr "Hardcover API kulcs"
 
-#: cps/templates/config_edit.html:248
+#: cps/templates/config_edit.html:249
 msgid "Allow Reverse Proxy Authentication"
 msgstr "Reverse Proxy hitelesítés engedélyezése"
 
-#: cps/templates/config_edit.html:249
+#: cps/templates/config_edit.html:250
 msgid ""
 "Trusts the \"Remote-User\" header from a reverse proxy for authentication. "
 "This is an authentication method, distinct from the HTTPS security setting "
 "below."
 msgstr ""
 
-#: cps/templates/config_edit.html:253
+#: cps/templates/config_edit.html:254
 msgid "Use via HTTPS"
 msgstr "Használat HTTPS-sel"
 
-#: cps/templates/config_edit.html:254
+#: cps/templates/config_edit.html:255
 msgid ""
 "Enables secure cookie settings (Secure, SameSite=Lax). Enable this ONLY if "
 "you are accessing the server via HTTPS, otherwise you will be locked out."
 msgstr ""
 
-#: cps/templates/config_edit.html:263
+#: cps/templates/config_edit.html:264
 msgid "Auto-create users from reverse proxy"
 msgstr "Felhasználók automatikus létrehozása reverse proxyból"
 
-#: cps/templates/config_edit.html:264
+#: cps/templates/config_edit.html:265
 msgid ""
 "Automatically create user accounts when valid reverse proxy headers are "
 "received. Only enable if your reverse proxy authentication is properly "
 "secured."
 msgstr ""
 
-#: cps/templates/config_edit.html:270
+#: cps/templates/config_edit.html:271
 msgid "Login type"
 msgstr "Bejelentkezési mód"
 
-#: cps/templates/config_edit.html:277
+#: cps/templates/config_edit.html:278
 msgid "Use OAuth (requires HTTPS)"
 msgstr "OAuth használata (HTTPS kötelező)"
 
-#: cps/templates/config_edit.html:284
+#: cps/templates/config_edit.html:285
 msgid "LDAP Server Host Name or IP Address"
 msgstr "LDAP szerver neve vagy IP címe"
 
-#: cps/templates/config_edit.html:288
+#: cps/templates/config_edit.html:289
 msgid "LDAP Server Port"
 msgstr "LDAP szerver port"
 
-#: cps/templates/config_edit.html:292
+#: cps/templates/config_edit.html:293
 msgid "LDAP Encryption"
 msgstr "LDAP titkosítás"
 
-#: cps/templates/config_edit.html:295
+#: cps/templates/config_edit.html:296
 msgid "TLS"
 msgstr "TLS"
 
-#: cps/templates/config_edit.html:296
+#: cps/templates/config_edit.html:297
 msgid "SSL"
 msgstr "SSL"
 
-#: cps/templates/config_edit.html:300
+#: cps/templates/config_edit.html:301
 msgid ""
 "LDAP CACertificate Path (Only needed for Client Certificate Authentication)"
 msgstr ""
 "LDAP CA-tanúsítvány elérési útja (csak kliensoldali tanúsítványalapú "
 "hitelesítéshez szükséges)"
 
-#: cps/templates/config_edit.html:307
+#: cps/templates/config_edit.html:308
 msgid ""
 "LDAP Certificate Path (Only needed for Client Certificate Authentication)"
 msgstr ""
 "LDAP tanúsítvány elérési útja (csak kliensoldali tanúsítványalapú "
 "hitelesítéshez szükséges)"
 
-#: cps/templates/config_edit.html:314
+#: cps/templates/config_edit.html:315
 msgid "LDAP Keyfile Path (Only needed for Client Certificate Authentication)"
 msgstr ""
 "LDAP kulcsfájl elérési útja (csak kliensoldali tanúsítványalapú "
 "hitelesítéshez szükséges)"
 
-#: cps/templates/config_edit.html:323
+#: cps/templates/config_edit.html:324
 msgid "LDAP Authentication"
 msgstr "LDAP hitelesítés"
 
-#: cps/templates/config_edit.html:325
+#: cps/templates/config_edit.html:326
 msgid "Anonymous"
 msgstr "Névtelen"
 
-#: cps/templates/config_edit.html:326
+#: cps/templates/config_edit.html:327
 msgid "Unauthenticated"
 msgstr "Hitelesítetlen"
 
-#: cps/templates/config_edit.html:327
+#: cps/templates/config_edit.html:328
 msgid "Simple"
 msgstr "Egyszerű"
 
-#: cps/templates/config_edit.html:332
+#: cps/templates/config_edit.html:333
 msgid "LDAP Administrator Username"
 msgstr "LDAP adminisztrátor felhasználónév"
 
-#: cps/templates/config_edit.html:338
+#: cps/templates/config_edit.html:339
 msgid "LDAP Administrator Password"
 msgstr "LDAP rendszergazda jelszó"
 
-#: cps/templates/config_edit.html:343
+#: cps/templates/config_edit.html:344
 msgid "LDAP Distinguished Name (DN)"
 msgstr "LDAP Distinguished Name (DN)"
 
-#: cps/templates/config_edit.html:347
+#: cps/templates/config_edit.html:348
 msgid "LDAP User Object Filter"
 msgstr "LDAP felhasználói objektumszűrő"
 
-#: cps/templates/config_edit.html:352
+#: cps/templates/config_edit.html:353
 msgid "LDAP Server is OpenLDAP?"
 msgstr "Az LDAP szerver OpenLDAP?"
 
-#: cps/templates/config_edit.html:356
+#: cps/templates/config_edit.html:357
 msgid "Auto-create users from LDAP"
 msgstr "Felhasználók automatikus létrehozása LDAP-ról"
 
-#: cps/templates/config_edit.html:357
+#: cps/templates/config_edit.html:358
 msgid ""
 "Automatically create user accounts when LDAP authentication succeeds for new "
 "users. Recommended for enterprise environments."
 msgstr ""
 
-#: cps/templates/config_edit.html:359
+#: cps/templates/config_edit.html:360
 msgid "Following Settings are Needed For User Import"
 msgstr "A következő beállítások szükségesek felhasználó importhoz"
 
-#: cps/templates/config_edit.html:361
+#: cps/templates/config_edit.html:362
 msgid "LDAP Group Object Filter"
 msgstr "LDAP csoport objektumszűrő"
 
-#: cps/templates/config_edit.html:365
+#: cps/templates/config_edit.html:366
 msgid "LDAP Group Name"
 msgstr "LDAP csoport név"
 
-#: cps/templates/config_edit.html:369
+#: cps/templates/config_edit.html:370
 msgid "LDAP Group Members Field"
 msgstr "LDAP csoporttag mező"
 
-#: cps/templates/config_edit.html:373
+#: cps/templates/config_edit.html:374
 msgid "LDAP Member User Filter Detection"
 msgstr "LDAP tagsági felhasználói szűrő felismerése"
 
-#: cps/templates/config_edit.html:375
+#: cps/templates/config_edit.html:376
 msgid "Autodetect"
 msgstr "Automatikus észlelés"
 
-#: cps/templates/config_edit.html:376
+#: cps/templates/config_edit.html:377
 msgid "Custom Filter"
 msgstr "Egyedi szűrő"
 
-#: cps/templates/config_edit.html:381
+#: cps/templates/config_edit.html:382
 msgid "LDAP Member User Filter"
 msgstr "LDAP tagsági felhasználói szűrő"
 
-#: cps/templates/config_edit.html:391
+#: cps/templates/config_edit.html:392
 msgid "Important:"
 msgstr "Fontos:"
 
-#: cps/templates/config_edit.html:391
+#: cps/templates/config_edit.html:392
 msgid ""
 "OAuth authentication requires this server to be accessed via HTTPS. If you "
 "are using HTTP, login will fail."
 msgstr ""
 
-#: cps/templates/config_edit.html:394
+#: cps/templates/config_edit.html:395
 msgid "Generic OAuth Provider"
 msgstr "Általános OAuth szolgáltató"
 
-#: cps/templates/config_edit.html:398
+#: cps/templates/config_edit.html:399
 msgid "OAuth Metadata URL (for auto-discovery)"
 msgstr "OAuth metaadat URL (automatikus felfedezéshez)"
 
-#: cps/templates/config_edit.html:402
+#: cps/templates/config_edit.html:403
 msgid "Test Metadata"
 msgstr "Metaadat tesztelés"
 
-#: cps/templates/config_edit.html:405
+#: cps/templates/config_edit.html:406
 msgid "Leave empty to use manual configuration below"
 msgstr "Hagyja üresen a manuális konfiguráció használatához"
 
-#: cps/templates/config_edit.html:411
+#: cps/templates/config_edit.html:412
 msgid "Use Manual Endpoint URLs (override auto-discovery)"
 msgstr "Manuális végpont URL használata (felülírja az automatikus felfedezést)"
 
-#: cps/templates/config_edit.html:412
+#: cps/templates/config_edit.html:413
 msgid ""
 "Check this to manually configure individual OAuth endpoints instead of using "
 "auto-discovery"
@@ -3941,152 +3951,152 @@ msgstr ""
 "Jelölje be, ha az OAuth egyes végpontjait manuálisan szeretné konfigurálni "
 "az automatikus felfedezés helyett"
 
-#: cps/templates/config_edit.html:417
+#: cps/templates/config_edit.html:418
 msgid "Manual Endpoint Configuration"
 msgstr "Kézi végpont beállítás"
 
-#: cps/templates/config_edit.html:420
+#: cps/templates/config_edit.html:421
 msgid "OAuth Base URL"
 msgstr "OAuth alap URL"
 
-#: cps/templates/config_edit.html:425
+#: cps/templates/config_edit.html:426
 msgid "Authorization Endpoint"
 msgstr "Azonosítási végpont"
 
-#: cps/templates/config_edit.html:430
+#: cps/templates/config_edit.html:431
 msgid "Token Endpoint"
 msgstr "Token végpont"
 
-#: cps/templates/config_edit.html:435
+#: cps/templates/config_edit.html:436
 msgid "UserInfo Endpoint"
 msgstr "UserInfo végpont"
 
-#: cps/templates/config_edit.html:443
+#: cps/templates/config_edit.html:444
 msgid "Test Connection"
 msgstr "Kapcsolat tesztelése"
 
-#: cps/templates/config_edit.html:452
+#: cps/templates/config_edit.html:453
 msgid "OAuth Scopes"
 msgstr "OAuth hatókörök"
 
-#: cps/templates/config_edit.html:454
+#: cps/templates/config_edit.html:455
 msgid "Space-separated list of OAuth scopes"
 msgstr "OAuth jogosultságok szóközzel felsorolva"
 
-#: cps/templates/config_edit.html:459
+#: cps/templates/config_edit.html:460
 msgid "OAuth Redirect Host"
 msgstr "OAuth átirányítási cím"
 
-#: cps/templates/config_edit.html:462
+#: cps/templates/config_edit.html:463
 msgid ""
 "Set a consistent hostname for OAuth redirects to prevent \"invalid redirect "
 "URI\" errors. Include protocol (https://). Leave empty to use automatic "
 "detection."
 msgstr ""
 
-#: cps/templates/config_edit.html:464
+#: cps/templates/config_edit.html:465
 msgid ""
 "Required if: accessing via multiple hostnames, behind reverse proxy, or "
 "getting \"invalid redirect URI\" errors."
 msgstr ""
 
-#: cps/templates/config_edit.html:469
+#: cps/templates/config_edit.html:470
 msgid "OAuth Client Id"
 msgstr "OAuth kliens azonosító"
 
-#: cps/templates/config_edit.html:473
+#: cps/templates/config_edit.html:474
 msgid "OAuth Client Secret"
 msgstr "OAuth kliens titok"
 
-#: cps/templates/config_edit.html:478
+#: cps/templates/config_edit.html:479
 msgid "Field Mapping Configuration"
 msgstr "Mező-hozzárendelés beállításai"
 
-#: cps/templates/config_edit.html:480
+#: cps/templates/config_edit.html:481
 msgid "Username Field"
 msgstr "Felhasználónév mező"
 
-#: cps/templates/config_edit.html:482
+#: cps/templates/config_edit.html:483
 msgid "JWT field to extract username from"
 msgstr "JWT mező felhasználónév kinyeréséhez"
 
-#: cps/templates/config_edit.html:485
+#: cps/templates/config_edit.html:486
 msgid "Email Field"
 msgstr "E-mail mező"
 
-#: cps/templates/config_edit.html:487
+#: cps/templates/config_edit.html:488
 msgid "JWT field to extract email from"
 msgstr "JWT mező e-mail kinyeréséhez"
 
-#: cps/templates/config_edit.html:490
+#: cps/templates/config_edit.html:491
 msgid "OAuth group for Admin"
 msgstr "OAuth rendszergazda csoport"
 
-#: cps/templates/config_edit.html:492
+#: cps/templates/config_edit.html:493
 msgid ""
 "Name of the OAuth group that grants admin privileges. Leave empty to disable "
 "group-based admin management, or use the global setting in Security Settings "
 "for more control."
 msgstr ""
 
-#: cps/templates/config_edit.html:495
+#: cps/templates/config_edit.html:496
 msgid "Login Button Text"
 msgstr "Bejelentkezési gomb felirat"
 
-#: cps/templates/config_edit.html:501
+#: cps/templates/config_edit.html:502
 #, python-format
 msgid "Obtain %(provider)s OAuth Credential"
 msgstr "%(provider)s OAuth hitelesítő adat beszerzése"
 
-#: cps/templates/config_edit.html:504
+#: cps/templates/config_edit.html:505
 #, python-format
 msgid "%(provider)s OAuth Client Id"
 msgstr "%(provider)s OAuth kliens azonosító"
 
-#: cps/templates/config_edit.html:508
+#: cps/templates/config_edit.html:509
 #, python-format
 msgid "%(provider)s OAuth Client Secret"
 msgstr "%(provider)s OAuth kliens titok"
 
-#: cps/templates/config_edit.html:519
+#: cps/templates/config_edit.html:520
 msgid "External binaries"
 msgstr "Külső futtatható fájlok"
 
-#: cps/templates/config_edit.html:520
+#: cps/templates/config_edit.html:521
 msgid "Path to Calibre Binaries"
 msgstr "Calibre futtatható fájlok elérési útvonala"
 
-#: cps/templates/config_edit.html:528
+#: cps/templates/config_edit.html:529
 msgid "Calibre E-Book Converter Settings"
 msgstr "Calibre e-könyv konvertáló beállításai"
 
-#: cps/templates/config_edit.html:531
+#: cps/templates/config_edit.html:532
 msgid "Path to Kepubify E-Book Converter"
 msgstr "Kepubify e-könyv konvertáló elérési útvonala"
 
-#: cps/templates/config_edit.html:539
+#: cps/templates/config_edit.html:540
 msgid "Location of Unrar binary"
 msgstr "Unrar elérési útvonala"
 
-#: cps/templates/config_edit.html:550
+#: cps/templates/config_edit.html:551
 msgid "Security Settings"
 msgstr "Biztonsági beállítások"
 
-#: cps/templates/config_edit.html:553
+#: cps/templates/config_edit.html:554
 msgid "Disable Standard Login (Username/Password)"
 msgstr "Alap bejelentkezés letiltása (Felhasználónév/Jelszó)"
 
-#: cps/templates/config_edit.html:554
+#: cps/templates/config_edit.html:555
 msgid ""
 "Hides the standard login form. Users must log in via OAuth or LDAP. Ensure "
 "you have a working alternative login method before enabling."
 msgstr ""
 
-#: cps/templates/config_edit.html:558
+#: cps/templates/config_edit.html:559
 msgid "Enable OAuth Group-Based Admin Role Management"
 msgstr ""
 
-#: cps/templates/config_edit.html:559
+#: cps/templates/config_edit.html:560
 msgid ""
 "When enabled, admin privileges are automatically granted or revoked based on "
 "OAuth group membership. Disable this to manually manage admin roles in the "
@@ -4094,59 +4104,59 @@ msgid ""
 "assignments."
 msgstr ""
 
-#: cps/templates/config_edit.html:563
+#: cps/templates/config_edit.html:564
 msgid "Limit failed login attempts"
 msgstr "Bejelentkezési kísérletek korlátozása"
 
-#: cps/templates/config_edit.html:567
+#: cps/templates/config_edit.html:568
 msgid "Configure Backend for Limiter"
 msgstr "Limiter backend beállítása"
 
-#: cps/templates/config_edit.html:571
+#: cps/templates/config_edit.html:572
 msgid "Options for Limiter Backend"
 msgstr "Limiter backend opciói"
 
-#: cps/templates/config_edit.html:577
+#: cps/templates/config_edit.html:578
 msgid "Check if file extensions matches file content on upload"
 msgstr "Ellenőrizze, hogy a fájlformátum passzol-e a tartalomhoz feltöltéskor"
 
-#: cps/templates/config_edit.html:580
+#: cps/templates/config_edit.html:581
 msgid "Session protection"
 msgstr "Munkamenet védelem"
 
-#: cps/templates/config_edit.html:582
+#: cps/templates/config_edit.html:583
 msgid "Basic"
 msgstr "Alap"
 
-#: cps/templates/config_edit.html:583
+#: cps/templates/config_edit.html:584
 msgid "Strong"
 msgstr "Erős"
 
-#: cps/templates/config_edit.html:588
+#: cps/templates/config_edit.html:589
 msgid "User Password policy"
 msgstr "Jelszó megkötések"
 
-#: cps/templates/config_edit.html:592
+#: cps/templates/config_edit.html:593
 msgid "Minimum password length"
 msgstr "Minimum jelszóhossz"
 
-#: cps/templates/config_edit.html:597
+#: cps/templates/config_edit.html:598
 msgid "Enforce number"
 msgstr "Szám kötelező"
 
-#: cps/templates/config_edit.html:601
+#: cps/templates/config_edit.html:602
 msgid "Enforce lowercase characters"
 msgstr "Kisbetű kötelező"
 
-#: cps/templates/config_edit.html:605
+#: cps/templates/config_edit.html:606
 msgid "Enforce uppercase characters"
 msgstr "Nagybetű kötelező"
 
-#: cps/templates/config_edit.html:609
+#: cps/templates/config_edit.html:610
 msgid "Enforce characters (needed For Chinese/Japanese/Korean Characters)"
 msgstr "Karakter kötelező (szükséges kínai/japán/koreai karakterekhez)"
 
-#: cps/templates/config_edit.html:613
+#: cps/templates/config_edit.html:614
 msgid "Enforce special characters"
 msgstr "Speciális karakter kötelező"
 
@@ -7151,6 +7161,9 @@ msgstr "Kiválasztott polcok szinkronizációja Kobo eszközzel"
 #: cps/templates/user_table.html:157
 msgid "Show Read/Unread Section"
 msgstr "Olvasott/olvasatlan mutatása"
+
+#~ msgid "Port"
+#~ msgstr "Port"
 
 #~ msgid "Scanning for duplicates"
 #~ msgstr "Ismétlődők keresése"

@@ -54,7 +54,7 @@ def _load_duplicates_module():
     )
 
     _install_stub("cps.admin", {"admin_required": lambda f: f})
-    _install_stub("cps.usermanagement", {"login_required_if_no_ano": lambda f: f})
+    _install_stub("cps.usermanagement", {"user_login_or_anonymous": lambda f: f})
     _install_stub("cps.render_template", {"render_title_template": lambda *args, **kwargs: ""})
 
     class _User:

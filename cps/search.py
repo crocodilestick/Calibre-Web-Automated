@@ -17,7 +17,7 @@ from sqlalchemy.sql.functions import coalesce
 
 from . import logger, db, calibre_db, config, ub
 from .string_helper import strip_whitespaces
-from .usermanagement import login_required_if_no_ano
+from .usermanagement import user_login_or_anonymous
 from .render_template import render_title_template
 from .pagination import Pagination
 
@@ -28,7 +28,7 @@ log = logger.create()
 
 
 @search.route("/search", methods=["GET"])
-@login_required_if_no_ano
+@user_login_or_anonymous
 def simple_search():
     term = request.args.get("query")
     if term:
@@ -55,7 +55,7 @@ def simple_search():
 
 
 @search.route("/advsearch", methods=['POST'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 def advanced_search():
     values = dict(request.form)
     params = ['include_tag', 'exclude_tag', 'include_serie', 'exclude_serie', 'include_shelf', 'exclude_shelf',
@@ -67,7 +67,7 @@ def advanced_search():
 
 
 @search.route("/advsearch", methods=['GET'])
-@login_required_if_no_ano
+@user_login_or_anonymous
 def advanced_search_form():
     # Build custom columns names
     cc = calibre_db.get_cc_columns(config, filter_config_custom_read=True)

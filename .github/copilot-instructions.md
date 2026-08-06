@@ -122,7 +122,7 @@ calibre_db.ensure_session()  # Before each request
 Use consistent decorator stacking:
 ```python
 @blueprint.route('/path')
-@login_required_if_no_ano  # Respects anonymous browsing setting
+@user_login_or_anonymous  # Respects anonymous browsing setting
 @limiter.limit("10 per minute")  # Rate limiting when enabled
 def route_handler():
     # CWA custom auth check

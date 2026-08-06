@@ -3,10 +3,9 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-05 16:15+0200\n"
-"PO-Revision-Date: 2025-09-09 20:18+0200\n"
-"Last-Translator: Manuel Drescher\n"
-"Language-Team: German\n"
+"POT-Creation-Date: 2026-08-06 12:50+0200\n"
+"PO-Revision-Date: 2026-07-20 20:00+0000\n"
+"Last-Translator: Krux86Language-Team: German\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -15,7 +14,7 @@ msgstr ""
 "X-Loco-Source-Locale: de_DE\n"
 "Generated-By: Babel 2.15.0\n"
 "X-Loco-Parser: loco_parse_po\n"
-"X-Generator: Poedit 3.6\n"
+"X-Generator: Loco https://localise.biz/\n"
 
 #: cps/about.py:65
 msgid "Statistics"
@@ -1068,6 +1067,8 @@ msgstr "Calibre-Web Automated - EPUB-Fixer-Dienst"
 #: cps/cwa_functions.py:2173
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
+"Der EPUB-Fixer für einzelne Bücher wird bei Google-Drive-Bibliotheken nicht "
+"unterstützt."
 
 #: cps/cwa_functions.py:2180
 msgid "Invalid book selection."
@@ -1091,7 +1092,7 @@ msgstr "EPUB-Fixer für das ausgewählte Buch gestartet."
 
 #: cps/cwa_functions.py:2214
 msgid "Failed to start EPUB Fixer for selected book."
-msgstr ""
+msgstr "EPUB-Fixer für ausgewähltes Buch konnte nicht gestartet werden."
 
 #: cps/cwa_functions.py:2261
 msgid "You must be an admin to access this page."
@@ -1165,6 +1166,8 @@ msgstr "Dublettengruppe wurde nicht verworfen"
 #: cps/duplicates.py:1314
 msgid "Import is in progress. Run a full duplicate scan after ingest finishes."
 msgstr ""
+"Import läuft. Führe nach Abschluss des Imports einen vollständigen "
+"Duplikatscan aus."
 
 #: cps/duplicates.py:1335
 msgid "Duplicate scan queued"
@@ -1182,12 +1185,15 @@ msgstr "Ungültige Lösungsstrategie"
 msgid ""
 "Import is in progress. Execute duplicate resolution after ingest finishes."
 msgstr ""
+"Import läuft. Führe die Duplikatauflösung nach Abschluss des Imports aus."
 
 #: cps/editbooks.py:112 cps/editbooks.py:169
 msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
 msgstr ""
+"Der Ingest-Ordner hat keine Schreibrechte. Überprüfe die Berechtigungen "
+"deines /cwa-book-ingest-Volumes."
 
 #: cps/editbooks.py:121
 msgid "Missing or invalid book id for format upload"
@@ -1488,7 +1494,7 @@ msgstr ""
 #: cps/helper.py:1067 cps/helper.py:1075
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
-msgstr ""
+msgstr "Coverbild überschreitet die maximale Größe von %(size)s MB"
 
 #: cps/helper.py:1086
 msgid "Error Downloading Cover"
@@ -1795,6 +1801,8 @@ msgid ""
 "Duplicate scanning needs a one-time full scan before fast duplicate checks "
 "can run after imports and metadata changes. "
 msgstr ""
+"Die Duplikatsuche benötigt einen einmaligen vollständigen Scan, bevor nach "
+"Importen und Metadatenänderungen schnelle Duplikatprüfungen laufen können."
 
 #: cps/render_template.py:74
 msgid "Books"
@@ -2377,9 +2385,8 @@ msgid "No email addresses selected"
 msgstr "Keine E-Mail-Adresse ausgewählt"
 
 #: cps/web.py:2024
-#, fuzzy
 msgid "Additional email addresses are disabled for your account."
-msgstr "Zusätzliche E-Mail-Adressen eingeben (durch Kommas getrennt):"
+msgstr "Zusätzliche E-Mail-Adressen sind für dein Konto deaktiviert."
 
 #: cps/web.py:2046
 msgid "Success! Book queued for sending to the selected address(es)!"
@@ -2620,38 +2627,34 @@ msgid "Duplicate scan"
 msgstr "Duplikat-Scan"
 
 #: cps/tasks/duplicate_scan.py:82
-#, fuzzy
 msgid "Duplicate scan skipped: import in progress"
-msgstr "Dubletten-Scan abgeschlossen: %(count)s neue Gruppen"
+msgstr "Duplikatscan übersprungen: Import läuft"
 
 #: cps/tasks/duplicate_scan.py:90
 msgid "Building duplicate index"
-msgstr ""
+msgstr "Erstelle Index-Duplikat"
 
 #: cps/tasks/duplicate_scan.py:98
 #, python-format
 msgid "Building duplicate index: %(processed)s/%(total)s books"
-msgstr ""
+msgstr "Erstelle Index-Duplikat: %(processed)s/%(total)s Bücher"
 
 #: cps/tasks/duplicate_scan.py:104
 msgid "Building duplicate index: no books"
-msgstr ""
+msgstr "Erstelle Index-Duplikat: Keine Bücher"
 
 #: cps/tasks/duplicate_scan.py:108
-#, fuzzy
 msgid "Finding duplicate groups"
-msgstr "Diese Dubletten-Gruppe ignorieren"
+msgstr "Duplikatgruppen werden gesucht"
 
 #: cps/tasks/duplicate_scan.py:124
-#, fuzzy
 msgid "Updating duplicate cache"
-msgstr "Entpacke Aktualisierungspaket"
+msgstr "Duplikat-Cache wird aktualisiert"
 
 #: cps/tasks/duplicate_scan.py:153 cps/tasks/duplicate_scan.py:163
 #: cps/tasks/duplicate_scan.py:203 cps/tasks/duplicate_scan.py:212
-#, fuzzy
 msgid "Duplicate scan pending: manual scan required"
-msgstr "Duplikat-Scan in Warteschlange eingereiht"
+msgstr "Duplikatscan ausstehend: manueller Scan erforderlich"
 
 #: cps/tasks/duplicate_scan.py:231
 #, python-format
@@ -3674,9 +3677,8 @@ msgid "Logfile Configuration"
 msgstr "Konfiguration der Logdatei"
 
 #: cps/templates/config_edit.html:149
-#, fuzzy
 msgid "Location and name of logfile (/dev/stdout for no entry)"
-msgstr "Pfad und Name der Zugriffs-Logdatei (access.log wenn leergelassen)"
+msgstr "Pfad und Name der Logdatei (/dev/stdout, um keine Datei zu schreiben)"
 
 #: cps/templates/config_edit.html:154
 msgid "Enable Access Log"
@@ -4426,11 +4428,11 @@ msgstr "Fehler beim Planen der Bibliothekskonvertierung"
 
 #: cps/templates/cwa_epub_fixer.html:22
 msgid "Run on a single book"
-msgstr ""
+msgstr "Auf ein einzelnes Buch anwenden"
 
 #: cps/templates/cwa_epub_fixer.html:24
 msgid "Search by title/author"
-msgstr ""
+msgstr "Nach Titel/Autor suchen"
 
 #: cps/templates/cwa_epub_fixer.html:29
 msgid "Run on selected book"
@@ -4543,9 +4545,8 @@ msgstr ""
 "github.com/innocenat\">innocenat</a> erstellt wurde."
 
 #: cps/templates/cwa_settings.html:181
-#, fuzzy
 msgid "Enable KOReader Sync (CWA Plugin)"
-msgstr "KOReader Sync-Plugin"
+msgstr "KOReader-Sync aktivieren (CWA-Plugin)"
 
 #: cps/templates/cwa_settings.html:183
 msgid ""
@@ -4553,6 +4554,9 @@ msgid ""
 "compatible checksums in metadata.db for progress syncing. Requires the "
 "KOReader plugin on your device."
 msgstr ""
+"Wenn aktiviert, stellt CWA die /kosync-Endpunkte bereit und speichert "
+"KOReader-kompatible Prüfsummen in der metadata.db für die "
+"Fortschrittssynchronisierung. Erfordert das KOReader-Plugin auf deinem Gerät."
 
 #: cps/templates/cwa_settings.html:185
 msgid ""
@@ -4560,6 +4564,10 @@ msgid ""
 "temporarily lock metadata.db. To stop a running backfill, restart the "
 "container after disabling."
 msgstr ""
+"Hinweis: Das Aktivieren dieser Option startet beim Hochfahren einen "
+"Prüfsummen-Backfill-Dienst, der die metadata.db vorübergehend sperren kann. "
+"Um einen laufenden Backfill zu stoppen, starte den Container nach dem "
+"Deaktivieren neu."
 
 #: cps/templates/cwa_settings.html:192
 msgid "Enable Aggressive EPUB Fixer Mode (riskier)"
@@ -4776,18 +4784,20 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:403
 msgid "Cover File Max Size (MB):"
-msgstr ""
+msgstr "Maximale Coverdatei-Größe (MB):"
 
 #: cps/templates/cwa_settings.html:416
-#, fuzzy
 msgid "Range: 1-200 MB (default: 15)"
-msgstr "Bereich: 5-120 Minuten (Standard: 15)"
+msgstr "Bereich: 1-200 MB (Standard: 15)"
 
 #: cps/templates/cwa_settings.html:419
 msgid ""
 "Limits the maximum size of cover images downloaded from metadata providers "
 "or URLs to prevent slow or stalled saves."
 msgstr ""
+"Begrenzt die maximale Größe von Coverbildern, die von Metadatenanbietern "
+"oder URLs heruntergeladen werden, um langsame oder hängende Speichervorgänge "
+"zu vermeiden."
 
 #: cps/templates/cwa_settings.html:428
 msgid "Ingest Processing Timeout"
@@ -5734,9 +5744,8 @@ msgid "Failed to update tags"
 msgstr "Aktualisierung der Tags fehlgeschlagen"
 
 #: cps/templates/detail.html:1252
-#, fuzzy
 msgid "Failed to update shelves"
-msgstr "Aktualisierung der Tags fehlgeschlagen"
+msgstr "Regale konnten nicht aktualisiert werden"
 
 #: cps/templates/duplicates.html:497
 msgid "CWA Duplicates Manager"
@@ -5751,9 +5760,8 @@ msgstr ""
 "verschiedenen Sprachen werden nicht als Duplikate betrachtet."
 
 #: cps/templates/duplicates.html:507
-#, fuzzy
 msgid "Run Full Duplicate Scan"
-msgstr "Duplikat-Scan"
+msgstr "Vollständigen Duplikatscan ausführen"
 
 #: cps/templates/duplicates.html:509
 msgid "Scan for Duplicates Now"
@@ -5773,7 +5781,7 @@ msgstr "Ausgewählte löschen"
 
 #: cps/templates/duplicates.html:529
 msgid "Duplicate scanning needs a one-time full scan."
-msgstr ""
+msgstr "Die Duplikatsuche benötigt einen einmaligen, vollständigen Scan."
 
 #: cps/templates/duplicates.html:531
 msgid ""
@@ -5781,30 +5789,34 @@ msgid ""
 "and metadata changes. Before incremental scans can run, the index needs an "
 "initial baseline."
 msgstr ""
+"CWA nutzt jetzt einen Duplikatindex, um Duplikatprüfungen bei Importen und "
+"Metadatenänderungen schnell zu halten. Bevor inkrementelle Scans laufen "
+"können, benötigt der Index einen initialen Ausgangsbestand."
 
 #: cps/templates/duplicates.html:534
 msgid ""
 "Click \"Run Full Duplicate Scan\" to build it. This may take several minutes "
 "on large libraries, and you can keep using CWA while it runs."
 msgstr ""
+"Klicke auf \"Vollständigen Duplikatscan ausführen\", um ihn zu erstellen. "
+"Das kann bei großen Bibliotheken einige Minuten dauern, du kannst CWA "
+"währenddessen aber weiter benutzen."
 
 #: cps/templates/duplicates.html:541
-#, fuzzy
 msgid "Duplicate scan is running."
-msgstr "Duplikat-Scan"
+msgstr "Duplikatscan läuft."
 
 #: cps/templates/duplicates.html:542
 msgid "You can keep using CWA while it runs."
-msgstr ""
+msgstr "Du kannst CWA währenddessen weiter benutzen."
 
 #: cps/templates/duplicates.html:545 cps/templates/tasks.html:17
 msgid "Progress"
 msgstr "Fortschritt"
 
 #: cps/templates/duplicates.html:554
-#, fuzzy
 msgid "View Background Tasks"
-msgstr "Übersicht der Hintergrundaufgaben"
+msgstr "Hintergrundaufgaben anzeigen"
 
 #: cps/templates/duplicates.html:565
 msgid "Auto-Resolve Duplicates"
@@ -5913,20 +5925,20 @@ msgstr ""
 "Fehlalarme zu vermeiden."
 
 #: cps/templates/duplicates.html:685
-#, fuzzy
 msgid "Execute Auto-Resolution"
-msgstr "Bereinigung ausführen"
+msgstr "Automatische Auflösung ausführen"
 
 #: cps/templates/duplicates.html:688
 msgid ""
 "CWA will resolve duplicate groups using the selected strategy and "
 "permanently delete duplicate books."
 msgstr ""
+"CWA löst Duplikat Gruppen anhand der gewählten Strategie auf und löscht "
+"doppelte Bücher dauerhaft."
 
 #: cps/templates/duplicates.html:690
-#, fuzzy
 msgid "Selected strategy:"
-msgstr "Wähle Formate:"
+msgstr "Gewählte Strategie:"
 
 #: cps/templates/duplicates.html:692 cps/templates/duplicates.html:715
 msgid "This action cannot be undone!"
@@ -6290,24 +6302,26 @@ msgid "Sort descending according to series index"
 msgstr "Sortiere nach Serienindex absteigend"
 
 #: cps/templates/kosync_plugin.html:112
-#, fuzzy
 msgid "KOReader Sync is disabled."
-msgstr "Standard-Login ist deaktiviert."
+msgstr "KOReader Sync ist deaktiviert."
 
 #: cps/templates/kosync_plugin.html:113
 msgid ""
 "Enable it in CWA Settings to activate the /kosync endpoints and checksum "
 "generation."
 msgstr ""
+"Aktiviere es in den CWA-Einstellungen, um die /kosync-Endpunkte und die "
+"Prüfsummengenerierung zu aktivieren."
 
 #: cps/templates/kosync_plugin.html:115
-#, fuzzy
 msgid "Open CWA Settings"
-msgstr "CWA Einstellungen"
+msgstr "Öffne CWA Einstellungen"
 
 #: cps/templates/kosync_plugin.html:139
 msgid "Download is available after enabling KOReader Sync in CWA Settings."
 msgstr ""
+"Der Download ist verfügbar, sobald KOReader Sync in den CWA-Einstellungen "
+"aktiviert ist."
 
 #: cps/templates/layout.html:93 cps/templates/login.html:51
 msgid "Home"
@@ -6348,9 +6362,8 @@ msgid "See Changelog"
 msgstr "Siehe Änderungsprotokoll"
 
 #: cps/templates/layout.html:219
-#, fuzzy
 msgid "Open Duplicates"
-msgstr "Duplikate"
+msgstr "Öffne Duplikate"
 
 #: cps/templates/layout.html:241
 msgid "Contribute here!"
@@ -7117,7 +7130,7 @@ msgstr ""
 
 #: cps/templates/user_edit.html:228
 msgid "Enable Send-to-eReader Pop-up Modal"
-msgstr ""
+msgstr "Popup-Fenster für „An eReader senden\" aktivieren"
 
 #: cps/templates/user_edit.html:230
 msgid ""
@@ -7125,15 +7138,17 @@ msgid ""
 "enter extra email addresses and only send to a selection of saved addresses "
 "when sending to eReader."
 msgstr ""
+"Aktiviert oder deaktiviert das Popup-Fenster für „An eReader senden\", über "
+"das Nutzer zusätzliche E-Mail-Adressen eingeben und eine Auswahl "
+"gespeicherter Adressen als Empfänger festlegen können."
 
 #: cps/templates/user_edit.html:232
-#, fuzzy
 msgid ""
 "When disabled, emails will be sent to all configured eReader addresses "
 "without prompting."
 msgstr ""
-"Wenn aktiviert, werden neu hinzugefügte Bücher automatisch an alle oben "
-"konfigurierten E-Mail-Adressen für eReader gesendet."
+"Wenn deaktiviert, werden E-Mails ohne Nachfrage an alle konfigurierten "
+"eReader-Adressen gesendet."
 
 #: cps/templates/user_edit.html:240
 msgid "Automatically send new books to my eReader(s)"
@@ -7251,59 +7266,58 @@ msgid "Configure what actions this user is allowed to perform."
 msgstr "Konfigurieren Sie, welche Aktionen dieser Benutzer ausführen darf."
 
 #: cps/templates/user_edit.html:454
-#, fuzzy
 msgid "Magic Shelves Order"
-msgstr "Magische Regale ✨"
+msgstr "Sortierung der magischen Regale"
 
 #: cps/templates/user_edit.html:455
 msgid "Choose how your magic shelves are ordered in the sidebar."
-msgstr ""
+msgstr "Wähle, wie deine magischen Regale in der Seitenleiste sortiert werden."
 
 #: cps/templates/user_edit.html:459
 msgid "Order Mode"
-msgstr ""
+msgstr "Sortiermodus"
 
 #: cps/templates/user_edit.html:461
 msgid "Manual (drag to reorder)"
-msgstr ""
+msgstr "Manuell (per Drag & Drop sortieren)"
 
 #: cps/templates/user_edit.html:462
 msgid "Name (A-Z)"
-msgstr ""
+msgstr "Name (A-Z)"
 
 #: cps/templates/user_edit.html:463
 msgid "Name (Z-A)"
-msgstr ""
+msgstr "Name (Z-A)"
 
 #: cps/templates/user_edit.html:464
 msgid "Book count (high to low)"
-msgstr ""
+msgstr "Anzahl der Bücher (Hoch nach niedrig)"
 
 #: cps/templates/user_edit.html:465
 msgid "Book count (low to high)"
-msgstr ""
+msgstr "Anzahl der Bücher (niedrig zu hoch)"
 
 #: cps/templates/user_edit.html:466
 msgid "Created (newest first)"
-msgstr ""
+msgstr "Erstellt (Neueste zuerst)"
 
 #: cps/templates/user_edit.html:467
 msgid "Created (oldest first)"
-msgstr ""
+msgstr "Erstellt (Älteste zuerst)"
 
 #: cps/templates/user_edit.html:468
-#, fuzzy
 msgid "Recently modified"
 msgstr "Zuletzt geändert"
 
 #: cps/templates/user_edit.html:469
-#, fuzzy
 msgid "Least recently modified"
-msgstr "Zuletzt geändert"
+msgstr "Am längsten nicht mehr geändert"
 
 #: cps/templates/user_edit.html:480
 msgid "Manual order is used only when the order mode is set to Manual."
 msgstr ""
+"Die manuelle Reihenfolge wird nur verwendet, wenn der Sortiermodus auf "
+"„Manuell\" gesetzt ist."
 
 #: cps/templates/user_edit.html:486
 msgid "Magic Shelves Visibility"

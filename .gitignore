@@ -200,3 +200,7 @@ cython_debug/
 
 # Dev instance files for testing in the same folder
 instance/
+
+CLAUDE.md
+.claude
+pr-analysis-*

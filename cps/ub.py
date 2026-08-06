@@ -280,6 +280,7 @@ class User(UserBase, Base):
     remote_auth_token = relationship('RemoteAuthToken', backref='user', lazy='dynamic')
     view_settings = Column(JSON, default={})
     kobo_only_shelves_sync = Column(Integer, default=0)
+    opds_only_shelves_sync = Column(Integer, default=0)
     hardcover_token = Column(String, unique=True, default=None)
     # New per-user theme (0=default/light, 1=caliBlur) replacing global-only behavior
     theme = Column(Integer, default=1)
@@ -322,6 +323,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
     def __init__(self):
         self.hardcover_token = None
         self.kobo_only_shelves_sync = None
+        self.opds_only_shelves_sync = None
         self.view_settings = None
         self.allowed_column_value = None
         self.allowed_tags = None
@@ -354,6 +356,7 @@ class Anonymous(AnonymousUserMixin, UserBase):
         self.allowed_column_value = data.allowed_column_value
         self.view_settings = data.view_settings
         self.kobo_only_shelves_sync = data.kobo_only_shelves_sync
+        self.opds_only_shelves_sync = data.opds_only_shelves_sync
         self.hardcover_token = data.hardcover_token
         self.auto_send_enabled = data.auto_send_enabled
     def role_admin(self):
@@ -459,6 +462,30 @@ class MagicShelfCache(Base):
     # Composite index for fast lookups
     __table_args__ = (
         Index('ix_magic_shelf_cache_lookup', 'shelf_id', 'user_id', 'sort_param'),
+    )
+
+
+class OpdsShelfExposure(Base):
+    __tablename__ = 'opds_shelf_exposure'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False, index=True)
+    shelf_id = Column(Integer, ForeignKey('shelf.id'), nullable=False, index=True)
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'shelf_id', name='unique_user_opds_shelf_exposure'),
+    )
+
+
+class OpdsMagicShelfExposure(Base):
+    __tablename__ = 'opds_magic_shelf_exposure'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False, index=True)
+    shelf_id = Column(Integer, ForeignKey('magic_shelf.id'), nullable=False, index=True)
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'shelf_id', name='unique_user_opds_magic_shelf_exposure'),
     )
 
 
@@ -574,6 +601,36 @@ class KoboSyncedBooks(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     user_id = Column(Integer, ForeignKey('user.id'))
     book_id = Column(Integer)
+
+
+def is_opds_shelf_exposed_for_user(user_id, shelf_id, _session=None):
+    s = _session if _session else session
+    return s.query(OpdsShelfExposure).filter_by(user_id=user_id, shelf_id=shelf_id).first() is not None
+
+
+def set_opds_shelf_exposed_for_user(user_id, shelf_id, exposed, _session=None):
+    s = _session if _session else session
+    existing = s.query(OpdsShelfExposure).filter_by(user_id=user_id, shelf_id=shelf_id).first()
+    if exposed:
+        if existing is None:
+            s.add(OpdsShelfExposure(user_id=user_id, shelf_id=shelf_id))
+    elif existing is not None:
+        s.delete(existing)
+
+
+def is_opds_magic_shelf_exposed_for_user(user_id, shelf_id, _session=None):
+    s = _session if _session else session
+    return s.query(OpdsMagicShelfExposure).filter_by(user_id=user_id, shelf_id=shelf_id).first() is not None
+
+
+def set_opds_magic_shelf_exposed_for_user(user_id, shelf_id, exposed, _session=None):
+    s = _session if _session else session
+    existing = s.query(OpdsMagicShelfExposure).filter_by(user_id=user_id, shelf_id=shelf_id).first()
+    if exposed:
+        if existing is None:
+            s.add(OpdsMagicShelfExposure(user_id=user_id, shelf_id=shelf_id))
+    elif existing is not None:
+        s.delete(existing)
 
 # The Kobo ReadingState API keeps track of 4 timestamped entities:
 #   ReadingState, StatusInfo, Statistics, CurrentBookmark
@@ -794,6 +851,10 @@ def add_missing_tables(engine, _session):
         MagicShelf.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "magic_shelf_cache"):
         MagicShelfCache.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "opds_shelf_exposure"):
+        OpdsShelfExposure.__table__.create(bind=engine, checkfirst=True)
+    if not engine.dialect.has_table(engine.connect(), "opds_magic_shelf_exposure"):
+        OpdsMagicShelfExposure.__table__.create(bind=engine, checkfirst=True)
     if not engine.dialect.has_table(engine.connect(), "hidden_magic_shelf_templates"):
         HiddenMagicShelfTemplate.__table__.create(bind=engine, checkfirst=True)
 
@@ -834,6 +895,13 @@ def migrate_user_table(engine, _session):
     except exc.OperationalError:  # Database is not compatible, some columns are missing
         _safe_session_rollback(_session, "user.hardcover_token")
         _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'hardcover_token' String")
+
+    try:
+        _session.query(exists().where(User.opds_only_shelves_sync)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        _safe_session_rollback(_session, "user.opds_only_shelves_sync")
+        _run_ddl_with_retry(engine, "ALTER TABLE user ADD column 'opds_only_shelves_sync' Integer DEFAULT 0")
     # Migration for per-user theme column
     try:
         _session.query(exists().where(User.theme)).scalar()
@@ -1037,6 +1105,15 @@ def migrate_magic_shelf_table(engine, _session):
         _run_ddl_with_retry(engine, "ALTER TABLE magic_shelf ADD column 'kobo_sync' Boolean DEFAULT 0")
 
 
+def migrate_shelf_table(engine, _session):
+    try:
+        _session.query(exists().where(Shelf.kobo_sync)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        _safe_session_rollback(_session, "shelf.kobo_sync")
+        _run_ddl_with_retry(engine, "ALTER TABLE shelf ADD column 'kobo_sync' Boolean DEFAULT 0")
+
+
 # Migrate database to current version, has to be updated after every database change. Currently migration from
 # maybe 4/5 versions back to current should work.
 # Migration is done by checking if relevant columns are existing, and then adding rows with SQL commands
@@ -1046,6 +1123,7 @@ def migrate_Database(_session):
     migrate_registration_table(engine, _session)
     migrate_user_session_table(engine, _session)
     migrate_user_table(engine, _session)
+    migrate_shelf_table(engine, _session)
     migrate_oauth_provider_table(engine, _session)
     migrate_config_table(engine, _session)
     migrate_magic_shelf_table(engine, _session)

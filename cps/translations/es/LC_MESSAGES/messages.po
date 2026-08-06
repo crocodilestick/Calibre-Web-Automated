@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 11:51+0000\n"
+"POT-Creation-Date: 2026-08-06 12:34+0000\n"
 "PO-Revision-Date: 2025-11-17 12:21-0300\n"
 "Last-Translator: minakmostoles <xxx@xxx.com>\n"
 "Language-Team: es <LL@li.org>\n"
@@ -134,7 +134,7 @@ msgstr "Configuración básica"
 msgid "UI Configuration"
 msgstr "Configuración de la Interfaz de Usuario"
 
-#: cps/admin.py:620 cps/admin.py:1302 cps/db.py:967 cps/search.py:153
+#: cps/admin.py:620 cps/admin.py:1302 cps/db.py:985 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -1170,7 +1170,7 @@ msgstr "Imagen de perfil actualizada correctamente."
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "Gestión de imágenes de perfil de CWA (en desarrollo)"
 
-#: cps/db.py:1252 cps/templates/config_edit.html:294
+#: cps/db.py:1270 cps/templates/config_edit.html:294
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
@@ -5708,7 +5708,7 @@ msgstr "Agregar a la estantería"
 
 #: cps/templates/detail.html:590 cps/templates/detail.html:612
 #: cps/templates/detail.html:765 cps/templates/detail.html:1251
-#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
+#: cps/templates/feed.xml:88 cps/templates/feed.xml:90
 #: cps/templates/layout.html:314 cps/templates/layout.html:323
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:22
@@ -6128,7 +6128,7 @@ msgstr "Dominios Prohibidos (Lista Negra)"
 msgid "Next"
 msgstr "Siguiente"
 
-#: cps/templates/feed.xml:83
+#: cps/templates/feed.xml:88
 msgid "(Magic)"
 msgstr "(Mágica)"
 

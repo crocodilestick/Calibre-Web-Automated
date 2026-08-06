@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 11:51+0000\n"
+"POT-Creation-Date: 2026-08-06 12:34+0000\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -126,7 +126,7 @@ msgstr "기본 설정"
 msgid "UI Configuration"
 msgstr "UI 설정"
 
-#: cps/admin.py:620 cps/admin.py:1302 cps/db.py:967 cps/search.py:153
+#: cps/admin.py:620 cps/admin.py:1302 cps/db.py:985 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -1099,7 +1099,7 @@ msgstr "프로필 사진이 갱신되었습니다."
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA 프로필 사진 관리자 (개발중)"
 
-#: cps/db.py:1252 cps/templates/config_edit.html:294
+#: cps/db.py:1270 cps/templates/config_edit.html:294
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793
@@ -5419,7 +5419,7 @@ msgstr "서재에 추가"
 
 #: cps/templates/detail.html:590 cps/templates/detail.html:612
 #: cps/templates/detail.html:765 cps/templates/detail.html:1251
-#: cps/templates/feed.xml:83 cps/templates/feed.xml:85
+#: cps/templates/feed.xml:88 cps/templates/feed.xml:90
 #: cps/templates/layout.html:314 cps/templates/layout.html:323
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:22
@@ -5824,7 +5824,7 @@ msgstr "차단 도메인 (블랙리스트)"
 msgid "Next"
 msgstr "다음"
 
-#: cps/templates/feed.xml:83
+#: cps/templates/feed.xml:88
 msgid "(Magic)"
 msgstr "(매직)"
 

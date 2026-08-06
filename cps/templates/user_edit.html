@@ -292,6 +292,19 @@
     </div>
     {% endif %}
     
+    <div class="settings-container" style="max-width: none; margin-inline: 0rem;">
+      <div class="form-group" style="margin-bottom: 20px; display: flex; flex-direction: column; gap: 0.5rem;">
+        <h4 class="settings-section-header">{{_('Metadata Provider Settings')}}</h4>
+        <label for="amazon_region" style="margin-bottom: 8px !important;">{{_('Choose an Amazon region')}}:</label>
+        <select class="form-control" name="amazon_region" id="amazon_region">
+          <option value="">({{ _('Global Default') }})</option>
+          {% for region in amazon_regions -%}
+          <option value="{{ region }}"{% if amazon_region == region %} selected{% endif %}>www.amazon.{{ region }}</option>
+          {% endfor %}
+        </select>
+      </div>
+    </div>
+
     <!-- OAuth & API Integrations Card -->
     {% if (registered_oauth.keys()| length > 0 and not new_user and profile) or (hardcover_support and not new_user) or (kobo_support and not new_user) %}
     <div class="settings-container" style="max-width: none; margin-inline: 0rem;">

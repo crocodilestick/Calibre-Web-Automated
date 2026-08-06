@@ -39,6 +39,10 @@ from .services.worker import WorkerThread, STAT_FINISH_SUCCESS, STAT_FAIL, STAT_
 from .tasks.database import TaskReconnectDatabase
 from .tasks.auto_send import TaskAutoSend
 from .tasks.ops import TaskConvertLibraryRun, TaskEpubFixerRun
+from .metadata_provider_settings import (
+    apply_config_metadata_provider_regions,
+    get_metadata_provider_context,
+)
 
 switch_theme = Blueprint('switch_theme', __name__)
 library_refresh = Blueprint('library_refresh', __name__)
@@ -968,6 +972,7 @@ def set_cwa_settings():
 
             # Save Kobo Sync Magic Shelves setting (stored in app.db, not cwa.db)
             config.config_kobo_sync_magic_shelves = 'config_kobo_sync_magic_shelves' in request.form
+            apply_config_metadata_provider_regions(config, request.form)
             config.save()
 
             duplicate_criteria_changed = False
@@ -1053,10 +1058,13 @@ def set_cwa_settings():
     next_scan_run = get_next_duplicate_scan_run(cwa_settings)
 
     return render_title_template("cwa_settings.html", title=_("Calibre-Web Automated User Settings"), page="cwa-settings",
-                                    cwa_settings=cwa_settings, ignorable_formats=ignorable_formats, target_formats=target_formats,
-                                    automerge_options=automerge_options, autoingest_options=autoingest_options,
-                                    hardcover_token_available=hardcover_token_available,
-                                    next_duplicate_scan_run=next_scan_run, config=config)
+                                     cwa_settings=cwa_settings, ignorable_formats=ignorable_formats, target_formats=target_formats,
+                                     automerge_options=automerge_options, autoingest_options=autoingest_options,
+                                     hardcover_token_available=hardcover_token_available,
+                                     next_duplicate_scan_run=next_scan_run, config=config,
+                                     **get_metadata_provider_context(
+                                         amazon_region=getattr(config, "config_amazon_region", ""),
+                                     ))
 
 
 def get_next_duplicate_scan_run(settings):

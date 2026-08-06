@@ -6,11 +6,11 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version:  Calibre-Web Automated\n"
+"Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-05 16:15+0200\n"
-"PO-Revision-Date: 2020-04-29 01:20+0400\n"
+"POT-Creation-Date: 2026-08-06 12:50+0200\n"
+"PO-Revision-Date: 2026-03-05 20:11+0200\n"
 "Last-Translator: ZIZA\n"
 "Language-Team: \n"
 "Language: ru\n"
@@ -20,6 +20,7 @@ msgstr ""
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && "
 "n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
 "Generated-By: Babel 2.13.1\n"
+"X-Generator: Poedit 3.8\n"
 
 #: cps/about.py:65
 msgid "Statistics"
@@ -28,14 +29,13 @@ msgstr "Статистика"
 #: cps/admin.py:128
 msgid "Calibre database unavailable. Please reconfigure the library path."
 msgstr ""
+"База данных Calibre недоступна. Пожалуйста, перенастройте путь к библиотеке."
 
 #: cps/admin.py:180
-#, fuzzy
 msgid "Server restarted, please reload page."
 msgstr "Сервер перезапущен, пожалуйста, перезагрузите страницу."
 
 #: cps/admin.py:182
-#, fuzzy
 msgid "Performing Server shutdown, please close window."
 msgstr "Выполняется остановка сервера, пожалуйста, закройте окно."
 
@@ -48,7 +48,6 @@ msgid "Unknown command"
 msgstr "Неизвестная команда"
 
 #: cps/admin.py:204
-#, fuzzy
 msgid ""
 "Success! Books queued for Metadata Backup, please check Tasks for result"
 msgstr ""
@@ -60,6 +59,8 @@ msgid ""
 "Error: No Hardcover token available. Set HARDCOVER_TOKEN environment "
 "variable or configure in Basic Configuration."
 msgstr ""
+"Ошибка: токен Hardcover недоступен. Установите переменную среды "
+"HARDCOVER_TOKEN или настройте в базовой конфигурации."
 
 #: cps/admin.py:252
 msgid ""
@@ -69,50 +70,51 @@ msgstr ""
 #: cps/admin.py:257
 #, python-format
 msgid "Error starting Hardcover auto-fetch task: %(error)s"
-msgstr ""
+msgstr "Ошибка при запуске задачи автоматической загрузки Hardcover: %(error)s"
 
 #: cps/admin.py:296 cps/templates/admin.html:223
 msgid "Review Hardcover Matches"
-msgstr ""
+msgstr "Посмотреть совпадения с Hardcover"
 
 #: cps/admin.py:303
 #, python-format
 msgid "Error loading review queue: %(error)s"
-msgstr ""
+msgstr "Ошибка при загрузке очереди проверок: %(error)s"
 
 #: cps/admin.py:384
-#, fuzzy
 msgid "Hardcover ID applied successfully"
-msgstr "Пользователи ({}) успешно удалены"
+msgstr "Идентификатор Hardcover ID успешно применен"
 
 #: cps/admin.py:401
 #, python-format
 msgid "Match %(action)s"
-msgstr ""
+msgstr "Совпадения %(action)s"
 
 #: cps/admin.py:439
 msgid "No pending matches to reject"
-msgstr ""
+msgstr "Нет ожидающих совпадений для отклонения"
 
 #: cps/admin.py:445
 #, python-format
 msgid "Rejected %(count)s match(es)"
-msgstr ""
+msgstr "Отклонено %(count)s совпадений"
 
 #: cps/admin.py:482
 #, python-brace-format
 msgid ""
 "Thumbnail cache refresh started for {} book(s). This may take a few minutes."
 msgstr ""
+"Началось обновление кэша миниатюр для {} книг. Это может занять несколько "
+"минут."
 
 #: cps/admin.py:484
 msgid "No books with covers found to process."
-msgstr ""
+msgstr "Не найдено книг с обложками для обработки."
 
 #: cps/admin.py:496
 #, python-brace-format
 msgid "Failed to start thumbnail refresh: {}"
-msgstr ""
+msgstr "Не удалось запустить обновление миниатюр: {}"
 
 #: cps/admin.py:538
 msgid "Admin page"
@@ -133,7 +135,6 @@ msgid "Custom Column No.%(column)d does not exist in calibre database"
 msgstr "Пользовательский столбец №%(column)d отсутствует в базе данных calibre"
 
 #: cps/admin.py:638 cps/templates/admin.html:55
-#, fuzzy
 msgid "Edit Users"
 msgstr "Редактирование пользователей"
 
@@ -216,9 +217,8 @@ msgid "Invalid Restricted Column"
 msgstr "Неверный ограниченный столбец"
 
 #: cps/admin.py:914 cps/admin.py:2459
-#, fuzzy
 msgid "Calibre-Web Automated configuration updated"
-msgstr "Конфигурация Calibre-Web обновлена"
+msgstr "Конфигурация Calibre-Web Automated обновлена"
 
 #: cps/admin.py:926
 msgid "Do you really want to delete the Kobo Token?"
@@ -237,9 +237,10 @@ msgid "Are you sure you want to delete this shelf?"
 msgstr "Вы уверены, что хотите удалить эту полку?"
 
 #: cps/admin.py:934
-#, fuzzy
 msgid "Are you sure you want to change locales of selected user(s)?"
-msgstr "Вы уверены, что хотите изменить локали выбранных пользователей?"
+msgstr ""
+"Вы уверены, что хотите изменить языковые настройки выбранного пользователя "
+"(пользователей)?"
 
 #: cps/admin.py:936
 msgid ""
@@ -255,7 +256,6 @@ msgstr ""
 "Вы уверены, что хотите изменить выбранную роль для выбранных пользователей?"
 
 #: cps/admin.py:940
-#, fuzzy
 msgid ""
 "Are you sure you want to change the selected restrictions for the selected "
 "user(s)?"
@@ -272,7 +272,6 @@ msgstr ""
 "пользователей?"
 
 #: cps/admin.py:945
-#, fuzzy
 msgid ""
 "Are you sure you want to change shelf sync behavior for the selected user(s)?"
 msgstr ""
@@ -280,27 +279,24 @@ msgstr ""
 "пользователей?"
 
 #: cps/admin.py:947
-#, fuzzy
 msgid "Are you sure you want to change Calibre library location?"
 msgstr "Вы уверены, что хотите изменить расположение библиотеки Calibre?"
 
 #: cps/admin.py:949
-#, fuzzy
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
 "Thumbnails, this may take a while?"
 msgstr ""
 "Calibre-Web выполнит поиск обновленных обложек и обновит их миниатюры, это "
-"может занять некоторое время?"
+"может занять некоторое время"
 
 #: cps/admin.py:952
-#, fuzzy
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
 "a full sync with your Kobo Reader?"
 msgstr ""
-"Вы уверены, что хотите удалить базу данных синхронизации Calibre-Web для "
-"принудительной полной синхронизации с вашим устройством Kobo?"
+"Вы уверены, что хотите удалить базу данных синхронизации Calibre-Web  "
+"Automated для принудительной полной синхронизации с вашим устройством Kobo?"
 
 #: cps/admin.py:1191 cps/admin.py:1197 cps/admin.py:1207 cps/admin.py:1217
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
@@ -345,7 +341,6 @@ msgstr ""
 "Пожалуйста, укажите поставщика LDAP, порт, DN и идентификатор пользователя"
 
 #: cps/admin.py:1624
-#, fuzzy
 msgid "Please Enter a LDAP Service Account and Password"
 msgstr "Пожалуйста, укажите учетную запись и пароль службы LDAP"
 
@@ -461,9 +456,8 @@ msgid "Settings DB is not Writeable"
 msgstr "База данных настроек недоступна для записи"
 
 #: cps/admin.py:1843 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
-#, fuzzy
 msgid "title"
-msgstr "Название"
+msgstr "название"
 
 #: cps/admin.py:1949 cps/admin.py:2817
 #, python-format
@@ -471,12 +465,11 @@ msgid "Edit User %(nick)s"
 msgstr "Редактирование пользователя %(nick)s"
 
 #: cps/admin.py:1961
-#, fuzzy, python-format
+#, python-format
 msgid "Success! Password for user %(user)s reset"
 msgstr "Успех! Пароль пользователя %(user)s сброшен"
 
 #: cps/admin.py:1967
-#, fuzzy
 msgid "Oops! Please configure the SMTP mail settings."
 msgstr "Пожалуйста, настройте параметры SMTP."
 
@@ -534,7 +527,6 @@ msgid "General error"
 msgstr "Общая ошибка"
 
 #: cps/admin.py:2055
-#, fuzzy
 msgid "Update file could not be saved in temp dir"
 msgstr "Не удалось сохранить файл обновления во временной директории"
 
@@ -543,7 +535,6 @@ msgid "Files could not be replaced during update"
 msgstr "Не удалось заменить файлы во время обновления"
 
 #: cps/admin.py:2080
-#, fuzzy
 msgid "Failed to extract at least One LDAP User"
 msgstr "Не удалось извлечь хотя бы одного пользователя LDAP"
 
@@ -594,16 +585,22 @@ msgid ""
 "Auto-create users cannot be enabled without enabling reverse proxy "
 "authentication"
 msgstr ""
+"Автоматическое создание пользователей не может быть включено без включения "
+"аутентификации обратного прокси."
 
 #: cps/admin.py:2368
 msgid "Auto-create users requires a valid reverse proxy header name"
 msgstr ""
+"Для автоматического создания пользователей требуется действительное имя "
+"заголовка обратного прокси-сервера."
 
 #: cps/admin.py:2387 cps/admin.py:2394
 msgid ""
 "Invalid OAuth Redirect Host format. Please include the full URL with "
 "protocol (e.g., https://your-domain.com)"
 msgstr ""
+"Неверный формат перенаправления OAuth. Пожалуйста, укажите полный URL-адрес "
+"с протоколом (например, https://your-domain.com)."
 
 #: cps/admin.py:2391
 msgid ""
@@ -616,12 +613,10 @@ msgid "Password length has to be between 1 and 40"
 msgstr "Длина пароля должна быть от 1 до 40 символов"
 
 #: cps/admin.py:2486
-#, fuzzy
 msgid "Database Settings updated"
 msgstr "Настройки базы данных обновлены"
 
 #: cps/admin.py:2494
-#, fuzzy
 msgid "Database Configuration"
 msgstr "Конфигурация базы данных"
 
@@ -643,7 +638,6 @@ msgid "User '%(user)s' created"
 msgstr "Пользователь '%(user)s' создан"
 
 #: cps/admin.py:2554
-#, fuzzy
 msgid "Oops! An account already exists for this Email. or name."
 msgstr ""
 "Учетная запись с таким адресом электронной почты или именем уже существует."
@@ -681,6 +675,8 @@ msgid ""
 "Connection failed: OIDC discovery endpoint not found (404). Check if the "
 "base URL is correct."
 msgstr ""
+"Сбой подключения: конечная точка обнаружения OIDC не найдена (404). "
+"Проверьте правильность базового URL-адреса."
 
 #: cps/admin.py:2893 cps/admin.py:2950
 #, python-format
@@ -688,29 +684,32 @@ msgid "Connection failed: Server returned status code %(code)s"
 msgstr "Ошибка подключения: сервер вернул код состояния %(code)s"
 
 #: cps/admin.py:2895
-#, fuzzy
 msgid ""
 "Connection failed: Could not connect to server. Check the URL and network "
 "connectivity."
-msgstr "Ошибка подключения: не удалось подключиться к серверу."
+msgstr ""
+"Сбой подключения: не удалось подключиться к серверу. Проверьте URL-адрес и "
+"сетевое подключение."
 
 #: cps/admin.py:2897
-#, fuzzy
 msgid ""
 "Connection failed: Request timed out. The server may be slow or unreachable."
-msgstr "Ошибка подключения: время ожидания запроса истекло."
+msgstr ""
+"Сбой подключения: истекло время ожидания запроса. Сервер может работать "
+"медленно или быть недоступен."
 
 #: cps/admin.py:2899
-#, fuzzy
 msgid ""
 "Connection failed: Server returned invalid JSON. This may not be an OIDC "
 "endpoint."
-msgstr "Ошибка подключения: неверный JSON в ответе."
+msgstr ""
+"Ошибка подключения: неверный JSON в ответе. Возможно, это не конечная точка "
+"OIDC."
 
 #: cps/admin.py:2902
-#, fuzzy, python-format
+#, python-format
 msgid "Connection failed: %(error)s"
-msgstr "Ошибка соединения"
+msgstr "Ошибка соединения %(error)s"
 
 #: cps/admin.py:2928
 #, fuzzy, python-format
@@ -720,14 +719,13 @@ msgid ""
 msgstr "В метаданных отсутствуют обязательные поля: %(fields)s"
 
 #: cps/admin.py:2939
-#, fuzzy, python-format
+#, python-format
 msgid "Metadata URL is valid! Found %(count)s OAuth endpoints."
-msgstr "URL метаданных действителен! Найдено %(count)s конечных точек."
+msgstr "URL метаданных действителен! Найдено %(count)s конечных точек OAuth."
 
 #: cps/admin.py:2941
-#, fuzzy
 msgid " User info endpoint is available."
-msgstr "Информация о выпуске недоступна"
+msgstr " Доступен конечный пункт информации о пользователе."
 
 #: cps/admin.py:2943
 msgid ""
@@ -736,14 +734,15 @@ msgstr ""
 
 #: cps/admin.py:2948
 msgid "Metadata URL not found (404). Please check the URL is correct."
-msgstr ""
+msgstr "URL метаданных не найден (404). Проверьте правильность URL."
 
 #: cps/admin.py:2952
-#, fuzzy
 msgid ""
 "Connection failed: Could not connect to metadata URL. Check the URL and "
 "network connectivity."
-msgstr "Ошибка подключения: не удалось подключиться к серверу."
+msgstr ""
+"Сбой подключения: не удалось подключиться к URL-адресу метаданных. Проверьте "
+"URL-адрес и подключение к сети."
 
 #: cps/admin.py:2954
 msgid "Connection failed: Request timed out."
@@ -754,37 +753,37 @@ msgid "Connection failed: Invalid JSON in response."
 msgstr "Ошибка подключения: неверный JSON в ответе."
 
 #: cps/admin.py:2959
-#, fuzzy
 msgid "An unknown error occurred."
-msgstr "Произошла неизвестная ошибка. Пожалуйста, попробуйте позже."
+msgstr "Произошла неизвестная ошибка."
 
 #: cps/admin.py:2971
-#, fuzzy
 msgid "Restore already in progress."
-msgstr "Ошибка соединения"
+msgstr "Восстановление в процессе выполнения."
 
 #: cps/admin.py:2975
 msgid "Restore failed: Calibre library path is not configured."
-msgstr ""
+msgstr "Восстановление не удалось: путь к библиотеке Calibre не настроен."
 
 #: cps/admin.py:2980
 #, python-format
 msgid "Restore failed: metadata.db not found at %(path)s"
-msgstr ""
+msgstr "Восстановление не удалось: metadata.db не найден в %(path)s"
 
 #: cps/admin.py:2985
 #, python-format
 msgid "Restore failed: app.db not found at %(path)s"
-msgstr ""
+msgstr "Восстановление не удалось: app.db не найден в %(path)s"
 
 #: cps/admin.py:3057 cps/admin.py:3097
-#, fuzzy, python-format
+#, python-format
 msgid "Restore failed: %(err)s"
-msgstr "Ошибка соединения"
+msgstr "Восстановление не удалось: %(err)s"
 
 #: cps/admin.py:3074
 msgid "Restore completed but app.db cleanup failed. See logs for details."
 msgstr ""
+"Восстановление завершено, но очистка app.db не удалась. Подробности см. в "
+"журналах."
 
 #: cps/admin.py:3093
 #, python-format
@@ -792,6 +791,8 @@ msgid ""
 "Restore complete. Backups and restore log saved to %(dir)s. All book-linked "
 "data was reset."
 msgstr ""
+"Восстановление завершено. Резервные копии и журнал восстановления сохранены "
+"в %(dir)s. Все данные, связанные с книгами, были сброшены."
 
 #: cps/constants.py:207
 msgid "Czech"
@@ -810,7 +811,6 @@ msgid "Spanish"
 msgstr "Испанский"
 
 #: cps/constants.py:211
-#, fuzzy
 msgid "Finnish"
 msgstr "Финский"
 
@@ -855,7 +855,6 @@ msgid "Norwegian"
 msgstr "Норвежский"
 
 #: cps/constants.py:222
-#, fuzzy
 msgid "Polish"
 msgstr "Польский"
 
@@ -913,7 +912,7 @@ msgstr "Отсутствуют права на выполнение"
 
 #: cps/cwa_functions.py:165
 msgid "Theme switching is temporarily disabled until v5.0.0"
-msgstr ""
+msgstr "Переключение тем временно отключено до версии 5.0.0"
 
 #: cps/cwa_functions.py:280
 msgid ""
@@ -925,6 +924,8 @@ msgstr ""
 #: cps/cwa_functions.py:959
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
+"Недопустимое выражение cron для повторных сканирований. Изменения не были "
+"сохранены."
 
 #: cps/cwa_functions.py:1055
 msgid "Calibre-Web Automated User Settings"
@@ -938,7 +939,6 @@ msgstr "Отметка времени"
 
 #: cps/cwa_functions.py:1101 cps/cwa_functions.py:1103
 #: cps/templates/tasks.html:43
-#, fuzzy
 msgid "Book ID"
 msgstr "ID книги"
 
@@ -948,7 +948,6 @@ msgid "Book Title"
 msgstr "Название книги"
 
 #: cps/cwa_functions.py:1101
-#, fuzzy
 msgid "Book Author"
 msgstr "Автор книги"
 
@@ -957,13 +956,11 @@ msgid "Trigger Type"
 msgstr "Тип триггера"
 
 #: cps/cwa_functions.py:1103 cps/cwa_functions.py:1109
-#, fuzzy
 msgid "Filepath"
 msgstr "Путь к файлу"
 
 #: cps/cwa_functions.py:1107 cps/cwa_functions.py:1109
 #: cps/cwa_functions.py:1112 cps/cwa_functions.py:1114
-#, fuzzy
 msgid "Filename"
 msgstr "Имя файла"
 
@@ -994,14 +991,12 @@ msgid "End Format"
 msgstr "Конечный формат"
 
 #: cps/cwa_functions.py:1190 cps/cwa_functions.py:1219
-#, fuzzy
 msgid "Unknown User"
-msgstr "Неизвестно"
+msgstr "Неизвестный пользователь"
 
 #: cps/cwa_functions.py:1327
-#, fuzzy
 msgid "Calibre-Web Automated Stats & Activity"
-msgstr "Автоматизированная статистика и архив сервера Calibre-Web"
+msgstr "Calibre-Web Automated - Статистика и активность"
 
 #: cps/cwa_functions.py:1711
 msgid "Calibre-Web Automated - Full Enforcement History"
@@ -1059,42 +1054,38 @@ msgid "Calibre-Web Automated - Convert Library"
 msgstr "Calibre-Web Automated - Конвертировать библиотеку"
 
 #: cps/cwa_functions.py:2095 cps/cwa_functions.py:2119
-#, fuzzy
 msgid "Calibre-Web Automated - EPUB Fixer Service"
-msgstr "Calibre-Web Automated - Сервис исправления EPUB для Send-to-Kindle"
+msgstr "Calibre-Web Automated - Сервис исправления EPUB"
 
 #: cps/cwa_functions.py:2173
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
+"Сервис исправлений EPUB для одной книги не поддерживается в библиотеках "
+"Google Drive."
 
 #: cps/cwa_functions.py:2180
-#, fuzzy
 msgid "Invalid book selection."
-msgstr "Неверный ID книги."
+msgstr "Недопустимый выбор книги."
 
 #: cps/cwa_functions.py:2186
-#, fuzzy
 msgid "Book not found."
-msgstr "Токен не найден"
+msgstr "Книга не найдена."
 
 #: cps/cwa_functions.py:2192
-#, fuzzy
 msgid "Selected book has no EPUB format."
-msgstr "Пометить выбранные книги как непрочитанные"
+msgstr "Выбранная книга не имеет формата EPUB."
 
 #: cps/cwa_functions.py:2196
-#, fuzzy
 msgid "EPUB file not found on disk."
-msgstr "Формат %(format)s не найден на диске"
+msgstr "Файл EPUB не найден на диске."
 
 #: cps/cwa_functions.py:2211
-#, fuzzy
 msgid "EPUB Fixer started for selected book."
-msgstr "Редактировать выбранные книги"
+msgstr "Сервис исправления EPUB запущен для выбранной книги."
 
 #: cps/cwa_functions.py:2214
 msgid "Failed to start EPUB Fixer for selected book."
-msgstr ""
+msgstr "Не удалось запустить сервис исправления EPUB для выбранной книги."
 
 #: cps/cwa_functions.py:2261
 msgid "You must be an admin to access this page."
@@ -1107,27 +1098,30 @@ msgstr "Требуются имя пользователя и данные из�
 #: cps/cwa_functions.py:2284
 msgid "Invalid image data format. Must be a valid image."
 msgstr ""
+"Недопустимый формат данных изображения. Должно быть допустимое изображение."
 
 #: cps/cwa_functions.py:2292
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr ""
+"Неподдерживаемый тип изображения. Допускаются только форматы PNG и JPEG."
 
 #: cps/cwa_functions.py:2304
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr ""
+"Изображение слишком большое. Пожалуйста, используйте изображение размером "
+"менее 500 КБ."
 
 #: cps/cwa_functions.py:2308
 msgid "Invalid Base64 image data."
-msgstr ""
+msgstr "Недопустимые данные изображения Base64."
 
 #: cps/cwa_functions.py:2312
-#, fuzzy
 msgid "Invalid image data format."
-msgstr "Неверный формат адреса электронной почты"
+msgstr "Недопустимый формат данных изображения."
 
 #: cps/cwa_functions.py:2317
 msgid "Error validating image data."
-msgstr ""
+msgstr "Ошибка при проверке данных изображения."
 
 #: cps/cwa_functions.py:2335
 msgid "Profile picture updated successfully."
@@ -1147,45 +1141,40 @@ msgid "None"
 msgstr "Нет"
 
 #: cps/duplicates.py:352 cps/duplicates.py:363
-#, fuzzy
 msgid "Duplicate Books"
-msgstr "Удалить книгу"
+msgstr "Дубликаты книг"
 
 #: cps/duplicates.py:1201
 msgid "Duplicate group already dismissed"
-msgstr ""
+msgstr "Дубликат группы уже удален"
 
 #: cps/duplicates.py:1221
-#, fuzzy
 msgid "Duplicate group dismissed"
-msgstr "Удалить книгу"
+msgstr "Дубликат группы удален"
 
 #: cps/duplicates.py:1258
-#, fuzzy
 msgid "Duplicate group restored"
-msgstr "Удалить книгу"
+msgstr "Дубликат группы восстановлен"
 
 #: cps/duplicates.py:1260
 msgid "Duplicate group was not dismissed"
-msgstr ""
+msgstr "Дубликат группы не был удален"
 
 #: cps/duplicates.py:1314
 msgid "Import is in progress. Run a full duplicate scan after ingest finishes."
 msgstr ""
 
 #: cps/duplicates.py:1335
-#, fuzzy
 msgid "Duplicate scan queued"
-msgstr "Дубликаты"
+msgstr "Сканирование дубликатов в очереди"
 
 #: cps/duplicates.py:1404
 msgid "Duplicate scan completed (fallback)"
-msgstr ""
+msgstr "Сканирование дубликатов завершено  (резервный вариант)"
 
 #: cps/duplicates.py:1479
-#, fuzzy
 msgid "Invalid resolution strategy"
-msgstr "Неверная роль"
+msgstr "Неверная стратегия разрешения"
 
 #: cps/duplicates.py:1490
 msgid ""
@@ -1197,6 +1186,8 @@ msgid ""
 "Ingest folder is not writable. Check your /cwa-book-ingest volume "
 "permissions."
 msgstr ""
+"Папка Ingest не доступна для записи. Проверьте права доступа к тому /cwa-"
+"book-ingest."
 
 #: cps/editbooks.py:121
 msgid "Missing or invalid book id for format upload"
@@ -1204,7 +1195,7 @@ msgstr "Отсутствует или неверный идентификато�
 
 #: cps/editbooks.py:127
 msgid "Cannot upload format: Book no longer exists in library"
-msgstr ""
+msgstr "Невозможно загрузить формат: книга больше не существует в библиотеке"
 
 #: cps/editbooks.py:152 cps/editbooks.py:179 cps/templates/book_edit.html:52
 #: cps/templates/layout.html:152
@@ -1212,9 +1203,8 @@ msgid "Upload done, processing, please wait..."
 msgstr "Загрузка завершена, обработка, пожалуйста, подождите..."
 
 #: cps/editbooks.py:157 cps/editbooks.py:183
-#, fuzzy
 msgid "Failed to queue upload for processing"
-msgstr "Не удалось создать путь для обложки"
+msgstr "Не удалось добавить в очередь загрузки для обработки"
 
 #: cps/editbooks.py:199
 msgid "Source or destination format for conversion missing"
@@ -1231,7 +1221,6 @@ msgid "There was an error converting this book: %(res)s"
 msgstr "Произошла ошибка при конвертации книги: %(res)s"
 
 #: cps/editbooks.py:367 cps/editbooks.py:1249 cps/editbooks.py:1776
-#, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "Данный тип файлов не разрешен для загрузки на сервер"
 
@@ -1260,7 +1249,7 @@ msgstr ""
 "Идентификаторы не чувствительны к регистру, перезапись старого идентификатора"
 
 #: cps/editbooks.py:911 cps/editbooks.py:1211 cps/editbooks.py:1587
-#, fuzzy, python-format
+#, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s' не является допустимым языком"
 
@@ -1370,47 +1359,42 @@ msgstr "Формат %(format)s не найден: %(fn)s"
 
 #: cps/helper.py:110 cps/helper.py:234 cps/templates/detail.html:516
 #: cps/templates/detail.html:520
-#, fuzzy
 msgid "Send to eReader"
 msgstr "Отправить на eReader"
 
 #: cps/helper.py:112 cps/helper.py:132 cps/helper.py:245
-#, fuzzy
 msgid "This Email has been sent via Calibre-Web Automated."
-msgstr "Это письмо было отправлено через Calibre-Web."
+msgstr "Это письмо было отправлено через Calibre-Web Automated."
 
 #: cps/helper.py:130
-#, fuzzy
 msgid "Calibre-Web Automated Test Email"
-msgstr "Тестовое письмо Calibre-Web"
+msgstr "Тестовое письмо Calibre-Web Automated"
 
 #: cps/helper.py:131
-#, fuzzy
 msgid "Test Email"
 msgstr "Тестовое письмо"
 
 #: cps/helper.py:148
-#, fuzzy
 msgid "Get Started with Calibre-Web Automated"
-msgstr "Начало работы с Calibre-Web"
+msgstr "Начало работы с Calibre-Web Automated"
 
 #: cps/helper.py:153
-#, fuzzy, python-format
+#, python-format
 msgid "Registration Email for user: %(name)s"
 msgstr "Регистрационное письмо для пользователя: %(name)s"
 
 #: cps/helper.py:164 cps/helper.py:170
-#, fuzzy, python-format
+#, python-format
 msgid "Convert %(orig)s to %(format)s and send to eReader"
 msgstr "Конвертировать %(orig)s в %(format)s и отправить на eReader"
 
 #: cps/helper.py:189 cps/helper.py:193 cps/helper.py:197
-#, fuzzy, python-format
+#, python-format
 msgid "Send %(format)s to eReader"
 msgstr "Отправить %(format)s на eReader"
 
 #: cps/helper.py:240
-#, fuzzy, python-format
+#, python-format
 msgid "%(book)s send to eReader"
 msgstr "%(book)s отправлена на eReader"
 
@@ -1445,7 +1429,7 @@ msgstr ""
 "недействителен: %(path)s"
 
 #: cps/helper.py:528
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Rename author from: '%(src)s' to '%(dest)s' failed with error: %(error)s"
 msgstr "Переименование автора с '%(src)s' на '%(dest)s' не удалось: %(error)s"
@@ -1491,7 +1475,7 @@ msgstr ""
 #: cps/helper.py:1067 cps/helper.py:1075
 #, python-format
 msgid "Cover image exceeds maximum size of %(size)s MB"
-msgstr ""
+msgstr "Изображение обложки превышает максимальный размер %(size)s МБ"
 
 #: cps/helper.py:1086
 msgid "Error Downloading Cover"
@@ -1531,7 +1515,6 @@ msgid "Only jpg/jpeg files are supported as coverfile"
 msgstr "Только файлы jpg/jpeg поддерживаются в качестве обложки"
 
 #: cps/helper.py:1318 cps/helper.py:1557
-#, fuzzy
 msgid "Cover"
 msgstr "Обложка"
 
@@ -1549,6 +1532,8 @@ msgid ""
 "Unsupported architecture detected: %(arch)s. CWA is optimized for x86_64 and "
 "aarch64."
 msgstr ""
+"Обнаружена неподдерживаемая архитектура: %(arch)s. CWA оптимизирована для "
+"x86_64 и aarch64."
 
 #: cps/helper.py:1361
 msgid "Could not find the specified directory"
@@ -1581,13 +1566,12 @@ msgid "Queue all books for metadata backup"
 msgstr "Поставить все книги в очередь резервного копирования метаданных"
 
 #: cps/kobo_auth.py:80
-#, fuzzy
 msgid ""
 "Please access Calibre-Web Automated from non localhost to get valid "
 "api_endpoint for kobo device"
 msgstr ""
-"Пожалуйста, обращайтесь к Calibre-Web не с localhost, чтобы получить "
-"действительный api_endpoint для устройства Kobo"
+"Пожалуйста, обращайтесь к Calibre-Web Automated не с localhost, чтобы "
+"получить действительный api_endpoint для устройства Kobo"
 
 #: cps/kobo_auth.py:106
 msgid "Kobo Setup"
@@ -1608,15 +1592,16 @@ msgstr ""
 #: cps/oauth_bb.py:259
 msgid "Login failed: OAuth token expired. Please try logging in again."
 msgstr ""
+"Не удалось войти: срок действия токена OAuth истек. Повторите попытку входа."
 
 #: cps/oauth_bb.py:263
-#, fuzzy
 msgid ""
 "Login failed: Could not connect to the OAuth provider's user info endpoint. "
 "Please try again or contact your administrator."
 msgstr ""
-"Вход не выполнен: не удалось подключиться к эндпоинту информации о "
-"пользователе."
+"Не удалось войти: не удалось подключиться к конечной точке пользовательской "
+"информации поставщика OAuth. Повторите попытку или обратитесь к "
+"администратору."
 
 #: cps/oauth_bb.py:268
 #, fuzzy
@@ -1636,7 +1621,7 @@ msgstr ""
 
 #: cps/oauth_bb.py:316 cps/oauth_bb.py:560
 msgid "Failed to link OAuth account. Please try again."
-msgstr ""
+msgstr "Не удалось подключить учетную запись OAuth. Повторите попытку."
 
 #: cps/oauth_bb.py:531
 msgid ""
@@ -1664,11 +1649,12 @@ msgstr ""
 #: cps/oauth_bb.py:570
 msgid "OAuth authentication failed. Please try again or contact administrator."
 msgstr ""
+"Аутентификация OAuth не удалась. Повторите попытку или обратитесь к "
+"администратору."
 
 #: cps/oauth_bb.py:574
-#, fuzzy
 msgid "OAuth system error. Please contact administrator."
-msgstr "Почтовый сервер не настроен, свяжитесь с администратором."
+msgstr "Системная ошибка OAuth. Обратитесь к администратору."
 
 #: cps/oauth_bb.py:607
 #, python-format
@@ -1702,19 +1688,21 @@ msgid "Failed to fetch user info from Google."
 msgstr "Не удалось получить информацию о пользователе из Google."
 
 #: cps/oauth_bb.py:881
-#, fuzzy
 msgid "Failed to log in with Generic OAuth."
-msgstr "Не удалось войти через GitHub."
+msgstr "Не удалось войти с помощью OAuth."
 
 #: cps/oauth_bb.py:897
 msgid "OAuth authentication failed: Token validation error. Please try again."
 msgstr ""
+"Аутентификация OAuth не удалась: ошибка проверки токена. Повторите попытку."
 
 #: cps/oauth_bb.py:901
 msgid ""
 "OAuth authentication failed due to an unexpected error. Please contact "
 "administrator."
 msgstr ""
+"Аутентификация OAuth не удалась из-за непредвиденной ошибки. Обратитесь к "
+"администратору."
 
 #: cps/oauth_bb.py:909 cps/oauth_bb.py:927 cps/oauth_bb.py:945
 msgid ""
@@ -1742,14 +1730,13 @@ msgid "Google Oauth error: {}"
 msgstr "Ошибка Google Oauth: {}"
 
 #: cps/oauth_bb.py:1081 cps/oauth_bb.py:1089
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "OAuth error: {}"
-msgstr "Ошибка GitHub Oauth: {}"
+msgstr "Ошибка OAuth: {}"
 
 #: cps/opds.py:200
-#, fuzzy
 msgid "description"
-msgstr "Описание"
+msgstr "описание"
 
 #: cps/opds.py:483
 #, python-brace-format
@@ -1818,7 +1805,6 @@ msgid "Read Books"
 msgstr "Прочитанные книги"
 
 #: cps/render_template.py:96
-#, fuzzy
 msgid "Show Read and Unread"
 msgstr "Показать прочитанные и непрочитанные"
 
@@ -1844,7 +1830,6 @@ msgid "Categories"
 msgstr "Категории"
 
 #: cps/render_template.py:106 cps/templates/user_table.html:159
-#, fuzzy
 msgid "Show Category Section"
 msgstr "Показать раздел категорий"
 
@@ -1857,7 +1842,6 @@ msgid "Series"
 msgstr "Серии"
 
 #: cps/render_template.py:109 cps/templates/user_table.html:158
-#, fuzzy
 msgid "Show Series Section"
 msgstr "Показать раздел серий"
 
@@ -1868,7 +1852,6 @@ msgid "Authors"
 msgstr "Авторы"
 
 #: cps/render_template.py:112 cps/templates/user_table.html:161
-#, fuzzy
 msgid "Show Author Section"
 msgstr "Показать раздел авторов"
 
@@ -1877,7 +1860,6 @@ msgid "Publishers"
 msgstr "Издатели"
 
 #: cps/render_template.py:116 cps/templates/user_table.html:164
-#, fuzzy
 msgid "Show Publisher Section"
 msgstr "Показать раздел издателей"
 
@@ -1888,7 +1870,6 @@ msgid "Languages"
 msgstr "Языки"
 
 #: cps/render_template.py:120 cps/templates/user_table.html:156
-#, fuzzy
 msgid "Show Language Section"
 msgstr "Показать раздел языков"
 
@@ -1897,7 +1878,6 @@ msgid "Ratings"
 msgstr "Рейтинги"
 
 #: cps/render_template.py:123 cps/templates/user_table.html:165
-#, fuzzy
 msgid "Show Ratings Section"
 msgstr "Показать раздел рейтингов"
 
@@ -1906,7 +1886,6 @@ msgid "File formats"
 msgstr "Форматы файлов"
 
 #: cps/render_template.py:126 cps/templates/user_table.html:166
-#, fuzzy
 msgid "Show File Formats Section"
 msgstr "Показать раздел форматов файлов"
 
@@ -1915,7 +1894,6 @@ msgid "Archived Books"
 msgstr "Архивированные книги"
 
 #: cps/render_template.py:130 cps/templates/user_table.html:167
-#, fuzzy
 msgid "Show Archived Books"
 msgstr "Показать архивированные книги"
 
@@ -1932,15 +1910,16 @@ msgid "Duplicates"
 msgstr "Дубликаты"
 
 #: cps/render_template.py:140
-#, fuzzy
 msgid "Show Duplicate Books"
-msgstr "Показать книги с наивысшим рейтингом"
+msgstr "Показать дубликаты книг"
 
 #: cps/render_template.py:217
 msgid ""
 "ℹ️ Your theme has been updated to caliBlur (Dark). Theme switching is "
 "temporarily disabled while we develop a new frontend for v5.0.0."
 msgstr ""
+"ℹ️ Ваша тема была обновлена до caliBlur (Dark). Переключение тем временно "
+"отключено, пока мы разрабатываем новый интерфейс для версии 5.0.0."
 
 #: cps/search.py:53 cps/search.py:440 cps/templates/book_edit.html:275
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:34
@@ -1985,7 +1964,6 @@ msgid "Invalid shelf specified"
 msgstr "Указана недопустимая полка"
 
 #: cps/shelf.py:40
-#, fuzzy
 msgid "Sorry you are not allowed to add a book to that shelf"
 msgstr "Извините, у вас нет прав для добавления книг на эту полку"
 
@@ -2037,7 +2015,6 @@ msgid "Create a Shelf"
 msgstr "Создать полку"
 
 #: cps/shelf.py:261
-#, fuzzy
 msgid "Sorry you are not allowed to edit this shelf"
 msgstr "Извините, у вас нет прав для редактирования этой полки"
 
@@ -2050,7 +2027,6 @@ msgid "Error deleting Shelf"
 msgstr "Ошибка удаления полки"
 
 #: cps/shelf.py:274
-#, fuzzy
 msgid "Shelf successfully deleted"
 msgstr "Полка успешно удалена"
 
@@ -2219,118 +2195,108 @@ msgid "Language: %(name)s"
 msgstr "Язык: %(name)s"
 
 #: cps/web.py:940
-#, fuzzy
 msgid "Error loading magic shelf"
-msgstr "Ошибка удаления полки"
+msgstr "Ошибка при загрузке Волшебной полки"
 
 #: cps/web.py:965
 #, python-format
 msgid "Magic Shelf&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s"
-msgstr ""
+msgstr "Волшебная полка&nbsp&nbsp&nbsp—&nbsp&nbsp&nbsp%(icon)s %(name)s"
 
 #: cps/web.py:1038
 msgid "No rules provided"
-msgstr ""
+msgstr "Правила не указаны"
 
 #: cps/web.py:1044
-#, fuzzy
 msgid "Invalid rules format"
-msgstr "Неверный формат адреса электронной почты"
+msgstr "Недопустимый формат правил"
 
 #: cps/web.py:1066
 msgid "Error processing rules"
 msgstr ""
 
 #: cps/web.py:1070
-#, fuzzy
 msgid "Invalid request"
-msgstr "Неверная роль"
+msgstr "Недопустимый запрос"
 
 #: cps/web.py:1114
-#, fuzzy
 msgid "Name and rules are required"
-msgstr "Требуются имя пользователя и данные изображения."
+msgstr "Требуется указать название и правила"
 
 #: cps/web.py:1117 cps/web.py:1214
 msgid "Shelf name too long (max 100 characters)"
-msgstr ""
+msgstr "Название полки слишком длинное (максимум 100 символов)"
 
 #: cps/web.py:1139
-#, fuzzy
 msgid "Error creating shelf"
-msgstr "Ошибка удаления полки"
+msgstr "Ошибка при создании полки"
 
 #: cps/templates/layout.html:326 cps/web.py:1153
-#, fuzzy
 msgid "Create Magic Shelf"
-msgstr "Создать полку"
+msgstr "Создать Волшебную полку"
 
 #: cps/web.py:1207
 msgid "Permission denied to change public status"
-msgstr ""
+msgstr "У Вас нет разрешения на изменение публичного статуса"
 
 #: cps/web.py:1211
-#, fuzzy
 msgid "Shelf name is required"
-msgstr "Это поле обязательно"
+msgstr "Необходимо указать название полки"
 
 #: cps/web.py:1245
-#, fuzzy
 msgid "Error updating shelf"
-msgstr "Ошибка удаления полки"
+msgstr "Ошибка при обновлении полки"
 
 #: cps/web.py:1260
-#, fuzzy
 msgid "Edit Magic Shelf"
-msgstr "Редактировать полку"
+msgstr "Редактировать Волшебную полку"
 
 #: cps/web.py:1273
-#, fuzzy
 msgid "Shelf not found"
-msgstr "Пользователь не найден"
+msgstr "Полка не найдена"
 
 #: cps/web.py:1278
 msgid "Permission denied"
 msgstr ""
 
 #: cps/web.py:1309
-#, fuzzy
 msgid "Shelf duplicated successfully"
-msgstr "Пользователи ({}) успешно удалены"
+msgstr "Полка успешно скопирована"
 
 #: cps/web.py:1315
-#, fuzzy
 msgid "Error duplicating shelf"
-msgstr "Ошибка удаления полки"
+msgstr "Ошибка при дублировании полки"
 
 #: cps/templates/magic_shelf_edit.html:448 cps/web.py:1342
 msgid ""
 "System shelves cannot be deleted. You can hide them in your user profile "
 "settings."
 msgstr ""
+"Системные полки нельзя удалить. Вы можете скрыть их в настройках своего "
+"профиля пользователя."
 
 #: cps/web.py:1359
-#, fuzzy
 msgid "Error deleting shelf"
-msgstr "Ошибка удаления полки"
+msgstr "Ошибка при удалении полки"
 
 #: cps/web.py:1375
 msgid ""
 "You cannot hide your own shelves. Delete them instead if you don't want them."
 msgstr ""
+"Вы не можете скрыть свои собственные полки. Если они вам не нужны, просто "
+"удалите их."
 
 #: cps/web.py:1385
 msgid "Shelf already hidden"
-msgstr ""
+msgstr "Полка уже скрыта"
 
 #: cps/web.py:1399
-#, fuzzy
 msgid "Error hiding shelf"
-msgstr "Ошибка удаления полки"
+msgstr "Ошибка при скрытии полки"
 
 #: cps/web.py:1413
 msgid "Shelf was not hidden"
-msgstr ""
+msgstr "Полка не была скрыта"
 
 #: cps/web.py:1422
 #, fuzzy
@@ -2346,12 +2312,10 @@ msgid "File formats list"
 msgstr "Список форматов файлов"
 
 #: cps/web.py:1961 cps/web.py:1999
-#, fuzzy
 msgid "Please configure the SMTP mail settings first..."
 msgstr "Пожалуйста, сначала настройте параметры SMTP..."
 
 #: cps/web.py:1965
-#, fuzzy
 msgid "Oops! Please update your profile with a valid eReader Email."
 msgstr "Пожалуйста, обновите свой профиль действительным email для eReader."
 
@@ -2370,14 +2334,13 @@ msgid "No email addresses selected"
 msgstr "Адреса электронной почты не выбраны"
 
 #: cps/web.py:2024
-#, fuzzy
 msgid "Additional email addresses are disabled for your account."
-msgstr "Выберите адреса электронной почты:"
+msgstr ""
+"Дополнительные адреса электронной почты для вашей учетной записи отключены."
 
 #: cps/web.py:2046
-#, fuzzy
 msgid "Success! Book queued for sending to the selected address(es)!"
-msgstr "Успех! Книга поставлена в очередь отправки на %(eReadermail)s"
+msgstr "Успех! Книга отправлена на указанный адрес (адреса)!"
 
 #: cps/web.py:2065
 msgid "Please wait one minute to register next user"
@@ -2410,27 +2373,26 @@ msgid "Success! Confirmation Email has been sent."
 msgstr "Успех! Письмо с подтверждением отправлено."
 
 #: cps/web.py:2163
-#, fuzzy
 msgid ""
 "Authentication loop detected. If you're experiencing login issues, please "
 "contact your administrator."
-msgstr "Экземпляр Calibre-Web не настроен, свяжитесь с администратором"
+msgstr ""
+"Обнаружен цикл аутентификации. Если у вас возникли проблемы с входом в "
+"систему, обратитесь к администратору."
 
 #: cps/web.py:2208
-#, fuzzy
 msgid ""
 "OAuth authentication is not properly configured. Please contact "
 "administrator."
-msgstr "Почтовый сервер не настроен, свяжитесь с администратором."
+msgstr "Аутентификация OAuth настроена неверно. Обратитесь к администратору."
 
 #: cps/web.py:2213 cps/web.py:2240
-#, fuzzy
 msgid "Cannot activate LDAP authentication"
 msgstr "Не удалось активировать LDAP-аутентификацию"
 
 #: cps/web.py:2222
 msgid "Standard login is disabled."
-msgstr ""
+msgstr "Стандартный вход в систему отключен."
 
 #: cps/web.py:2230
 msgid "Please wait one minute before next login"
@@ -2438,35 +2400,40 @@ msgstr "Пожалуйста, подождите минуту перед сле�
 
 #: cps/web.py:2248
 msgid "Username cannot be empty"
-msgstr ""
+msgstr "Имя пользователя не может быть пустым"
 
 #: cps/web.py:2260
-#, fuzzy, python-format
+#, python-format
 msgid "you are now logged in as: '%(nickname)s'"
 msgstr "вы вошли как: '%(nickname)s'"
 
 #: cps/web.py:2279
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Welcome! Your account has been automatically created. You are now logged in "
 "as: '%(nickname)s'"
-msgstr "Успех! Вы вошли как: %(nickname)s"
+msgstr ""
+"Добро пожаловать! Ваша учетная запись была создана автоматически. Вы вошли в "
+"систему под именем: «%(nickname)s»"
 
 #: cps/web.py:2284 cps/web.py:2287
-#, fuzzy
 msgid ""
 "Authentication successful, but account creation failed. Please contact your "
 "administrator."
-msgstr "Экземпляр Calibre-Web не настроен, свяжитесь с администратором"
+msgstr ""
+"Аутентификация прошла успешно, но создание учетной записи не удалось. "
+"Обратитесь к администратору."
 
 #: cps/web.py:2291
 msgid ""
 "Authentication successful, but no local account found. Please contact your "
 "administrator to create your account."
 msgstr ""
+"Аутентификация прошла успешно, но локальная учетная запись не найдена. "
+"Обратитесь к администратору для создания учетной записи."
 
 #: cps/web.py:2299
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Fallback Login as: '%(nickname)s', LDAP Server not reachable, or user not "
 "known"
@@ -2475,42 +2442,36 @@ msgstr ""
 "неизвестен"
 
 #: cps/web.py:2305
-#, fuzzy, python-format
+#, python-format
 msgid "Could not login: %(message)s"
 msgstr "Не удалось войти: %(message)s"
 
 #: cps/web.py:2328 cps/web.py:2329 cps/web.py:2372
-#, fuzzy
 msgid "Wrong Username or Password"
 msgstr "Неверное имя пользователя или пароль"
 
 #: cps/web.py:2337
-#, fuzzy
 msgid "New Password was sent to your email address"
 msgstr "Новый пароль был отправлен на ваш email"
 
 #: cps/web.py:2341
-#, fuzzy
 msgid "An unknown error occurred. Please try again later."
 msgstr "Произошла неизвестная ошибка. Пожалуйста, попробуйте позже."
 
 #: cps/web.py:2343
-#, fuzzy
 msgid "Please enter valid username to reset password"
 msgstr "Пожалуйста, введите действительное имя пользователя для сброса пароля"
 
 #: cps/web.py:2351
-#, fuzzy, python-format
+#, python-format
 msgid "You are now logged in as: '%(nickname)s'"
 msgstr "Вы вошли как: '%(nickname)s'"
 
 #: cps/web.py:2667
-#, fuzzy
 msgid "Success! Profile Updated"
 msgstr "Успех! Профиль обновлен"
 
 #: cps/web.py:2673
-#, fuzzy
 msgid "Oops! An account already exists for this Email."
 msgstr "Учетная запись с этим email уже существует."
 
@@ -2537,29 +2498,26 @@ msgstr "%(book)s отправлена на eReader"
 
 #: cps/tasks/auto_send.py:56
 msgid "Checking available formats..."
-msgstr ""
+msgstr "Проверка доступных форматов..."
 
 #: cps/tasks/auto_send.py:69
-#, fuzzy
 msgid "Sending to eReader..."
-msgstr "Отправить на eReader"
+msgstr "Отправка на eReader..."
 
 #: cps/tasks/auto_send.py:86
-#, fuzzy
 msgid "Auto-send completed successfully"
-msgstr "Пользователи ({}) успешно удалены"
+msgstr "Автоматическая отправка выполнена успешно"
 
 #: cps/tasks/auto_send.py:102
-#, fuzzy
 msgid "Auto-Send"
-msgstr "Отправить"
+msgstr "Автоматическая отправка"
 
 #: cps/tasks/clean.py:18
 msgid "Delete temp folder contents"
 msgstr "Удалить содержимое временной папки"
 
 #: cps/tasks/convert.py:98
-#, fuzzy, python-format
+#, python-format
 msgid "%(book)s send to E-Reader"
 msgstr "%(book)s отправлена на eReader"
 
@@ -2579,7 +2537,7 @@ msgid "Ebook converter failed with unknown error"
 msgstr "Конвертер электронных книг завершился с неизвестной ошибкой"
 
 #: cps/tasks/convert.py:219
-#, fuzzy, python-format
+#, python-format
 msgid "Kepubify-converter failed: %(error)s"
 msgstr "Ошибка конвертера Kepubify: %(error)s"
 
@@ -2600,12 +2558,10 @@ msgid "Ebook-converter failed: %(error)s"
 msgstr "Ошибка конвертера электронных книг: %(error)s"
 
 #: cps/tasks/convert.py:341
-#, fuzzy
 msgid "Convert"
 msgstr "Конвертировать"
 
 #: cps/tasks/database.py:15
-#, fuzzy
 msgid "Reconnecting Calibre database"
 msgstr "Переподключение к базе данных Calibre"
 
@@ -2667,12 +2623,10 @@ msgid "Duplicate scan completed: %(count)s groups auto-resolved"
 msgstr ""
 
 #: cps/tasks/mail.py:295
-#, fuzzy
 msgid "E-mail"
 msgstr "Электронная почта"
 
 #: cps/tasks/metadata_backup.py:23
-#, fuzzy
 msgid "Backing up Metadata"
 msgstr "Резервное копирование метаданных"
 
@@ -2681,9 +2635,8 @@ msgid "Convert Library – full run"
 msgstr ""
 
 #: cps/tasks/ops.py:84
-#, fuzzy
 msgid "Convert Library"
-msgstr "В библиотеке"
+msgstr "Конвертировать библиотеку"
 
 #: cps/tasks/ops.py:95
 msgid "EPUB Fixer – full run"
@@ -2777,7 +2730,6 @@ msgid "Delete"
 msgstr "Удалить"
 
 #: cps/templates/admin.html:28
-#, fuzzy
 msgid "Public Shelf"
 msgstr "Публичная полка"
 
@@ -2790,7 +2742,6 @@ msgid "Import LDAP Users"
 msgstr "Импорт пользователей LDAP"
 
 #: cps/templates/admin.html:67
-#, fuzzy
 msgid "Email Server Settings&nbsp;&nbsp;📬"
 msgstr "Настройки почтового сервера&nbsp;&nbsp;📬"
 
@@ -2816,7 +2767,6 @@ msgid "From Email"
 msgstr "Email отправителя"
 
 #: cps/templates/admin.html:95
-#, fuzzy
 msgid "Email Service"
 msgstr "Почтовый сервис"
 
@@ -2841,7 +2791,6 @@ msgid "Port"
 msgstr "Порт"
 
 #: cps/templates/admin.html:127
-#, fuzzy
 msgid "External Port"
 msgstr "Внешний порт"
 
@@ -2874,7 +2823,6 @@ msgid "Reverse Proxy Header Name"
 msgstr "Имя заголовка обратного прокси"
 
 #: cps/templates/admin.html:164
-#, fuzzy
 msgid "CWA Settings"
 msgstr "Настройки CWA"
 
@@ -2887,7 +2835,6 @@ msgid "Edit UI Configuration"
 msgstr "Редактировать настройки интерфейса"
 
 #: cps/templates/admin.html:167
-#, fuzzy
 msgid "Edit Calibre Database Configuration"
 msgstr "Редактировать конфигурацию базы данных Calibre"
 
@@ -2897,7 +2844,6 @@ msgstr "Запланированные задания&nbsp;&nbsp;⌛"
 
 #: cps/templates/admin.html:176 cps/templates/schedule_edit.html:12
 #: cps/templates/tasks.html:19
-#, fuzzy
 msgid "Start Time"
 msgstr "Время начала"
 
@@ -2915,7 +2861,6 @@ msgstr "Генерировать миниатюры обложек серий"
 
 #: cps/templates/admin.html:192 cps/templates/admin.html:232
 #: cps/templates/schedule_edit.html:38
-#, fuzzy
 msgid "Reconnect Calibre Database"
 msgstr "Переподключить базу данных Calibre"
 
@@ -2932,7 +2877,6 @@ msgid "CWA Admin Functions&nbsp;&nbsp;⚡"
 msgstr "Функции администрирования CWA&nbsp;&nbsp;⚡"
 
 #: cps/templates/admin.html:209
-#, fuzzy
 msgid "Show CWA Stats"
 msgstr "Показать статистику CWA"
 
@@ -2941,7 +2885,6 @@ msgid "Check CWA Status"
 msgstr "Проверить статус CWA"
 
 #: cps/templates/admin.html:211
-#, fuzzy
 msgid "Setup KOReader Sync"
 msgstr "Настройка синхронизации KOReader"
 
@@ -2959,7 +2902,6 @@ msgid "CWA GitHub"
 msgstr "CWA GitHub"
 
 #: cps/templates/admin.html:219
-#, fuzzy
 msgid "CWA Discord Server"
 msgstr "Discord-сервер CWA"
 
@@ -2974,7 +2916,6 @@ msgid "Administration&nbsp;&nbsp;🚀"
 msgstr "Администрирование&nbsp;&nbsp;🚀"
 
 #: cps/templates/admin.html:228
-#, fuzzy
 msgid "Download Debug Package"
 msgstr "Скачать отладочный пакет"
 
@@ -3121,7 +3062,6 @@ msgid "Convert from:"
 msgstr "Конвертировать из:"
 
 #: cps/templates/book_edit.html:32 cps/templates/book_edit.html:39
-#, fuzzy
 msgid "select an option"
 msgstr "выберите опцию"
 
@@ -3280,13 +3220,12 @@ msgid "Keyword"
 msgstr "Ключевое слово"
 
 #: cps/templates/book_edit.html:273
-#, fuzzy
 msgid "Search keyword"
 msgstr "Поиск по ключевому слову"
 
 #: cps/templates/book_edit.html:282
 msgid "Selected metadata fields were applied to the edit form."
-msgstr ""
+msgstr "Выбранные поля метаданных были добавлены в форму редактирования."
 
 #: cps/templates/book_edit.html:288 cps/templates/book_edit.html:368
 msgid "Loading..."
@@ -3317,27 +3256,22 @@ msgstr "Объединить"
 
 #: cps/templates/book_table.html:50 cps/templates/book_table.html:210
 #: cps/templates/duplicates.html:660
-#, fuzzy
 msgid "Archive"
 msgstr "Архив"
 
 #: cps/templates/book_table.html:53 cps/templates/book_table.html:230
-#, fuzzy
 msgid "Unarchive"
 msgstr "Разархивировать"
 
 #: cps/templates/book_table.html:56 cps/templates/book_table.html:250
-#, fuzzy
 msgid "Mark as read"
 msgstr "Пометить как прочитанное"
 
 #: cps/templates/book_table.html:59 cps/templates/book_table.html:270
-#, fuzzy
 msgid "Mark as unread"
 msgstr "Пометить как непрочитанное"
 
 #: cps/templates/book_table.html:65
-#, fuzzy
 msgid "Add to Shelf"
 msgstr "Добавить на полку"
 
@@ -3346,9 +3280,8 @@ msgid " Exchange author & title"
 msgstr " Поменять автора и название местами"
 
 #: cps/templates/book_table.html:72
-#, fuzzy
 msgid "Select all"
-msgstr "Выберите полку"
+msgstr "Выбрать все"
 
 #: cps/templates/book_table.html:75
 msgid "Clear all"
@@ -3363,7 +3296,6 @@ msgid "Update Author Sort automatically"
 msgstr "Обновить сортировку автора автоматически"
 
 #: cps/templates/book_table.html:102 cps/templates/book_table.html:108
-#, fuzzy
 msgid "Enter Title"
 msgstr "Введите название"
 
@@ -3379,9 +3311,8 @@ msgid "Enter Title Sort"
 msgstr "Введите сортировку названия"
 
 #: cps/templates/book_table.html:103
-#, fuzzy
 msgid "Title Sort"
-msgstr "Сортировка названия"
+msgstr "Сортировка по Названию"
 
 #: cps/templates/book_table.html:104
 msgid "Enter Author Sort"
@@ -3392,52 +3323,42 @@ msgid "Author Sort"
 msgstr "Сортировка автора"
 
 #: cps/templates/book_table.html:105
-#, fuzzy
 msgid "Enter Authors"
 msgstr "Введите авторов"
 
 #: cps/templates/book_table.html:106
-#, fuzzy
 msgid "Enter Categories"
 msgstr "Введите категории"
 
 #: cps/templates/book_table.html:107
-#, fuzzy
 msgid "Enter Series"
 msgstr "Введите серии"
 
 #: cps/templates/book_table.html:109
-#, fuzzy
 msgid "Enter Languages"
 msgstr "Введите языки"
 
 #: cps/templates/book_table.html:110
-#, fuzzy
 msgid "Publishing Date"
 msgstr "Дата публикации"
 
 #: cps/templates/book_table.html:111
-#, fuzzy
 msgid "Enter Publishers"
 msgstr "Введите издателей"
 
 #: cps/templates/book_table.html:112
-#, fuzzy
 msgid "Enter comments"
 msgstr "Введите комментарии"
 
 #: cps/templates/book_table.html:112
-#, fuzzy
 msgid "Comments"
 msgstr "Комментарии"
 
 #: cps/templates/book_table.html:114
-#, fuzzy
 msgid "Archived?"
-msgstr "Архивировано?"
+msgstr "Заархивировано?"
 
 #: cps/templates/book_table.html:116
-#, fuzzy
 msgid "Read?"
 msgstr "Прочитано?"
 
@@ -3445,7 +3366,6 @@ msgstr "Прочитано?"
 #: cps/templates/book_table.html:123 cps/templates/book_table.html:125
 #: cps/templates/book_table.html:129 cps/templates/book_table.html:131
 #: cps/templates/book_table.html:135
-#, fuzzy
 msgid "Enter "
 msgstr "Введите "
 
@@ -3501,9 +3421,11 @@ msgid ""
 "Multiple values are supported for Authors, Tags/Categories, Languages, and "
 "Publishers. Use comma-separated values (e.g., \"Name1, Name2\")."
 msgstr ""
+"Поддерживаются несколько значений для авторов, тегов/категорий, языков и "
+"издателей. Используйте значения, разделенные запятыми (например, «Имя1, "
+"Имя2»)."
 
 #: cps/templates/book_table.html:343
-#, fuzzy
 msgid "Select a Shelf"
 msgstr "Выберите полку"
 
@@ -3521,7 +3443,6 @@ msgid "Add"
 msgstr "Добавить"
 
 #: cps/templates/config_db.html:38
-#, fuzzy
 msgid "Location of Calibre Database (metadata.db file)"
 msgstr "Расположение базы данных Calibre (файл metadata.db)"
 
@@ -3626,9 +3547,10 @@ msgid "Revoke"
 msgstr "Отозвать"
 
 #: cps/templates/config_db.html:117
-#, fuzzy
 msgid "Last Resort: Restore Calibre Database (experimental)"
-msgstr "Переподключить базу данных Calibre"
+msgstr ""
+"Последнее средство: восстановление базы данных Calibre (экспериментальная "
+"функция)"
 
 #: cps/templates/config_db.html:118
 msgid ""
@@ -3639,19 +3561,24 @@ msgid ""
 "databases will be automatically backed up in /config/backup before any "
 "destructive action.</b> A restore log will be saved alongside the backups."
 msgstr ""
+"Если ваша библиотека Calibre повреждена и не открывается, вы можете "
+"попытаться восстановить ее из файлов OPF в вашей библиотеке. Это приведет к "
+"<b>удалению всех данных по книгам</b> (прогресс чтения, закладки, ссылки на "
+"полки, загрузки и т. д.) в базе данных приложения, но не повлияет на учетные "
+"записи или настройки пользователей. <b>Перед выполнением любых "
+"разрушительных действий будет автоматически создана резервная копия обеих "
+"баз данных в папке /config/backup.</b> Журнал восстановления будет сохранен "
+"вместе с резервными копиями."
 
 #: cps/templates/config_db.html:121
-#, fuzzy
 msgid "Are you sure? This cannot be undone."
-msgstr "Вы уверены, что хотите выключить?"
+msgstr "Вы уверены? Это действие нельзя отменить!"
 
 #: cps/templates/config_db.html:121
-#, fuzzy
 msgid "Restore Calibre Database (Last Resort)"
-msgstr "Переподключить базу данных Calibre"
+msgstr "Восстановить базу данных Calibre (крайняя мера)"
 
 #: cps/templates/config_db.html:137
-#, fuzzy
 msgid "New db location is invalid, please enter valid path"
 msgstr ""
 "Новое расположение базы данных недействительно, укажите правильный путь"
@@ -3758,7 +3685,6 @@ msgid "Enable Public Registration"
 msgstr "Включить публичную регистрацию"
 
 #: cps/templates/config_edit.html:193
-#, fuzzy
 msgid "Use Email as Username"
 msgstr "Использовать email как имя пользователя"
 
@@ -3800,7 +3726,6 @@ msgid "Goodreads API Key"
 msgstr "API-ключ Goodreads"
 
 #: cps/templates/config_edit.html:238
-#, fuzzy
 msgid "Enable Hardcover Sync"
 msgstr "Включить синхронизацию с Hardcover"
 
@@ -4419,12 +4344,12 @@ msgstr "Старт"
 #: cps/templates/cwa_convert_library.html:27
 #: cps/templates/cwa_epub_fixer.html:44
 msgid "Schedule 5m"
-msgstr ""
+msgstr "Расписание 5 минут"
 
 #: cps/templates/cwa_convert_library.html:28
 #: cps/templates/cwa_epub_fixer.html:45
 msgid "Schedule 15m"
-msgstr ""
+msgstr "Расписание 15 минут"
 
 #: cps/templates/cwa_convert_library.html:100
 msgid "Convert Library scheduled successfully"
@@ -4436,16 +4361,15 @@ msgstr ""
 
 #: cps/templates/cwa_epub_fixer.html:22
 msgid "Run on a single book"
-msgstr ""
+msgstr "Выполнить для одной книги"
 
 #: cps/templates/cwa_epub_fixer.html:24
 msgid "Search by title/author"
-msgstr ""
+msgstr "Поиск по названию/автору"
 
 #: cps/templates/cwa_epub_fixer.html:29
-#, fuzzy
 msgid "Run on selected book"
-msgstr "Редактировать выбранные книги"
+msgstr "Выполнить для выбранной книги"
 
 #: cps/templates/cwa_epub_fixer.html:120
 #, fuzzy
@@ -4458,24 +4382,20 @@ msgid "Error scheduling EPUB Fixer"
 msgstr "Ошибка удаления полки"
 
 #: cps/templates/cwa_epub_fixer.html:132
-#, fuzzy
 msgid "No matches found"
-msgstr "Результатов не найдено"
+msgstr "Результаты не найдены"
 
 #: cps/templates/cwa_epub_fixer.html:167
-#, fuzzy
 msgid "Enter a search term"
-msgstr "Введите имя пользователя"
+msgstr "Введите поисковый запрос"
 
 #: cps/templates/cwa_epub_fixer.html:175
-#, fuzzy
 msgid "Failed to search library"
-msgstr "Поиск в библиотеке"
+msgstr "Не удалось найти библиотеку"
 
 #: cps/templates/cwa_epub_fixer.html:182
-#, fuzzy
 msgid "Select a book first"
-msgstr "Выберите полку"
+msgstr "Сначала выберите книгу"
 
 #: cps/templates/cwa_epub_fixer.html:195
 #, fuzzy
@@ -4483,14 +4403,12 @@ msgid "EPUB Fixer started for selected book"
 msgstr "Редактировать выбранные книги"
 
 #: cps/templates/cwa_epub_fixer.html:200
-#, fuzzy
 msgid "Error starting EPUB Fixer"
-msgstr "Ошибка удаления полки"
+msgstr "Ошибка при запуске EPUB Fixer"
 
 #: cps/templates/cwa_settings.html:136
-#, fuzzy
 msgid "Enable/Disable Calibre-Web Automated Services"
-msgstr "Журнал Caliber-Web: "
+msgstr "Включение/отключение служб Calibre-Web Automated"
 
 #: cps/templates/cwa_settings.html:143
 msgid "Enable CWA Auto-Convert"
@@ -4555,9 +4473,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:181
-#, fuzzy
 msgid "Enable KOReader Sync (CWA Plugin)"
-msgstr "Плагин синхронизации KOReader"
+msgstr "Включить KOReader Sync (плагин CWA)"
 
 #: cps/templates/cwa_settings.html:183
 msgid ""
@@ -4575,7 +4492,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:192
 msgid "Enable Aggressive EPUB Fixer Mode (riskier)"
-msgstr ""
+msgstr "Включить агрессивный режим исправления EPUB (более рискованный)"
 
 #: cps/templates/cwa_settings.html:194
 msgid ""
@@ -4596,7 +4513,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:208
 msgid "Cleanup Schedule:"
-msgstr ""
+msgstr "Расписание очистки:"
 
 #: cps/templates/cwa_settings.html:213 cps/templates/cwa_settings.html:582
 msgid "Frequent Intervals"
@@ -4604,105 +4521,104 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:214 cps/templates/cwa_settings.html:583
 msgid "Every 15 Minutes"
-msgstr ""
+msgstr "Каждые 15 минут"
 
 #: cps/templates/cwa_settings.html:215 cps/templates/cwa_settings.html:584
 msgid "Every 30 Minutes"
-msgstr ""
+msgstr "Каждые 30 минут"
 
 #: cps/templates/cwa_settings.html:216 cps/templates/cwa_settings.html:585
 msgid "Every Hour"
-msgstr ""
+msgstr "Каждый час"
 
 #: cps/templates/cwa_settings.html:217 cps/templates/cwa_settings.html:586
 msgid "Every 2 Hours"
-msgstr ""
+msgstr "Каждые 2 часа"
 
 #: cps/templates/cwa_settings.html:218 cps/templates/cwa_settings.html:587
 msgid "Every 4 Hours"
-msgstr ""
+msgstr "Каждые 4 часа"
 
 #: cps/templates/cwa_settings.html:219 cps/templates/cwa_settings.html:588
 msgid "Every 6 Hours"
-msgstr ""
+msgstr "Каждые 6 часов"
 
 #: cps/templates/cwa_settings.html:220 cps/templates/cwa_settings.html:589
 msgid "Every 12 Hours"
-msgstr ""
+msgstr "Каждые 12 часов"
 
 #: cps/templates/cwa_settings.html:222 cps/templates/cwa_settings.html:591
 msgid "Daily/Weekly/Monthly"
-msgstr ""
+msgstr "Ежедневно/Еженедельно/Ежемесячно"
 
 #: cps/templates/cwa_settings.html:223 cps/templates/cwa_settings.html:592
 msgid "Daily at Specific Time"
-msgstr ""
+msgstr "Ежедневно в определенное время"
 
 #: cps/templates/cwa_settings.html:224 cps/templates/cwa_settings.html:593
 msgid "Weekly on Specific Day"
-msgstr ""
+msgstr "Еженедельно в определенный день"
 
 #: cps/templates/cwa_settings.html:225 cps/templates/cwa_settings.html:594
 msgid "Monthly on Specific Day"
-msgstr ""
+msgstr "Ежемесячно в определенный день"
 
 #: cps/templates/cwa_settings.html:228
 msgid "Default: daily at 03:00"
-msgstr ""
+msgstr "По умолчанию: ежедневно в 03:00"
 
 #: cps/templates/cwa_settings.html:231 cps/templates/cwa_settings.html:601
 msgid "Day of Week:"
-msgstr ""
+msgstr "День недели:"
 
 #: cps/templates/cwa_settings.html:235 cps/templates/cwa_settings.html:606
 msgid "Monday"
-msgstr ""
+msgstr "Понедельник"
 
 #: cps/templates/cwa_settings.html:236 cps/templates/cwa_settings.html:607
 msgid "Tuesday"
-msgstr ""
+msgstr "Вторник"
 
 #: cps/templates/cwa_settings.html:237 cps/templates/cwa_settings.html:608
 msgid "Wednesday"
-msgstr ""
+msgstr "Среда"
 
 #: cps/templates/cwa_settings.html:238 cps/templates/cwa_settings.html:609
 msgid "Thursday"
-msgstr ""
+msgstr "Четверг"
 
 #: cps/templates/cwa_settings.html:239 cps/templates/cwa_settings.html:610
 msgid "Friday"
-msgstr ""
+msgstr "Пятница"
 
 #: cps/templates/cwa_settings.html:240 cps/templates/cwa_settings.html:611
 msgid "Saturday"
-msgstr ""
+msgstr "Суббота"
 
 #: cps/templates/cwa_settings.html:241 cps/templates/cwa_settings.html:612
 msgid "Sunday"
-msgstr ""
+msgstr "Воскресенье"
 
 #: cps/templates/cwa_settings.html:246 cps/templates/cwa_settings.html:618
 msgid "Day of Month:"
-msgstr ""
+msgstr "День месяца:"
 
 #: cps/templates/cwa_settings.html:254 cps/templates/cwa_settings.html:627
 msgid "(1-28)"
-msgstr ""
+msgstr "(1-28)"
 
 #: cps/templates/cwa_settings.html:258 cps/templates/cwa_settings.html:632
 msgid "Time of Day:"
-msgstr ""
+msgstr "Время суток:"
 
 #: cps/templates/cwa_settings.html:266 cps/templates/cwa_settings.html:641
 #, python-format
 msgid "(Server timezone: %(tz)s)"
-msgstr ""
+msgstr "(Часовой пояс сервера: %(tz)s)"
 
 #: cps/templates/cwa_settings.html:302
-#, fuzzy
 msgid "Enable Automatic Metadata Fetching for New Books"
-msgstr "Включить автоматический сервис CWA для проверки обложек и метаданных"
+msgstr "Включить автоматическую загрузку метаданных для новых книг"
 
 #: cps/templates/cwa_settings.html:304
 msgid ""
@@ -4735,20 +4651,21 @@ msgid ""
 "fields will never be modified during automatic metadata fetching, preserving "
 "your existing data."
 msgstr ""
+"Выберите, какие поля метаданных должны обновляться при автоматической "
+"загрузке. Неотмеченные поля никогда не будут изменяться при автоматической "
+"загрузке метаданных, что позволит сохранить существующие данные."
 
 #: cps/templates/cwa_settings.html:355 cps/templates/cwa_settings.html:357
 msgid "Tags/Genres"
-msgstr ""
+msgstr "Теги/Жанры"
 
 #: cps/templates/cwa_settings.html:376 cps/templates/cwa_settings.html:378
-#, fuzzy
 msgid "Publication Date"
 msgstr "Дата публикации"
 
 #: cps/templates/cwa_settings.html:383 cps/templates/cwa_settings.html:385
-#, fuzzy
 msgid "Identifiers (ISBN, etc.)"
-msgstr "Идентификаторы"
+msgstr "Идентификаторы (ISBN, и т.д.)"
 
 #: cps/templates/cwa_settings.html:390 cps/templates/cwa_settings.html:392
 #, fuzzy
@@ -4759,7 +4676,7 @@ msgstr "Обложка"
 #: cps/templates/cwa_settings.html:526 cps/templates/cwa_settings.html:731
 #: cps/templates/user_edit.html:389 cps/templates/user_edit.html:480
 msgid "Tip"
-msgstr ""
+msgstr "Совет"
 
 #: cps/templates/cwa_settings.html:398
 msgid ""
@@ -4770,12 +4687,11 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:403
 msgid "Cover File Max Size (MB):"
-msgstr ""
+msgstr "Максимальный размер файла обложки (МБ):"
 
 #: cps/templates/cwa_settings.html:416
-#, fuzzy
 msgid "Range: 1-200 MB (default: 15)"
-msgstr "Диапазон: 5-120 минут (по умолчанию: 15)"
+msgstr "Диапазон: 1–200 МБ (по умолчанию: 15)"
 
 #: cps/templates/cwa_settings.html:419
 msgid ""
@@ -5079,7 +4995,7 @@ msgstr ""
 "создаёт zip-архивы всех сохранённых конвертированных, импортированных и "
 "неудавшихся файлов за этот день. Это помогает поддерживать порядок в "
 "подкаталогах /config/processed_books и минимизировать использование "
-"дискового пространства."
+"дискового пространства"
 
 #: cps/templates/cwa_settings.html:823
 msgid ""
@@ -5128,7 +5044,7 @@ msgstr ""
 msgid "CWA Auto-Convert - Ignored Formats"
 msgstr ""
 "Форматы, выбранные здесь, будут игнорироваться функцией автоматической "
-"конверсии CWA при её активации, то есть они будут импортированы без "
+"крнвертации CWA при её активации, то есть они будут импортированы без "
 "изменений."
 
 #: cps/templates/cwa_settings.html:853
@@ -6007,7 +5923,6 @@ msgstr ""
 "(или отредактируйте):"
 
 #: cps/templates/generate_kobo_auth_url.html:11
-#, fuzzy
 msgid "Kobo Token:"
 msgstr "Токен Kobo:"
 
@@ -6056,14 +5971,12 @@ msgid ""
 msgstr ""
 
 #: cps/templates/hardcover_review_matches.html:81
-#, fuzzy
 msgid "Reject All Pending"
-msgstr "Выберите полку"
+msgstr "Отклонить все ожидающие"
 
 #: cps/templates/hardcover_review_matches.html:94
-#, fuzzy
 msgid "Search Query"
-msgstr "Поисковый запрос:"
+msgstr "Поисковый запрос"
 
 #: cps/templates/hardcover_review_matches.html:98
 msgid "Candidate Matches"
@@ -6085,18 +5998,16 @@ msgid "Match Reason"
 msgstr ""
 
 #: cps/templates/hardcover_review_matches.html:160
-#, fuzzy
 msgid "View on Hardcover"
-msgstr "Просмотреть книгу после сохранения"
+msgstr "Посмотреть на Hardcover"
 
 #: cps/templates/hardcover_review_matches.html:168
 msgid "Select This Match"
 msgstr ""
 
 #: cps/templates/hardcover_review_matches.html:180
-#, fuzzy
 msgid "Reject All"
-msgstr "Выберите полку"
+msgstr "Отклонить все"
 
 #: cps/templates/hardcover_review_matches.html:185
 msgid "Skip for Now"
@@ -6106,9 +6017,8 @@ msgstr ""
 #: cps/templates/hardcover_review_matches.html:303
 #: cps/templates/hardcover_review_matches.html:346
 #: cps/templates/hardcover_review_matches.html:380
-#, fuzzy
 msgid "Processing..."
-msgstr "Загрузка..."
+msgstr "Обработка..."
 
 #: cps/templates/hardcover_review_matches.html:280
 #: cps/templates/hardcover_review_matches.html:289
@@ -6120,12 +6030,12 @@ msgid "Failed to apply match"
 msgstr ""
 
 #: cps/templates/hardcover_review_matches.html:299
-#, fuzzy
 msgid ""
 "Are you sure you want to reject all matches for this book? This cannot be "
 "undone."
 msgstr ""
-"Вы уверены, что хотите изменить выбранную роль для выбранных пользователей?"
+"Вы уверены, что хотите отклонить все совпадения для этой книги? Это действие "
+"нельзя отменить."
 
 #: cps/templates/hardcover_review_matches.html:324
 #: cps/templates/hardcover_review_matches.html:333
@@ -6133,27 +6043,24 @@ msgid "✗ Reject All Matches"
 msgstr ""
 
 #: cps/templates/hardcover_review_matches.html:328
-#, fuzzy
 msgid "Failed to reject match"
-msgstr "Не удалось создать путь для обложки"
+msgstr "Не удалось отклонить совпадение"
 
 #: cps/templates/hardcover_review_matches.html:342
-#, fuzzy
 msgid ""
 "Are you sure you want to reject all pending matches? This cannot be undone."
 msgstr ""
-"Вы уверены, что хотите изменить выбранную роль для выбранных пользователей?"
+"Вы уверены, что хотите отклонить все ожидающие совпадения? Это действие "
+"нельзя отменить."
 
 #: cps/templates/hardcover_review_matches.html:361
 #: cps/templates/hardcover_review_matches.html:370
-#, fuzzy
 msgid "✗ Reject All Pending"
-msgstr "Выберите полку"
+msgstr "✗ Отклонить все ожидающие"
 
 #: cps/templates/hardcover_review_matches.html:365
-#, fuzzy
 msgid "Failed to reject all pending matches"
-msgstr "Не удалось создать путь для обложки"
+msgstr "Не удалось отклонить все ожидающие совпадения"
 
 #: cps/templates/hardcover_review_matches.html:401
 #: cps/templates/hardcover_review_matches.html:410
@@ -6180,7 +6087,6 @@ msgid "Return to Home"
 msgstr "Вернуться на главную"
 
 #: cps/templates/http_error.html:53
-#, fuzzy
 msgid "Logout User"
 msgstr "Выйти"
 
@@ -6197,33 +6103,28 @@ msgid "Refresh shelf to update with latest changes"
 msgstr ""
 
 #: cps/templates/index.html:135
-#, fuzzy
 msgid "Refresh"
-msgstr "Обновить библиотеку"
+msgstr "Обновить"
 
 #: cps/templates/index.html:145
-#, fuzzy
 msgid "Edit shelf rules"
-msgstr "Редактировать полку"
+msgstr "Редактировать правила полки"
 
 #: cps/templates/index.html:159
 msgid "Hide this shelf from your sidebar"
 msgstr ""
 
 #: cps/templates/index.html:159
-#, fuzzy
 msgid "Show this shelf in your sidebar"
-msgstr "Синхронизировать эту полку с устройством Kobo"
+msgstr "Показать эту полку в боковой панели"
 
 #: cps/templates/index.html:161
-#, fuzzy
 msgid "Show Shelf"
-msgstr "Показать все"
+msgstr "Показать полку"
 
 #: cps/templates/index.html:161
-#, fuzzy
 msgid "Hide Shelf"
-msgstr "Публичная полка"
+msgstr "Скрыть полку"
 
 #: cps/templates/index.html:170
 msgid "Sort ascending according to download count"
@@ -6252,9 +6153,8 @@ msgid "Sort descending according to series index"
 msgstr "Сортировать по убыванию индекса серии"
 
 #: cps/templates/kosync_plugin.html:112
-#, fuzzy
 msgid "KOReader Sync is disabled."
-msgstr "Плагин синхронизации KOReader"
+msgstr "Синхронизация KOReader отключена."
 
 #: cps/templates/kosync_plugin.html:113
 msgid ""
@@ -6293,18 +6193,15 @@ msgid "Logout"
 msgstr "Выйти"
 
 #: cps/templates/layout.html:147
-#, fuzzy
 msgid "Switch Theme"
 msgstr "Сменить тему"
 
 #: cps/templates/layout.html:166 cps/templates/read.html:79
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
-#, fuzzy
 msgid "Settings"
 msgstr "Настройки"
 
 #: cps/templates/layout.html:168
-#, fuzzy
 msgid "Refresh Library"
 msgstr "Обновить библиотеку"
 
@@ -6334,7 +6231,6 @@ msgid "Shelves"
 msgstr "Полки"
 
 #: cps/templates/layout.html:317
-#, fuzzy
 msgid "Create Shelf"
 msgstr "Создать полку"
 
@@ -6355,27 +6251,24 @@ msgid "Book Details"
 msgstr "Подробнее о книге"
 
 #: cps/templates/layout.html:439
-#, fuzzy
 msgid "Duplicate Books Detected"
-msgstr "Удалить книгу"
+msgstr "Обнаружены дубликаты книг"
 
 #: cps/templates/layout.html:440
 msgid "You have unresolved duplicate books in your library"
 msgstr ""
 
 #: cps/templates/layout.html:445
-#, fuzzy
 msgid "Duplicate Groups Found"
-msgstr "Результатов не найдено"
+msgstr "Найдены дубликаты групп"
 
 #: cps/templates/layout.html:453
 msgid "Remind Me Later"
 msgstr ""
 
 #: cps/templates/layout.html:456
-#, fuzzy
 msgid "View & Resolve Duplicates"
-msgstr "Выбрать дубликаты"
+msgstr "Просмотр и удаление дубликатов"
 
 #: cps/templates/list.html:25 cps/templates/list.html:27
 msgid "Filter by initial"
@@ -6390,9 +6283,8 @@ msgid "Read"
 msgstr "Прочитано"
 
 #: cps/templates/login.html:30
-#, fuzzy
 msgid "Show Password"
-msgstr "Пароль SMTP"
+msgstr "Показать пароль"
 
 #: cps/templates/login.html:35
 msgid "Remember Me"
@@ -6424,7 +6316,6 @@ msgid "Show Calibre-Web Log: "
 msgstr "Показать журнал Calibre-Web: "
 
 #: cps/templates/logviewer.html:8
-#, fuzzy
 msgid "Calibre-Web Log: "
 msgstr "Журнал Calibre-Web: "
 
@@ -6437,12 +6328,10 @@ msgid "Show Access Log: "
 msgstr "Показать журнал доступа: "
 
 #: cps/templates/logviewer.html:18
-#, fuzzy
 msgid "Download Calibre-Web Log"
 msgstr "Скачать журнал Calibre-Web"
 
 #: cps/templates/logviewer.html:21
-#, fuzzy
 msgid "Download Access Log"
 msgstr "Скачать журнал доступа"
 
@@ -6455,7 +6344,6 @@ msgid "This is a pre-configured template shelf. You can edit it freely."
 msgstr ""
 
 #: cps/templates/magic_shelf_edit.html:399
-#, fuzzy
 msgid "Share with Everyone (Public)"
 msgstr "Поделиться со всеми"
 
@@ -6492,7 +6380,6 @@ msgid "Add View Restriction"
 msgstr "Добавить ограничение просмотра"
 
 #: cps/templates/modal_dialogs.html:50
-#, fuzzy
 msgid "This book format will be permanently erased from database"
 msgstr "Этот формат книги будет окончательно удалён из базы данных"
 
@@ -6520,7 +6407,6 @@ msgstr ""
 "устройство."
 
 #: cps/templates/modal_dialogs.html:76
-#, fuzzy
 msgid "Choose File Location"
 msgstr "Выберите расположение файла"
 
@@ -6529,7 +6415,6 @@ msgid "type"
 msgstr "тип"
 
 #: cps/templates/modal_dialogs.html:83
-#, fuzzy
 msgid "name"
 msgstr "имя"
 
@@ -6538,7 +6423,6 @@ msgid "size"
 msgstr "размер"
 
 #: cps/templates/modal_dialogs.html:90
-#, fuzzy
 msgid "Parent Directory"
 msgstr "Родительская папка"
 
@@ -6547,7 +6431,6 @@ msgid "Select"
 msgstr "Выбрать"
 
 #: cps/templates/modal_dialogs.html:134 cps/templates/tasks.html:93
-#, fuzzy
 msgid "Ok"
 msgstr "ОК"
 
@@ -6574,7 +6457,6 @@ msgid "Sepia"
 msgstr "Сепия"
 
 #: cps/templates/read.html:91
-#, fuzzy
 msgid "Black"
 msgstr "Чёрная"
 
@@ -6591,7 +6473,6 @@ msgid "Font"
 msgstr "Шрифт"
 
 #: cps/templates/read.html:107
-#, fuzzy
 msgid "Default"
 msgstr "По умолчанию"
 
@@ -6644,7 +6525,6 @@ msgid "Next Page"
 msgstr "Следующая страница"
 
 #: cps/templates/readcbr.html:80
-#, fuzzy
 msgid "Single Page Display"
 msgstr "Одностраничный режим"
 
@@ -6752,7 +6632,6 @@ msgid "Reset to Top"
 msgstr "Сбросить к началу"
 
 #: cps/templates/readcbr.html:163
-#, fuzzy
 msgid "Remember Position"
 msgstr "Запомнить позицию"
 
@@ -6761,7 +6640,6 @@ msgid "Scrollbar"
 msgstr "Полоса прокрутки"
 
 #: cps/templates/readcbr.html:171
-#, fuzzy
 msgid "Show"
 msgstr "Показать"
 
@@ -6843,7 +6721,6 @@ msgid "Published Date To"
 msgstr "Дата публикации до"
 
 #: cps/templates/search_form.html:42
-#, fuzzy
 msgid "Read Status"
 msgstr "Статус прочтения"
 
@@ -6864,7 +6741,6 @@ msgid "Exclude Series"
 msgstr "Исключить серии"
 
 #: cps/templates/search_form.html:96
-#, fuzzy
 msgid "Exclude Shelves"
 msgstr "Исключить полки"
 
@@ -6963,7 +6839,6 @@ msgid "Series in this Library"
 msgstr "Серий в библиотеке"
 
 #: cps/templates/stats.html:29
-#, fuzzy
 msgid "System Statistics"
 msgstr "Статистика системы"
 
@@ -7015,9 +6890,8 @@ msgid "Scheduled Time"
 msgstr ""
 
 #: cps/templates/tasks.html:45 cps/templates/tasks.html:67
-#, fuzzy
 msgid "State"
-msgstr "Поворот"
+msgstr "Состояние"
 
 #: cps/templates/tasks.html:50
 msgid ""
@@ -7055,23 +6929,20 @@ msgstr ""
 "запланированное время."
 
 #: cps/templates/tasks.html:192
-#, fuzzy
 msgid "Scheduled item cancelled successfully"
-msgstr "Выбранные дубликаты книг успешно удалены!"
+msgstr "Запланированная задача успешно отменена"
 
 #: cps/templates/tasks.html:197
 msgid "Error cancelling scheduled item"
 msgstr ""
 
 #: cps/templates/user_edit.html:173
-#, fuzzy
 msgid "Your Profile"
-msgstr "Ваш Email"
+msgstr "Ваш профиль"
 
 #: cps/templates/user_edit.html:173
-#, fuzzy
 msgid "User Settings"
-msgstr "Настройки"
+msgstr "Настройки пользователя"
 
 #: cps/templates/user_edit.html:181
 msgid "Account Information"
@@ -7087,9 +6958,8 @@ msgid "Reset user Password"
 msgstr "Сбросить пароль пользователя"
 
 #: cps/templates/user_edit.html:212
-#, fuzzy
 msgid "eReader Configuration"
-msgstr "Конфигурация сервера"
+msgstr "конфигурация eReader-а"
 
 #: cps/templates/user_edit.html:215
 #, fuzzy
@@ -7138,9 +7008,8 @@ msgid "Language & Theme Preferences"
 msgstr ""
 
 #: cps/templates/user_edit.html:252
-#, fuzzy
 msgid "Interface Language"
-msgstr "Введите языки"
+msgstr "Язык интерфейса"
 
 #: cps/templates/user_edit.html:261 cps/templates/user_edit.html:283
 msgid "Language of Books"
@@ -7172,7 +7041,6 @@ msgid "Unlink"
 msgstr "Отвязать"
 
 #: cps/templates/user_edit.html:315
-#, fuzzy
 msgid "Hardcover API Token"
 msgstr "Токен API Hardcover"
 
@@ -7197,9 +7065,8 @@ msgid "Sync only books in selected shelves with Kobo"
 msgstr "Синхронизировать с Kobo только книги из выбранных полок"
 
 #: cps/templates/user_edit.html:346
-#, fuzzy
 msgid "Sidebar Display Settings"
-msgstr "Настройки безопасности"
+msgstr "Настройки отображения боковой панели"
 
 #: cps/templates/user_edit.html:347
 msgid "Choose which sections to display in your sidebar navigation."
@@ -7302,9 +7169,8 @@ msgid "Default System Shelves:"
 msgstr ""
 
 #: cps/templates/user_edit.html:515
-#, fuzzy
 msgid "Public Shelves:"
-msgstr "Редактировать публичные полки"
+msgstr "Публичные полки:"
 
 #: cps/templates/user_edit.html:540
 #, python-format
@@ -7337,28 +7203,24 @@ msgid "Remove Selections"
 msgstr "Удалить выделение"
 
 #: cps/templates/user_table.html:131
-#, fuzzy
 msgid "Edit User"
 msgstr "Редактировать пользователя"
 
 #: cps/templates/user_table.html:134
-#, fuzzy
 msgid "Enter Username"
 msgstr "Введите имя пользователя"
 
 #: cps/templates/user_table.html:135
-#, fuzzy
 msgid "Enter Email"
 msgstr "Введите Email"
 
 #: cps/templates/user_table.html:136
-#, fuzzy
 msgid "Enter eReader Email"
 msgstr "Введите Email eReader"
 
 #: cps/templates/user_table.html:136
 msgid "eReader Email"
-msgstr "Email eReader"
+msgstr "Адрес электронной почты eReader"
 
 #: cps/templates/user_table.html:137
 #, fuzzy
@@ -7421,17 +7283,14 @@ msgid "Denied Column Values"
 msgstr "Запрещённые значения столбцов"
 
 #: cps/templates/user_table.html:145
-#, fuzzy
 msgid "Change Password"
 msgstr "Изменить пароль"
 
 #: cps/templates/user_table.html:148
-#, fuzzy
 msgid "View"
 msgstr "Просмотр"
 
 #: cps/templates/user_table.html:151
-#, fuzzy
 msgid "Edit Public Shelves"
 msgstr "Редактировать публичные полки"
 
@@ -7440,13 +7299,8 @@ msgid "Sync selected Shelves with Kobo"
 msgstr "Синхронизировать выбранные полки с Kobo"
 
 #: cps/templates/user_table.html:157
-#, fuzzy
 msgid "Show Read/Unread Section"
 msgstr "Показать раздел прочитанного/непрочитанного"
-
-#, fuzzy
-#~ msgid "Cancel Scan"
-#~ msgstr "Отмена"
 
 #~ msgid "Standard Theme"
 #~ msgstr "Стандартная тема"
@@ -7505,14 +7359,6 @@ msgstr "Показать раздел прочитанного/непрочит�
 #~ msgid "Unable to fetch OpenID configuration."
 #~ msgstr "Не удалось получить конфигурацию OpenID."
 
-#, fuzzy
-#~ msgid "Connection successful!"
-#~ msgstr "Ошибка соединения"
-
-#, fuzzy
-#~ msgid "This Email has been sent via Automated."
-#~ msgstr "Это письмо было отправлено автоматически."
-
 #~ msgid "Login failed: User profile from provider is incomplete."
 #~ msgstr "Вход не выполнен: профиль пользователя от провайдера неполный."
 
@@ -7539,10 +7385,6 @@ msgstr "Показать раздел прочитанного/непрочит�
 #~ msgstr ""
 #~ "Переключение тем для каждого пользователя включено; эта глобальная "
 #~ "настройка по умолчанию влияет только на новых пользователей и анонимных"
-
-#, fuzzy
-#~ msgid "Please select at least one email address"
-#~ msgstr "Новый пароль был отправлен на ваш email"
 
 #~ msgid ""
 #~ "Send to eReader Email Address. Use comma to separate emails for multiple "
@@ -7650,16 +7492,41 @@ msgstr "Показать раздел прочитанного/непрочит�
 #~ "        после того как вы отметите опцию <b>Отделить файлы книг от "
 #~ "библиотеки</b>."
 
-#, fuzzy
-#~ msgid "Mark Book as Read or Unread"
-#~ msgstr "Пометить книгу как прочитанную или непрочитанную"
-
 #~ msgid ""
 #~ "Mark Book as archived or not, to hide it in Calibre-Web and delete it "
 #~ "from Kobo Reader"
 #~ msgstr ""
 #~ "Пометить книгу как архивированную или нет, чтобы скрыть ее в Calibre-Web "
 #~ "и удалить из Kobo Reader"
+
+#~ msgid "Users"
+#~ msgstr "Список пользователей"
+
+#~ msgid "Configuration"
+#~ msgstr "Настройки сервера"
+
+#~ msgid "Click the cover to load metadata to the form"
+#~ msgstr "Нажмите на обложку, чтобы получить метаданные"
+
+#, fuzzy
+#~ msgid "Cancel Scan"
+#~ msgstr "Отмена"
+
+#, fuzzy
+#~ msgid "Connection successful!"
+#~ msgstr "Ошибка соединения"
+
+#, fuzzy
+#~ msgid "This Email has been sent via Automated."
+#~ msgstr "Это письмо было отправлено автоматически."
+
+#, fuzzy
+#~ msgid "Please select at least one email address"
+#~ msgstr "Новый пароль был отправлен на ваш email"
+
+#, fuzzy
+#~ msgid "Mark Book as Read or Unread"
+#~ msgstr "Пометить книгу как прочитанную или непрочитанную"
 
 #, fuzzy
 #~ msgid "This Email has been sent via  Autmoated."
@@ -7696,12 +7563,3 @@ msgstr "Показать раздел прочитанного/непрочит�
 #, fuzzy
 #~ msgid "Repeat for confirmation"
 #~ msgstr "Дополнительный Настройки"
-
-#~ msgid "Users"
-#~ msgstr "Список пользователей"
-
-#~ msgid "Configuration"
-#~ msgstr "Настройки сервера"
-
-#~ msgid "Click the cover to load metadata to the form"
-#~ msgstr "Нажмите на обложку, чтобы получить метаданные"

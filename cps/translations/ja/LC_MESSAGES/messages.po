@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-05 16:15+0200\n"
+"POT-Creation-Date: 2026-08-06 11:51+0000\n"
 "PO-Revision-Date: 2018-02-07 02:20-0500\n"
 "Last-Translator: subdiox <subdiox@gmail.com>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -1190,7 +1190,7 @@ msgid "File to be uploaded must have an extension"
 msgstr "アップロードするファイルには拡張子が必要です"
 
 #: cps/editbooks.py:845 cps/editbooks.py:1453 cps/web.py:612 cps/web.py:2790
-#: cps/web.py:2881 cps/web.py:2966
+#: cps/web.py:2882 cps/web.py:2967
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "選択した本は利用できません。ファイルが存在しないか、アクセスできません"
@@ -2439,7 +2439,7 @@ msgstr "成功！プロフィールを更新しました"
 msgid "Oops! An account already exists for this Email."
 msgstr "このメールアドレスで登録されたアカウントがすでに存在します"
 
-#: cps/web.py:2894
+#: cps/web.py:2895
 msgid "Invalid book ID."
 msgstr "無効な書籍IDです。"
 

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 12:44+0200\n"
+"POT-Creation-Date: 2026-08-06 11:51+0000\n"
 "PO-Revision-Date: 2026-05-14 01:36+0300\n"
 "Last-Translator: İsmail Hakkı Şen <hakki@outlook.com>\n"
 "Language-Team: \n"
@@ -1223,7 +1223,7 @@ msgid "File to be uploaded must have an extension"
 msgstr "Yüklenecek dosyanın mutlaka bir uzantısı olması gerekli"
 
 #: cps/editbooks.py:845 cps/editbooks.py:1453 cps/web.py:612 cps/web.py:2790
-#: cps/web.py:2881 cps/web.py:2966
+#: cps/web.py:2882 cps/web.py:2967
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "Oops! Seçilen kitap geçersiz. Dosya bulunamadı veya erişilemez"
@@ -2489,7 +2489,7 @@ msgstr "Başarılı! Profil güncellendi"
 msgid "Oops! An account already exists for this Email."
 msgstr "Bu e-posta adresi için bir hesap mevcut."
 
-#: cps/web.py:2894
+#: cps/web.py:2895
 msgid "Invalid book ID."
 msgstr "Geçersiz kitap ID."
 
@@ -4493,8 +4493,8 @@ msgid ""
 "\">kindle-epub-fix.netlify.app</a> tool made by <a href=\"https://github.com/"
 "innocenat\">innocenat</a>."
 msgstr ""
-"Bu araç, <a href=\"https://kindle-epub-fix.netlify.app/\">kindle-epub-"
-"fix.netlify.app</a> aracından uyarlanmıştır ve <a href=\"https://github.com/"
+"Bu araç, <a href=\"https://kindle-epub-fix.netlify.app/\">kindle-epub-fix."
+"netlify.app</a> aracından uyarlanmıştır ve <a href=\"https://github.com/"
 "innocenat\">innocenat</a> tarafından geliştirilmiştir."
 
 #: cps/templates/cwa_settings.html:181

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 12:50+0200\n"
+"POT-Creation-Date: 2026-08-06 11:51+0000\n"
 "PO-Revision-Date: 2026-03-05 20:11+0200\n"
 "Last-Translator: ZIZA\n"
 "Language-Team: \n"
@@ -1234,7 +1234,7 @@ msgid "File to be uploaded must have an extension"
 msgstr "Загружаемый файл должен иметь расширение"
 
 #: cps/editbooks.py:845 cps/editbooks.py:1453 cps/web.py:612 cps/web.py:2790
-#: cps/web.py:2881 cps/web.py:2966
+#: cps/web.py:2882 cps/web.py:2967
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "Выбранная книга недоступна. Файл не существует или недоступен"
@@ -2475,7 +2475,7 @@ msgstr "Успех! Профиль обновлен"
 msgid "Oops! An account already exists for this Email."
 msgstr "Учетная запись с этим email уже существует."
 
-#: cps/web.py:2894
+#: cps/web.py:2895
 msgid "Invalid book ID."
 msgstr "Неверный ID книги."
 

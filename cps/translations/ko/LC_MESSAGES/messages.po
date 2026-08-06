@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 12:44+0200\n"
+"POT-Creation-Date: 2026-08-06 11:51+0000\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -1203,7 +1203,7 @@ msgid "File to be uploaded must have an extension"
 msgstr "확장자가 없는 파일은 업로드할 수 없습니다."
 
 #: cps/editbooks.py:845 cps/editbooks.py:1453 cps/web.py:612 cps/web.py:2790
-#: cps/web.py:2881 cps/web.py:2966
+#: cps/web.py:2882 cps/web.py:2967
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "선택한 책을 사용할 수 없습니다. 파일이 없거나 접근할 수 없습니다."
@@ -2433,7 +2433,7 @@ msgstr "프로필이 업데이트되었습니다."
 msgid "Oops! An account already exists for this Email."
 msgstr "이미 등록된 이메일 주소입니다."
 
-#: cps/web.py:2894
+#: cps/web.py:2895
 msgid "Invalid book ID."
 msgstr "잘못된 "
 
@@ -3434,8 +3434,8 @@ msgid ""
 msgstr ""
 "이 경로들은 CWA 내부에서만 사용됩니다. 콜론 왼쪽 경로는 자유롭게 변경가능하"
 "나,\n"
-"        오른쪽 경로는 변경할 이유가 없습니다.<br><br>만약 "
-"<code>metadata.db<code> 파일을 나머지 서재와 다른 위치에 두고 싶다면, \n"
+"        오른쪽 경로는 변경할 이유가 없습니다.<br><br>만약 <code>metadata."
+"db<code> 파일을 나머지 서재와 다른 위치에 두고 싶다면, \n"
 "<b>아래의 ‘책 파일을 서재와 분리하기’ 옵션을 사용하고, 거기에 라이브러리의 나"
 "머지 경로를 입력하십시오.</b>"
 
@@ -4443,8 +4443,8 @@ msgid ""
 "Removes stale archived book references in app.db when the book no longer "
 "exists in the Calibre library. Helps keep archived counts accurate."
 msgstr ""
-"Calibre 라이브러리에 더 이상 존재하지 않는 책에 대한 오래된 보관 참조를 "
-"app.db에서 제거합니다. 보관된 책 수를 정확하게 유지하는 데 도움이 됩니다."
+"Calibre 라이브러리에 더 이상 존재하지 않는 책에 대한 오래된 보관 참조를 app."
+"db에서 제거합니다. 보관된 책 수를 정확하게 유지하는 데 도움이 됩니다."
 
 #: cps/templates/cwa_settings.html:208
 msgid "Cleanup Schedule:"

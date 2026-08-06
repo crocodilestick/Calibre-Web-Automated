@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 12:47+0200\n"
+"POT-Creation-Date: 2026-08-06 11:51+0000\n"
 "PO-Revision-Date: 2026-05-17 20:18+0800\n"
 "Last-Translator: SkyLull <https://github.com/SkyLull>\n"
 "Language-Team: zh_Hans_TW <LL@li.org>\n"
@@ -571,8 +571,8 @@ msgid ""
 "OAuth Redirect Host should not include a path. Use only the base URL (e.g., "
 "https://your-domain.com)"
 msgstr ""
-"OAuth 重新導向主機不應包含路徑。請僅使用根 URL（例如 https://your-"
-"domain.com）"
+"OAuth 重新導向主機不應包含路徑。請僅使用根 URL（例如 https://your-domain."
+"com）"
 
 #: cps/admin.py:2426
 msgid "Password length has to be between 1 and 40"
@@ -1171,7 +1171,7 @@ msgid "File to be uploaded must have an extension"
 msgstr "要上傳的檔案必須具有附檔名"
 
 #: cps/editbooks.py:845 cps/editbooks.py:1453 cps/web.py:612 cps/web.py:2790
-#: cps/web.py:2881 cps/web.py:2966
+#: cps/web.py:2882 cps/web.py:2967
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "糟糕！選擇書名無法開啟。文件不存在或者檔案不可存取"
@@ -2371,7 +2371,7 @@ msgstr "成功！個人資料已更新"
 msgid "Oops! An account already exists for this Email."
 msgstr "使用此電子郵件的帳號已經存在。"
 
-#: cps/web.py:2894
+#: cps/web.py:2895
 msgid "Invalid book ID."
 msgstr "無效書籍 ID。"
 

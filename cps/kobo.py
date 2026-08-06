@@ -229,6 +229,7 @@ def HandleSyncRequest():
             ub.session.rollback()
 
     only_kobo_shelves = current_user.kobo_only_shelves_sync
+    sync_public_shelves = current_user.kobo_sync_public_shelves
 
     log.debug("Kobo Sync: books last modified: {}".format(sync_token.books_last_modified))
 
@@ -255,6 +256,7 @@ def HandleSyncRequest():
                            .outerjoin(ub.Shelf, ub.Shelf.id == ub.BookShelf.shelf)
                            .filter(or_(
                                and_(ub.Shelf.user_id == current_user.id, ub.Shelf.kobo_sync == True),
+                               and_(ub.Shelf.is_public == True, ub.Shelf.kobo_sync == True) if sync_public_shelves else False,
                                db.Books.id.in_(magic_shelf_book_ids) if magic_shelf_book_ids else False
                            ))
                            .distinct())
@@ -353,7 +355,7 @@ def HandleSyncRequest():
             })
             new_reading_state_last_modified = max(new_reading_state_last_modified, kobo_reading_state.last_modified)
 
-    sync_shelves(sync_token, sync_results, only_kobo_shelves)
+    sync_shelves(sync_token, sync_results, only_kobo_shelves, sync_public_shelves)
 
     # Add magic shelves as collections
     if config.config_kobo_sync_magic_shelves:
@@ -522,7 +524,10 @@ def current_time():
 def get_description(book):
     if not book.comments:
         return None
-    return book.comments[0].text
+    text = book.comments[0].text
+    if config.config_kobo_strip_comment_newlines:
+        text = text.replace('\n', '')
+    return text
 
 
 def get_author(book):
@@ -815,7 +820,7 @@ def HandleTagRemoveItem(tag_id):
 
 # Add new, changed, or deleted shelves to the sync_results.
 # Note: Public shelves that aren't owned by the user aren't supported.
-def sync_shelves(sync_token, sync_results, only_kobo_shelves=False):
+def sync_shelves(sync_token, sync_results, only_kobo_shelves=False, sync_public_shelves=False):
     new_tags_last_modified = sync_token.tags_last_modified
     # transmit all archived shelfs independent of last sync (why should this matter?)
     for shelf in ub.session.query(ub.ShelfArchive).filter(ub.ShelfArchive.user_id == current_user.id):
@@ -847,11 +852,18 @@ def sync_shelves(sync_token, sync_results, only_kobo_shelves=False):
                 }
             })
         extra_filters.append(ub.Shelf.kobo_sync)
+        if sync_public_shelves:
+            extra_filters.append(
+                or_(ub.Shelf.user_id == current_user.id, and_(ub.Shelf.is_public, ub.Shelf.kobo_sync))
+            )
+        else:
+            extra_filters.append(ub.Shelf.user_id == current_user.id)
+    else:
+        extra_filters.append(ub.Shelf.user_id == current_user.id)
 
     shelflist = ub.session.query(ub.Shelf).outerjoin(ub.BookShelf).filter(
         or_(func.datetime(ub.Shelf.last_modified) > sync_token.tags_last_modified,
             func.datetime(ub.BookShelf.date_added) > sync_token.tags_last_modified),
-        ub.Shelf.user_id == current_user.id,
         *extra_filters
     ).distinct().order_by(func.datetime(ub.Shelf.last_modified).asc())
 

@@ -562,6 +562,31 @@ def edit_book_param(param, vals):
                 ret = Response(json.dumps({'success': False,
                                            'msg': rename_error}),
                                mimetype='application/json')
+        elif param == 'pubdate':
+            raw = vals.get('value', '').strip()
+            if raw:
+                try:
+                    book.pubdate = datetime.strptime(raw, "%Y-%m-%d")
+                except ValueError:
+                    book.pubdate = db.Books.DEFAULT_PUBDATE
+            else:
+                book.pubdate = db.Books.DEFAULT_PUBDATE
+            display = '' if book.pubdate.year < 200 else book.pubdate.strftime('%Y-%m-%d')
+            ret = Response(json.dumps({'success': True, 'newValue': display}), mimetype='application/json')
+            metadata_changed = True
+            log_key = 'pubdate'
+            log_value = raw
+        elif param == 'timestamp':
+            raw = vals.get('value', '').strip()
+            if raw:
+                try:
+                    book.timestamp = datetime.strptime(raw, "%Y-%m-%d")
+                except ValueError:
+                    book.timestamp = datetime.now(timezone.utc)
+            else:
+                book.timestamp = datetime.now(timezone.utc)
+            ret = Response(json.dumps({'success': True, 'newValue': book.timestamp.strftime('%Y-%m-%d')}),
+                           mimetype='application/json')
         elif param == 'rating':
             rating_changed = edit_book_ratings({'rating': vals.get('value', '')}, book)
             ret = Response(json.dumps({'success': True, 'newValue': vals.get('value', '')}),

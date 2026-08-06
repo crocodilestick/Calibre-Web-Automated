@@ -606,6 +606,11 @@ $(function() {
                 //if (this.id == "comments") {
                 element.editable.display = shorten_html;
             }
+            if ($(this).attr("data-field") === "rating_value") {
+                element.editable.display = function(value) {
+                    $(this).html(bookRatingFormatter(value));
+                };
+            }
             var validateText = $(this).attr("data-edit-validate");
             if (validateText) {
                 element.editable.validate = function (value) {
@@ -1118,6 +1123,19 @@ function ratingFormatter(value, row) {
         return "";
     }
     return (value/2);
+}
+
+function pubdateFormatter(value, row) {
+    if (!value || value.startsWith("0101-")) {
+        return "";
+    }
+    return value;
+}
+
+function bookRatingFormatter(value, row) {
+    var rating = parseInt(value, 10);
+    if (!rating) return "";
+    return "★".repeat(rating) + "☆".repeat(5 - rating);
 }
 
 

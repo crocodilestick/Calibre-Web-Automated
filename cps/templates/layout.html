@@ -406,6 +406,7 @@
         {% endif %}
         // Add user permissions
         window.cwaUserData.canEditBooks = {{ 'true' if current_user.role_edit() else 'false' }};
+        window.cwaUserData.allowEreaderModal = {{ 'true' if current_user.allow_additional_ereader_emails else 'false' }};
       </script>
       <script src="{{ url_for('static', filename='js/caliBlur.js') }}"></script>
     {% endif %}

@@ -10,6 +10,7 @@ import mimetypes
 import chardet  # dependency of requests
 import copy
 import importlib
+from collections import namedtuple
 import re
 import zipfile
 import xml.etree.ElementTree as ET
@@ -24,6 +25,7 @@ from flask_limiter import RateLimitExceeded
 from flask_limiter.util import get_remote_address
 from sqlalchemy.exc import IntegrityError, InvalidRequestError, OperationalError
 from sqlalchemy.sql.expression import text, func, false, not_, and_, or_
+from sqlalchemy import cast, Float, Integer
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.sql.functions import coalesce
 from werkzeug.datastructures import Headers
@@ -1463,7 +1465,7 @@ def list_books():
     elif sort_param == "languages":
         order = [db.Languages.lang_code.asc()] if order == "asc" else [db.Languages.lang_code.desc()]
         join = db.books_languages_link, db.Books.id == db.books_languages_link.c.book, db.Languages
-    elif order and sort_param in ["sort", "title", "authors_sort", "series_index"]:
+    elif order and sort_param in ["sort", "title", "authors_sort", "series_index", "timestamp", "pubdate"]:
         order = [text(sort_param + " " + order)]
     elif not state:
         order = [db.Books.timestamp.desc()]
@@ -1501,6 +1503,7 @@ def list_books():
         val = entry[0]
         val.is_archived = entry[1] is True
         val.read_status = entry[2] == ub.ReadBook.STATUS_FINISHED
+        val.rating_value = round(val.ratings[0].rating / 2, 1) if val.ratings else 0
         for lang_index in range(0, len(val.languages)):
             val.languages[lang_index].language_name = isoLanguages.get_language_name(get_locale(), val.languages[
                 lang_index].lang_code)
@@ -1612,6 +1615,126 @@ def publisher_list():
         abort(404)
 
 
+_SeriesEntry = namedtuple('_SeriesEntry', ['book', 'count', 'series'])
+
+SERIES_COVER_STRATEGIES = [
+    ('last',               'Last in series'),
+    ('first',              'First in series'),
+    ('first_unread',       'First unread in series'),
+    ('first_unread_whole', 'First unread whole number in series'),
+    ('first_whole',        'First whole number in series'),
+    ('last_whole',         'Last whole number in series'),
+]
+_VALID_COVER_STRATEGIES = {k for k, _ in SERIES_COVER_STRATEGIES}
+
+
+def _build_series_grid_entries(order, strategy, user_id):
+    """
+    Return a list of _SeriesEntry(book, count, series) for the series grid view.
+
+    Runs two queries:
+      1. All (Series, count) visible to the current user — for ordering and badge counts.
+      2. One cover Book per series chosen according to *strategy*.
+
+    Falls back to any available book for series where the strategy filter
+    yields no candidates (e.g. 'first_unread' when every book is finished).
+    """
+    if strategy not in _VALID_COVER_STRATEGIES:
+        strategy = 'last'
+
+    visible = calibre_db.common_filters()
+    s_idx_f = cast(db.Books.series_index, Float)    # numeric series_index
+    s_idx_i = cast(db.Books.series_index, Integer)
+
+    # ── Step 1: ordered series list + counts ────────────────────────────────
+    count_subq = (calibre_db.session.query(
+        db.books_series_link.c.series.label('sid'),
+        func.count(db.Books.id).label('cnt'),
+    ).join(db.Books, db.Books.id == db.books_series_link.c.book)
+     .filter(visible)
+     .group_by(db.books_series_link.c.series)
+     .subquery('series_counts'))
+
+    series_rows = (calibre_db.session.query(db.Series, count_subq.c.cnt)
+                   .join(count_subq, db.Series.id == count_subq.c.sid)
+                   .order_by(order)
+                   .all())
+
+    # ── Step 2: cover book per series ───────────────────────────────────────
+    # Extra filters for this strategy
+    cover_filters = [visible]
+
+    if strategy in ('first_unread', 'first_unread_whole'):
+        finished = (calibre_db.session.query(ub.ReadBook.book_id)
+                    .filter(ub.ReadBook.user_id == user_id,
+                            ub.ReadBook.read_status == ub.ReadBook.STATUS_FINISHED)
+                    .subquery())
+        cover_filters.append(~db.Books.id.in_(finished))
+
+    # Whole-number series_index >= 1 (excludes 0 and fractional parts)
+    whole_number = and_(s_idx_i == s_idx_f, s_idx_f >= 1.0)
+    if strategy in ('first_whole', 'last_whole', 'first_unread_whole'):
+        cover_filters.append(whole_number)
+
+    use_max = strategy in ('last', 'last_whole')
+    agg = func.max(s_idx_f) if use_max else func.min(s_idx_f)
+
+    def _cover_query(extra_filters, agg_fn):
+        target = (calibre_db.session.query(
+            db.books_series_link.c.series.label('sid'),
+            agg_fn.label('target_idx'),
+        ).join(db.Books, db.Books.id == db.books_series_link.c.book)
+         .filter(*extra_filters)
+         .group_by(db.books_series_link.c.series)
+         .subquery('cover_targets'))
+
+        return (calibre_db.session.query(db.Books, target.c.sid)
+                .join(db.books_series_link, db.Books.id == db.books_series_link.c.book)
+                .join(target, and_(target.c.sid == db.books_series_link.c.series,
+                                   s_idx_f == target.c.target_idx))
+                .filter(visible)
+                .group_by(target.c.sid)   # resolve ties: keep one book per series
+                .all())
+
+    cover_map = {row.sid: row[0] for row in _cover_query(cover_filters, agg)}
+
+    # Fallback: series with no strategy-matching book (e.g. all books finished).
+    # first_unread -> first; first_unread_whole -> first_whole; others -> any book.
+    missing = [s.id for s, _ in series_rows if s.id not in cover_map]
+    if missing:
+        if strategy == 'first_unread':
+            fb_filters = [visible, db.books_series_link.c.series.in_(missing)]
+            for row in _cover_query(fb_filters, func.min(s_idx_f)):
+                cover_map.setdefault(row.sid, row[0])
+        elif strategy == 'first_unread_whole':
+            fb_filters = [visible, whole_number, db.books_series_link.c.series.in_(missing)]
+            for row in _cover_query(fb_filters, func.min(s_idx_f)):
+                cover_map.setdefault(row.sid, row[0])
+
+        # Final safety net: any book (max ID) for series still without a cover
+        still_missing = [s.id for s, _ in series_rows if s.id not in cover_map]
+        if still_missing:
+            fb_target = (calibre_db.session.query(
+                db.books_series_link.c.series.label('sid'),
+                func.max(db.Books.id).label('target_id'),
+            ).join(db.Books, db.Books.id == db.books_series_link.c.book)
+             .filter(visible, db.books_series_link.c.series.in_(still_missing))
+             .group_by(db.books_series_link.c.series)
+             .subquery('fb_targets'))
+
+            for row in (calibre_db.session.query(db.Books, fb_target.c.sid)
+                        .join(fb_target, db.Books.id == fb_target.c.target_id)
+                        .filter(visible)
+                        .all()):
+                cover_map.setdefault(row.sid, row[0])
+
+    return [
+        _SeriesEntry(book=cover_map[s.id], count=cnt, series=s)
+        for s, cnt in series_rows
+        if s.id in cover_map
+    ]
+
+
 @web.route("/series")
 @login_required_if_no_ano
 def series_list():
@@ -1643,13 +1766,8 @@ def series_list():
                                          page="serieslist",
                                          data="series", order=order_no)
         else:
-            entries = (calibre_db.session.query(db.Books, func.count('books_series_link').label('count'),
-                                                func.max(db.Books.series_index), db.Books.id)
-                       .join(db.books_series_link).join(db.Series).filter(calibre_db.common_filters())
-                       .group_by(text('books_series_link.series'))
-                       .having(or_(func.max(db.Books.series_index), db.Books.series_index==""))
-                       .order_by(order)
-                       .all())
+            cover_strategy = current_user.get_view_property('series', 'cover_strategy') or 'last'
+            entries = _build_series_grid_entries(order, cover_strategy, current_user.id)
             return render_title_template('grid.html', entries=entries, folder='web.books_list', charlist=char_list,
                                          title=_("Series"), page="serieslist", data="series", bodyClass="grid-view",
                                          order=order_no)
@@ -2408,11 +2526,12 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
             current_user.kindle_mail = valid_email(to_save.get("kindle_mail"))
         if to_save.get("kindle_mail_subject", current_user.kindle_mail_subject) != current_user.kindle_mail_subject:
             current_user.kindle_mail_subject = strip_whitespaces(to_save.get("kindle_mail_subject", "")) or ""
-        new_email = valid_email(to_save.get("email", current_user.email))
-        if not new_email:
-            raise Exception(_("Email can't be empty and has to be a valid Email"))
-        if new_email != current_user.email:
-            current_user.email = check_email(new_email)
+        if not (config.config_reverse_proxy_login_use_email and not current_user.role_admin()):
+            new_email = valid_email(to_save.get("email", current_user.email))
+            if not new_email:
+                raise Exception(_("Email can't be empty and has to be a valid Email"))
+            if new_email != current_user.email:
+                current_user.email = check_email(new_email)
         if current_user.role_admin():
             if to_save.get("name", current_user.name) != current_user.name:
                 # Query username, if not existing, change
@@ -2425,6 +2544,7 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
         # 0 -> 1: all synced books have to be added to archived books, + currently synced shelfs which
         # don't have to be synced have to be removed (added to Shelf archive)
         current_user.kobo_only_shelves_sync = int(to_save.get("kobo_only_shelves_sync") == "on") or 0
+        current_user.kobo_sync_public_shelves = int(to_save.get("kobo_sync_public_shelves") == "on") or 0
         if old_state == 0 and current_user.kobo_only_shelves_sync == 1:
             kobo_sync_status.update_on_sync_shelfs(current_user.id)
         current_user.hardcover_token = to_save.get("hardcover_token","" ).replace("Bearer ","" ) or None
@@ -2531,6 +2651,15 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                 if not current_user.view_settings['opds']:
                     current_user.view_settings.pop('opds', None)
                 flag_modified(current_user, "view_settings")
+
+        # Series cover strategy
+        series_cover_strategy = to_save.get("series_cover_strategy", "last")
+        if series_cover_strategy not in _VALID_COVER_STRATEGIES:
+            series_cover_strategy = "last"
+        if current_user.view_settings is None:
+            current_user.view_settings = {}
+        current_user.view_settings.setdefault('series', {})['cover_strategy'] = series_cover_strategy
+        flag_modified(current_user, "view_settings")
 
         # Magic shelf order settings
         magic_shelf_order_raw = to_save.get("magic_shelf_order", "").strip()
@@ -2643,6 +2772,8 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                                      magic_shelf_order_string=magic_shelf_order_string,
                                      magic_shelf_order_labels=magic_shelf_order_labels,
                                      magic_shelf_order_mode=magic_shelf_order_mode,
+                                     cover_strategy=current_user.get_view_property('series', 'cover_strategy') or 'last',
+                                     cover_strategies=SERIES_COVER_STRATEGIES,
                                      title=_(f"{current_user.name.capitalize()}'s Profile", name=current_user.name),
                                      page="me",
                                      kobo_support=kobo_support,
@@ -2758,6 +2889,8 @@ def profile():
                                  languages=languages,
                                  content=current_user,
                                  config=config,
+                                 cover_strategy=current_user.get_view_property('series', 'cover_strategy') or 'last',
+                                 cover_strategies=SERIES_COVER_STRATEGIES,
                                  kobo_support=kobo_support,
                                  hardcover_support=hardcover_support,
                                  system_shelf_templates=system_shelf_templates,

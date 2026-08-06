@@ -845,8 +845,10 @@ $(function() {
                     $link.append($editBtn);
                 }
                 
-                // Add send to eReader button (only if it doesn't exist)
-                if ($link.find('.send-ereader-btn').length === 0) {
+                // Add send to eReader button only if user has an email configured or the modal is enabled
+                var hasEreaderEmail = window.cwaUserData && window.cwaUserData.primaryEmail;
+                var hasEreaderModal = window.cwaUserData && window.cwaUserData.allowEreaderModal;
+                if ((hasEreaderEmail || hasEreaderModal) && $link.find('.send-ereader-btn').length === 0) {
                     var $sendBtn = $('<div class="send-ereader-btn" title="Send to eReader"><span class="glyphicon glyphicon-send"></span></div>');
                     $link.append($sendBtn);
                 }
@@ -895,21 +897,21 @@ $(function() {
                 var centerY = linkHeight / 2;
                 var readIconRadius = readIconSize / 2;
                 
-                // Read toggle area (bottom-left)
-                var readToggleX = margin + (actionSize / 2);
-                var readToggleY = linkHeight - margin - (actionSize / 2);
+                // Bottom action button positions — evenly spaced based on which buttons exist
+                var hasSendBtn = $link.find('.send-ereader-btn').length > 0;
+                var bottomY = linkHeight - margin - (actionSize / 2);
+                var readToggleX = hasSendBtn ? (margin + actionSize / 2) : linkWidth / 3;
+                var readToggleY = bottomY;
                 var readToggleRadius = actionSize / 2;
-                
-                // Send to eReader area (bottom-right)
-                var sendEReaderX = linkWidth - margin - (actionSize / 2);
-                var sendEReaderY = linkHeight - margin - (actionSize / 2);
-                var sendEReaderRadius = actionSize / 2;
-                
-                // Edit metadata button (center-bottom)
-                var editMetadataX = linkWidth / 2;
-                var editMetadataY = linkHeight - margin - (actionSize / 2);
+
+                var editMetadataX = hasSendBtn ? linkWidth / 2 : 2 * linkWidth / 3;
+                var editMetadataY = bottomY;
                 var editMetadataRadius = actionSize / 2;
-                
+
+                var sendEReaderX = linkWidth - margin - (actionSize / 2);
+                var sendEReaderY = bottomY;
+                var sendEReaderRadius = actionSize / 2;
+
                 // Calculate distances
                 var distanceFromReadIcon = Math.sqrt(
                     Math.pow(mouseX - centerX, 2) + Math.pow(mouseY - centerY, 2)
@@ -973,18 +975,20 @@ $(function() {
                 var centerY = linkHeight / 2;
                 var readIconRadius = readIconSize / 2;
                 
-                var readToggleX = margin + (actionSize / 2);
-                var readToggleY = linkHeight - margin - (actionSize / 2);
+                // Bottom action button positions — evenly spaced based on which buttons exist
+                var hasSendBtn = $link.find('.send-ereader-btn').length > 0;
+                var bottomY = linkHeight - margin - (actionSize / 2);
+                var readToggleX = hasSendBtn ? (margin + actionSize / 2) : linkWidth / 3;
+                var readToggleY = bottomY;
                 var readToggleRadius = actionSize / 2;
-                
-                var sendEReaderX = linkWidth - margin - (actionSize / 2);
-                var sendEReaderY = linkHeight - margin - (actionSize / 2);
-                var sendEReaderRadius = actionSize / 2;
-                
-                // Edit metadata button (center-bottom)
-                var editMetadataX = linkWidth / 2;
-                var editMetadataY = linkHeight - margin - (actionSize / 2);
+
+                var editMetadataX = hasSendBtn ? linkWidth / 2 : 2 * linkWidth / 3;
+                var editMetadataY = bottomY;
                 var editMetadataRadius = actionSize / 2;
+
+                var sendEReaderX = linkWidth - margin - (actionSize / 2);
+                var sendEReaderY = bottomY;
+                var sendEReaderRadius = actionSize / 2;
                 
                 var distanceFromReadIcon = Math.sqrt(
                     Math.pow(clickX - centerX, 2) + Math.pow(clickY - centerY, 2)

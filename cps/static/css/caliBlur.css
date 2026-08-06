@@ -8689,6 +8689,14 @@ button.close {
     pointer-events: none; /* Allow hover to pass through when not visible */
 }
 
+/* When no send button is present, reposition the two remaining buttons to 1/3 and 2/3 */
+.book-cover-link:not(:has(.send-ereader-btn)) .read-toggle-btn {
+    left: calc(33.33% - 17.5px);
+}
+.book-cover-link:not(:has(.send-ereader-btn)) .edit-metadata-btn {
+    left: calc(66.67% - 17.5px);
+}
+
 .edit-metadata-btn .glyphicon {
     font-size: 14px;
     color: #fff;

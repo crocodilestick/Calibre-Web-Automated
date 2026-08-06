@@ -209,8 +209,11 @@ def load_user_from_reverse_proxy_header(req):
     if not rp_header_username:
         return None
     
-    # Look for existing user first
-    user = ub.session.query(ub.User).filter(func.lower(ub.User.name) == rp_header_username.lower()).first()
+    # Look for existing user first — match by email or username based on config
+    if getattr(config, 'config_reverse_proxy_login_use_email', False):
+        user = ub.session.query(ub.User).filter(func.lower(ub.User.email) == rp_header_username.lower()).first()
+    else:
+        user = ub.session.query(ub.User).filter(func.lower(ub.User.name) == rp_header_username.lower()).first()
     if user:
         [limiter.limiter.storage.clear(k.key) for k in limiter.current_limits]
         log.debug("Reverse proxy authentication: found existing user '%s'", user.name)

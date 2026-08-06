@@ -24,18 +24,18 @@
     {% if entries[0] %}
         <div id="list" class="row display-flex">
           {% for entry in entries %}
-              <div class="col-sm-3 col-lg-2 col-xs-6 book sortable" {% if entry[0].sort %}data-name="{{entry[0].series[0].name}}"{% endif %} data-id="{% if entry[0].series[0].name %}{{entry[0].series[0].name}}{% endif %}">
+              <div class="col-sm-3 col-lg-2 col-xs-6 book sortable" data-name="{{entry.series.name}}" data-id="{{entry.series.name}}">
                   <div class="cover">
-                      <a href="{{url_for('web.books_list', data=data, sort_param='stored', book_id=entry[0].series[0].id )}}">
-                          <span class="img" title="{{entry[0].series[0].name}}">
+                      <a href="{{url_for('web.books_list', data=data, sort_param='stored', book_id=entry.series.id )}}">
+                          <span class="img" title="{{entry.series.name}}">
                               {{ image.book_cover(entry[0])}}
                               <span class="badge">{{entry.count}}</span>
                             </span>
                       </a>
                   </div>
                   <div class="meta">
-                      <a href="{{url_for('web.books_list', data=data, sort_param='stored', book_id=entry[0].series[0].id )}}">
-                          <p title="{{entry[0].series[0].name|shortentitle}}" class="title">{{entry[0].series[0].name|shortentitle}}</p>
+                      <a href="{{url_for('web.books_list', data=data, sort_param='stored', book_id=entry.series.id )}}">
+                          <p title="{{entry.series.name|shortentitle}}" class="title">{{entry.series.name|shortentitle}}</p>
                       </a>
                   </div>
               </div>

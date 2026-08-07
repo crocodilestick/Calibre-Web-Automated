@@ -38,6 +38,7 @@ from . import db, calibre_db, ub, web_server, config, updater_thread, gdriveutil
 from .helper import check_valid_domain, send_test_mail, reset_password, generate_password_hash, check_email, \
     valid_email, check_username
 from .embed_helper import get_calibre_binarypath
+from .calibre_cli import get_calibre_cli_context
 from .gdriveutils import is_gdrive_ready, gdrive_support
 from .render_template import render_title_template, get_sidebar_config
 from .services.worker import WorkerThread
@@ -3033,11 +3034,18 @@ def restore_calibre_db():
 
         # 2. Run calibredb check_library (pre)
         calibredb_binary = get_calibre_binarypath("calibredb") or "/app/calibre/calibredb"
+        calibre_library_path, calibre_env = get_calibre_cli_context(config)
         check_cmd = [
             calibredb_binary, "check_library",
-            "--with-library", config.config_calibre_dir
+            "--with-library", calibre_library_path
         ]
-        check_result = subprocess.run(check_cmd, capture_output=True, text=True, timeout=300)
+        check_result = subprocess.run(
+            check_cmd,
+            capture_output=True,
+            text=True,
+            timeout=300,
+            env=calibre_env,
+        )
         log.info("calibredb check_library (pre) output: %s\n%s", check_result.stdout, check_result.stderr)
         if check_result.returncode != 0:
             log.warning("calibredb check_library (pre) returned code %s", check_result.returncode)
@@ -3049,10 +3057,16 @@ def restore_calibre_db():
         # 3. Run calibredb restore_database
         restore_cmd = [
             calibredb_binary, "restore_database",
-            "--with-library", config.config_calibre_dir,
+            "--with-library", calibre_library_path,
             "--really-do-it"
         ]
-        result = subprocess.run(restore_cmd, capture_output=True, text=True, timeout=1200)
+        result = subprocess.run(
+            restore_cmd,
+            capture_output=True,
+            text=True,
+            timeout=1200,
+            env=calibre_env,
+        )
         log.info("calibredb restore_database output: %s\n%s", result.stdout, result.stderr)
         with open(log_path, "a", encoding="utf-8") as log_file:
             log_file.write("\n[restore_database]\n")
@@ -3080,7 +3094,13 @@ def restore_calibre_db():
             return redirect(url_for("admin.db_configuration"))
 
         # 5. Run calibredb check_library (post)
-        check_result_post = subprocess.run(check_cmd, capture_output=True, text=True, timeout=300)
+        check_result_post = subprocess.run(
+            check_cmd,
+            capture_output=True,
+            text=True,
+            timeout=300,
+            env=calibre_env,
+        )
         log.info("calibredb check_library (post) output: %s\n%s", check_result_post.stdout, check_result_post.stderr)
         if check_result_post.returncode != 0:
             log.warning("calibredb check_library (post) returned code %s", check_result_post.returncode)

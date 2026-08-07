@@ -1264,7 +1264,10 @@ class NewBookProcessor:
             sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
             from cps.progress_syncing.checksums import calculate_koreader_partial_md5, store_checksum, CHECKSUM_VERSION
 
-            calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
+            # self.library_dir points at the book-files root in split-library
+            # mode. self.metadata_db is captured before that switch and always
+            # points at the configured Calibre database.
+            calibre_db_path = self.metadata_db
 
             with sqlite3.connect(calibre_db_path, timeout=30) as con:
                 cur = con.cursor()

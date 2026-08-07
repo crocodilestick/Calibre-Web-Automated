@@ -1726,7 +1726,7 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
                         print(f"[cwa-duplicates-auto] Starting deletion of book {book.id}...", flush=True)
                         
                         # Backup book files
-                        book_path = os.path.join(config.config_calibre_dir, book.path)
+                        book_path = os.path.join(config.get_book_path(), book.path)
                         if os.path.exists(book_path):
                             backup_path = os.path.join(backup_dir, f"book_{book.id}")
                             print(f"[cwa-duplicates-auto] Backing up book {book.id} to {backup_path}...", flush=True)

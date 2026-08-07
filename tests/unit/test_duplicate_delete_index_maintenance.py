@@ -5,6 +5,8 @@ import importlib.util
 import pathlib
 import sys
 
+import pytest
+
 
 def _install_stub(name, attrs=None):
     module = ModuleType(name)
@@ -383,6 +385,54 @@ def test_auto_resolve_duplicates_deletes_duplicate_keys_and_refreshes_cache():
     assert delete_key_calls == [[2]]
     assert _CwaDB.instances[-1].cache_updates == [([], 0, 1)]
     assert _CwaDB.instances[-1].invalidated is False
+
+
+@pytest.mark.unit
+def test_auto_resolve_duplicates_checks_split_book_path_for_backup():
+    _CwaDB.instances = []
+    delete_key_calls = []
+    module, calibre_books, _calls = _load_duplicates_module(delete_key_calls)
+    module.config.config_calibre_dir = "/calibre-library"
+    module.config.get_book_path = lambda: "/books"
+
+    kept = SimpleNamespace(
+        id=1,
+        title="Dune",
+        timestamp=datetime(2024, 1, 2, tzinfo=timezone.utc),
+        data=[],
+        path="Dune",
+    )
+    deleted = SimpleNamespace(
+        id=2,
+        title="Dune",
+        timestamp=datetime(2024, 1, 1, tzinfo=timezone.utc),
+        data=[],
+        path="Dune Copy",
+    )
+    calibre_books[1] = kept
+    calibre_books[2] = deleted
+    checked_paths = []
+
+    def record_exists(path):
+        checked_paths.append(path)
+        return False
+
+    with patch("os.path.exists", side_effect=record_exists), patch("os.makedirs"):
+        result = module.auto_resolve_duplicates(
+            strategy="newest",
+            duplicate_groups=[
+                {
+                    "group_hash": "abc123",
+                    "title": "Dune",
+                    "author": "Frank Herbert",
+                    "books": [kept, deleted],
+                }
+            ],
+        )
+
+    assert result["success"] is True
+    assert "/books/Dune Copy" in checked_paths
+    assert "/calibre-library/Dune Copy" not in checked_paths
 
 
 def test_auto_resolve_dry_run_does_not_invalidate_duplicate_cache():

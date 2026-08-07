@@ -10,6 +10,19 @@ from gevent.pywsgi import WSGIHandler
 
 
 class MyWSGIHandler(WSGIHandler):
+    def read_request(self, raw_requestline):
+        # Force ``Connection: close`` on every response. Reverse-proxy
+        # keepalive sockets can stay attached to the gevent process after
+        # the client side has gone away; under sustained load, stale
+        # sockets accumulate and starve the accept loop, surfacing as
+        # unresponsive healthchecks. Closing after each response keeps
+        # the proxy renegotiating fresh sockets so recovery is bounded.
+        # Backport of CWA #1335 by @I-Would-Like-To-Report-A-Bug-Please;
+        # addresses fork issue #193.
+        is_valid = super().read_request(raw_requestline)
+        self.close_connection = True
+        return is_valid
+
     def get_environ(self):
         env = super().get_environ()
         path, __ = self.path.split('?', 1) if '?' in self.path else (self.path, '')

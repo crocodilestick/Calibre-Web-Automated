@@ -21,13 +21,14 @@
 # DeadBone <deadbone2000@yahoo.fr>, 2025
 # Tex <tex@grosist.fr>, 2025
 # BiduleChou <blistex77@gmail.com>, 2026
+# Orcanism <louis.orca.brunner@gmail.com>, 2026
 msgid ""
 msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
 "POT-Creation-Date: 2026-08-06 15:04+0000\n"
-"PO-Revision-Date: 2026-02-11 09:17+0000\n"
+"PO-Revision-Date: 2026-09-16 11:30+0000\n"
 "Last-Translator: Tex <tex@grosist.fr>\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -3373,7 +3374,7 @@ msgstr "Chargement..."
 
 #: cps/templates/book_edit.html:312
 msgid "Apply"
-msgstr ""
+msgstr "Appliquer"
 
 #: cps/templates/book_edit.html:369
 msgid "Search error!"
@@ -6555,7 +6556,7 @@ msgstr "Précédent"
 
 #: cps/templates/layout.html:353
 msgid "Go to page"
-msgstr ""
+msgstr "Aller à la page"
 
 #: cps/templates/layout.html:376
 msgid "Book Details"

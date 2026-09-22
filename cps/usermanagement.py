@@ -45,10 +45,20 @@ def create_authenticated_user(username, email=None, auth_source="unknown"):
             log.warning("User '%s' already exists, returning existing user", username)
             return existing_user
             
-        # Generate email if not provided
+        # Generate email if not provided by the proxy.
+        # Header-auth proxies (e.g. Cloudflare Access, Authelia, authentik) put
+        # the identity in the username header and often send no Remote-Email, so
+        # the username is itself the user's email. Use it directly when it
+        # validates; only fall back to a placeholder otherwise. Blindly appending
+        # @localhost to an address produces a double-@ that valid_email() rejects
+        # on the next profile save, leaving the user unable to set a password.
         if not email:
-            email = f"{username}@localhost"
-        
+            from .helper import valid_email
+            try:
+                email = valid_email(username)
+            except Exception:
+                email = f"{username}@localhost"
+
         # Create user with same defaults as OAuth users
         user = ub.User()
         user.name = username

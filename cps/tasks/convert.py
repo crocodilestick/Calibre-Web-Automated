@@ -267,9 +267,10 @@ class TaskConvert(CalibreTask):
                 else:
                     library_path = config.config_calibre_dir
 
+                target = content_server.library_target()
                 opf_command = ([calibredb_binarypath, 'show_metadata', '--as-opf', str(self.book_id)]
-                               + (content_server.library_arguments() or ['--with-library', library_path]))
-                p = process_open(opf_command, quotes, my_env, newlines=False)
+                               + (target.args or ['--with-library', library_path]))
+                p = process_open(opf_command, quotes, my_env, newlines=False, stdin_payload=target.stdin)
                 lines = list()
                 while p.poll() is None:
                     lines.append(p.stdout.readline())

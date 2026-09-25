@@ -80,7 +80,7 @@ def _clear_modules():
 def _load_cwa_functions(monkeypatch, request):
     _clear_modules()
     cps = _install_stub("cps")
-    for name in ("config", "constants", "csrf", "helper", "ub", "calibre_db"):
+    for name in ("config", "constants", "csrf", "helper", "ub", "calibre_db", "content_server"):
         module = _install_stub(f"cps.{name}")
         setattr(cps, name, module)
     cps.config.config_kobo_sync_magic_shelves = False

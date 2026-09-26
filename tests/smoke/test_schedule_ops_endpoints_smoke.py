@@ -85,9 +85,9 @@ class TestConvertLibraryScheduling:
         with open(template_file, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Verify buttons call JS function
-        assert 'scheduleConvertLibrary(5)' in content
-        assert 'scheduleConvertLibrary(15)' in content
+        # Buttons link to the admin-only schedule route
+        assert "url_for('convert_library.schedule_convert_library', delay=5)" in content
+        assert "url_for('convert_library.schedule_convert_library', delay=15)" in content
     
     def test_convert_library_task_wrapper_exists(self):
         """Verify TaskConvertLibraryRun task wrapper exists"""
@@ -152,9 +152,9 @@ class TestEpubFixerScheduling:
         with open(template_file, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Verify buttons call JS function
-        assert 'scheduleEpubFixer(5)' in content
-        assert 'scheduleEpubFixer(15)' in content
+        # Buttons link to the admin-only schedule route
+        assert "url_for('epub_fixer.schedule_epub_fixer', delay=5)" in content
+        assert "url_for('epub_fixer.schedule_epub_fixer', delay=15)" in content
     
     def test_epub_fixer_task_wrapper_exists(self):
         """Verify TaskEpubFixerRun task wrapper exists"""

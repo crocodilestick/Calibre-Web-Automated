@@ -39,6 +39,7 @@ from .services.worker import WorkerThread, STAT_FINISH_SUCCESS, STAT_FAIL, STAT_
 from .tasks.database import TaskReconnectDatabase
 from .tasks.auto_send import TaskAutoSend
 from .tasks.ops import TaskConvertLibraryRun, TaskEpubFixerRun
+from .internal_api import internal_only, internal_headers
 
 switch_theme = Blueprint('switch_theme', __name__)
 library_refresh = Blueprint('library_refresh', __name__)
@@ -301,18 +302,14 @@ def get_library_refresh_messages():
 
 @csrf.exempt
 @cwa_internal.route('/cwa-internal/schedule-auto-send', methods=["POST"])
+@internal_only
 def cwa_internal_schedule_auto_send():
     """Schedule an Auto-Send task in the web process scheduler.
 
-    Security: Limited to localhost callers (within container/host).
+    Security: CWA's own processes only (@internal_only).
     Payload JSON: {book_id:int, user_id:int, delay_minutes:int, username:str, title:str}
     """
     try:
-        # Basic origin check: allow only localhost
-        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
-        if remote not in (None, '127.0.0.1', '::1'):
-            abort(403)
-
         data = request.get_json(force=True, silent=True) or {}
         book_id = int(data.get('book_id'))
         user_id = int(data.get('user_id'))
@@ -381,17 +378,14 @@ def cwa_internal_schedule_auto_send():
 
 @csrf.exempt
 @cwa_internal.route('/cwa-internal/queue-duplicate-scan', methods=["POST"])
+@internal_only
 def cwa_internal_queue_duplicate_scan():
     """Debounce and queue an incremental duplicate scan in the web process.
 
-    Security: Limited to localhost callers (within container/host).
+    Security: CWA's own processes only (@internal_only).
     Payload JSON: {delay_seconds:int, book_ids:[int]}
     """
     try:
-        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
-        if remote not in (None, '127.0.0.1', '::1'):
-            abort(403)
-
         data = request.get_json(force=True, silent=True) or {}
         result = queue_debounced_duplicate_scan(
             delay_seconds=data.get('delay_seconds'),
@@ -405,17 +399,14 @@ def cwa_internal_queue_duplicate_scan():
 
 @csrf.exempt
 @cwa_internal.route('/cwa-internal/run-duplicate-scan', methods=["POST"])
+@internal_only
 def cwa_internal_run_duplicate_scan():
     """Run a bounded incremental duplicate scan synchronously in the web process.
 
-    Security: Limited to localhost callers (within container/host).
+    Security: CWA's own processes only (@internal_only).
     Payload JSON: {book_ids:[int]}
     """
     try:
-        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
-        if remote not in (None, '127.0.0.1', '::1'):
-            abort(403)
-
         data = request.get_json(force=True, silent=True) or {}
         book_ids = _coerce_book_ids(data.get('book_ids'))
         if not book_ids:
@@ -446,13 +437,10 @@ def cwa_internal_run_duplicate_scan():
 
 @csrf.exempt
 @cwa_internal.route('/cwa-internal/duplicate-scan-status', methods=["GET", "POST"])
+@internal_only
 def cwa_internal_duplicate_scan_status():
     """Expose duplicate scan worker state to localhost-only ingest helpers."""
     try:
-        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
-        if remote not in (None, '127.0.0.1', '::1'):
-            abort(403)
-
         return jsonify({
             "success": True,
             "full_scan_running": _duplicate_full_scan_running(),
@@ -523,17 +511,14 @@ def duplicate_scan_debounce_pending():
 
 @csrf.exempt
 @cwa_internal.route('/cwa-internal/schedule-convert-library', methods=["POST"])
+@internal_only
 def cwa_internal_schedule_convert_library():
     """Schedule a Convert Library run in the web process scheduler.
 
-    Security: Limited to localhost callers (within container/host).
+    Security: CWA's own processes only (@internal_only).
     Payload JSON: {delay_minutes:int, username:str}
     """
     try:
-        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
-        if remote not in (None, '127.0.0.1', '::1'):
-            abort(403)
-
         data = request.get_json(force=True, silent=True) or {}
         delay_minutes = int(data.get('delay_minutes', 5))
         delay_minutes = max(0, min(60, delay_minutes))
@@ -584,17 +569,14 @@ def cwa_internal_schedule_convert_library():
 
 @csrf.exempt
 @cwa_internal.route('/cwa-internal/schedule-epub-fixer', methods=["POST"])
+@internal_only
 def cwa_internal_schedule_epub_fixer():
     """Schedule an EPUB Fixer run in the web process scheduler.
 
-    Security: Limited to localhost callers (within container/host).
+    Security: CWA's own processes only (@internal_only).
     Payload JSON: {delay_minutes:int, username:str}
     """
     try:
-        remote = request.headers.get('X-Forwarded-For', request.remote_addr)
-        if remote not in (None, '127.0.0.1', '::1'):
-            abort(403)
-
         data = request.get_json(force=True, silent=True) or {}
         delay_minutes = int(data.get('delay_minutes', 5))
         delay_minutes = max(0, min(60, delay_minutes))
@@ -643,15 +625,12 @@ def cwa_internal_schedule_epub_fixer():
 
 @csrf.exempt
 @cwa_internal.route('/cwa-internal/reconnect-db', methods=["POST"])
+@internal_only
 def cwa_internal_reconnect_db():
     """Enqueue a database reconnect task in the web process.
 
-    Security: Only accepts localhost callers.
+    Security: CWA's own processes only (@internal_only).
     """
-    remote = request.headers.get('X-Forwarded-For', request.remote_addr)
-    if remote not in (None, '127.0.0.1', '::1'):
-        abort(403)
-
     try:
         task = TaskReconnectDatabase()
         WorkerThread.add(None, task, hidden=True)
@@ -1790,6 +1769,8 @@ def cwa_flash_status():
 ##————————————————————————————————————————————————————————————————————————————##
 
 @cwa_logs.route('/cwa-logs/download/<log_filename>')
+@login_required_if_no_ano
+@admin_required
 def download_log(log_filename):
     try:
         # Secure the filename to prevent directory traversal (e.g., '..')
@@ -1814,6 +1795,8 @@ def download_log(log_filename):
         abort(400)  # Bad request for malformed or unsafe file paths
 
 @cwa_logs.route('/cwa-logs/read/<log_filename>')
+@login_required_if_no_ano
+@admin_required
 def read_log(log_filename):
     try:
         # Secure the filename to prevent directory traversal (e.g., '..')
@@ -1949,6 +1932,8 @@ def kill_convert_library(queue):
             break
 
 @convert_library.route('/cwa-convert-library-overview', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def show_convert_library_page():
     return render_title_template('cwa_convert_library.html', title=_("Calibre-Web Automated - Convert Library"), page="cwa-library-convert",
                                 target_format=CWA_DB().cwa_settings['auto_convert_target_format'].upper())
@@ -1963,7 +1948,8 @@ def schedule_convert_library(delay: int):
         import requests
         username = getattr(current_user, 'name', 'System') or 'System'
         url = helper.get_internal_api_url("/cwa-internal/schedule-convert-library")
-        resp = requests.post(url, json={"delay_minutes": delay, "username": username}, timeout=10, verify=False)
+        resp = requests.post(url, json={"delay_minutes": delay, "username": username},
+                                 headers=internal_headers(), timeout=10, verify=False)
         if resp.ok:
             flash(_(f"Convert Library scheduled in {delay} minute(s)."), category="success")
         else:
@@ -1973,6 +1959,8 @@ def schedule_convert_library(delay: int):
     return redirect(url_for('convert_library.show_convert_library_page'))
 
 @convert_library.route('/cwa-convert-library/log-archive', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def show_convert_library_logs():
     logs=get_logs_from_archive("convert-library")
     log_dates = get_log_dates(logs)
@@ -1980,6 +1968,8 @@ def show_convert_library_logs():
                                 logs=logs, log_dates=log_dates)
 
 @convert_library.route('/cwa-convert-library/download-current-log/<log_filename>')
+@login_required_if_no_ano
+@admin_required
 def download_current_log(log_filename):
     log_filename = "convert-library.log"
     LOG_DIR = "/config"
@@ -2005,8 +1995,11 @@ def download_current_log(log_filename):
         # Handle any other errors
         abort(400)  # Bad request for malformed or unsafe file paths
 
-@convert_library.route('/cwa-convert-library-start', methods=["GET"])
-def start_conversion():
+def start_convert_library_run():
+    """Start a full Convert Library run in background threads.
+
+    Called by the admin route and directly by TaskConvertLibraryRun (scheduled runs).
+    """
     # Wipe conversion log from previous runs
     open('/config/convert-library.log', 'w').close()
     # Remove any left over kill file
@@ -2022,15 +2015,28 @@ def start_conversion():
     # Create and start the kill thread
     cl_kill_thread = Thread(target=kill_convert_library, args=(process_queue,))
     cl_kill_thread.start()
+
+def request_convert_library_cancel():
+    # Create kill trigger file
+    open(tempfile.gettempdir() + "/.kill_convert_library_trigger", 'w').close()
+
+@convert_library.route('/cwa-convert-library-start', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
+def start_conversion():
+    start_convert_library_run()
     return redirect(url_for('convert_library.show_convert_library_page'))
 
 @convert_library.route('/convert-library-cancel', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def cancel_convert_library():
-    # Create kill trigger file
-    open(tempfile.gettempdir() + "/.kill_convert_library_trigger", 'w').close()
+    request_convert_library_cancel()
     return redirect(url_for('convert_library.show_convert_library_page'))
 
 @convert_library.route('/convert-library-status', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def get_status():
     with open("/config/convert-library.log", 'r') as f:
         status = f.read()
@@ -2091,6 +2097,8 @@ def kill_epub_fixer(queue):
             break
 
 @epub_fixer.route('/cwa-epub-fixer-overview', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def show_epub_fixer_page():
     return render_title_template('cwa_epub_fixer.html', title=_("Calibre-Web Automated - EPUB Fixer Service"), page="cwa-epub-fixer")
 
@@ -2103,7 +2111,8 @@ def schedule_epub_fixer(delay: int):
         import requests
         username = getattr(current_user, 'name', 'System') or 'System'
         url = helper.get_internal_api_url("/cwa-internal/schedule-epub-fixer")
-        resp = requests.post(url, json={"delay_minutes": delay, "username": username}, timeout=10, verify=False)
+        resp = requests.post(url, json={"delay_minutes": delay, "username": username},
+                                 headers=internal_headers(), timeout=10, verify=False)
         if resp.ok:
             flash(_(f"EPUB Fixer scheduled in {delay} minute(s)."), category="success")
         else:
@@ -2113,6 +2122,8 @@ def schedule_epub_fixer(delay: int):
     return redirect(url_for('epub_fixer.show_epub_fixer_page'))
 
 @epub_fixer.route('/cwa-epub-fixer/log-archive', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def show_epub_fixer_logs():
     logs = get_logs_from_archive("epub-fixer")
     log_dates = get_log_dates(logs)
@@ -2120,6 +2131,8 @@ def show_epub_fixer_logs():
                                 logs=logs, log_dates=log_dates)
 
 @epub_fixer.route('/cwa-epub-fixer/download-current-log/<log_filename>')
+@login_required_if_no_ano
+@admin_required
 def download_current_log(log_filename):
     log_filename = "epub-fixer.log"
     LOG_DIR = "/config"
@@ -2145,8 +2158,11 @@ def download_current_log(log_filename):
         # Handle any other errors
         abort(400)  # Bad request for malformed or unsafe file paths
 
-@epub_fixer.route('/cwa-epub-fixer-start', methods=["GET"])
-def start_epub_fixer():
+def start_epub_fixer_run():
+    """Start a full-library EPUB Fixer run in background threads.
+
+    Called by the admin route and directly by TaskEpubFixerRun (scheduled runs).
+    """
     # Wipe conversion log from previous runs
     open('/config/epub-fixer.log', 'w').close()
     # Remove any left over kill file
@@ -2162,6 +2178,24 @@ def start_epub_fixer():
     # Create and start the kill thread
     ef_kill_thread = Thread(target=kill_epub_fixer, args=(process_queue,))
     ef_kill_thread.start()
+
+def request_epub_fixer_cancel():
+    # Create kill trigger file
+    open(tempfile.gettempdir() + "/.kill_epub_fixer_trigger", 'w').close()
+    try:
+        subprocess.run([
+            "pkill",
+            "-f",
+            "/app/calibre-web-automated/scripts/kindle_epub_fixer.py"
+        ], check=False)
+    except Exception as e:
+        log.error(f"Failed to terminate epub fixer process: {e}")
+
+@epub_fixer.route('/cwa-epub-fixer-start', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
+def start_epub_fixer():
+    start_epub_fixer_run()
     return redirect(url_for('epub_fixer.show_epub_fixer_page'))
 
 
@@ -2169,6 +2203,9 @@ def start_epub_fixer():
 @csrf.exempt
 @login_required_if_no_ano
 def run_epub_fixer_for_book():
+    # Rewrites the book's files, so require edit rights (anonymous browsing passes the login check).
+    if not (current_user.role_edit() or current_user.role_admin()):
+        abort(403)
     if config.config_use_google_drive:
         return jsonify({"success": False, "error": _("Single-book EPUB Fixer is not supported with Google Drive libraries.")}), 400
 
@@ -2214,20 +2251,15 @@ def run_epub_fixer_for_book():
         return jsonify({"success": False, "error": _("Failed to start EPUB Fixer for selected book.")}), 500
 
 @epub_fixer.route('/epub-fixer-cancel', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def cancel_epub_fixer():
-    # Create kill trigger file
-    open(tempfile.gettempdir() + "/.kill_epub_fixer_trigger", 'w').close()
-    try:
-        subprocess.run([
-            "pkill",
-            "-f",
-            "/app/calibre-web-automated/scripts/kindle_epub_fixer.py"
-        ], check=False)
-    except Exception as e:
-        log.error(f"Failed to terminate epub fixer process: {e}")
+    request_epub_fixer_cancel()
     return redirect(url_for('epub_fixer.show_epub_fixer_page'))
 
 @epub_fixer.route('/epub-fixer-status', methods=["GET"])
+@login_required_if_no_ano
+@admin_required
 def get_status():
     with open("/config/epub-fixer.log", 'r') as f:
         status = f.read()

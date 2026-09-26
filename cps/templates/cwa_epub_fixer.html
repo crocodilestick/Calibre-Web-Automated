@@ -41,8 +41,8 @@
             </div>
             {% if current_user.role_admin() %}
             <div class="btn-group" role="group" aria-label="schedule" style="display: flex; justify-content: flex-start; flex-wrap: wrap; flex-direction: row; gap: 1rem; margin-bottom: 8px;">
-              <button class="btn btn-default" onclick="scheduleEpubFixer(5)">{{ _('Schedule 5m') }}</button>
-              <button class="btn btn-default" onclick="scheduleEpubFixer(15)">{{ _('Schedule 15m') }}</button>
+              <a class="btn btn-default" href="{{ url_for('epub_fixer.schedule_epub_fixer', delay=5) }}">{{ _('Schedule 5m') }}</a>
+              <a class="btn btn-default" href="{{ url_for('epub_fixer.schedule_epub_fixer', delay=15) }}">{{ _('Schedule 15m') }}</a>
             </div>
             {% endif %}
           </div>
@@ -102,27 +102,6 @@
     }, 4000);
   }
 
-  function scheduleEpubFixer(delayMinutes) {
-    fetch('/cwa-internal/schedule-epub-fixer', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ delay_minutes: delayMinutes, username: '{{ current_user.name }}' })
-    })
-    .then(r => {
-      if (!r.ok) {
-        return r.json().then(err => {
-          throw new Error(err.error || 'Failed to schedule');
-        });
-      }
-      return r.json();
-    })
-    .then(data => {
-      showNotification('{{ _("EPUB Fixer scheduled successfully") }}', 'success');
-    })
-    .catch(err => {
-      showNotification('{{ _("Error scheduling EPUB Fixer") }}: ' + err.message, 'danger');
-    });
-  }
 
   function renderEpubFixerSearchResults(rows) {
     const container = document.getElementById('epub_fixer_search_results');

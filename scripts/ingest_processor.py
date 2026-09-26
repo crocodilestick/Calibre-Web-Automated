@@ -410,8 +410,9 @@ def get_internal_api_url(path):
 
 
 def get_internal_api_headers():
-    """Provide headers that satisfy localhost-only internal endpoint checks."""
-    return {"X-Forwarded-For": "127.0.0.1"}
+    """Headers that authenticate this process to the web app's internal endpoints."""
+    from cwa_internal_auth import internal_headers
+    return internal_headers()
 
 
 def get_ingest_batch_dirty_file() -> str:

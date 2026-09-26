@@ -329,4 +329,5 @@ class CalibreTask:
         self.done_event.set()
 
     def __str__(self):
-        return self.name
+        # name may be a lazy translation (N_), which __str__ must not return as-is
+        return str(self.name)

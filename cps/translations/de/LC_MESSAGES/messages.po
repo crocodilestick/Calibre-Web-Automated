@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 15:04+0000\n"
+"POT-Creation-Date: 2026-09-26 14:44+0000\n"
 "PO-Revision-Date: 2026-07-20 20:00+0000\n"
 "Last-Translator: Krux86Language-Team: German\n"
 "Language: de\n"
@@ -912,11 +912,11 @@ msgstr "nicht installiert"
 msgid "Execution permissions missing"
 msgstr "Ausführberechtigung fehlt"
 
-#: cps/cwa_functions.py:165
+#: cps/cwa_functions.py:166
 msgid "Theme switching is temporarily disabled until v5.0.0"
 msgstr "Der Themenwechsel ist bis v5.0.0 vorübergehend deaktiviert"
 
-#: cps/cwa_functions.py:280
+#: cps/cwa_functions.py:281
 msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
@@ -924,213 +924,213 @@ msgstr ""
 "Bibliothek aktualisieren 🔄 Prüfe auf Bücher, die vielleicht vergessen "
 "wurden, bitte warten..."
 
-#: cps/cwa_functions.py:959
+#: cps/cwa_functions.py:906
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
 "Ungültiger Cron-Ausdruck für Dubletten-Scans. Änderungen wurden nicht "
 "gespeichert."
 
-#: cps/cwa_functions.py:1055
+#: cps/cwa_functions.py:1002
 msgid "Calibre-Web Automated User Settings"
 msgstr "Calibre-Web Automated Benutzereinstellungen"
 
-#: cps/cwa_functions.py:1101 cps/cwa_functions.py:1103
-#: cps/cwa_functions.py:1107 cps/cwa_functions.py:1109
-#: cps/cwa_functions.py:1112 cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1048 cps/cwa_functions.py:1050
+#: cps/cwa_functions.py:1054 cps/cwa_functions.py:1056
+#: cps/cwa_functions.py:1059 cps/cwa_functions.py:1061
 msgid "Timestamp"
 msgstr "Zeitstempel"
 
-#: cps/cwa_functions.py:1101 cps/cwa_functions.py:1103
+#: cps/cwa_functions.py:1048 cps/cwa_functions.py:1050
 #: cps/templates/tasks.html:43
 msgid "Book ID"
 msgstr "Buch-ID"
 
-#: cps/cwa_functions.py:1101 cps/templates/book_edit.html:83
+#: cps/cwa_functions.py:1048 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "Buchtitel"
 
-#: cps/cwa_functions.py:1101
+#: cps/cwa_functions.py:1048
 msgid "Book Author"
 msgstr "Autor des Buches"
 
-#: cps/cwa_functions.py:1101
+#: cps/cwa_functions.py:1048
 msgid "Trigger Type"
 msgstr "Auslösertyp"
 
-#: cps/cwa_functions.py:1103 cps/cwa_functions.py:1109
+#: cps/cwa_functions.py:1050 cps/cwa_functions.py:1056
 msgid "Filepath"
 msgstr "Dateipfad"
 
-#: cps/cwa_functions.py:1107 cps/cwa_functions.py:1109
-#: cps/cwa_functions.py:1112 cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1054 cps/cwa_functions.py:1056
+#: cps/cwa_functions.py:1059 cps/cwa_functions.py:1061
 msgid "Filename"
 msgstr "Dateiname"
 
-#: cps/cwa_functions.py:1107
+#: cps/cwa_functions.py:1054
 msgid "Manual?"
 msgstr "Manuell?"
 
-#: cps/cwa_functions.py:1107
+#: cps/cwa_functions.py:1054
 msgid "No. Fixes"
 msgstr "Anzahl der Korrekturen"
 
-#: cps/cwa_functions.py:1107 cps/cwa_functions.py:1112
-#: cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1054 cps/cwa_functions.py:1059
+#: cps/cwa_functions.py:1061
 msgid "Original Backed Up?"
 msgstr "Original gesichert?"
 
-#: cps/cwa_functions.py:1109
+#: cps/cwa_functions.py:1056
 msgid "Fixes Applied"
 msgstr "Korrekturen angewendet"
 
-#: cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1061
 msgid "Original Format"
 msgstr "Originalformat"
 
-#: cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1061
 msgid "End Format"
 msgstr "Zielformat"
 
-#: cps/cwa_functions.py:1190 cps/cwa_functions.py:1219
+#: cps/cwa_functions.py:1137 cps/cwa_functions.py:1166
 msgid "Unknown User"
 msgstr "Unbekannter Benutzer"
 
-#: cps/cwa_functions.py:1327
+#: cps/cwa_functions.py:1274
 msgid "Calibre-Web Automated Stats & Activity"
 msgstr "Calibre-Web Automated Statistiken & Aktivitäten"
 
-#: cps/cwa_functions.py:1711
+#: cps/cwa_functions.py:1658
 msgid "Calibre-Web Automated - Full Enforcement History"
 msgstr "Calibre-Web Automated - Vollständige Durchsetzungsgeschichte"
 
-#: cps/cwa_functions.py:1720
+#: cps/cwa_functions.py:1667
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
 msgstr ""
 "Calibre-Web Automated - Vollständige Durchsetzungsgeschichte (mit Pfaden)"
 
-#: cps/cwa_functions.py:1729
+#: cps/cwa_functions.py:1676
 msgid "Calibre-Web Automated - Full Import History"
 msgstr "Calibre-Web Automated - Vollständiger Importverlauf"
 
-#: cps/cwa_functions.py:1738
+#: cps/cwa_functions.py:1685
 msgid "Calibre-Web Automated - Full Conversion History"
 msgstr "Calibre-Web Automated - Vollständige Konvertierungsgeschichte"
 
-#: cps/cwa_functions.py:1747
+#: cps/cwa_functions.py:1694
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr ""
 "Calibre-Web Automated - Vollständige EPUB-Fixer-Historie (ohne Pfade und "
 "Korrekturen)"
 
-#: cps/cwa_functions.py:1756
+#: cps/cwa_functions.py:1703
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr ""
 "Calibre-Web Automated - Vollständige EPUB-Fixer-Historie (mit Pfaden und "
 "Korrekturen)"
 
-#: cps/cwa_functions.py:1774
+#: cps/cwa_functions.py:1721
 msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr "✅ Alle Überwachungsdienste laufen wie vorgesehen! 👍"
 
-#: cps/cwa_functions.py:1776
+#: cps/cwa_functions.py:1723
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr "🔴 Der Ingest-Dienst läuft, aber der Metadaten-Änderungsdetektor nicht"
 
-#: cps/cwa_functions.py:1778
+#: cps/cwa_functions.py:1725
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr ""
 "🔴 Der Metadaten-Änderungsdetektor wird ausgeführt, der Ingest-Dienst jedoch "
 "nicht"
 
-#: cps/cwa_functions.py:1780
+#: cps/cwa_functions.py:1727
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr ""
 "⛔ Weder der Ingest-Dienst noch der Metadaten-Änderungsdetektor werden "
 "ausgeführt"
 
-#: cps/cwa_functions.py:1782
+#: cps/cwa_functions.py:1729
 msgid "An Error has occurred"
 msgstr "Ein Fehler ist aufgetreten"
 
-#: cps/cwa_functions.py:1953 cps/cwa_functions.py:1979
+#: cps/cwa_functions.py:1906 cps/cwa_functions.py:1930
 msgid "Calibre-Web Automated - Convert Library"
 msgstr "Calibre-Web Automated - Bibliothek konvertieren"
 
-#: cps/cwa_functions.py:2095 cps/cwa_functions.py:2119
+#: cps/cwa_functions.py:2069 cps/cwa_functions.py:2091
 msgid "Calibre-Web Automated - EPUB Fixer Service"
 msgstr "Calibre-Web Automated - EPUB-Fixer-Dienst"
 
-#: cps/cwa_functions.py:2173
+#: cps/cwa_functions.py:2171
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 "Der EPUB-Fixer für einzelne Bücher wird bei Google-Drive-Bibliotheken nicht "
 "unterstützt."
 
-#: cps/cwa_functions.py:2180
+#: cps/cwa_functions.py:2178
 msgid "Invalid book selection."
 msgstr "Ungültige Buchauswahl."
 
-#: cps/cwa_functions.py:2186
+#: cps/cwa_functions.py:2184
 msgid "Book not found."
 msgstr "Buch wurde nicht gefunden."
 
-#: cps/cwa_functions.py:2192
+#: cps/cwa_functions.py:2190
 msgid "Selected book has no EPUB format."
 msgstr "Das ausgewählte Buch hat kein EPUB-Format."
 
-#: cps/cwa_functions.py:2196
+#: cps/cwa_functions.py:2194
 msgid "EPUB file not found on disk."
 msgstr "EPUB-Datei wurde nicht auf dem Datenträger gefunden."
 
-#: cps/cwa_functions.py:2211
+#: cps/cwa_functions.py:2209
 msgid "EPUB Fixer started for selected book."
 msgstr "EPUB-Fixer für das ausgewählte Buch gestartet."
 
-#: cps/cwa_functions.py:2214
+#: cps/cwa_functions.py:2212
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr "EPUB-Fixer für ausgewähltes Buch konnte nicht gestartet werden."
 
-#: cps/cwa_functions.py:2261
+#: cps/cwa_functions.py:2257
 msgid "You must be an admin to access this page."
 msgstr "Du musst Administrator sein, um auf diese Seite zugreifen zu können."
 
-#: cps/cwa_functions.py:2276
+#: cps/cwa_functions.py:2272
 msgid "Both username and image data are required."
 msgstr "Sowohl der Benutzername als auch die Bilddaten sind erforderlich."
 
-#: cps/cwa_functions.py:2284
+#: cps/cwa_functions.py:2280
 msgid "Invalid image data format. Must be a valid image."
 msgstr "Ungültiges Bilddatenformat. Es muss ein gültiges Bild sein."
 
-#: cps/cwa_functions.py:2292
+#: cps/cwa_functions.py:2288
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr "Nicht unterstützter Bildtyp. Nur PNG und JPEG sind zulässig."
 
-#: cps/cwa_functions.py:2304
+#: cps/cwa_functions.py:2300
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr "Bild ist zu groß. Bitte ein Bild kleiner als 500 KB verwenden."
 
-#: cps/cwa_functions.py:2308
+#: cps/cwa_functions.py:2304
 msgid "Invalid Base64 image data."
 msgstr "Ungültige Base64-Bilddaten."
 
-#: cps/cwa_functions.py:2312
+#: cps/cwa_functions.py:2308
 msgid "Invalid image data format."
 msgstr "Ungültiges Bilddatenformat."
 
-#: cps/cwa_functions.py:2317
+#: cps/cwa_functions.py:2313
 msgid "Error validating image data."
 msgstr "Fehler bei der Validierung der Bilddaten."
 
-#: cps/cwa_functions.py:2335
+#: cps/cwa_functions.py:2331
 msgid "Profile picture updated successfully."
 msgstr "Profilbild erfolgreich aktualisiert."
 
-#: cps/cwa_functions.py:2348
+#: cps/cwa_functions.py:2344
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA-Profilbildverwaltung (Laufende Arbeiten)"
 
@@ -1143,45 +1143,45 @@ msgstr "CWA-Profilbildverwaltung (Laufende Arbeiten)"
 msgid "None"
 msgstr "Keine"
 
-#: cps/duplicates.py:352 cps/duplicates.py:363
+#: cps/duplicates.py:353 cps/duplicates.py:364
 msgid "Duplicate Books"
 msgstr "Bücherduplikate"
 
-#: cps/duplicates.py:1201
+#: cps/duplicates.py:1202
 msgid "Duplicate group already dismissed"
 msgstr "Dublettengruppe bereits verworfen"
 
-#: cps/duplicates.py:1221
+#: cps/duplicates.py:1222
 msgid "Duplicate group dismissed"
 msgstr "Duplikatgruppe verworfen"
 
-#: cps/duplicates.py:1258
+#: cps/duplicates.py:1259
 msgid "Duplicate group restored"
 msgstr "Duplikatgruppe wiederhergestellt"
 
-#: cps/duplicates.py:1260
+#: cps/duplicates.py:1261
 msgid "Duplicate group was not dismissed"
 msgstr "Dublettengruppe wurde nicht verworfen"
 
-#: cps/duplicates.py:1314
+#: cps/duplicates.py:1316
 msgid "Import is in progress. Run a full duplicate scan after ingest finishes."
 msgstr ""
 "Import läuft. Führe nach Abschluss des Imports einen vollständigen "
 "Duplikatscan aus."
 
-#: cps/duplicates.py:1335
+#: cps/duplicates.py:1337
 msgid "Duplicate scan queued"
 msgstr "Duplikat-Scan in Warteschlange eingereiht"
 
-#: cps/duplicates.py:1404
+#: cps/duplicates.py:1406
 msgid "Duplicate scan completed (fallback)"
 msgstr "Dubletten-Scan abgeschlossen (Fallback)"
 
-#: cps/duplicates.py:1479
+#: cps/duplicates.py:1481
 msgid "Invalid resolution strategy"
 msgstr "Ungültige Lösungsstrategie"
 
-#: cps/duplicates.py:1490
+#: cps/duplicates.py:1492
 msgid ""
 "Import is in progress. Execute duplicate resolution after ingest finishes."
 msgstr ""
@@ -1592,7 +1592,7 @@ msgstr "Fehler beim Ausführen von Calibre"
 msgid "Queue all books for metadata backup"
 msgstr "Alle Bücher für Metadaten-Backup einreihen"
 
-#: cps/kobo_auth.py:80
+#: cps/kobo_auth.py:87
 msgid ""
 "Please access Calibre-Web Automated from non localhost to get valid "
 "api_endpoint for kobo device"
@@ -1600,7 +1600,7 @@ msgstr ""
 "Bitte greifen Sie auf Calibre-Web Automated von einem anderen Host als "
 "\"localhost\" zu, um einen gültigen API-Endpunkt für Kobo-Geräte zu erhalten"
 
-#: cps/kobo_auth.py:99
+#: cps/kobo_auth.py:106
 msgid "Kobo Setup"
 msgstr "Kobo Setup"
 
@@ -2693,15 +2693,15 @@ msgstr "Metadaten Backup läuft"
 msgid "Convert Library – full run"
 msgstr "Bibliothek konvertieren – vollständiger Durchlauf"
 
-#: cps/tasks/ops.py:84
+#: cps/tasks/ops.py:81
 msgid "Convert Library"
 msgstr "Bibliothek konvertieren"
 
-#: cps/tasks/ops.py:95
+#: cps/tasks/ops.py:92
 msgid "EPUB Fixer – full run"
 msgstr "EPUB-Fixer – vollständiger Durchlauf"
 
-#: cps/tasks/ops.py:142
+#: cps/tasks/ops.py:136
 msgid "EPUB Fixer"
 msgstr "EPUB-Fixer"
 
@@ -4438,14 +4438,6 @@ msgstr "In 5 Min. planen"
 msgid "Schedule 15m"
 msgstr "In 15 Min. planen"
 
-#: cps/templates/cwa_convert_library.html:100
-msgid "Convert Library scheduled successfully"
-msgstr "Bibliothekskonvertierung erfolgreich geplant"
-
-#: cps/templates/cwa_convert_library.html:103
-msgid "Error scheduling Convert Library"
-msgstr "Fehler beim Planen der Bibliothekskonvertierung"
-
 #: cps/templates/cwa_epub_fixer.html:22
 msgid "Run on a single book"
 msgstr "Auf ein einzelnes Buch anwenden"
@@ -4458,35 +4450,27 @@ msgstr "Nach Titel/Autor suchen"
 msgid "Run on selected book"
 msgstr "Für das ausgewählte Buch ausführen"
 
-#: cps/templates/cwa_epub_fixer.html:120
-msgid "EPUB Fixer scheduled successfully"
-msgstr "EPUB Fixer erfolgreich geplant"
-
-#: cps/templates/cwa_epub_fixer.html:123
-msgid "Error scheduling EPUB Fixer"
-msgstr "Fehler beim Planen des EPUB Fixers"
-
-#: cps/templates/cwa_epub_fixer.html:132
+#: cps/templates/cwa_epub_fixer.html:111
 msgid "No matches found"
 msgstr "Keine Treffer gefunden"
 
-#: cps/templates/cwa_epub_fixer.html:167
+#: cps/templates/cwa_epub_fixer.html:146
 msgid "Enter a search term"
 msgstr "Suchbegriff eingeben"
 
-#: cps/templates/cwa_epub_fixer.html:175
+#: cps/templates/cwa_epub_fixer.html:154
 msgid "Failed to search library"
 msgstr "Suche in der Bibliothek fehlgeschlagen"
 
-#: cps/templates/cwa_epub_fixer.html:182
+#: cps/templates/cwa_epub_fixer.html:161
 msgid "Select a book first"
 msgstr "Bitte zuerst ein Buch auswählen"
 
-#: cps/templates/cwa_epub_fixer.html:195
+#: cps/templates/cwa_epub_fixer.html:174
 msgid "EPUB Fixer started for selected book"
 msgstr "EPUB-Fixer für das ausgewählte Buch gestartet"
 
-#: cps/templates/cwa_epub_fixer.html:200
+#: cps/templates/cwa_epub_fixer.html:179
 msgid "Error starting EPUB Fixer"
 msgstr "Fehler beim Starten des EPUB-Fixers"
 
@@ -7481,6 +7465,18 @@ msgstr "Ausgewählte Regale mit Kobo synchronisieren"
 #: cps/templates/user_table.html:157
 msgid "Show Read/Unread Section"
 msgstr "Zeige Gelesen/Ungelesen-Abschnitt"
+
+#~ msgid "Convert Library scheduled successfully"
+#~ msgstr "Bibliothekskonvertierung erfolgreich geplant"
+
+#~ msgid "Error scheduling Convert Library"
+#~ msgstr "Fehler beim Planen der Bibliothekskonvertierung"
+
+#~ msgid "EPUB Fixer scheduled successfully"
+#~ msgstr "EPUB Fixer erfolgreich geplant"
+
+#~ msgid "Error scheduling EPUB Fixer"
+#~ msgstr "Fehler beim Planen des EPUB Fixers"
 
 #~ msgid "Port"
 #~ msgstr "Port"

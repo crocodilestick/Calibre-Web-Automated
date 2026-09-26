@@ -7,7 +7,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 15:04+0000\n"
+"POT-Creation-Date: 2026-09-26 14:44+0000\n"
 "PO-Revision-Date: 2025-09-08 00:53+0900\n"
 "Last-Translator: limeade23 <admin@limeade.me>\n"
 "Language-Team: Korean <>\n"
@@ -888,214 +888,214 @@ msgstr "설치되지 않았습니다."
 msgid "Execution permissions missing"
 msgstr "실행 권한이 없습니다."
 
-#: cps/cwa_functions.py:165
+#: cps/cwa_functions.py:166
 msgid "Theme switching is temporarily disabled until v5.0.0"
 msgstr "테마 전환은 v5.0.0까지 일시적으로 비활성화되어 있습니다"
 
-#: cps/cwa_functions.py:280
+#: cps/cwa_functions.py:281
 msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
 msgstr "서재 새로고침 중 🔄 새 책을 찾고 있습니다. 잠시 기다려 주세요…"
 
-#: cps/cwa_functions.py:959
+#: cps/cwa_functions.py:906
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
 "중복 검사용 cron 표현식이 올바르지 않습니다. 변경 사항이 저장되지 않았습니다."
 
-#: cps/cwa_functions.py:1055
+#: cps/cwa_functions.py:1002
 msgid "Calibre-Web Automated User Settings"
 msgstr "Calibre-Web Automated 사용자 설정"
 
-#: cps/cwa_functions.py:1101 cps/cwa_functions.py:1103
-#: cps/cwa_functions.py:1107 cps/cwa_functions.py:1109
-#: cps/cwa_functions.py:1112 cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1048 cps/cwa_functions.py:1050
+#: cps/cwa_functions.py:1054 cps/cwa_functions.py:1056
+#: cps/cwa_functions.py:1059 cps/cwa_functions.py:1061
 msgid "Timestamp"
 msgstr "타임스탬프"
 
-#: cps/cwa_functions.py:1101 cps/cwa_functions.py:1103
+#: cps/cwa_functions.py:1048 cps/cwa_functions.py:1050
 #: cps/templates/tasks.html:43
 msgid "Book ID"
 msgstr "책 ID"
 
-#: cps/cwa_functions.py:1101 cps/templates/book_edit.html:83
+#: cps/cwa_functions.py:1048 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "책 제목"
 
-#: cps/cwa_functions.py:1101
+#: cps/cwa_functions.py:1048
 msgid "Book Author"
 msgstr "저자"
 
-#: cps/cwa_functions.py:1101
+#: cps/cwa_functions.py:1048
 msgid "Trigger Type"
 msgstr "트리거 유형"
 
-#: cps/cwa_functions.py:1103 cps/cwa_functions.py:1109
+#: cps/cwa_functions.py:1050 cps/cwa_functions.py:1056
 msgid "Filepath"
 msgstr "파일 위치"
 
-#: cps/cwa_functions.py:1107 cps/cwa_functions.py:1109
-#: cps/cwa_functions.py:1112 cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1054 cps/cwa_functions.py:1056
+#: cps/cwa_functions.py:1059 cps/cwa_functions.py:1061
 msgid "Filename"
 msgstr "파일명"
 
-#: cps/cwa_functions.py:1107
+#: cps/cwa_functions.py:1054
 msgid "Manual?"
 msgstr "수동?"
 
-#: cps/cwa_functions.py:1107
+#: cps/cwa_functions.py:1054
 msgid "No. Fixes"
 msgstr "아니오, 고칩니다."
 
-#: cps/cwa_functions.py:1107 cps/cwa_functions.py:1112
-#: cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1054 cps/cwa_functions.py:1059
+#: cps/cwa_functions.py:1061
 msgid "Original Backed Up?"
 msgstr "원본이 백업되었습니까?"
 
-#: cps/cwa_functions.py:1109
+#: cps/cwa_functions.py:1056
 msgid "Fixes Applied"
 msgstr "수정사항 적용."
 
-#: cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1061
 msgid "Original Format"
 msgstr "원본 형식"
 
-#: cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1061
 msgid "End Format"
 msgstr "결과 형식"
 
-#: cps/cwa_functions.py:1190 cps/cwa_functions.py:1219
+#: cps/cwa_functions.py:1137 cps/cwa_functions.py:1166
 msgid "Unknown User"
 msgstr "알 수 없는 사용자"
 
-#: cps/cwa_functions.py:1327
+#: cps/cwa_functions.py:1274
 msgid "Calibre-Web Automated Stats & Activity"
 msgstr "Calibre-Web Automated 통계 및 활동"
 
-#: cps/cwa_functions.py:1711
+#: cps/cwa_functions.py:1658
 msgid "Calibre-Web Automated - Full Enforcement History"
 msgstr "Calibre-Web Automated - 전체 적용 내역"
 
-#: cps/cwa_functions.py:1720
+#: cps/cwa_functions.py:1667
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
 msgstr "Calibre-Web Automated - 전체 적용 내역 (경로 포함)"
 
-#: cps/cwa_functions.py:1729
+#: cps/cwa_functions.py:1676
 msgid "Calibre-Web Automated - Full Import History"
 msgstr "Calibre-Web Automated - 전체 가져오기 내역"
 
-#: cps/cwa_functions.py:1738
+#: cps/cwa_functions.py:1685
 msgid "Calibre-Web Automated - Full Conversion History"
 msgstr "Calibre-Web Automated - 전체 변환 내역"
 
-#: cps/cwa_functions.py:1747
+#: cps/cwa_functions.py:1694
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr "Calibre-Web Automated - 전체 EPUB Fixer 내역 (경로 & 수정 제외)"
 
-#: cps/cwa_functions.py:1756
+#: cps/cwa_functions.py:1703
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr "Calibre-Web Automated - 전체 EPUB Fixer 내역 (경로 & 수정 포함)"
 
-#: cps/cwa_functions.py:1774
+#: cps/cwa_functions.py:1721
 msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr "✅ 모든 모니터링 서비스가 정상 실행중입니다! 👍"
 
-#: cps/cwa_functions.py:1776
+#: cps/cwa_functions.py:1723
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr ""
 "🔴 가져오기 서비스는 실행중이지만, 메타데이터 변경점 감지기가 정지되었습니다."
 
-#: cps/cwa_functions.py:1778
+#: cps/cwa_functions.py:1725
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr ""
 "🔴 메타데이터 변경점 감지기는 실행중이지만, 가져오기 서비스가 정지되었습니다."
 
-#: cps/cwa_functions.py:1780
+#: cps/cwa_functions.py:1727
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr "⛔ 가져오기 서비스와 메타데이터 변경점 감지기 모두 정지되었습니다."
 
-#: cps/cwa_functions.py:1782
+#: cps/cwa_functions.py:1729
 msgid "An Error has occurred"
 msgstr "오류가 발생했습니다."
 
-#: cps/cwa_functions.py:1953 cps/cwa_functions.py:1979
+#: cps/cwa_functions.py:1906 cps/cwa_functions.py:1930
 msgid "Calibre-Web Automated - Convert Library"
 msgstr "Calibre-Web Automated - 서재 변환"
 
-#: cps/cwa_functions.py:2095 cps/cwa_functions.py:2119
+#: cps/cwa_functions.py:2069 cps/cwa_functions.py:2091
 msgid "Calibre-Web Automated - EPUB Fixer Service"
 msgstr "Calibre-Web Automated - EPUB 수정 서비스"
 
-#: cps/cwa_functions.py:2173
+#: cps/cwa_functions.py:2171
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 "Google 드라이브 라이브러리에서는 단일 책 EPUB 수정 기능을 지원하지 않습니다."
 
-#: cps/cwa_functions.py:2180
+#: cps/cwa_functions.py:2178
 msgid "Invalid book selection."
 msgstr "잘못된 책 선택입니다."
 
-#: cps/cwa_functions.py:2186
+#: cps/cwa_functions.py:2184
 msgid "Book not found."
 msgstr "책을 찾을 수 없습니다."
 
-#: cps/cwa_functions.py:2192
+#: cps/cwa_functions.py:2190
 msgid "Selected book has no EPUB format."
 msgstr "선택한 책에 EPUB 형식이 없습니다."
 
-#: cps/cwa_functions.py:2196
+#: cps/cwa_functions.py:2194
 msgid "EPUB file not found on disk."
 msgstr "디스크에서 EPUB 파일을 찾을 수 없습니다."
 
-#: cps/cwa_functions.py:2211
+#: cps/cwa_functions.py:2209
 msgid "EPUB Fixer started for selected book."
 msgstr "선택한 책에 대한 EPUB 수정이 시작되었습니다."
 
-#: cps/cwa_functions.py:2214
+#: cps/cwa_functions.py:2212
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr "선택한 책에 대한 EPUB 수정 시작에 실패했습니다."
 
-#: cps/cwa_functions.py:2261
+#: cps/cwa_functions.py:2257
 msgid "You must be an admin to access this page."
 msgstr "이 페이지에 접근하려면 관리자권한이 필요합니다."
 
-#: cps/cwa_functions.py:2276
+#: cps/cwa_functions.py:2272
 msgid "Both username and image data are required."
 msgstr "사용자명과 사진 데이터가 필요합니다."
 
-#: cps/cwa_functions.py:2284
+#: cps/cwa_functions.py:2280
 msgid "Invalid image data format. Must be a valid image."
 msgstr "이미지 데이터 형식이 올바르지 않습니다. 유효한 이미지여야 합니다."
 
-#: cps/cwa_functions.py:2292
+#: cps/cwa_functions.py:2288
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr "지원하지 않는 이미지 형식입니다. PNG와 JPEG만 허용됩니다."
 
-#: cps/cwa_functions.py:2304
+#: cps/cwa_functions.py:2300
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr "이미지가 너무 큽니다. 500KB보다 작은 이미지를 사용하세요."
 
-#: cps/cwa_functions.py:2308
+#: cps/cwa_functions.py:2304
 msgid "Invalid Base64 image data."
 msgstr "Base64 이미지 데이터가 올바르지 않습니다."
 
-#: cps/cwa_functions.py:2312
+#: cps/cwa_functions.py:2308
 msgid "Invalid image data format."
 msgstr "이미지 데이터 형식이 올바르지 않습니다."
 
-#: cps/cwa_functions.py:2317
+#: cps/cwa_functions.py:2313
 msgid "Error validating image data."
 msgstr "이미지 데이터 검증 중 오류가 발생했습니다."
 
-#: cps/cwa_functions.py:2335
+#: cps/cwa_functions.py:2331
 msgid "Profile picture updated successfully."
 msgstr "프로필 사진이 갱신되었습니다."
 
-#: cps/cwa_functions.py:2348
+#: cps/cwa_functions.py:2344
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA 프로필 사진 관리자 (개발중)"
 
@@ -1108,44 +1108,44 @@ msgstr "CWA 프로필 사진 관리자 (개발중)"
 msgid "None"
 msgstr "없음"
 
-#: cps/duplicates.py:352 cps/duplicates.py:363
+#: cps/duplicates.py:353 cps/duplicates.py:364
 msgid "Duplicate Books"
 msgstr "책 복제"
 
-#: cps/duplicates.py:1201
+#: cps/duplicates.py:1202
 msgid "Duplicate group already dismissed"
 msgstr "이미 무시된 중복 그룹입니다"
 
-#: cps/duplicates.py:1221
+#: cps/duplicates.py:1222
 msgid "Duplicate group dismissed"
 msgstr "중복 그룹을 무시했습니다"
 
-#: cps/duplicates.py:1258
+#: cps/duplicates.py:1259
 msgid "Duplicate group restored"
 msgstr "중복 그룹을 복원했습니다"
 
-#: cps/duplicates.py:1260
+#: cps/duplicates.py:1261
 msgid "Duplicate group was not dismissed"
 msgstr "중복 그룹이 무시되지 않았습니다"
 
-#: cps/duplicates.py:1314
+#: cps/duplicates.py:1316
 msgid "Import is in progress. Run a full duplicate scan after ingest finishes."
 msgstr ""
 "가져오기가 진행 중입니다. 가져오기가 끝난 후 전체 중복 검사를 실행하세요."
 
-#: cps/duplicates.py:1335
+#: cps/duplicates.py:1337
 msgid "Duplicate scan queued"
 msgstr "중복 검사가 대기열에 추가되었습니다"
 
-#: cps/duplicates.py:1404
+#: cps/duplicates.py:1406
 msgid "Duplicate scan completed (fallback)"
 msgstr "중복 검사 완료 (대체 방식)"
 
-#: cps/duplicates.py:1479
+#: cps/duplicates.py:1481
 msgid "Invalid resolution strategy"
 msgstr "잘못된 해결 전략입니다"
 
-#: cps/duplicates.py:1490
+#: cps/duplicates.py:1492
 msgid ""
 "Import is in progress. Execute duplicate resolution after ingest finishes."
 msgstr "가져오기가 진행 중입니다. 가져오기가 끝난 후 중복 해결을 실행하세요."
@@ -1534,7 +1534,7 @@ msgstr "Calibre 실행 오류"
 msgid "Queue all books for metadata backup"
 msgstr "메타데이터 백업이 작업에 추가되었습니다."
 
-#: cps/kobo_auth.py:80
+#: cps/kobo_auth.py:87
 msgid ""
 "Please access Calibre-Web Automated from non localhost to get valid "
 "api_endpoint for kobo device"
@@ -1542,7 +1542,7 @@ msgstr ""
 "Kobo 장치에 대한 유효한 api_endpoint를 얻으려면, 로컬 호스트가 아닌 곳에서 "
 "Calibre-Web에 접근하세요."
 
-#: cps/kobo_auth.py:99
+#: cps/kobo_auth.py:106
 msgid "Kobo Setup"
 msgstr "Kobo 설정"
 
@@ -2596,15 +2596,15 @@ msgstr "메타데이터를 백업하고 있습니다."
 msgid "Convert Library – full run"
 msgstr "라이브러리 변환 – 전체 실행"
 
-#: cps/tasks/ops.py:84
+#: cps/tasks/ops.py:81
 msgid "Convert Library"
 msgstr "라이브러리 변환"
 
-#: cps/tasks/ops.py:95
+#: cps/tasks/ops.py:92
 msgid "EPUB Fixer – full run"
 msgstr "EPUB 수정 – 전체 실행"
 
-#: cps/tasks/ops.py:142
+#: cps/tasks/ops.py:136
 msgid "EPUB Fixer"
 msgstr "EPUB 수정"
 
@@ -4298,14 +4298,6 @@ msgstr "5분마다 예약"
 msgid "Schedule 15m"
 msgstr "15분마다 예약"
 
-#: cps/templates/cwa_convert_library.html:100
-msgid "Convert Library scheduled successfully"
-msgstr "라이브러리 변환이 예약되었습니다"
-
-#: cps/templates/cwa_convert_library.html:103
-msgid "Error scheduling Convert Library"
-msgstr "라이브러리 변환 예약 중 오류가 발생했습니다"
-
 #: cps/templates/cwa_epub_fixer.html:22
 msgid "Run on a single book"
 msgstr "책 한 권에 대해 실행"
@@ -4318,35 +4310,27 @@ msgstr "제목/저자로 검색"
 msgid "Run on selected book"
 msgstr "선택한 책에 대해 실행"
 
-#: cps/templates/cwa_epub_fixer.html:120
-msgid "EPUB Fixer scheduled successfully"
-msgstr "EPUB 수정이 예약되었습니다"
-
-#: cps/templates/cwa_epub_fixer.html:123
-msgid "Error scheduling EPUB Fixer"
-msgstr "EPUB 수정 예약 중 오류가 발생했습니다"
-
-#: cps/templates/cwa_epub_fixer.html:132
+#: cps/templates/cwa_epub_fixer.html:111
 msgid "No matches found"
 msgstr "일치하는 항목이 없습니다"
 
-#: cps/templates/cwa_epub_fixer.html:167
+#: cps/templates/cwa_epub_fixer.html:146
 msgid "Enter a search term"
 msgstr "검색어를 입력하세요"
 
-#: cps/templates/cwa_epub_fixer.html:175
+#: cps/templates/cwa_epub_fixer.html:154
 msgid "Failed to search library"
 msgstr "라이브러리 검색에 실패했습니다"
 
-#: cps/templates/cwa_epub_fixer.html:182
+#: cps/templates/cwa_epub_fixer.html:161
 msgid "Select a book first"
 msgstr "먼저 책을 선택하세요"
 
-#: cps/templates/cwa_epub_fixer.html:195
+#: cps/templates/cwa_epub_fixer.html:174
 msgid "EPUB Fixer started for selected book"
 msgstr "선택한 책에 대한 EPUB 수정이 시작되었습니다"
 
-#: cps/templates/cwa_epub_fixer.html:200
+#: cps/templates/cwa_epub_fixer.html:179
 msgid "Error starting EPUB Fixer"
 msgstr "EPUB 수정 시작 중 오류가 발생했습니다"
 
@@ -7222,6 +7206,18 @@ msgstr "선택한 서재 Kobo 동기화"
 #: cps/templates/user_table.html:157
 msgid "Show Read/Unread Section"
 msgstr "읽음/읽지 않음 표시"
+
+#~ msgid "Convert Library scheduled successfully"
+#~ msgstr "라이브러리 변환이 예약되었습니다"
+
+#~ msgid "Error scheduling Convert Library"
+#~ msgstr "라이브러리 변환 예약 중 오류가 발생했습니다"
+
+#~ msgid "EPUB Fixer scheduled successfully"
+#~ msgstr "EPUB 수정이 예약되었습니다"
+
+#~ msgid "Error scheduling EPUB Fixer"
+#~ msgstr "EPUB 수정 예약 중 오류가 발생했습니다"
 
 #~ msgid "Port"
 #~ msgstr "포트"

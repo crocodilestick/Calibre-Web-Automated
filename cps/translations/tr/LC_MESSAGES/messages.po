@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 15:04+0000\n"
+"POT-Creation-Date: 2026-09-26 14:44+0000\n"
 "PO-Revision-Date: 2026-05-14 01:36+0300\n"
 "Last-Translator: İsmail Hakkı Şen <hakki@outlook.com>\n"
 "Language-Team: \n"
@@ -904,11 +904,11 @@ msgstr "yüklü değil"
 msgid "Execution permissions missing"
 msgstr "Uygulama yetkileri eksik"
 
-#: cps/cwa_functions.py:165
+#: cps/cwa_functions.py:166
 msgid "Theme switching is temporarily disabled until v5.0.0"
 msgstr "Tema değişikliği v5.0.0 sürümüne kadar geçici olarak pasif."
 
-#: cps/cwa_functions.py:280
+#: cps/cwa_functions.py:281
 msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
@@ -916,206 +916,206 @@ msgstr ""
 "Kütüphane Yenileme 🔄 Gözden kaçan bir kitaplar kontrol ediliyor, lütfen "
 "bekleyin..."
 
-#: cps/cwa_functions.py:959
+#: cps/cwa_functions.py:906
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
 "Yinelenen taramalar için geçersiz cron ifadesi. Değişiklikler kaydedilmedi."
 
-#: cps/cwa_functions.py:1055
+#: cps/cwa_functions.py:1002
 msgid "Calibre-Web Automated User Settings"
 msgstr "Calibre-Web Automated Kullanıcı Ayarları"
 
-#: cps/cwa_functions.py:1101 cps/cwa_functions.py:1103
-#: cps/cwa_functions.py:1107 cps/cwa_functions.py:1109
-#: cps/cwa_functions.py:1112 cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1048 cps/cwa_functions.py:1050
+#: cps/cwa_functions.py:1054 cps/cwa_functions.py:1056
+#: cps/cwa_functions.py:1059 cps/cwa_functions.py:1061
 msgid "Timestamp"
 msgstr "Zaman Damgası"
 
-#: cps/cwa_functions.py:1101 cps/cwa_functions.py:1103
+#: cps/cwa_functions.py:1048 cps/cwa_functions.py:1050
 #: cps/templates/tasks.html:43
 msgid "Book ID"
 msgstr "Kitap ID"
 
-#: cps/cwa_functions.py:1101 cps/templates/book_edit.html:83
+#: cps/cwa_functions.py:1048 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "Kitap Adı"
 
-#: cps/cwa_functions.py:1101
+#: cps/cwa_functions.py:1048
 msgid "Book Author"
 msgstr "Kitap Yazarı"
 
-#: cps/cwa_functions.py:1101
+#: cps/cwa_functions.py:1048
 msgid "Trigger Type"
 msgstr "Tetikleyici Türü"
 
-#: cps/cwa_functions.py:1103 cps/cwa_functions.py:1109
+#: cps/cwa_functions.py:1050 cps/cwa_functions.py:1056
 msgid "Filepath"
 msgstr "Dosya Dizini"
 
-#: cps/cwa_functions.py:1107 cps/cwa_functions.py:1109
-#: cps/cwa_functions.py:1112 cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1054 cps/cwa_functions.py:1056
+#: cps/cwa_functions.py:1059 cps/cwa_functions.py:1061
 #, fuzzy
 msgid "Filename"
 msgstr "Kullanıcı adı"
 
-#: cps/cwa_functions.py:1107
+#: cps/cwa_functions.py:1054
 msgid "Manual?"
 msgstr "Manual?"
 
-#: cps/cwa_functions.py:1107
+#: cps/cwa_functions.py:1054
 msgid "No. Fixes"
 msgstr "Düzeltme Yok"
 
-#: cps/cwa_functions.py:1107 cps/cwa_functions.py:1112
-#: cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1054 cps/cwa_functions.py:1059
+#: cps/cwa_functions.py:1061
 msgid "Original Backed Up?"
 msgstr "Orijinal Yedekleme?"
 
-#: cps/cwa_functions.py:1109
+#: cps/cwa_functions.py:1056
 msgid "Fixes Applied"
 msgstr "Düzeltmeler Uygulandı"
 
-#: cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1061
 msgid "Original Format"
 msgstr "Orjinal Format"
 
-#: cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1061
 msgid "End Format"
 msgstr "Son Format"
 
-#: cps/cwa_functions.py:1190 cps/cwa_functions.py:1219
+#: cps/cwa_functions.py:1137 cps/cwa_functions.py:1166
 msgid "Unknown User"
 msgstr "Bilinmeyen Kullanıcı"
 
-#: cps/cwa_functions.py:1327
+#: cps/cwa_functions.py:1274
 msgid "Calibre-Web Automated Stats & Activity"
 msgstr "Calibre-Web Automated İstatistikler & Aktivite"
 
-#: cps/cwa_functions.py:1711
+#: cps/cwa_functions.py:1658
 msgid "Calibre-Web Automated - Full Enforcement History"
 msgstr "Calibre-Web Automated - Tam Uygulama Geçmişi"
 
-#: cps/cwa_functions.py:1720
+#: cps/cwa_functions.py:1667
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
 msgstr "Calibre-Web Otomatik - Tam Uygulama Geçmişi (w/ Paths)"
 
-#: cps/cwa_functions.py:1729
+#: cps/cwa_functions.py:1676
 msgid "Calibre-Web Automated - Full Import History"
 msgstr "Calibre-Web Automated - Tam Aktarım Geçmişi"
 
-#: cps/cwa_functions.py:1738
+#: cps/cwa_functions.py:1685
 msgid "Calibre-Web Automated - Full Conversion History"
 msgstr "Calibre-Web Automated - Tam Dönüştürme Geçmişi"
 
-#: cps/cwa_functions.py:1747
+#: cps/cwa_functions.py:1694
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr ""
 "Calibre-Web Automated - Tam EPUB Onarım Geçmişi (w/out Dizinler & Onarımlar)"
 
-#: cps/cwa_functions.py:1756
+#: cps/cwa_functions.py:1703
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr ""
 "Calibre-Web Automated - Tam EPUB Onarım Geçmişi (w/ Dizinler & Onarımlar)"
 
-#: cps/cwa_functions.py:1774
+#: cps/cwa_functions.py:1721
 msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr "✅ Tüm izleme hizmetleri beklenildiği gibi çalışıyor! 👍"
 
-#: cps/cwa_functions.py:1776
+#: cps/cwa_functions.py:1723
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr ""
 "🔴 Ingest servisi çalışıyor fakat metaveri değişiklik izleyicisi çalışmıyor"
 
-#: cps/cwa_functions.py:1778
+#: cps/cwa_functions.py:1725
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr ""
 "🔴 Metaveri değişiklik izleyicisi çalışıyor fakat Ingest servisi çalışmıyor"
 
-#: cps/cwa_functions.py:1780
+#: cps/cwa_functions.py:1727
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr "⛔ Ingest servisi ve metaveri değişiklik izleyicisi çalışmıyor"
 
-#: cps/cwa_functions.py:1782
+#: cps/cwa_functions.py:1729
 msgid "An Error has occurred"
 msgstr "Bir hata oluştu"
 
-#: cps/cwa_functions.py:1953 cps/cwa_functions.py:1979
+#: cps/cwa_functions.py:1906 cps/cwa_functions.py:1930
 msgid "Calibre-Web Automated - Convert Library"
 msgstr "Calibre-Web Automated - Kütüphane Dönüştürme"
 
-#: cps/cwa_functions.py:2095 cps/cwa_functions.py:2119
+#: cps/cwa_functions.py:2069 cps/cwa_functions.py:2091
 msgid "Calibre-Web Automated - EPUB Fixer Service"
 msgstr "Calibre-Web Automated - EPUB Onarım Servisi"
 
-#: cps/cwa_functions.py:2173
+#: cps/cwa_functions.py:2171
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr "Tek-kitap EPUB onarıcı Google Drive kütüphanelerinde desteklenmiyor."
 
-#: cps/cwa_functions.py:2180
+#: cps/cwa_functions.py:2178
 msgid "Invalid book selection."
 msgstr "Geçersiz kitap seçimi."
 
-#: cps/cwa_functions.py:2186
+#: cps/cwa_functions.py:2184
 msgid "Book not found."
 msgstr "Kitap bulunamadı."
 
-#: cps/cwa_functions.py:2192
+#: cps/cwa_functions.py:2190
 msgid "Selected book has no EPUB format."
 msgstr "Seçilen kitabın EPUB formatı yok."
 
-#: cps/cwa_functions.py:2196
+#: cps/cwa_functions.py:2194
 msgid "EPUB file not found on disk."
 msgstr "EPUB dosyası diskte bulunamadı."
 
-#: cps/cwa_functions.py:2211
+#: cps/cwa_functions.py:2209
 msgid "EPUB Fixer started for selected book."
 msgstr "EPUB onarıcı seçilen kitap için başlatıldı."
 
-#: cps/cwa_functions.py:2214
+#: cps/cwa_functions.py:2212
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr "Seçilen kitap için EPUB onarıcı başlatılamadı."
 
-#: cps/cwa_functions.py:2261
+#: cps/cwa_functions.py:2257
 msgid "You must be an admin to access this page."
 msgstr "Bu sayfaya erişmek için yönetici olmanız gerekiyor."
 
-#: cps/cwa_functions.py:2276
+#: cps/cwa_functions.py:2272
 msgid "Both username and image data are required."
 msgstr "Kullanıcı adı ve imaj verisi gerekiyor."
 
-#: cps/cwa_functions.py:2284
+#: cps/cwa_functions.py:2280
 msgid "Invalid image data format. Must be a valid image."
 msgstr "Geçersiz imaj veri formatı. Geçerli bir imaj olmalıdır."
 
-#: cps/cwa_functions.py:2292
+#: cps/cwa_functions.py:2288
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr "Desteklenmeyen imaj türü. Sadece PNG ve JPEG destekleniyor."
 
-#: cps/cwa_functions.py:2304
+#: cps/cwa_functions.py:2300
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr "İmaj çok büyük. Lütfen 500KB'tan küçük imaj kullanın."
 
-#: cps/cwa_functions.py:2308
+#: cps/cwa_functions.py:2304
 msgid "Invalid Base64 image data."
 msgstr "Geçersiz Base64 imaj verisi."
 
-#: cps/cwa_functions.py:2312
+#: cps/cwa_functions.py:2308
 msgid "Invalid image data format."
 msgstr "Geçersiz imaj veri formatı."
 
-#: cps/cwa_functions.py:2317
+#: cps/cwa_functions.py:2313
 msgid "Error validating image data."
 msgstr "İmaj verisi doğrulama hatası."
 
-#: cps/cwa_functions.py:2335
+#: cps/cwa_functions.py:2331
 msgid "Profile picture updated successfully."
 msgstr "Profil fotoğrafı başarıyla güncellendi."
 
-#: cps/cwa_functions.py:2348
+#: cps/cwa_functions.py:2344
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA Profile Fotoğraf Yönetimi (WIP)"
 
@@ -1128,43 +1128,43 @@ msgstr "CWA Profile Fotoğraf Yönetimi (WIP)"
 msgid "None"
 msgstr "Hiçbiri"
 
-#: cps/duplicates.py:352 cps/duplicates.py:363
+#: cps/duplicates.py:353 cps/duplicates.py:364
 msgid "Duplicate Books"
 msgstr "Tekrarlı Kitaplar"
 
-#: cps/duplicates.py:1201
+#: cps/duplicates.py:1202
 msgid "Duplicate group already dismissed"
 msgstr "Tekrarlı grubu zaten yoksayıldı"
 
-#: cps/duplicates.py:1221
+#: cps/duplicates.py:1222
 msgid "Duplicate group dismissed"
 msgstr "Tekrarlı grup yoksayıldı"
 
-#: cps/duplicates.py:1258
+#: cps/duplicates.py:1259
 msgid "Duplicate group restored"
 msgstr "Tekrarlı grup geri yüklendi"
 
-#: cps/duplicates.py:1260
+#: cps/duplicates.py:1261
 msgid "Duplicate group was not dismissed"
 msgstr "Tekrarlı grup yoksayılmadı"
 
-#: cps/duplicates.py:1314
+#: cps/duplicates.py:1316
 msgid "Import is in progress. Run a full duplicate scan after ingest finishes."
 msgstr ""
 
-#: cps/duplicates.py:1335
+#: cps/duplicates.py:1337
 msgid "Duplicate scan queued"
 msgstr "Tekrarlı taraması sıraya alındı"
 
-#: cps/duplicates.py:1404
+#: cps/duplicates.py:1406
 msgid "Duplicate scan completed (fallback)"
 msgstr ""
 
-#: cps/duplicates.py:1479
+#: cps/duplicates.py:1481
 msgid "Invalid resolution strategy"
 msgstr "Geçersiz çözümleme stratejisi"
 
-#: cps/duplicates.py:1490
+#: cps/duplicates.py:1492
 msgid ""
 "Import is in progress. Execute duplicate resolution after ingest finishes."
 msgstr ""
@@ -1569,7 +1569,7 @@ msgstr "Calibre uygulama hatası"
 msgid "Queue all books for metadata backup"
 msgstr "Metaveri yedeklemesi için tüm kitapları sıraya al"
 
-#: cps/kobo_auth.py:80
+#: cps/kobo_auth.py:87
 msgid ""
 "Please access Calibre-Web Automated from non localhost to get valid "
 "api_endpoint for kobo device"
@@ -1577,7 +1577,7 @@ msgstr ""
 "Kobo cihazı için geçerli api_endpoint'i almak üzere lütfen Calibre-Web "
 "Automated'a localhost dışındaki bir yerden erişin"
 
-#: cps/kobo_auth.py:99
+#: cps/kobo_auth.py:106
 msgid "Kobo Setup"
 msgstr "Kobo Kurulumu"
 
@@ -2656,15 +2656,15 @@ msgstr "Meta veri yedekleniyor"
 msgid "Convert Library – full run"
 msgstr "Kütüphaneyi dönüştür - tam çalışma"
 
-#: cps/tasks/ops.py:84
+#: cps/tasks/ops.py:81
 msgid "Convert Library"
 msgstr "Kütüphaneyi dönüştür"
 
-#: cps/tasks/ops.py:95
+#: cps/tasks/ops.py:92
 msgid "EPUB Fixer – full run"
 msgstr "EPUB onarıcı - tam çalışma"
 
-#: cps/tasks/ops.py:142
+#: cps/tasks/ops.py:136
 msgid "EPUB Fixer"
 msgstr "EPUB onarıcı"
 
@@ -4392,14 +4392,6 @@ msgstr "5dk Zamanla"
 msgid "Schedule 15m"
 msgstr "15dk Zamanla"
 
-#: cps/templates/cwa_convert_library.html:100
-msgid "Convert Library scheduled successfully"
-msgstr "Kütüphane dönüştürme başarıyla zamanlandı"
-
-#: cps/templates/cwa_convert_library.html:103
-msgid "Error scheduling Convert Library"
-msgstr "Kütüphane dönüştürme zamanlama hatası"
-
 #: cps/templates/cwa_epub_fixer.html:22
 msgid "Run on a single book"
 msgstr "Tek kitap üzerinde çalıştır"
@@ -4412,35 +4404,27 @@ msgstr "Başlık/Yazara göre ara"
 msgid "Run on selected book"
 msgstr "Seçilen kitaplarda çalıştır"
 
-#: cps/templates/cwa_epub_fixer.html:120
-msgid "EPUB Fixer scheduled successfully"
-msgstr "EPUB onarıcı başarıyla zamanlandı"
-
-#: cps/templates/cwa_epub_fixer.html:123
-msgid "Error scheduling EPUB Fixer"
-msgstr "EPUB onarıcı zamanlama hatası"
-
-#: cps/templates/cwa_epub_fixer.html:132
+#: cps/templates/cwa_epub_fixer.html:111
 msgid "No matches found"
 msgstr "Eşleşme bulunamadı"
 
-#: cps/templates/cwa_epub_fixer.html:167
+#: cps/templates/cwa_epub_fixer.html:146
 msgid "Enter a search term"
 msgstr "Bir arama terimi girin"
 
-#: cps/templates/cwa_epub_fixer.html:175
+#: cps/templates/cwa_epub_fixer.html:154
 msgid "Failed to search library"
 msgstr "Kütüphanede arama başarısız"
 
-#: cps/templates/cwa_epub_fixer.html:182
+#: cps/templates/cwa_epub_fixer.html:161
 msgid "Select a book first"
 msgstr "Önce bir kitap seçin"
 
-#: cps/templates/cwa_epub_fixer.html:195
+#: cps/templates/cwa_epub_fixer.html:174
 msgid "EPUB Fixer started for selected book"
 msgstr "EPUB onarıcı seçilen kitaplar için başladı"
 
-#: cps/templates/cwa_epub_fixer.html:200
+#: cps/templates/cwa_epub_fixer.html:179
 msgid "Error starting EPUB Fixer"
 msgstr "EPUB onarıcı başlatma hatası"
 
@@ -7406,6 +7390,18 @@ msgstr "Seçilen Kitaplıkları Kobo İle Eşitle"
 #: cps/templates/user_table.html:157
 msgid "Show Read/Unread Section"
 msgstr "Okunan/Okunmaya Bölümünü Göster"
+
+#~ msgid "Convert Library scheduled successfully"
+#~ msgstr "Kütüphane dönüştürme başarıyla zamanlandı"
+
+#~ msgid "Error scheduling Convert Library"
+#~ msgstr "Kütüphane dönüştürme zamanlama hatası"
+
+#~ msgid "EPUB Fixer scheduled successfully"
+#~ msgstr "EPUB onarıcı başarıyla zamanlandı"
+
+#~ msgid "Error scheduling EPUB Fixer"
+#~ msgstr "EPUB onarıcı zamanlama hatası"
 
 #~ msgid "Port"
 #~ msgstr "Port"

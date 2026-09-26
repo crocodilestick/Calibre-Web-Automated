@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-08-06 15:04+0000\n"
+"POT-Creation-Date: 2026-09-26 14:44+0000\n"
 "PO-Revision-Date: 2025-08-11 07:03+0000\n"
 "Last-Translator: Andrej Kralj\n"
 "Language-Team: Slovenian\n"
@@ -923,11 +923,11 @@ msgstr "ni nameščen"
 msgid "Execution permissions missing"
 msgstr "Manjkajo dovoljenja za izvajanje"
 
-#: cps/cwa_functions.py:165
+#: cps/cwa_functions.py:166
 msgid "Theme switching is temporarily disabled until v5.0.0"
 msgstr "Preklapljanje tem je začasno onemogočeno do različice 5.0.0"
 
-#: cps/cwa_functions.py:280
+#: cps/cwa_functions.py:281
 msgid ""
 "Library Refresh 🔄 Checking for any books that may have been missed, please "
 "wait..."
@@ -935,225 +935,225 @@ msgstr ""
 "Osvežitev knjižnice 🔄 Preverjamo morebitne spregledane knjige, prosimo, "
 "počakajte ..."
 
-#: cps/cwa_functions.py:959
+#: cps/cwa_functions.py:906
 msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr ""
 "Neveljaven cron izraz za iskanje dvojnikov. Spremembe niso bile shranjene."
 
-#: cps/cwa_functions.py:1055
+#: cps/cwa_functions.py:1002
 #, fuzzy
 msgid "Calibre-Web Automated User Settings"
 msgstr "Nastavitve pretvornika e-knjig Calibre"
 
-#: cps/cwa_functions.py:1101 cps/cwa_functions.py:1103
-#: cps/cwa_functions.py:1107 cps/cwa_functions.py:1109
-#: cps/cwa_functions.py:1112 cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1048 cps/cwa_functions.py:1050
+#: cps/cwa_functions.py:1054 cps/cwa_functions.py:1056
+#: cps/cwa_functions.py:1059 cps/cwa_functions.py:1061
 msgid "Timestamp"
 msgstr "Časovni žig"
 
-#: cps/cwa_functions.py:1101 cps/cwa_functions.py:1103
+#: cps/cwa_functions.py:1048 cps/cwa_functions.py:1050
 #: cps/templates/tasks.html:43
 #, fuzzy
 msgid "Book ID"
 msgstr "Knjige"
 
-#: cps/cwa_functions.py:1101 cps/templates/book_edit.html:83
+#: cps/cwa_functions.py:1048 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
 msgid "Book Title"
 msgstr "Naslov knjige"
 
-#: cps/cwa_functions.py:1101
+#: cps/cwa_functions.py:1048
 #, fuzzy
 msgid "Book Author"
 msgstr "Avtor"
 
-#: cps/cwa_functions.py:1101
+#: cps/cwa_functions.py:1048
 msgid "Trigger Type"
 msgstr "Vrsta sprožilca"
 
-#: cps/cwa_functions.py:1103 cps/cwa_functions.py:1109
+#: cps/cwa_functions.py:1050 cps/cwa_functions.py:1056
 #, fuzzy
 msgid "Filepath"
 msgstr "Vrste datotek"
 
-#: cps/cwa_functions.py:1107 cps/cwa_functions.py:1109
-#: cps/cwa_functions.py:1112 cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1054 cps/cwa_functions.py:1056
+#: cps/cwa_functions.py:1059 cps/cwa_functions.py:1061
 #, fuzzy
 msgid "Filename"
 msgstr "ime"
 
-#: cps/cwa_functions.py:1107
+#: cps/cwa_functions.py:1054
 msgid "Manual?"
 msgstr "Ročno?"
 
-#: cps/cwa_functions.py:1107
+#: cps/cwa_functions.py:1054
 msgid "No. Fixes"
 msgstr "Brez sprememb"
 
-#: cps/cwa_functions.py:1107 cps/cwa_functions.py:1112
-#: cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1054 cps/cwa_functions.py:1059
+#: cps/cwa_functions.py:1061
 msgid "Original Backed Up?"
 msgstr "Izvirnik varnostno kopiran?"
 
-#: cps/cwa_functions.py:1109
+#: cps/cwa_functions.py:1056
 msgid "Fixes Applied"
 msgstr "Uporabljeni popravki"
 
-#: cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1061
 msgid "Original Format"
 msgstr "Izvirna oblika"
 
-#: cps/cwa_functions.py:1114
+#: cps/cwa_functions.py:1061
 #, fuzzy
 msgid "End Format"
 msgstr "Nalaganje vrsta"
 
-#: cps/cwa_functions.py:1190 cps/cwa_functions.py:1219
+#: cps/cwa_functions.py:1137 cps/cwa_functions.py:1166
 #, fuzzy
 msgid "Unknown User"
 msgstr "Neznano"
 
-#: cps/cwa_functions.py:1327
+#: cps/cwa_functions.py:1274
 #, fuzzy
 msgid "Calibre-Web Automated Stats & Activity"
 msgstr "Avtomatizirana statistika in arhiv strežnikov Calibre-Web"
 
-#: cps/cwa_functions.py:1711
+#: cps/cwa_functions.py:1658
 msgid "Calibre-Web Automated - Full Enforcement History"
 msgstr "Calibre-Web Automated - Celotna zgodovina uveljavljanja"
 
-#: cps/cwa_functions.py:1720
+#: cps/cwa_functions.py:1667
 msgid "Calibre-Web Automated - Full Enforcement History (w/ Paths)"
 msgstr "Calibre-Web Automated - Celotna zgodovina uveljavljanja (s potmi)"
 
-#: cps/cwa_functions.py:1729
+#: cps/cwa_functions.py:1676
 msgid "Calibre-Web Automated - Full Import History"
 msgstr "Calibre-Web Automated - Celotna zgodovina uvoza"
 
-#: cps/cwa_functions.py:1738
+#: cps/cwa_functions.py:1685
 msgid "Calibre-Web Automated - Full Conversion History"
 msgstr "Calibre-Web Automated - Celotna zgodovina pretvorb"
 
-#: cps/cwa_functions.py:1747
+#: cps/cwa_functions.py:1694
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/out Paths & Fixes)"
 msgstr ""
 "Calibre-Web Automated - Celotna zgodovina popravljanja EPUB (brez poti in "
 "popravkov)"
 
-#: cps/cwa_functions.py:1756
+#: cps/cwa_functions.py:1703
 msgid "Calibre-Web Automated - Full EPUB Fixer History (w/ Paths & Fixes)"
 msgstr ""
 "Calibre-Web Automated - Celotna zgodovina popravljanja EPUB (s potmi in "
 "popravki)"
 
-#: cps/cwa_functions.py:1774
+#: cps/cwa_functions.py:1721
 msgid "✅ All Monitoring Services are running as intended! 👍"
 msgstr "✅ Vse nadzorne storitve delujejo po načrtih! 👍"
 
-#: cps/cwa_functions.py:1776
+#: cps/cwa_functions.py:1723
 msgid ""
 "🔴 The Ingest Service is running but the Metadata Change Detector is not"
 msgstr "🔴 Storitev vnosa se izvaja, detektor sprememb metapodatkov pa ne."
 
-#: cps/cwa_functions.py:1778
+#: cps/cwa_functions.py:1725
 msgid ""
 "🔴 The Metadata Change Detector is running but the Ingest Service is not"
 msgstr "🔴 Detektor sprememb metapodatkov deluje, storitev vnosa pa ne."
 
-#: cps/cwa_functions.py:1780
+#: cps/cwa_functions.py:1727
 msgid ""
 "⛔ Neither the Ingest Service or the Metadata Change Detector are running"
 msgstr ""
 "⛔ Niti storitev vnosa niti detektor sprememb metapodatkov se ne izvajata"
 
-#: cps/cwa_functions.py:1782
+#: cps/cwa_functions.py:1729
 msgid "An Error has occurred"
 msgstr "Prišlo je do napake"
 
-#: cps/cwa_functions.py:1953 cps/cwa_functions.py:1979
+#: cps/cwa_functions.py:1906 cps/cwa_functions.py:1930
 msgid "Calibre-Web Automated - Convert Library"
 msgstr "Calibre-Web Automated - Pretvori knjižnico"
 
-#: cps/cwa_functions.py:2095 cps/cwa_functions.py:2119
+#: cps/cwa_functions.py:2069 cps/cwa_functions.py:2091
 #, fuzzy
 msgid "Calibre-Web Automated - EPUB Fixer Service"
 msgstr ""
 "Calibre-Web Automated - Storitev za popravljanje datotek EPUB za pošiljanje "
 "v Kindle"
 
-#: cps/cwa_functions.py:2173
+#: cps/cwa_functions.py:2171
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
 msgstr ""
 "Popravljalnik EPUB za posamezno knjigo ni podprt v knjižnicah Google Drive."
 
-#: cps/cwa_functions.py:2180
+#: cps/cwa_functions.py:2178
 #, fuzzy
 msgid "Invalid book selection."
 msgstr "Neveljavna vloga"
 
-#: cps/cwa_functions.py:2186
+#: cps/cwa_functions.py:2184
 #, fuzzy
 msgid "Book not found."
 msgstr "ne najdem žetona"
 
-#: cps/cwa_functions.py:2192
+#: cps/cwa_functions.py:2190
 #, fuzzy
 msgid "Selected book has no EPUB format."
 msgstr "Združevanje izbranih knjig"
 
-#: cps/cwa_functions.py:2196
+#: cps/cwa_functions.py:2194
 #, fuzzy
 msgid "EPUB file not found on disk."
 msgstr "%(format)s vrsta ni najdena na disku"
 
-#: cps/cwa_functions.py:2211
+#: cps/cwa_functions.py:2209
 #, fuzzy
 msgid "EPUB Fixer started for selected book."
 msgstr "Združevanje izbranih knjig"
 
-#: cps/cwa_functions.py:2214
+#: cps/cwa_functions.py:2212
 msgid "Failed to start EPUB Fixer for selected book."
 msgstr "Napaka pri zagonu popravljalnika EPUB za izbrano knjigo."
 
-#: cps/cwa_functions.py:2261
+#: cps/cwa_functions.py:2257
 msgid "You must be an admin to access this page."
 msgstr "Za dostop do te strani morate biti skrbnik."
 
-#: cps/cwa_functions.py:2276
+#: cps/cwa_functions.py:2272
 msgid "Both username and image data are required."
 msgstr "Zahtevani so tako uporabniško ime kot podatki o sliki."
 
-#: cps/cwa_functions.py:2284
+#: cps/cwa_functions.py:2280
 msgid "Invalid image data format. Must be a valid image."
 msgstr "Neveljavna oblika slikovnih podatkov. Izbrati morate veljavno sliko."
 
-#: cps/cwa_functions.py:2292
+#: cps/cwa_functions.py:2288
 msgid "Unsupported image type. Only PNG and JPEG are allowed."
 msgstr "Nepodprta vrsta slike. Dovoljena sta le PNG in JPEG."
 
-#: cps/cwa_functions.py:2304
+#: cps/cwa_functions.py:2300
 msgid "Image is too large. Please use an image smaller than 500KB."
 msgstr "Slika je prevelika. Prosimo, uporabite sliko, manjšo od 500 KB."
 
-#: cps/cwa_functions.py:2308
+#: cps/cwa_functions.py:2304
 msgid "Invalid Base64 image data."
 msgstr "Neveljavni Base64 podatki o sliki."
 
-#: cps/cwa_functions.py:2312
+#: cps/cwa_functions.py:2308
 #, fuzzy
 msgid "Invalid image data format."
 msgstr "Nepravilna oblike e-poštnega naslova"
 
-#: cps/cwa_functions.py:2317
+#: cps/cwa_functions.py:2313
 msgid "Error validating image data."
 msgstr "Napaka pri preverjanju podatkov slike."
 
-#: cps/cwa_functions.py:2335
+#: cps/cwa_functions.py:2331
 #, fuzzy
 msgid "Profile picture updated successfully."
 msgstr "{} uporabnikov uspešno izbrisanih"
 
-#: cps/cwa_functions.py:2348
+#: cps/cwa_functions.py:2344
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA Upravljanje profilnih slik (v teku)"
 
@@ -1166,48 +1166,48 @@ msgstr "CWA Upravljanje profilnih slik (v teku)"
 msgid "None"
 msgstr "Nobeno"
 
-#: cps/duplicates.py:352 cps/duplicates.py:363
+#: cps/duplicates.py:353 cps/duplicates.py:364
 #, fuzzy
 msgid "Duplicate Books"
 msgstr "Izbriši knjigo"
 
-#: cps/duplicates.py:1201
+#: cps/duplicates.py:1202
 msgid "Duplicate group already dismissed"
 msgstr "Skupina dvojnikov je že bila opuščena"
 
-#: cps/duplicates.py:1221
+#: cps/duplicates.py:1222
 #, fuzzy
 msgid "Duplicate group dismissed"
 msgstr "Izbriši knjigo"
 
-#: cps/duplicates.py:1258
+#: cps/duplicates.py:1259
 #, fuzzy
 msgid "Duplicate group restored"
 msgstr "Izbriši knjigo"
 
-#: cps/duplicates.py:1260
+#: cps/duplicates.py:1261
 msgid "Duplicate group was not dismissed"
 msgstr "Skupina dvojnikov ni bila opuščena"
 
-#: cps/duplicates.py:1314
+#: cps/duplicates.py:1316
 msgid "Import is in progress. Run a full duplicate scan after ingest finishes."
 msgstr ""
 
-#: cps/duplicates.py:1335
+#: cps/duplicates.py:1337
 #, fuzzy
 msgid "Duplicate scan queued"
 msgstr "Ni bilo najdenih rezultatov"
 
-#: cps/duplicates.py:1404
+#: cps/duplicates.py:1406
 msgid "Duplicate scan completed (fallback)"
 msgstr "Iskanje dvojnikov končano (rezervni način)"
 
-#: cps/duplicates.py:1479
+#: cps/duplicates.py:1481
 #, fuzzy
 msgid "Invalid resolution strategy"
 msgstr "Neveljavna vloga"
 
-#: cps/duplicates.py:1490
+#: cps/duplicates.py:1492
 msgid ""
 "Import is in progress. Execute duplicate resolution after ingest finishes."
 msgstr ""
@@ -1616,7 +1616,7 @@ msgstr "Napaka pri izvajanju programa Calibre"
 msgid "Queue all books for metadata backup"
 msgstr "Vse knjige v vrsti za varnostno kopiranje metapodatkov"
 
-#: cps/kobo_auth.py:80
+#: cps/kobo_auth.py:87
 #, fuzzy
 msgid ""
 "Please access Calibre-Web Automated from non localhost to get valid "
@@ -1625,7 +1625,7 @@ msgstr ""
 "Dostopajte do Calibre-Web z nelokalnega gostitelja, da pridobite veljavno "
 "api_endpoint za napravo kobo"
 
-#: cps/kobo_auth.py:99
+#: cps/kobo_auth.py:106
 msgid "Kobo Setup"
 msgstr "Nastavitev za Kobo"
 
@@ -2716,16 +2716,16 @@ msgstr "Varnostno kopiranje metapodatkov"
 msgid "Convert Library – full run"
 msgstr "Pretvori knjižnico – celoten zagon"
 
-#: cps/tasks/ops.py:84
+#: cps/tasks/ops.py:81
 #, fuzzy
 msgid "Convert Library"
 msgstr "V knjižnici"
 
-#: cps/tasks/ops.py:95
+#: cps/tasks/ops.py:92
 msgid "EPUB Fixer – full run"
 msgstr "Popravljalnik EPUB – celoten zagon"
 
-#: cps/tasks/ops.py:142
+#: cps/tasks/ops.py:136
 msgid "EPUB Fixer"
 msgstr "Popravljalnik EPUB"
 
@@ -4476,14 +4476,6 @@ msgstr "Urnik 5 min"
 msgid "Schedule 15m"
 msgstr "Urnik 15 min"
 
-#: cps/templates/cwa_convert_library.html:100
-msgid "Convert Library scheduled successfully"
-msgstr "Pretvorba knjižnice je bila uspešno načrtovana"
-
-#: cps/templates/cwa_convert_library.html:103
-msgid "Error scheduling Convert Library"
-msgstr "Napaka pri načrtovanju pretvorbe knjižnice"
-
 #: cps/templates/cwa_epub_fixer.html:22
 msgid "Run on a single book"
 msgstr "Zaženi na posamezni knjigi"
@@ -4497,42 +4489,32 @@ msgstr "Iskanje po naslovu/avtorju"
 msgid "Run on selected book"
 msgstr "Združevanje izbranih knjig"
 
-#: cps/templates/cwa_epub_fixer.html:120
-#, fuzzy
-msgid "EPUB Fixer scheduled successfully"
-msgstr "{} uporabnikov uspešno izbrisanih"
-
-#: cps/templates/cwa_epub_fixer.html:123
-#, fuzzy
-msgid "Error scheduling EPUB Fixer"
-msgstr "Napaka pri brisanju police"
-
-#: cps/templates/cwa_epub_fixer.html:132
+#: cps/templates/cwa_epub_fixer.html:111
 #, fuzzy
 msgid "No matches found"
 msgstr "Ni bilo najdenih rezultatov"
 
-#: cps/templates/cwa_epub_fixer.html:167
+#: cps/templates/cwa_epub_fixer.html:146
 #, fuzzy
 msgid "Enter a search term"
 msgstr "Vnesi uporabniško ime"
 
-#: cps/templates/cwa_epub_fixer.html:175
+#: cps/templates/cwa_epub_fixer.html:154
 #, fuzzy
 msgid "Failed to search library"
 msgstr "Iskanje po knjižnici"
 
-#: cps/templates/cwa_epub_fixer.html:182
+#: cps/templates/cwa_epub_fixer.html:161
 #, fuzzy
 msgid "Select a book first"
 msgstr "Ustvari polico"
 
-#: cps/templates/cwa_epub_fixer.html:195
+#: cps/templates/cwa_epub_fixer.html:174
 #, fuzzy
 msgid "EPUB Fixer started for selected book"
 msgstr "Združevanje izbranih knjig"
 
-#: cps/templates/cwa_epub_fixer.html:200
+#: cps/templates/cwa_epub_fixer.html:179
 #, fuzzy
 msgid "Error starting EPUB Fixer"
 msgstr "Napaka pri brisanju police"
@@ -7531,6 +7513,20 @@ msgstr "Usklajevanje izbrane police s Kobo"
 #: cps/templates/user_table.html:157
 msgid "Show Read/Unread Section"
 msgstr "Prikaži razdelek Prebrano/neprebrano"
+
+#~ msgid "Convert Library scheduled successfully"
+#~ msgstr "Pretvorba knjižnice je bila uspešno načrtovana"
+
+#~ msgid "Error scheduling Convert Library"
+#~ msgstr "Napaka pri načrtovanju pretvorbe knjižnice"
+
+#, fuzzy
+#~ msgid "EPUB Fixer scheduled successfully"
+#~ msgstr "{} uporabnikov uspešno izbrisanih"
+
+#, fuzzy
+#~ msgid "Error scheduling EPUB Fixer"
+#~ msgstr "Napaka pri brisanju police"
 
 #~ msgid "Port"
 #~ msgstr "Vrata"

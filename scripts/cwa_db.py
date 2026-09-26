@@ -19,7 +19,8 @@ class CWA_DB:
         self.verbose = verbose
 
         self.db_file = "cwa.db"
-        self.db_path = "/config/"
+        # CWA_DB_PATH lets tests point at an isolated directory; production always uses /config/
+        self.db_path = os.path.join(os.environ.get("CWA_DB_PATH", "/config"), "")
         self.con, self.cur = self.connect_to_db() # type: ignore
 
         # Support both Docker and CI environments for schema path
@@ -50,6 +51,7 @@ class CWA_DB:
         con = None
         cur = None
         try:
+            os.makedirs(self.db_path, exist_ok=True)
             con = sqlite3.connect(self.db_path + self.db_file, timeout=30)
         except sqlError as e:
             print(f"[cwa-db]: The following error occurred while trying to connect to the CWA Enforcement DB: {e}")

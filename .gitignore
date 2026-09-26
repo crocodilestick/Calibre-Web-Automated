@@ -204,3 +204,5 @@ instance/
 CLAUDE.md
 .claude
 pr-analysis-*
+# Local issue/PR triage export (see .github/triage/)
+.triage/

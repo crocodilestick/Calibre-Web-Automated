@@ -13,6 +13,23 @@ var reader;
         bookmarks: calibre.bookmark ? [calibre.bookmark] : []
     });
 
+    // Make bundled custom reading fonts (e.g. Literata) available inside every
+    // rendered chapter's iframe. Without this, selecting a custom font only
+    // sets font-family on content the browser has no matching @font-face for,
+    // and it silently falls back to a system font.
+    if (reader && reader.rendition && reader.rendition.hooks && reader.rendition.hooks.content
+        && typeof reader.rendition.hooks.content.register === 'function' && calibre.customFontFaces) {
+        reader.rendition.hooks.content.register(function(contents) {
+            try {
+                contents.addStylesheetCss(calibre.customFontFaces, 'cwa-custom-font-faces');
+            } catch (e) {
+                // Some content types (e.g. non-XHTML resources) may not support
+                // stylesheet injection; failing silently just means that one
+                // piece of content keeps its default font.
+            }
+        });
+    }
+
     function showReaderError(message, error) {
         try {
             console.error(message, error || "");
@@ -158,6 +175,7 @@ var reader;
         // Font
         let fontMap = {
             'default': '',
+            'Literata': '"Literata", serif',
             'Yahei': '"Microsoft YaHei", sans-serif',
             'SimSun': 'SimSun, serif',
             'KaiTi': 'KaiTi, serif',

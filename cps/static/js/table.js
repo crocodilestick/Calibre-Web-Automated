@@ -1033,37 +1033,37 @@ function handle_header_buttons () {
 /* Function for deleting domain restrictions */
 function TableActions (value, row) {
     return [
-        "<a class=\"danger remove\"  data-value=\"" + row.id
+        "<button type=\"button\" class=\"danger remove\"  data-value=\"" + row.id
         + "\" title=\"Remove\">",
         "<i class=\"glyphicon glyphicon-trash\"></i>",
-        "</a>"
+        "</button>"
     ].join("");
 }
 
 /* Function for deleting domain restrictions */
 function RestrictionActions (value, row) {
     return [
-        "<div class=\"danger remove\" data-restriction-id=\"" + row.id + "\" title=\"Remove\">",
+        "<button type=\"button\" class=\"danger remove\" data-restriction-id=\"" + row.id + "\" title=\"Remove\">",
         "<i class=\"glyphicon glyphicon-trash\"></i>",
-        "</div>"
+        "</button>"
     ].join("");
 }
 
 /* Function for deleting books */
 function EbookActions (value, row) {
     return [
-        "<div class=\"book-remove\" data-toggle=\"modal\" data-target=\"#deleteModal\" data-ajax=\"1\" data-delete-id=\"" + row.id + "\" title=\"Remove\">",
+        "<button type=\"button\" class=\"book-remove\" data-toggle=\"modal\" data-target=\"#deleteModal\" data-ajax=\"1\" data-delete-id=\"" + row.id + "\" title=\"Remove\">",
         "<i class=\"glyphicon glyphicon-trash\"></i>",
-        "</div>"
+        "</button>"
     ].join("");
 }
 
 /* Function for deleting Users */
 function UserActions (value, row) {
     return [
-        "<div class=\"user-remove\" data-value=\"delete\" onclick=\"deleteUser(this, '" + row.id + "')\" data-pk=\"" + row.id + "\" title=\"Remove\">",
+        "<button type=\"button\" class=\"user-remove\" data-value=\"delete\" onclick=\"deleteUser(this, '" + row.id + "')\" data-pk=\"" + row.id + "\" title=\"Remove\">",
         "<i class=\"glyphicon glyphicon-trash\"></i>",
-        "</div>"
+        "</button>"
     ].join("");
 }
 

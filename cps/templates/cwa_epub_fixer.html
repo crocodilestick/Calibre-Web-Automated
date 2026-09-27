@@ -13,12 +13,12 @@
                       display: flex;
                       flex-direction: column;
                       justify-content: space-between;">
-            <p style="font-size: 11px; max-width: max(50vw, 600px); width: -webkit-fill-available;">
+            <p style="font-size: 11px; max-width: max(50vw, 600px); width: 100%;">
               Upon loading this page, if you have previously started a run of the CWA EPUB Fixer service either here in the Web UI or through the CLI, you will see the output of the most recent previous run below. 
               Once you start a run, you are free to leave the page and return whenever you want to check on the run's progress. If you wish to cancel a run that is still in progress, simply press the Cancel button above 
               and the run will terminate ASAP. This tool is based on the <a href="https://kindle-epub-fix.netlify.app/" class="external" target="_blank">Amazon Kindle EPUB Fix</a> tool by <a href="https://github.com/innocenat/kindle-epub-fix" class="external" target="_blank">innocenat</a>
             </p>
-            <div style="margin-bottom: 10px; max-width: max(50vw, 600px); width: -webkit-fill-available;">
+            <div style="margin-bottom: 10px; max-width: max(50vw, 600px); width: 100%;">
               <label for="epub_fixer_book_search" style="color: #bbbbbb; display: block; margin-bottom: 4px;">{{ _('Run on a single book') }}</label>
               <div style="display: flex; gap: 6px;">
                 <input type="text" id="epub_fixer_book_search" placeholder="{{ _('Search by title/author') }}" style="flex: 1; padding: 6px 8px; border: 1px solid transparent; border-radius: 4px; background-color: #151e2680; color: #fff;">

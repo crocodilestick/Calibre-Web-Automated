@@ -7319,7 +7319,7 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     body.editbook > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9, body.upload > div.container-fluid > div.row-fluid > div.col-sm-10 > form > div.col-sm-9 {
         padding: 15px;
         margin-right: 2rem !important;
-        width: -webkit-fill-available !important;
+        width: 100% !important;
         margin-left: 2rem !important;
         margin-top: 0px !important;
     }
@@ -8477,7 +8477,7 @@ select.cwa-settings-select {
     max-width: 900px;
     justify-self: anchor-center;
     margin-left: 2rem;
-    width: -webkit-fill-available;
+    width: 100%;
 }
 
 .settings-section-header {
@@ -8572,7 +8572,7 @@ select.cwa-settings-select {
 }
 
 a#remote_login {
-    width: -webkit-fill-available;
+    width: 100%;
     text-align: center;
     margin-top: 1.5rem;
     padding: 6px 30px 5px;

@@ -64,6 +64,15 @@ a,
 .user-remove:hover {
   color: #23527c;
 }
+.book-remove,
+.user-remove,
+.danger.remove {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  cursor: pointer;
+}
 .btn-default a {
   color: #444;
 }
@@ -780,6 +789,6 @@ select.cwa-settings-select {
 }
 
 .refresh-cwa {
-  width: -webkit-fill-available;
+  width: 100%;
   justify-content: space-evenly;
 }

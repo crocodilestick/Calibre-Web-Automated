@@ -54,7 +54,7 @@
     text-align: center;
     padding: 0.3rem;
     border-radius: 6px;
-    width: --webkit-fill-available;
+    width: 100%;
 }
 .rules-list > .rule-container > .rule-operator-container > select {
     background-color: rgb(187 187 187 / 34%);

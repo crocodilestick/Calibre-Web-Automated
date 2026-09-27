@@ -78,7 +78,7 @@
 </div>
 <form role="form" action="{{ url_for('edit-book.edit_book', book_id=book.id) }}" method="post" enctype="multipart/form-data" id="book_edit_frm">
   <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-  <div style="background-color: #212c3973; padding: 4rem; margin-left: 40rem; margin-top: 2rem; width: -webkit-fill-available; margin-right: 4rem;" class="col-sm-9 col-xs-12">
+  <div style="background-color: #212c3973; padding: 4rem; margin-left: 40rem; margin-top: 2rem; width: 100%; margin-right: 4rem;" class="col-sm-9 col-xs-12">
     <div class="form-group">
       <label for="title">{{_('Book Title')}}</label>
       <input type="text" class="form-control" name="title" id="title" value="{{book.title}}">

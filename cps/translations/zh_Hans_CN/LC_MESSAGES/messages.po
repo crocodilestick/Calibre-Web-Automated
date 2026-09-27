@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-09-27 12:53+0000\n"
+"POT-Creation-Date: 2026-09-27 15:39+0000\n"
 "PO-Revision-Date: 2026-02-10 18:28+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -373,8 +373,8 @@ msgid "Success! Gmail Account Verified."
 msgstr "Gmail 账户验证成功。"
 
 #: cps/admin.py:1745 cps/admin.py:1748 cps/admin.py:2234 cps/admin.py:2448
-#: cps/admin.py:2563 cps/admin.py:2834 cps/editbooks.py:1046
-#: cps/editbooks.py:1830 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
+#: cps/admin.py:2563 cps/admin.py:2834 cps/editbooks.py:1062
+#: cps/editbooks.py:1860 cps/shelf.py:93 cps/shelf.py:167 cps/shelf.py:228
 #: cps/shelf.py:278 cps/shelf.py:315 cps/shelf.py:389 cps/shelf.py:511
 #: cps/tasks/convert.py:145 cps/web.py:2678
 #, python-format
@@ -1159,104 +1159,104 @@ msgstr "书籍已经被成功加入 %(book_format)s 格式转换队列"
 msgid "There was an error converting this book: %(res)s"
 msgstr "转换此书籍时出现错误： %(res)s"
 
-#: cps/editbooks.py:367 cps/editbooks.py:1249 cps/editbooks.py:1776
+#: cps/editbooks.py:367 cps/editbooks.py:1265 cps/editbooks.py:1806
 msgid "File type isn't allowed to be uploaded to this server"
 msgstr "该文件类型不允许上传至本服务器"
 
-#: cps/editbooks.py:372 cps/editbooks.py:1255 cps/editbooks.py:1787
+#: cps/editbooks.py:372 cps/editbooks.py:1271 cps/editbooks.py:1817
 #, python-format
 msgid "File extension '%(ext)s' is not allowed to be uploaded to this server"
 msgstr "不能上传文件扩展名为“%(ext)s”的文件到此服务器"
 
-#: cps/editbooks.py:376 cps/editbooks.py:1259 cps/editbooks.py:1792
+#: cps/editbooks.py:376 cps/editbooks.py:1275 cps/editbooks.py:1822
 msgid "File to be uploaded must have an extension"
 msgstr "要上传的文件必须具有扩展名"
 
-#: cps/editbooks.py:845 cps/editbooks.py:1453 cps/web.py:612 cps/web.py:2790
+#: cps/editbooks.py:861 cps/editbooks.py:1483 cps/web.py:612 cps/web.py:2790
 #: cps/web.py:2882 cps/web.py:2967
 msgid ""
 "Oops! Selected book is unavailable. File does not exist or is not accessible"
 msgstr "糟糕！选择书名无法打开。文件不存在或者文件不可访问"
 
-#: cps/editbooks.py:885 cps/editbooks.py:1860
+#: cps/editbooks.py:901 cps/editbooks.py:1890
 msgid "User has no rights to upload cover"
 msgstr "用户没有权限上传封面"
 
-#: cps/editbooks.py:908 cps/editbooks.py:1237
+#: cps/editbooks.py:924 cps/editbooks.py:1253
 msgid "Identifiers are not Case Sensitive, Overwriting Old Identifier"
 msgstr "标识符不区分大小写，覆盖旧标识符"
 
-#: cps/editbooks.py:920 cps/editbooks.py:1211 cps/editbooks.py:1587
+#: cps/editbooks.py:936 cps/editbooks.py:1227 cps/editbooks.py:1617
 #, python-format
 msgid "'%(langname)s' is not a valid language"
 msgstr "'%(langname)s' 不是一种有效语言"
 
-#: cps/editbooks.py:1031
+#: cps/editbooks.py:1047
 msgid "Metadata successfully updated"
 msgstr "已成功更新元数据"
 
-#: cps/editbooks.py:1051
+#: cps/editbooks.py:1067
 #, python-brace-format
 msgid "Error editing book: {}"
 msgstr "编辑书籍时出错: {}"
 
-#: cps/editbooks.py:1106 cps/editbooks.py:1151 cps/editbooks.py:1878
+#: cps/editbooks.py:1122 cps/editbooks.py:1167 cps/editbooks.py:1908
 #: cps/updater.py:618 cps/uploader.py:97 cps/uploader.py:106
 msgid "Unknown"
 msgstr "未知"
 
-#: cps/editbooks.py:1155
+#: cps/editbooks.py:1171
 msgid ""
 "Uploaded book probably exists in the library, consider to change before "
 "upload new: "
 msgstr "上传的书籍可能已经存在，建议修改后重新上传： "
 
-#: cps/editbooks.py:1267
+#: cps/editbooks.py:1283
 #, python-format
 msgid "File %(filename)s could not saved to temp dir"
 msgstr "文件 %(filename)s 无法保存到临时目录"
 
-#: cps/editbooks.py:1287
+#: cps/editbooks.py:1303
 #, python-format
 msgid "Failed to Move Cover File %(file)s: %(error)s"
 msgstr "移动封面文件失败 %(file)s：%(error)s"
 
-#: cps/editbooks.py:1345 cps/editbooks.py:1347
+#: cps/editbooks.py:1361 cps/editbooks.py:1363
 msgid "Book Format Successfully Deleted"
 msgstr "书籍的此格式副本已成功删除"
 
-#: cps/editbooks.py:1354 cps/editbooks.py:1356
+#: cps/editbooks.py:1370 cps/editbooks.py:1372
 msgid "Book Successfully Deleted"
 msgstr "书籍已成功删除"
 
-#: cps/editbooks.py:1438
+#: cps/editbooks.py:1468
 msgid "You are missing permissions to delete books"
 msgstr "您没有删除书籍的权限"
 
-#: cps/editbooks.py:1492
+#: cps/editbooks.py:1522
 msgid "edit metadata"
 msgstr "编辑元数据"
 
-#: cps/editbooks.py:1546
+#: cps/editbooks.py:1576
 #, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
 msgstr "系列索引：%(seriesindex)s 不是一个有效的数字，将跳过此操作"
 
-#: cps/editbooks.py:1781
+#: cps/editbooks.py:1811
 msgid "User has no rights to upload additional file formats"
 msgstr "用户没有权限上传其他文件格式"
 
-#: cps/editbooks.py:1805
+#: cps/editbooks.py:1835
 #, python-format
 msgid "Failed to create path %(path)s (Permission denied)."
 msgstr "创建路径 %(path)s 失败 (权限不足)"
 
-#: cps/editbooks.py:1812
+#: cps/editbooks.py:1842
 #, python-format
 msgid "Failed to store file %(file)s."
 msgstr "保存文件 %(file)s 失败。"
 
-#: cps/editbooks.py:1837
+#: cps/editbooks.py:1867
 #, python-format
 msgid "File format %(ext)s added to %(book)s"
 msgstr "已添加 %(ext)s 格式到 %(book)s"

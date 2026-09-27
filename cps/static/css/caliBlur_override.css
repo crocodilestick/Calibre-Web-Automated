@@ -254,3 +254,28 @@ a#advanced_search > span.hidden-sm {
     background-color: #E59029;
     color: #fff;
 }
+/* x-editable popovers -----------------------------------------------------
+ * Bootstrap's `.popover` sets a white background, while caliBlur sets
+ * `body { color: #f5f5f5 }` for its dark background. Nothing here or in
+ * caliBlur.css sets a colour on the popover, so its text inherits #f5f5f5
+ * onto white — a contrast ratio of roughly 1.1:1. Most visible on the
+ * Comments column in Books List, which opens a wysihtml5 rich-text editor
+ * inside the popover.
+ * ------------------------------------------------------------------------ */
+.editable-container.editable-popup,
+.editable-container.editable-inline,
+.editable-container .popover-content,
+.editable-container .editable-input,
+.editable-container .editable-input input,
+.editable-container .editable-input textarea,
+.editable-container .editable-input select,
+.editable-container textarea.editable-wysihtml5,
+.editable-container .wysihtml5-editor,
+.popover.editable-container .popover-title {
+    color: #333;
+}
+
+.editable-container .wysihtml5-toolbar a.btn,
+.editable-container .wysihtml5-toolbar .dropdown-menu > li > a {
+    color: #333;
+}

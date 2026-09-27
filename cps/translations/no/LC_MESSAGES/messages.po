@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-09-26 14:44+0000\n"
+"POT-Creation-Date: 2026-09-27 12:01+0000\n"
 "PO-Revision-Date: 2023-01-06 11:00+0000\n"
 "Last-Translator: Vegard Fladby <vegard.fladby@gmail.com>\n"
 "Language-Team: \n"
@@ -1180,7 +1180,7 @@ msgid "Cannot upload format: Book no longer exists in library"
 msgstr ""
 
 #: cps/editbooks.py:152 cps/editbooks.py:179 cps/templates/book_edit.html:52
-#: cps/templates/layout.html:152
+#: cps/templates/layout.html:153
 msgid "Upload done, processing, please wait..."
 msgstr ""
 
@@ -1745,9 +1745,8 @@ msgstr "Beskrivelse"
 msgid "{} Stars"
 msgstr "{} Stjerner"
 
-#: cps/remotelogin.py:76 cps/templates/layout.html:135
-#: cps/templates/layout.html:177 cps/templates/login.html:11
-#: cps/templates/login.html:39 cps/web.py:2187
+#: cps/remotelogin.py:76 cps/templates/layout.html:136
+#: cps/templates/layout.html:178 cps/templates/login.html:50 cps/web.py:2187
 msgid "Login"
 msgstr "Logg Inn"
 
@@ -1933,8 +1932,8 @@ msgstr ""
 
 #: cps/search.py:53 cps/search.py:440 cps/templates/book_edit.html:275
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:34
-#: cps/templates/index.xml:12 cps/templates/layout.html:114
-#: cps/templates/layout.html:117 cps/templates/search_form.html:247
+#: cps/templates/index.xml:12 cps/templates/layout.html:115
+#: cps/templates/layout.html:118 cps/templates/search_form.html:247
 msgid "Search"
 msgstr "Søk"
 
@@ -1965,7 +1964,7 @@ msgstr "Lesestatus = %(status)s"
 msgid "Error on search for custom columns, please restart Calibre-Web"
 msgstr "Feil ved søk etter egendefinerte kolonner. Start Calibre-Web på nytt"
 
-#: cps/search.py:384 cps/search.py:416 cps/templates/layout.html:125
+#: cps/search.py:384 cps/search.py:416 cps/templates/layout.html:126
 msgid "Advanced Search"
 msgstr "Avansert søk"
 
@@ -2082,7 +2081,7 @@ msgstr "Hylle: '%(name)s'"
 msgid "Error opening shelf. Shelf does not exist or is not accessible"
 msgstr "Feil ved åpning av hylle. Hylle finnes ikke eller er ikke tilgjengelig"
 
-#: cps/tasks_status.py:37 cps/templates/layout.html:163
+#: cps/tasks_status.py:37 cps/templates/layout.html:164
 #: cps/templates/tasks.html:7
 msgid "Tasks"
 msgstr "Oppgaver"
@@ -2247,7 +2246,7 @@ msgstr ""
 msgid "Error creating shelf"
 msgstr "Feil ved sletting av hylle"
 
-#: cps/templates/layout.html:326 cps/web.py:1153
+#: cps/templates/layout.html:327 cps/web.py:1153
 #, fuzzy
 msgid "Create Magic Shelf"
 msgstr "Lag en hylle"
@@ -2370,8 +2369,8 @@ msgstr "Boken ble satt i kø for sending til %(eReadermail)s"
 msgid "Please wait one minute to register next user"
 msgstr ""
 
-#: cps/templates/layout.html:136 cps/templates/layout.html:178
-#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2066
+#: cps/templates/layout.html:137 cps/templates/layout.html:179
+#: cps/templates/login.html:106 cps/templates/register.html:17 cps/web.py:2066
 #: cps/web.py:2070 cps/web.py:2075 cps/web.py:2079 cps/web.py:2085
 #: cps/web.py:2110 cps/web.py:2114 cps/web.py:2127 cps/web.py:2130
 msgid "Register"
@@ -2694,7 +2693,7 @@ msgid "Clearing cover thumbnail cache"
 msgstr "Tømmer cache for miniatyrbilde for omslag"
 
 #: cps/tasks/upload.py:28 cps/templates/admin.html:22
-#: cps/templates/layout.html:155 cps/templates/user_table.html:146
+#: cps/templates/layout.html:156 cps/templates/user_table.html:146
 msgid "Upload"
 msgstr "Laste opp"
 
@@ -2702,9 +2701,9 @@ msgstr "Laste opp"
 msgid "Users&nbsp;&nbsp;👤"
 msgstr ""
 
-#: cps/templates/admin.html:14 cps/templates/login.html:17
-#: cps/templates/login.html:19 cps/templates/register.html:9
-#: cps/templates/user_edit.html:185 cps/templates/user_table.html:134
+#: cps/templates/admin.html:14 cps/templates/login.html:24
+#: cps/templates/register.html:9 cps/templates/user_edit.html:185
+#: cps/templates/user_table.html:134
 msgid "Username"
 msgstr "Brukernavn"
 
@@ -2724,13 +2723,13 @@ msgstr "Send til E-Reader E-postadresse"
 msgid "Send to eReader Subject"
 msgstr "Send til E-Reader"
 
-#: cps/templates/admin.html:19 cps/templates/layout.html:166
+#: cps/templates/admin.html:19 cps/templates/layout.html:167
 #: cps/templates/user_table.html:144
 msgid "Admin"
 msgstr "Admin"
 
-#: cps/templates/admin.html:20 cps/templates/login.html:22
-#: cps/templates/login.html:23 cps/templates/user_edit.html:204
+#: cps/templates/admin.html:20 cps/templates/login.html:30
+#: cps/templates/user_edit.html:204
 msgid "Password"
 msgstr "Passord"
 
@@ -3116,15 +3115,15 @@ msgid "Convert book"
 msgstr "Konverter bok"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:69
-#: cps/templates/layout.html:152 cps/templates/layout.html:283
+#: cps/templates/layout.html:153 cps/templates/layout.html:284
 #, fuzzy
 msgid "Uploading..."
 msgstr "Laster inn..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:152 cps/templates/layout.html:380
-#: cps/templates/layout.html:445 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:153 cps/templates/layout.html:381
+#: cps/templates/layout.html:446 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:573
 msgid "Close"
 msgstr "Lukk"
@@ -3138,7 +3137,7 @@ msgstr "Lukk"
 #: cps/templates/hardcover_review_matches.html:369
 #: cps/templates/hardcover_review_matches.html:400
 #: cps/templates/hardcover_review_matches.html:409
-#: cps/templates/layout.html:152
+#: cps/templates/layout.html:153
 #, fuzzy
 msgid "Error"
 msgstr "Serverport"
@@ -5408,7 +5407,7 @@ msgstr "Rediger en hylle"
 #: cps/templates/detail.html:590 cps/templates/detail.html:612
 #: cps/templates/detail.html:765 cps/templates/detail.html:1251
 #: cps/templates/feed.xml:88 cps/templates/feed.xml:90
-#: cps/templates/layout.html:314 cps/templates/layout.html:323
+#: cps/templates/layout.html:315 cps/templates/layout.html:324
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:22
 #, fuzzy
@@ -5803,7 +5802,7 @@ msgstr ""
 msgid "Save and Send Test Email"
 msgstr "Send til E-Reader E-postadresse"
 
-#: cps/templates/email_edit.html:70 cps/templates/layout.html:93
+#: cps/templates/email_edit.html:70 cps/templates/layout.html:94
 #: cps/templates/shelf_order.html:42 cps/templates/user_table.html:175
 msgid "Back"
 msgstr ""
@@ -5825,7 +5824,7 @@ msgstr "Skriv inn kommentarer"
 msgid "Denied Domains (Blacklist)"
 msgstr ""
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:364
+#: cps/templates/feed.xml:22 cps/templates/layout.html:365
 #, fuzzy
 msgid "Next"
 msgstr "Admin side"
@@ -6105,115 +6104,115 @@ msgstr "Vurderinger"
 msgid "Download is available after enabling KOReader Sync in CWA Settings."
 msgstr ""
 
-#: cps/templates/layout.html:93 cps/templates/login.html:51
+#: cps/templates/layout.html:94
 msgid "Home"
 msgstr ""
 
-#: cps/templates/layout.html:100
+#: cps/templates/layout.html:101
 #, fuzzy
 msgid "Toggle Navigation"
 msgstr "Loggfilkonfigurasjon"
 
-#: cps/templates/layout.html:115
+#: cps/templates/layout.html:116
 #, fuzzy
 msgid "Search Library"
 msgstr "I biblioteket"
 
-#: cps/templates/layout.html:133 cps/templates/layout.html:170
+#: cps/templates/layout.html:134 cps/templates/layout.html:171
 #: cps/templates/user_edit.html:305 cps/templates/user_edit.html:307
 msgid "Account"
 msgstr ""
 
-#: cps/templates/layout.html:139 cps/templates/layout.html:172
+#: cps/templates/layout.html:140 cps/templates/layout.html:173
 msgid "Logout"
 msgstr ""
 
-#: cps/templates/layout.html:147
+#: cps/templates/layout.html:148
 msgid "Switch Theme"
 msgstr ""
 
-#: cps/templates/layout.html:166 cps/templates/read.html:79
+#: cps/templates/layout.html:167 cps/templates/read.html:79
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 #, fuzzy
 msgid "Settings"
 msgstr "Vurderinger"
 
-#: cps/templates/layout.html:168
+#: cps/templates/layout.html:169
 #, fuzzy
 msgid "Refresh Library"
 msgstr "I biblioteket"
 
-#: cps/templates/layout.html:209
+#: cps/templates/layout.html:210
 msgid "See Changelog"
 msgstr ""
 
-#: cps/templates/layout.html:219
+#: cps/templates/layout.html:220
 #, fuzzy
 msgid "Open Duplicates"
 msgstr "Slett bok"
 
-#: cps/templates/layout.html:241
+#: cps/templates/layout.html:242
 msgid "Contribute here!"
 msgstr ""
 
-#: cps/templates/layout.html:284
+#: cps/templates/layout.html:285
 #, fuzzy
 msgid "Please do not refresh the page"
 msgstr "Oppdaterer, vennligst ikke last inn denne siden på nytt"
 
-#: cps/templates/layout.html:294
+#: cps/templates/layout.html:295
 msgid "Browse"
 msgstr ""
 
-#: cps/templates/layout.html:311 cps/templates/search_form.html:88
+#: cps/templates/layout.html:312 cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr ""
 
-#: cps/templates/layout.html:317
+#: cps/templates/layout.html:318
 #, fuzzy
 msgid "Create Shelf"
 msgstr "Lag en hylle"
 
-#: cps/templates/layout.html:321
+#: cps/templates/layout.html:322
 msgid "Magic Shelves ✨"
 msgstr ""
 
-#: cps/templates/layout.html:330 cps/templates/stats.html:3
+#: cps/templates/layout.html:331 cps/templates/stats.html:3
 msgid "About"
 msgstr ""
 
-#: cps/templates/layout.html:342
+#: cps/templates/layout.html:343
 msgid "Previous"
 msgstr ""
 
-#: cps/templates/layout.html:353
+#: cps/templates/layout.html:354
 msgid "Go to page"
 msgstr ""
 
-#: cps/templates/layout.html:376
+#: cps/templates/layout.html:377
 #, fuzzy
 msgid "Book Details"
 msgstr "Detaljer"
 
-#: cps/templates/layout.html:446
+#: cps/templates/layout.html:447
 #, fuzzy
 msgid "Duplicate Books Detected"
 msgstr "Slett bok"
 
-#: cps/templates/layout.html:447
+#: cps/templates/layout.html:448
 msgid "You have unresolved duplicate books in your library"
 msgstr ""
 
-#: cps/templates/layout.html:452
+#: cps/templates/layout.html:453
 #, fuzzy
 msgid "Duplicate Groups Found"
 msgstr "Merket ble ikke funnet"
 
-#: cps/templates/layout.html:460
+#: cps/templates/layout.html:461
 msgid "Remind Me Later"
 msgstr ""
 
-#: cps/templates/layout.html:463
+#: cps/templates/layout.html:464
 msgid "View & Resolve Duplicates"
 msgstr ""
 
@@ -6230,33 +6229,54 @@ msgstr ""
 msgid "Read"
 msgstr "redusere"
 
-#: cps/templates/login.html:30
+#: cps/templates/login.html:11
+msgid "Sign in to your library"
+msgstr ""
+
+#: cps/templates/login.html:34
 #, fuzzy
 msgid "Show Password"
 msgstr "Passord"
 
-#: cps/templates/login.html:35
+#: cps/templates/login.html:43
 msgid "Remember Me"
 msgstr ""
 
-#: cps/templates/login.html:41
+#: cps/templates/login.html:46
 #, fuzzy
 msgid "Forgot Password?"
 msgstr "Passord"
 
-#: cps/templates/login.html:55
-msgid ""
-"Log in with Magic\n"
-"      Link"
-msgstr ""
+#: cps/templates/login.html:56
+#, fuzzy
+msgid "or"
+msgstr "Havn"
 
-#: cps/templates/login.html:95
+#: cps/templates/login.html:63
 msgid "Log in with SSO"
 msgstr ""
 
-#: cps/templates/login.html:102
+#: cps/templates/login.html:72
+#, fuzzy
+msgid "Login with GitHub"
+msgstr "Kunne ikke logge på med GitHub."
+
+#: cps/templates/login.html:83
+#, fuzzy
+msgid "Login with Google"
+msgstr "Kunne ikke logge på med Google."
+
+#: cps/templates/login.html:90
+msgid "Log in with Magic Link"
+msgstr ""
+
+#: cps/templates/login.html:98
 msgid ""
 "Standard login is disabled. Please use one of the alternative login methods."
+msgstr ""
+
+#: cps/templates/login.html:109
+msgid "Continue as guest"
 msgstr ""
 
 #: cps/templates/logviewer.html:6
@@ -7302,9 +7322,6 @@ msgstr "Vis serieutvalg"
 #, fuzzy
 #~ msgid "Error scheduling EPUB Fixer"
 #~ msgstr "Feil ved sletting av hylle"
-
-#~ msgid "Port"
-#~ msgstr "Havn"
 
 #, fuzzy
 #~ msgid "Cancel Scan"

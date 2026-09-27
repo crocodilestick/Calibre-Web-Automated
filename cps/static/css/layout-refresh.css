@@ -1,0 +1,375 @@
+/* Calibre-Web Automated – fork of Calibre-Web
+ * Copyright (C) 2018-2026 Calibre-Web contributors
+ * Copyright (C) 2024-2026 Calibre-Web Automated contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * See CONTRIBUTORS for full list of authors.
+ *
+ * Layout refresh for the caliBlur theme: sort toolbar, book grid density,
+ * page title bar, and the mobile navigation drawer. Loaded after caliBlur.css
+ * and caliBlur_override.css; everything is scoped to body.blur (caliBlur).
+ *
+ * The book grid is laid out by Isotope (main.js), which measures each .book's
+ * width, so column counts are set by giving .book a percentage width. */
+
+body.blur {
+    --lr-surface: rgba(20, 24, 29, .55);
+    --lr-drawer: #16191e;
+    --lr-border: rgba(255, 255, 255, .08);
+    --lr-chip: rgba(255, 255, 255, .06);
+    --lr-chip-hover: rgba(255, 255, 255, .11);
+    --lr-text: #eef0f3;
+    --lr-muted: rgba(238, 240, 243, .6);
+    --lr-accent: var(--color-secondary, #CC7B19);
+    --lr-accent-soft: rgba(204, 123, 25, .18);
+}
+
+/* ── Sort / shelf toolbar ───────────────────────────────────────────────── */
+body.blur .shelf-actions {
+    padding: 10px 12px;
+    margin: 0 15px 20px;
+    background: var(--lr-surface);
+    border: 1px solid var(--lr-border);
+    border-radius: 12px;
+    -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
+}
+
+body.blur .shelf-actions .filterheader {
+    display: flex !important;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+}
+
+body.blur .shelf-actions .filterheader > .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1px;
+    height: 34px;
+    min-width: 44px;
+    margin: 0 !important;
+    padding: 0 10px;
+    color: var(--lr-muted);
+    background: var(--lr-chip);
+    border: 1px solid var(--lr-border);
+    border-radius: 8px;
+    box-shadow: none;
+    transition: background-color .15s ease, color .15s ease, border-color .15s ease;
+}
+
+body.blur .shelf-actions .filterheader > .btn:hover,
+body.blur .shelf-actions .filterheader > .btn:focus {
+    color: var(--lr-text);
+    background: var(--lr-chip-hover);
+    border-color: rgba(255, 255, 255, .16);
+}
+
+body.blur .shelf-actions .filterheader > .btn.active,
+body.blur .shelf-actions .filterheader > .btn.active:hover {
+    color: #fff;
+    background: var(--lr-accent);
+    border-color: transparent;
+}
+
+body.blur .shelf-actions .filterheader > .btn:focus-visible {
+    outline: 2px solid var(--lr-text);
+    outline-offset: 2px;
+}
+
+body.blur .shelf-actions .filterheader > .btn .glyphicon {
+    top: 0;
+    font-size: 13px;
+}
+
+body.blur .shelf-actions .magic-shelf-buttons .btn {
+    height: 34px;
+    border-radius: 8px;
+}
+
+/* ── Book cards ──────────────────────────────────────────────────────────── */
+body.blur .container-fluid .book .meta {
+    margin-top: 10px !important;
+}
+
+body.blur .container-fluid .book .meta .title {
+    font-weight: 600;
+    line-height: 1.3;
+}
+
+body.blur .container-fluid .book .meta .author {
+    line-height: 1.35;
+}
+
+/* ── Tablet: 3 columns beside the sidebar ─────────────────────────────── */
+@media (min-width: 768px) and (max-width: 991px) {
+    body.blur .discover .book:not(body) {
+        width: 33.3333% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        padding: 0 10px !important;
+    }
+}
+
+/* ── Phone ───────────────────────────────────────────────────────────────── */
+@media (max-width: 767px) {
+    /* Page title bar under the top navbar */
+    body.blur .discover > h2 {
+        display: flex;
+        align-items: center;
+        height: 44px !important;
+        padding: 0 16px !important;
+        font-size: 15px !important;
+        font-weight: 600;
+        letter-spacing: .01em;
+        background: rgba(15, 18, 22, .72) !important;
+        border-bottom: 1px solid var(--lr-border);
+        -webkit-backdrop-filter: blur(12px);
+        backdrop-filter: blur(12px);
+    }
+
+    body.blur .discover {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+    }
+
+    /* The grid pages sat 40px below the title bar */
+    body.blur > div.container-fluid > div > div.col-sm-10 > div.discover.load-more {
+        margin-top: 10px !important;
+    }
+
+    /* Menu button: a hamburger on the left, where the drawer opens, instead of
+       an avatar on the right */
+    body.blur .navbar > .container-fluid > .navbar-header > button.navbar-toggle {
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        right: auto;
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+        color: var(--lr-text);
+    }
+
+    body.blur .navbar > .container-fluid > .navbar-header > button.navbar-toggle:hover,
+    body.blur .navbar > .container-fluid > .navbar-header > button.navbar-toggle:focus-visible {
+        background: var(--lr-chip-hover);
+    }
+
+    body.blur .navbar > .container-fluid > .navbar-header > button.navbar-toggle:before {
+        top: 19px;
+        left: 11px;
+        right: auto;
+        width: 18px;
+        height: 2px;
+        border-radius: 1px;
+        background: currentColor;
+        box-shadow: 0 -6px 0 currentColor, 0 6px 0 currentColor;
+        overflow: visible;
+    }
+
+    body.blur > div.navbar.navbar-default.navbar-static-top > div > div.navbar-header > a {
+        padding-left: 52px;
+        width: calc(100vw - 60px);
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 17px;
+    }
+
+    /* Sort toolbar: one scrollable row instead of a two-row block */
+    body.blur .shelf-actions {
+        margin: 4px 12px 14px !important;
+        padding: 8px !important;
+        border-radius: 10px;
+        flex-direction: row !important;
+        align-items: center !important;
+    }
+
+    body.blur .shelf-actions .filterheader {
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        overflow-x: auto;
+        overscroll-behavior-x: contain;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        width: 100% !important;
+        text-align: left !important;
+        mask-image: linear-gradient(to right, #000 88%, transparent);
+        -webkit-mask-image: linear-gradient(to right, #000 88%, transparent);
+    }
+
+    body.blur .shelf-actions .filterheader::-webkit-scrollbar {
+        display: none;
+    }
+
+    body.blur .shelf-actions .filterheader > .btn {
+        flex: 0 0 auto;
+        height: 32px;
+        min-width: 40px;
+        padding: 0 9px;
+    }
+
+    body.blur .shelf-actions .magic-shelf-buttons {
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    /* Book grid: 3 columns */
+    body.blur .discover .row.display-flex {
+        margin: 0 6px !important;
+    }
+
+    body.blur .discover .book:not(body) {
+        width: 33.3333% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        padding: 0 6px !important;
+        margin: 0 0 18px !important;
+    }
+
+    body.blur .container-fluid .book .meta {
+        margin-top: 7px !important;
+    }
+
+    body.blur .container-fluid .book .meta .title {
+        font-size: 12.5px;
+    }
+
+    body.blur .container-fluid .book .meta .author,
+    body.blur .container-fluid .book .meta .series {
+        font-size: 11.5px;
+    }
+
+    /* Navigation drawer: dark panel instead of translucent orange */
+    body.blur .navbar-collapse.collapse {
+        width: 284px !important;
+        margin: 0 !important;
+        padding: 0 10px 24px !important;
+        background: var(--lr-drawer) !important;
+        border-right: 1px solid var(--lr-border);
+        box-shadow: 12px 0 40px rgba(0, 0, 0, .45);
+    }
+
+    /* Profile block: avatar and name on one row instead of a 130px header */
+    body.blur #main-nav > li:nth-child(1) {
+        height: 72px;
+        border-bottom: 1px solid var(--lr-border);
+    }
+
+    body.blur > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > a.profileDrop {
+        height: 72px;
+        border-radius: 8px;
+    }
+
+    body.blur > div.navbar.navbar-default.navbar-static-top > div > div.navbar-collapse.collapse > ul > li > a.profileDrop:before {
+        left: auto;
+        right: 14px;
+        top: 34px;
+        color: var(--lr-muted);
+    }
+
+    body.blur .profileDrop > span {
+        margin: 21px 12px;
+    }
+
+    body.blur .profileDrop + span.hidden-sm {
+        top: 20px;
+        left: 54px;
+        max-width: 170px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 17px;
+        line-height: 32px;
+    }
+
+    /* Section labels: smaller gaps, quieter type */
+    body.blur #main-nav > li.cwa-switch-theme,
+    body.blur #main-nav > li.top_tasks {
+        margin-top: 40px;
+    }
+
+    body.blur #main-nav > li.cwa-switch-theme:before,
+    body.blur #main-nav > li.top_tasks:before {
+        top: -36px;
+        padding-left: 15px;
+        line-height: 36px;
+        font-size: 11px;
+        letter-spacing: .08em;
+        color: var(--lr-muted);
+    }
+
+    body.blur #main-nav + #scnd-nav li.nav-head {
+        height: 36px;
+        min-height: 36px;
+        margin-top: 12px;
+        font-size: 11px;
+        line-height: 36px;
+        letter-spacing: .08em;
+        color: var(--lr-muted);
+    }
+
+    /* Desktop header strip; inside the drawer it showed as a dark box */
+    body.blur #main-nav + #scnd-nav::after {
+        display: none;
+    }
+
+    body.blur #main-nav + #scnd-nav > li.nav-head:first-child {
+        margin-top: 4px;
+    }
+
+    body.blur #main-nav > li:has(> #refresh-library) {
+        height: 44px;
+    }
+
+    body.blur #form-upload {
+        border-bottom-color: var(--lr-border);
+    }
+
+    /* Rows: 44px, rounded highlight on hover and for the current page */
+    body.blur #main-nav > li > a:not(.profileDrop),
+    body.blur .navbar-collapse.collapse .navigation > ul > li > a {
+        height: 44px;
+        border-radius: 8px;
+        transition: background-color .15s ease, color .15s ease;
+    }
+
+    body.blur #main-nav > li > a:not(.profileDrop):hover,
+    body.blur #main-nav + #scnd-nav li a:hover {
+        background: rgba(255, 255, 255, .06);
+    }
+
+    body.blur #main-nav + #scnd-nav li.active a {
+        background: var(--lr-accent-soft);
+    }
+
+    body.blur .navigation > ul > li {
+        min-height: 44px;
+        max-width: none;
+    }
+
+    body.blur .navbar-collapse.collapse:not(.in) {
+        -webkit-transform: translate3d(-100%, 0, 0);
+        transform: translate3d(-100%, 0, 0);
+        box-shadow: none;
+    }
+
+    body.blur .navbar-collapse.collapse.in {
+        -webkit-transition: -webkit-transform .28s cubic-bezier(.2, .8, .2, 1);
+        transition: transform .28s cubic-bezier(.2, .8, .2, 1);
+    }
+
+    body.blur .navbar-collapse.collapse.in + .sidebar-backdrop {
+        background: rgba(0, 0, 0, .55);
+        -webkit-backdrop-filter: blur(2px);
+        backdrop-filter: blur(2px);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body.blur .shelf-actions .filterheader > .btn,
+    body.blur .navbar-collapse.collapse.in {
+        transition: none;
+    }
+}

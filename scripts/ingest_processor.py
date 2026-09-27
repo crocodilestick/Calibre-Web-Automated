@@ -1342,7 +1342,13 @@ class NewBookProcessor:
         try:
             nsm = os.getenv("NETWORK_SHARE_MODE", "false").strip().lower() in ("1", "true", "yes", "on")
             if not nsm:
-                subprocess.run(["chown", "-R", "abc:abc", self.library_dir], check=True)
+                # Only touch entries whose ownership actually differs. A blanket
+                # "chown -R" issues an fchownat() for every inode in the library on
+                # every single book, which is O(library size) instead of O(new files).
+                # -h matches "chown -R", which uses AT_SYMLINK_NOFOLLOW.
+                subprocess.run(["find", self.library_dir,
+                                "(", "!", "-user", "abc", "-o", "!", "-group", "abc", ")",
+                                "-exec", "chown", "-h", "abc:abc", "{}", "+"], check=True)
             else:
                 print(f"[ingest-processor] NETWORK_SHARE_MODE=true detected; skipping chown of {self.library_dir}", flush=True)
         except subprocess.CalledProcessError as e:

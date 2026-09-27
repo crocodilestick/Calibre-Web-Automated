@@ -81,9 +81,8 @@ msgid "Error loading review queue: %(error)s"
 msgstr "Chyba pri načítaní frontu na kontrolu: %(error)s"
 
 #: cps/admin.py:384
-#, fuzzy
 msgid "Hardcover ID applied successfully"
-msgstr "Zmazaných {} používateľov"
+msgstr "Hardcover ID bolo úspešne použité"
 
 #: cps/admin.py:401
 #, python-format
@@ -217,9 +216,8 @@ msgid "Invalid Restricted Column"
 msgstr "Neplatný stĺpec na obmedzenie"
 
 #: cps/admin.py:916 cps/admin.py:2464
-#, fuzzy
 msgid "Calibre-Web Automated configuration updated"
-msgstr "Konfigurácia Calibre-Web bola aktualizovaná"
+msgstr "Konfigurácia Calibre-Web Automated bola aktualizovaná"
 
 #: cps/admin.py:928
 msgid "Do you really want to delete the Kobo Token?"
@@ -279,22 +277,20 @@ msgid "Are you sure you want to change Calibre library location?"
 msgstr "Naozaj chcete zmeniť umiestnenie pre knižnicu Calibre?"
 
 #: cps/admin.py:951
-#, fuzzy
 msgid ""
 "Calibre-Web Automated will search for updated Covers and update Cover "
 "Thumbnails, this may take a while?"
 msgstr ""
-"Calilbre-Web vyhľadá aktualizované obálky a aktualizuje ich náhľady, môže to"
-" chvíľu trvať?"
+"Calibre-Web Automated vyhľadá aktualizované obálky a aktualizuje ich "
+"náhľady, môže to chvíľu trvať?"
 
 #: cps/admin.py:954
-#, fuzzy
 msgid ""
 "Are you sure you want delete Calibre-Web Automated's sync database to force "
 "a full sync with your Kobo Reader?"
 msgstr ""
-"Naozaj chcete zmazať synchronizačnú databázu Calibre-Web aby ste vynútili "
-"úplnú synchronizáciu s vašou Kobo čítačkou?"
+"Naozaj chcete zmazať synchronizačnú databázu Calibre-Web Automated a vynútiť"
+" tak úplnú synchronizáciu s vašou čítačkou Kobo?"
 
 #: cps/admin.py:1193 cps/admin.py:1199 cps/admin.py:1209 cps/admin.py:1219
 #: cps/templates/modal_dialogs.html:29 cps/templates/user_table.html:41
@@ -457,9 +453,8 @@ msgid "Settings DB is not Writeable"
 msgstr "Nie je možné zapisovať do databázy nastavení"
 
 #: cps/admin.py:1845 cps/opds.py:199 cps/web.py:2604 cps/web.py:2729
-#, fuzzy
 msgid "title"
-msgstr "Názov"
+msgstr "názov"
 
 #: cps/admin.py:1951 cps/admin.py:2822
 #, python-format
@@ -714,9 +709,9 @@ msgstr ""
 "koncový bod OIDC."
 
 #: cps/admin.py:2907
-#, fuzzy, python-format
+#, python-format
 msgid "Connection failed: %(error)s"
-msgstr "Chyba spojenia"
+msgstr "Pripojenie zlyhalo: %(error)s"
 
 #: cps/admin.py:2933
 #, python-format
@@ -734,9 +729,8 @@ msgstr ""
 "URL adresa metadát je platná! Nájdených %(count)s koncových bodov OAuth."
 
 #: cps/admin.py:2946
-#, fuzzy
 msgid " User info endpoint is available."
-msgstr "Nie je dostupná informácia o vydaní"
+msgstr " Koncový bod s informáciami o používateľovi je dostupný."
 
 #: cps/admin.py:2948
 msgid ""
@@ -768,14 +762,12 @@ msgid "Connection failed: Invalid JSON in response."
 msgstr "Spojenie zlyhalo: Neplatný JSON v odpovedi."
 
 #: cps/admin.py:2964
-#, fuzzy
 msgid "An unknown error occurred."
-msgstr "Vyskytla sa neočakávaná chyba. Prosím, skúste to opäť neskôr."
+msgstr "Vyskytla sa neznáma chyba."
 
 #: cps/admin.py:2976
-#, fuzzy
 msgid "Restore already in progress."
-msgstr "Chyba spojenia"
+msgstr "Obnova už prebieha."
 
 #: cps/admin.py:2980
 msgid "Restore failed: Calibre library path is not configured."
@@ -792,9 +784,9 @@ msgid "Restore failed: app.db not found at %(path)s"
 msgstr "Obnova zlyhala: súbor app.db nebol nájdený v %(path)s"
 
 #: cps/admin.py:3062 cps/admin.py:3102
-#, fuzzy, python-format
+#, python-format
 msgid "Restore failed: %(err)s"
-msgstr "Chyba spojenia"
+msgstr "Obnova zlyhala: %(err)s"
 
 #: cps/admin.py:3079
 msgid "Restore completed but app.db cleanup failed. See logs for details."
@@ -828,9 +820,8 @@ msgid "Spanish"
 msgstr "Španielčina"
 
 #: cps/constants.py:211
-#, fuzzy
 msgid "Finnish"
-msgstr "Hotová"
+msgstr "Fínčina"
 
 #: cps/constants.py:212
 msgid "French"
@@ -873,9 +864,8 @@ msgid "Norwegian"
 msgstr "Nórčina"
 
 #: cps/constants.py:222
-#, fuzzy
 msgid "Polish"
-msgstr "Vydavateľ"
+msgstr "Poľština"
 
 #: cps/constants.py:223
 msgid "Portuguese"
@@ -946,9 +936,8 @@ msgid "Invalid cron expression for duplicate scans. Changes were not saved."
 msgstr "Neplatný cron výraz pre skenovanie duplicít. Zmeny neboli uložené."
 
 #: cps/cwa_functions.py:1055
-#, fuzzy
 msgid "Calibre-Web Automated User Settings"
-msgstr "Nastavenie Calibre prevádzača e-kníh"
+msgstr "Používateľské nastavenia Calibre-Web Automated"
 
 #: cps/cwa_functions.py:1101 cps/cwa_functions.py:1103
 #: cps/cwa_functions.py:1107 cps/cwa_functions.py:1109
@@ -958,9 +947,8 @@ msgstr "Časová značka"
 
 #: cps/cwa_functions.py:1101 cps/cwa_functions.py:1103
 #: cps/templates/tasks.html:43
-#, fuzzy
 msgid "Book ID"
-msgstr "Knihy"
+msgstr "ID knihy"
 
 #: cps/cwa_functions.py:1101 cps/templates/book_edit.html:83
 #: cps/templates/search_form.html:8
@@ -968,24 +956,21 @@ msgid "Book Title"
 msgstr "Názov knihy"
 
 #: cps/cwa_functions.py:1101
-#, fuzzy
 msgid "Book Author"
-msgstr "Autor"
+msgstr "Autor knihy"
 
 #: cps/cwa_functions.py:1101
 msgid "Trigger Type"
 msgstr "Typ spustenia"
 
 #: cps/cwa_functions.py:1103 cps/cwa_functions.py:1109
-#, fuzzy
 msgid "Filepath"
-msgstr "Súborové formáty"
+msgstr "Cesta k súboru"
 
 #: cps/cwa_functions.py:1107 cps/cwa_functions.py:1109
 #: cps/cwa_functions.py:1112 cps/cwa_functions.py:1114
-#, fuzzy
 msgid "Filename"
-msgstr "meno"
+msgstr "Názov súboru"
 
 #: cps/cwa_functions.py:1107
 msgid "Manual?"
@@ -1009,19 +994,16 @@ msgid "Original Format"
 msgstr "Pôvodný formát"
 
 #: cps/cwa_functions.py:1114
-#, fuzzy
 msgid "End Format"
-msgstr "Formát nahrávania"
+msgstr "Cieľový formát"
 
 #: cps/cwa_functions.py:1190 cps/cwa_functions.py:1219
-#, fuzzy
 msgid "Unknown User"
-msgstr "Neznámy"
+msgstr "Neznámy používateľ"
 
 #: cps/cwa_functions.py:1327
-#, fuzzy
 msgid "Calibre-Web Automated Stats & Activity"
-msgstr "Testovací e-mail Calibre-Web"
+msgstr "Calibre-Web Automated – štatistiky a aktivita"
 
 #: cps/cwa_functions.py:1711
 msgid "Calibre-Web Automated - Full Enforcement History"
@@ -1077,9 +1059,8 @@ msgid "Calibre-Web Automated - Convert Library"
 msgstr "Calibre-Web Automated - Prevod knižnice"
 
 #: cps/cwa_functions.py:2095 cps/cwa_functions.py:2119
-#, fuzzy
 msgid "Calibre-Web Automated - EPUB Fixer Service"
-msgstr "Nastavenie Calibre prevádzača e-kníh"
+msgstr "Calibre-Web Automated – služba EPUB Fixer"
 
 #: cps/cwa_functions.py:2173
 msgid "Single-book EPUB Fixer is not supported with Google Drive libraries."
@@ -1087,29 +1068,24 @@ msgstr ""
 "EPUB Fixer pre jednu knihu nie je podporovaný pre knižnice na Google Drive."
 
 #: cps/cwa_functions.py:2180
-#, fuzzy
 msgid "Invalid book selection."
-msgstr "Neplatná rola"
+msgstr "Neplatný výber knihy."
 
 #: cps/cwa_functions.py:2186
-#, fuzzy
 msgid "Book not found."
-msgstr "Žetón sa nenašiel"
+msgstr "Kniha sa nenašla."
 
 #: cps/cwa_functions.py:2192
-#, fuzzy
 msgid "Selected book has no EPUB format."
-msgstr "Zlúčiť vybrané knihy"
+msgstr "Vybraná kniha nemá formát EPUB."
 
 #: cps/cwa_functions.py:2196
-#, fuzzy
 msgid "EPUB file not found on disk."
-msgstr "Formát %(format)s sa nenachádza na disku"
+msgstr "Súbor EPUB sa na disku nenašiel."
 
 #: cps/cwa_functions.py:2211
-#, fuzzy
 msgid "EPUB Fixer started for selected book."
-msgstr "Zlúčiť vybrané knihy"
+msgstr "EPUB Fixer bol spustený pre vybranú knihu."
 
 #: cps/cwa_functions.py:2214
 msgid "Failed to start EPUB Fixer for selected book."
@@ -1140,18 +1116,16 @@ msgid "Invalid Base64 image data."
 msgstr "Neplatné údaje obrázka vo formáte Base64."
 
 #: cps/cwa_functions.py:2312
-#, fuzzy
 msgid "Invalid image data format."
-msgstr "Neplatný formát poštovej adresy"
+msgstr "Neplatný formát obrazových dát."
 
 #: cps/cwa_functions.py:2317
 msgid "Error validating image data."
 msgstr "Chyba pri overovaní údajov obrázka."
 
 #: cps/cwa_functions.py:2335
-#, fuzzy
 msgid "Profile picture updated successfully."
-msgstr "Zmazaných {} používateľov"
+msgstr "Profilový obrázok bol úspešne aktualizovaný."
 
 #: cps/cwa_functions.py:2348
 msgid "CWA Profile Picture Management (WIP)"
@@ -1167,23 +1141,20 @@ msgid "None"
 msgstr "Žiadne"
 
 #: cps/duplicates.py:352 cps/duplicates.py:363
-#, fuzzy
 msgid "Duplicate Books"
-msgstr "Zmazať knihu"
+msgstr "Duplicitné knihy"
 
 #: cps/duplicates.py:1201
 msgid "Duplicate group already dismissed"
 msgstr "Skupina duplicít už bola zamietnutá"
 
 #: cps/duplicates.py:1221
-#, fuzzy
 msgid "Duplicate group dismissed"
-msgstr "Zmazať knihu"
+msgstr "Skupina duplikátov bola zamietnutá"
 
 #: cps/duplicates.py:1258
-#, fuzzy
 msgid "Duplicate group restored"
-msgstr "Zmazať knihu"
+msgstr "Skupina duplikátov bola obnovená"
 
 #: cps/duplicates.py:1260
 msgid "Duplicate group was not dismissed"
@@ -1196,18 +1167,16 @@ msgstr ""
 "Prebieha import. Po dokončení importu spustite úplné skenovanie duplicít."
 
 #: cps/duplicates.py:1335
-#, fuzzy
 msgid "Duplicate scan queued"
-msgstr "Nič sa nenašlo"
+msgstr "Hľadanie duplikátov bolo zaradené do frontu"
 
 #: cps/duplicates.py:1404
 msgid "Duplicate scan completed (fallback)"
 msgstr "Skenovanie duplicít dokončené (náhradný režim)"
 
 #: cps/duplicates.py:1479
-#, fuzzy
 msgid "Invalid resolution strategy"
-msgstr "Neplatná rola"
+msgstr "Neplatná stratégia riešenia"
 
 #: cps/duplicates.py:1490
 msgid ""
@@ -1236,9 +1205,8 @@ msgid "Upload done, processing, please wait..."
 msgstr "Nahrávanie ukončené, spracováva sa, počkajte prosím..."
 
 #: cps/editbooks.py:157 cps/editbooks.py:183
-#, fuzzy
 msgid "Failed to queue upload for processing"
-msgstr "Vytváranie cesty k obálke knihy zlyhalo"
+msgstr "Nahratý súbor sa nepodarilo zaradiť na spracovanie"
 
 #: cps/editbooks.py:199
 msgid "Source or destination format for conversion missing"
@@ -1255,9 +1223,8 @@ msgid "There was an error converting this book: %(res)s"
 msgstr "Vyskytla sa chyba pri prevode tejto knihy: %(res)s"
 
 #: cps/editbooks.py:367 cps/editbooks.py:1249 cps/editbooks.py:1776
-#, fuzzy
 msgid "File type isn't allowed to be uploaded to this server"
-msgstr "Prípona súboru '%(ext)s' nemôže byť nahraná na tento server"
+msgstr "Tento typ súboru nie je povolené nahrať na tento server"
 
 #: cps/editbooks.py:372 cps/editbooks.py:1255 cps/editbooks.py:1787
 #, python-format
@@ -1340,9 +1307,9 @@ msgid "edit metadata"
 msgstr "upraviť metadáta"
 
 #: cps/editbooks.py:1546
-#, fuzzy, python-format
+#, python-format
 msgid "Seriesindex: %(seriesindex)s is not a valid number, skipping"
-msgstr "%(seriesindex)s nie je platné číslo, preskakuje sa"
+msgstr "Číslo série: %(seriesindex)s nie je platné číslo, preskakuje sa"
 
 #: cps/editbooks.py:1781
 msgid "User has no rights to upload additional file formats"
@@ -1400,33 +1367,30 @@ msgid "Send to eReader"
 msgstr "Poslať do čítačky"
 
 #: cps/helper.py:114 cps/helper.py:141 cps/helper.py:254
-#, fuzzy
 msgid "This Email has been sent via Calibre-Web Automated."
-msgstr "Tento e-mail bol odoslaný skrz Calibre-Web."
+msgstr "Tento e-mail bol odoslaný cez Calibre-Web Automated."
 
 #: cps/helper.py:129
-#, fuzzy, python-format
+#, python-format
 msgid "Conversion timed out for book id: %(book)d"
-msgstr "Formát %(format)s sa nenašiel pre knihu s ID: %(book)d"
+msgstr "Prevod knihy s ID %(book)d vypršal"
 
 #: cps/helper.py:131
-#, fuzzy, python-format
+#, python-format
 msgid "Conversion failed for book id: %(book)d"
-msgstr "Formát %(format)s sa nenašiel pre knihu s ID: %(book)d"
+msgstr "Prevod knihy s ID %(book)d zlyhal"
 
 #: cps/helper.py:139
-#, fuzzy
 msgid "Calibre-Web Automated Test Email"
-msgstr "Testovací e-mail Calibre-Web"
+msgstr "Testovací e-mail Calibre-Web Automated"
 
 #: cps/helper.py:140
 msgid "Test Email"
 msgstr "Testovací e-mail"
 
 #: cps/helper.py:157
-#, fuzzy
 msgid "Get Started with Calibre-Web Automated"
-msgstr "Začnite s aplikáciu Calibre-Web"
+msgstr "Začíname s Calibre-Web Automated"
 
 #: cps/helper.py:162
 #, python-format
@@ -1598,9 +1562,8 @@ msgid "Please specify a directory, not a file"
 msgstr "Prosím, zadajte priečinok, nie súbor"
 
 #: cps/helper.py:1387
-#, fuzzy
 msgid "Calibre binaries not viable"
-msgstr "Do databázy nie je možné zapisovať"
+msgstr "Binárne súbory Calibre nie sú použiteľné"
 
 #: cps/helper.py:1396
 #, python-format
@@ -1608,27 +1571,25 @@ msgid "Missing calibre binaries: %(missing)s"
 msgstr "Chýbajúce binárne súbory Calibre: %(missing)s"
 
 #: cps/helper.py:1398
-#, fuzzy, python-format
+#, python-format
 msgid "Missing executable permissions: %(missing)s"
-msgstr "Chýba právo na vykonanie"
+msgstr "Chýbajúce oprávnenia na spustenie: %(missing)s"
 
 #: cps/helper.py:1403
-#, fuzzy
 msgid "Error executing Calibre"
-msgstr "Chyba pri spustení UnRar"
+msgstr "Chyba pri spúšťaní Calibre"
 
 #: cps/helper.py:1578 cps/templates/admin.html:240
 msgid "Queue all books for metadata backup"
 msgstr "Zaradiť všetky knihy na zálohovanie metadát"
 
 #: cps/kobo_auth.py:80
-#, fuzzy
 msgid ""
 "Please access Calibre-Web Automated from non localhost to get valid "
 "api_endpoint for kobo device"
 msgstr ""
-"Prosím, pristupujte k Calibre-Web z nie lokálneho hostiteľa aby ste získali "
-"platný API koncový bod pre Kobo zariadenie"
+"Pristupujte ku Calibre-Web Automated z inej adresy ako localhost, aby ste "
+"získali platný api_endpoint pre zariadenie Kobo"
 
 #: cps/kobo_auth.py:99
 msgid "Kobo Setup"
@@ -1665,11 +1626,12 @@ msgstr ""
 "alebo kontaktujte administrátora."
 
 #: cps/oauth_bb.py:268
-#, fuzzy
 msgid ""
 "Login failed: The OAuth provider returned invalid user profile data. Please "
 "contact your administrator."
-msgstr "Poštový server nie je nastavený, kontaktujte prosím správcu."
+msgstr ""
+"Prihlásenie zlyhalo: poskytovateľ OAuth vrátil neplatné údaje profilu "
+"používateľa. Kontaktujte svojho správcu."
 
 #: cps/oauth_bb.py:290
 #, python-format
@@ -1722,9 +1684,8 @@ msgstr ""
 "administrátora."
 
 #: cps/oauth_bb.py:574
-#, fuzzy
 msgid "OAuth system error. Please contact administrator."
-msgstr "Poštový server nie je nastavený, kontaktujte prosím správcu."
+msgstr "Systémová chyba OAuth. Kontaktujte správcu."
 
 #: cps/oauth_bb.py:607
 #, python-format
@@ -1758,9 +1719,8 @@ msgid "Failed to fetch user info from Google."
 msgstr "Získanie používateľa z Google zlyhalo."
 
 #: cps/oauth_bb.py:881
-#, fuzzy
 msgid "Failed to log in with Generic OAuth."
-msgstr "Prihlásenie na GitHub zlyhalo."
+msgstr "Prihlásenie cez všeobecné OAuth zlyhalo."
 
 #: cps/oauth_bb.py:897
 msgid "OAuth authentication failed: Token validation error. Please try again."
@@ -1805,14 +1765,13 @@ msgid "Google Oauth error: {}"
 msgstr "Chyba Google OAuth: {}"
 
 #: cps/oauth_bb.py:1081 cps/oauth_bb.py:1089
-#, fuzzy, python-brace-format
+#, python-brace-format
 msgid "OAuth error: {}"
-msgstr "Chyba GitHub OAuth: {}"
+msgstr "Chyba OAuth: {}"
 
 #: cps/opds.py:200
-#, fuzzy
 msgid "description"
-msgstr "Popis"
+msgstr "popis"
 
 #: cps/opds.py:483
 #, python-brace-format
@@ -1990,9 +1949,8 @@ msgid "Duplicates"
 msgstr "Duplicity"
 
 #: cps/render_template.py:140
-#, fuzzy
 msgid "Show Duplicate Books"
-msgstr "Zobraziť najlepšie hodnotené knihy"
+msgstr "Zobraziť duplicitné knihy"
 
 #: cps/render_template.py:217
 msgid ""
@@ -2028,9 +1986,9 @@ msgid "Rating >= %(rating)s"
 msgstr "Hodnotenie >= %(rating)s"
 
 #: cps/search.py:237
-#, fuzzy, python-format
+#, python-format
 msgid "Read Status = '%(status)s'"
-msgstr "Status čítania = %(status)s"
+msgstr "Stav čítania = '%(status)s'"
 
 #: cps/search.py:354
 msgid "Error on search for custom columns, please restart Calibre-Web"
@@ -2281,9 +2239,8 @@ msgid "Language: %(name)s"
 msgstr "Jazyk: %(name)s"
 
 #: cps/web.py:940
-#, fuzzy
 msgid "Error loading magic shelf"
-msgstr "Chyba pri mazaní police"
+msgstr "Chyba pri načítaní magickej police"
 
 #: cps/web.py:965
 #, python-format
@@ -2295,18 +2252,16 @@ msgid "No rules provided"
 msgstr "Neboli poskytnuté žiadne pravidlá"
 
 #: cps/web.py:1044
-#, fuzzy
 msgid "Invalid rules format"
-msgstr "Neplatný formát poštovej adresy"
+msgstr "Neplatný formát pravidiel"
 
 #: cps/web.py:1066
 msgid "Error processing rules"
 msgstr "Chyba pri spracovaní pravidiel"
 
 #: cps/web.py:1070
-#, fuzzy
 msgid "Invalid request"
-msgstr "Neplatná rola"
+msgstr "Neplatná požiadavka"
 
 #: cps/web.py:1114
 msgid "Name and rules are required"
@@ -2317,52 +2272,44 @@ msgid "Shelf name too long (max 100 characters)"
 msgstr "Názov police je príliš dlhý (max. 100 znakov)"
 
 #: cps/web.py:1139
-#, fuzzy
 msgid "Error creating shelf"
-msgstr "Chyba pri mazaní police"
+msgstr "Chyba pri vytváraní police"
 
 #: cps/templates/layout.html:326 cps/web.py:1153
-#, fuzzy
 msgid "Create Magic Shelf"
-msgstr "Vytvoriť policu"
+msgstr "Vytvoriť magickú policu"
 
 #: cps/web.py:1207
 msgid "Permission denied to change public status"
 msgstr "Zmena verejného stavu bola zamietnutá"
 
 #: cps/web.py:1211
-#, fuzzy
 msgid "Shelf name is required"
-msgstr "Toto pole je povinné"
+msgstr "Názov police je povinný"
 
 #: cps/web.py:1245
-#, fuzzy
 msgid "Error updating shelf"
-msgstr "Chyba pri mazaní police"
+msgstr "Chyba pri aktualizácii police"
 
 #: cps/web.py:1260
-#, fuzzy
 msgid "Edit Magic Shelf"
-msgstr "Upraviť policu"
+msgstr "Upraviť magickú policu"
 
 #: cps/web.py:1273
-#, fuzzy
 msgid "Shelf not found"
-msgstr "Používateľ sa nenašiel"
+msgstr "Polica sa nenašla"
 
 #: cps/web.py:1278
 msgid "Permission denied"
 msgstr "Prístup zamietnutý"
 
 #: cps/web.py:1309
-#, fuzzy
 msgid "Shelf duplicated successfully"
-msgstr "Zmazaných {} používateľov"
+msgstr "Polica bola úspešne duplikovaná"
 
 #: cps/web.py:1315
-#, fuzzy
 msgid "Error duplicating shelf"
-msgstr "Chyba pri mazaní police"
+msgstr "Chyba pri duplikovaní police"
 
 #: cps/templates/magic_shelf_edit.html:448 cps/web.py:1342
 msgid ""
@@ -2373,7 +2320,6 @@ msgstr ""
 "používateľského profilu."
 
 #: cps/web.py:1359
-#, fuzzy
 msgid "Error deleting shelf"
 msgstr "Chyba pri mazaní police"
 
@@ -2389,18 +2335,16 @@ msgid "Shelf already hidden"
 msgstr "Polička je už skrytá"
 
 #: cps/web.py:1399
-#, fuzzy
 msgid "Error hiding shelf"
-msgstr "Chyba pri mazaní police"
+msgstr "Chyba pri skrývaní police"
 
 #: cps/web.py:1413
 msgid "Shelf was not hidden"
 msgstr "Polička nebola skrytá"
 
 #: cps/web.py:1422
-#, fuzzy
 msgid "Error unhiding shelf"
-msgstr "Chyba pri mazaní police"
+msgstr "Chyba pri zrušení skrytia police"
 
 #: cps/templates/admin.html:18 cps/web.py:1569
 msgid "Downloads"
@@ -2437,9 +2381,8 @@ msgid "Additional email addresses are disabled for your account."
 msgstr "Dodatočné e-mailové adresy sú pre vaše konto zakázané."
 
 #: cps/web.py:2046
-#, fuzzy
 msgid "Success! Book queued for sending to the selected address(es)!"
-msgstr "Úspech! Kniha bola zaradená na odoslanie do %(eReadermail)s"
+msgstr "Úspech! Kniha bola zaradená na odoslanie na vybrané adresy!"
 
 #: cps/web.py:2065
 msgid "Please wait one minute to register next user"
@@ -2453,9 +2396,8 @@ msgid "Register"
 msgstr "Registrovať"
 
 #: cps/web.py:2069 cps/web.py:2234
-#, fuzzy
 msgid "Connection error to limiter backend, please contact your administrator"
-msgstr "Poštový server nie je nastavený, kontaktujte prosím správcu."
+msgstr "Chyba pripojenia k backendu obmedzovača, kontaktujte svojho správcu"
 
 #: cps/web.py:2074 cps/web.py:2126
 msgid ""
@@ -2471,19 +2413,18 @@ msgid "Success! Confirmation Email has been sent."
 msgstr "Úspech! Potvrdzujúci e-mail bol odoslaný."
 
 #: cps/web.py:2163
-#, fuzzy
 msgid ""
 "Authentication loop detected. If you're experiencing login issues, please "
 "contact your administrator."
 msgstr ""
-"Inštancia Calibre-Web nie je nastavené, kontaktujte prosím vašeho správcu"
+"Zistila sa slučka overovania. Ak máte problémy s prihlásením, kontaktujte "
+"svojho správcu."
 
 #: cps/web.py:2208
-#, fuzzy
 msgid ""
 "OAuth authentication is not properly configured. Please contact "
 "administrator."
-msgstr "Poštový server nie je nastavený, kontaktujte prosím správcu."
+msgstr "Overovanie OAuth nie je správne nakonfigurované. Kontaktujte správcu."
 
 #: cps/web.py:2213 cps/web.py:2240
 msgid "Cannot activate LDAP authentication"
@@ -2507,19 +2448,21 @@ msgid "you are now logged in as: '%(nickname)s'"
 msgstr "ste prihlásený ako: '%(nickname)s'"
 
 #: cps/web.py:2279
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "Welcome! Your account has been automatically created. You are now logged in "
 "as: '%(nickname)s'"
-msgstr "Úspech! Teraz ste prihlásený ako: %(nickname)s"
+msgstr ""
+"Vitajte! Váš účet bol automaticky vytvorený. Teraz ste prihlásený ako: "
+"'%(nickname)s'"
 
 #: cps/web.py:2284 cps/web.py:2287
-#, fuzzy
 msgid ""
 "Authentication successful, but account creation failed. Please contact your "
 "administrator."
 msgstr ""
-"Inštancia Calibre-Web nie je nastavené, kontaktujte prosím vašeho správcu"
+"Overenie prebehlo úspešne, ale vytvorenie účtu zlyhalo. Kontaktujte svojho "
+"správcu."
 
 #: cps/web.py:2291
 msgid ""
@@ -2573,9 +2516,8 @@ msgid "Oops! An account already exists for this Email."
 msgstr "Účet s touto e-mailovou adresou už existuje."
 
 #: cps/web.py:2895
-#, fuzzy
 msgid "Invalid book ID."
-msgstr "Neplatná rola"
+msgstr "Neplatné ID knihy."
 
 #: cps/progress_syncing/protocols/kosync.py:485
 msgid "KOReader Sync Plugin"
@@ -2590,23 +2532,20 @@ msgid "Auto-fetching Hardcover IDs"
 msgstr "Automatické získavanie ID Hardcover"
 
 #: cps/tasks/auto_send.py:34
-#, fuzzy
 msgid "Preparing to send to eReader..."
-msgstr "%(book)s odoslaná do čítačky"
+msgstr "Pripravuje sa odoslanie do čítačky..."
 
 #: cps/tasks/auto_send.py:56
 msgid "Checking available formats..."
 msgstr "Kontrolujú sa dostupné formáty..."
 
 #: cps/tasks/auto_send.py:69
-#, fuzzy
 msgid "Sending to eReader..."
-msgstr "Poslať do čítačky"
+msgstr "Odosiela sa do čítačky..."
 
 #: cps/tasks/auto_send.py:86
-#, fuzzy
 msgid "Auto-send completed successfully"
-msgstr "Zmazaných {} používateľov"
+msgstr "Automatické odoslanie bolo úspešne dokončené"
 
 #: cps/tasks/auto_send.py:102
 msgid "Auto-Send"
@@ -2669,9 +2608,8 @@ msgid "Clean archived book references"
 msgstr "Vyčistiť odkazy na archivované knihy"
 
 #: cps/tasks/duplicate_scan.py:36 cps/tasks/duplicate_scan.py:52
-#, fuzzy
 msgid "Duplicate scan"
-msgstr "Zmazať knihu"
+msgstr "Hľadanie duplikátov"
 
 #: cps/tasks/duplicate_scan.py:82
 msgid "Duplicate scan skipped: import in progress"
@@ -2691,20 +2629,17 @@ msgid "Building duplicate index: no books"
 msgstr "Vytvára sa index duplicít: žiadne knihy"
 
 #: cps/tasks/duplicate_scan.py:108
-#, fuzzy
 msgid "Finding duplicate groups"
-msgstr "Zmazať knihu"
+msgstr "Hľadajú sa skupiny duplikátov"
 
 #: cps/tasks/duplicate_scan.py:124
-#, fuzzy
 msgid "Updating duplicate cache"
-msgstr "Rozbaľuje sa aktualizačný balík"
+msgstr "Aktualizuje sa vyrovnávacia pamäť duplikátov"
 
 #: cps/tasks/duplicate_scan.py:153 cps/tasks/duplicate_scan.py:163
 #: cps/tasks/duplicate_scan.py:203 cps/tasks/duplicate_scan.py:212
-#, fuzzy
 msgid "Duplicate scan pending: manual scan required"
-msgstr "Nič sa nenašlo"
+msgstr "Hľadanie duplikátov čaká: je potrebné ručné hľadanie"
 
 #: cps/tasks/duplicate_scan.py:231
 #, python-format
@@ -2735,9 +2670,8 @@ msgid "Convert Library – full run"
 msgstr "Prevod knižnice – úplný beh"
 
 #: cps/tasks/ops.py:84
-#, fuzzy
 msgid "Convert Library"
-msgstr "V knižnici"
+msgstr "Previesť knižnicu"
 
 #: cps/tasks/ops.py:95
 msgid "EPUB Fixer – full run"
@@ -2791,9 +2725,8 @@ msgid "Send to eReader Email"
 msgstr "Poslať na e-mail čítačky"
 
 #: cps/templates/admin.html:17 cps/templates/user_edit.html:221
-#, fuzzy
 msgid "Send to eReader Subject"
-msgstr "Poslať do čítačky"
+msgstr "Predmet pre odoslanie do čítačky"
 
 #: cps/templates/admin.html:19 cps/templates/layout.html:166
 #: cps/templates/user_table.html:144
@@ -2842,9 +2775,8 @@ msgid "Import LDAP Users"
 msgstr "Importovať LDAP používateľov"
 
 #: cps/templates/admin.html:67
-#, fuzzy
 msgid "Email Server Settings&nbsp;&nbsp;📬"
-msgstr "Nastavenia poštového servera"
+msgstr "Nastavenia e-mailového servera&nbsp;&nbsp;📬"
 
 #: cps/templates/admin.html:72 cps/templates/email_edit.html:31
 msgid "SMTP Hostname"
@@ -2924,9 +2856,8 @@ msgid "Reverse Proxy Header Name"
 msgstr "Meno hlavičky pre reverznú proxy"
 
 #: cps/templates/admin.html:164
-#, fuzzy
 msgid "CWA Settings"
-msgstr "Nastavenia"
+msgstr "Nastavenia CWA"
 
 #: cps/templates/admin.html:165
 msgid "Edit Basic Configuration"
@@ -2941,9 +2872,8 @@ msgid "Edit Calibre Database Configuration"
 msgstr "Upraviť konfiguráciu databázy Calibre"
 
 #: cps/templates/admin.html:173
-#, fuzzy
 msgid "Scheduled Tasks&nbsp;&nbsp;⌛"
-msgstr "Naplánované úlohy"
+msgstr "Naplánované úlohy&nbsp;&nbsp;⌛"
 
 #: cps/templates/admin.html:176 cps/templates/schedule_edit.html:12
 #: cps/templates/tasks.html:19
@@ -2980,17 +2910,14 @@ msgid "CWA Admin Functions&nbsp;&nbsp;⚡"
 msgstr "Administrátorské funkcie CWA&nbsp;&nbsp;⚡"
 
 #: cps/templates/admin.html:209
-#, fuzzy
 msgid "Show CWA Stats"
-msgstr "Nastavenia"
+msgstr "Zobraziť štatistiky CWA"
 
 #: cps/templates/admin.html:210
-#, fuzzy
 msgid "Check CWA Status"
-msgstr "Stav archivácie"
+msgstr "Skontrolovať stav CWA"
 
 #: cps/templates/admin.html:211
-#, fuzzy
 msgid "Setup KOReader Sync"
 msgstr "Nastaviť synchronizáciu KOReader"
 
@@ -2999,27 +2926,24 @@ msgid "CWA Library Conversion Service"
 msgstr "Služba prevodu knižnice CWA"
 
 #: cps/templates/admin.html:215
-#, fuzzy
 msgid "CWA EPUB Fixer Service"
-msgstr "Objaviť"
+msgstr "Služba EPUB Fixer CWA"
 
 #: cps/templates/admin.html:218
 msgid "CWA GitHub"
 msgstr "CWA GitHub"
 
 #: cps/templates/admin.html:219
-#, fuzzy
 msgid "CWA Discord Server"
-msgstr "Objaviť"
+msgstr "Discord server CWA"
 
 #: cps/templates/admin.html:222
 msgid "Run Hardcover Auto-Fetch"
 msgstr "Spustiť automatické získavanie z Hardcover"
 
 #: cps/templates/admin.html:227
-#, fuzzy
 msgid "Administration&nbsp;&nbsp;🚀"
-msgstr "Správa"
+msgstr "Správa&nbsp;&nbsp;🚀"
 
 #: cps/templates/admin.html:228
 msgid "Download Debug Package"
@@ -3038,9 +2962,8 @@ msgid "Shutdown"
 msgstr "Vypnúť"
 
 #: cps/templates/admin.html:245
-#, fuzzy
 msgid "Version Information&nbsp;&nbsp;📜"
-msgstr "Informácia o verzii"
+msgstr "Informácie o verzii&nbsp;&nbsp;📜"
 
 #: cps/templates/admin.html:250
 msgid "Version"
@@ -3293,9 +3216,8 @@ msgid "No"
 msgstr "Nie"
 
 #: cps/templates/book_edit.html:228
-#, fuzzy
 msgid "Hardcover Sync Blacklist"
-msgstr "Povoliť synchronizáciu Kobo"
+msgstr "Čierna listina synchronizácie Hardcover"
 
 #: cps/templates/book_edit.html:232
 msgid "Blacklist annotations from syncing to Hardcover"
@@ -3366,48 +3288,40 @@ msgstr "Zlúčiť"
 
 #: cps/templates/book_table.html:50 cps/templates/book_table.html:210
 #: cps/templates/duplicates.html:660
-#, fuzzy
 msgid "Archive"
-msgstr "Archivovaný"
+msgstr "Archivovať"
 
 #: cps/templates/book_table.html:53 cps/templates/book_table.html:230
-#, fuzzy
 msgid "Unarchive"
-msgstr "Archivovaný"
+msgstr "Zrušiť archiváciu"
 
 #: cps/templates/book_table.html:56 cps/templates/book_table.html:250
-#, fuzzy
 msgid "Mark as read"
-msgstr "Označiť ako neprečítané"
+msgstr "Označiť ako prečítané"
 
 #: cps/templates/book_table.html:59 cps/templates/book_table.html:270
-#, fuzzy
 msgid "Mark as unread"
 msgstr "Označiť ako neprečítané"
 
 #: cps/templates/book_table.html:65
-#, fuzzy
 msgid "Add to Shelf"
-msgstr "Pridať do police"
+msgstr "Pridať na policu"
 
 #: cps/templates/book_table.html:67
-#, fuzzy
 msgid " Exchange author & title"
-msgstr "Vymeniť autora a názov"
+msgstr " Vymeniť autora a názov"
 
 #: cps/templates/book_table.html:72
-#, fuzzy
 msgid "Select all"
-msgstr "Vytvoriť policu"
+msgstr "Vybrať všetko"
 
 #: cps/templates/book_table.html:75
 msgid "Clear all"
 msgstr "Vymazať všetko"
 
 #: cps/templates/book_table.html:84
-#, fuzzy
 msgid "Update Title Sort automatically  "
-msgstr "Automaticky aktualizovať triedenie podľa názvu"
+msgstr "Automaticky aktualizovať triedenie podľa názvu  "
 
 #: cps/templates/book_table.html:88
 msgid "Update Author Sort automatically"
@@ -3469,19 +3383,16 @@ msgid "Enter comments"
 msgstr "Zadajte komentáre"
 
 #: cps/templates/book_table.html:112
-#, fuzzy
 msgid "Comments"
 msgstr "Komentáre"
 
 #: cps/templates/book_table.html:114
-#, fuzzy
 msgid "Archived?"
-msgstr "Archivovaný"
+msgstr "Archivované?"
 
 #: cps/templates/book_table.html:116
-#, fuzzy
 msgid "Read?"
-msgstr "Čítať"
+msgstr "Prečítané?"
 
 #: cps/templates/book_table.html:119 cps/templates/book_table.html:121
 #: cps/templates/book_table.html:123 cps/templates/book_table.html:125
@@ -3543,9 +3454,8 @@ msgstr ""
 "hodnôt. Použite hodnoty oddelené čiarkou (napr. \"Meno1, Meno2\")."
 
 #: cps/templates/book_table.html:343
-#, fuzzy
 msgid "Select a Shelf"
-msgstr "Vytvoriť policu"
+msgstr "Vyberte policu"
 
 #: cps/templates/book_table.html:346
 msgid "Please select a shelf to add the selected books to:"
@@ -3561,9 +3471,8 @@ msgid "Add"
 msgstr "Pridať"
 
 #: cps/templates/config_db.html:38
-#, fuzzy
 msgid "Location of Calibre Database (metadata.db file)"
-msgstr "Umiestnenie databázy Calibre"
+msgstr "Umiestnenie databázy Calibre (súbor metadata.db)"
 
 #: cps/templates/config_db.html:48
 msgid ""
@@ -3642,9 +3551,8 @@ msgid "Revoke"
 msgstr "Zrušiť"
 
 #: cps/templates/config_db.html:118
-#, fuzzy
 msgid "Last Resort: Restore Calibre Database (experimental)"
-msgstr "Znovu naviazať spojenie s Calibre databázou"
+msgstr "Posledná možnosť: obnoviť databázu Calibre (experimentálne)"
 
 #: cps/templates/config_db.html:119
 msgid ""
@@ -3665,14 +3573,12 @@ msgstr ""
 "obnove sa uloží spolu so zálohami."
 
 #: cps/templates/config_db.html:122
-#, fuzzy
 msgid "Are you sure? This cannot be undone."
-msgstr "Skutočne chcete vypnúťť?"
+msgstr "Ste si istý? Túto akciu nie je možné vrátiť späť."
 
 #: cps/templates/config_db.html:122
-#, fuzzy
 msgid "Restore Calibre Database (Last Resort)"
-msgstr "Znovu naviazať spojenie s Calibre databázou"
+msgstr "Obnoviť databázu Calibre (posledná možnosť)"
 
 #: cps/templates/config_db.html:137
 msgid "New db location is invalid, please enter valid path"
@@ -3729,10 +3635,8 @@ msgid "Logfile Configuration"
 msgstr "Konfigurácia súboru denníka"
 
 #: cps/templates/config_edit.html:149
-#, fuzzy
 msgid "Location and name of logfile (/dev/stdout for no entry)"
-msgstr ""
-"Umiestnenie a meno denníkového súboru pre prístup (access.log keď nezadané)"
+msgstr "Umiestnenie a názov súboru záznamov (/dev/stdout pre žiadny súbor)"
 
 #: cps/templates/config_edit.html:154
 msgid "Enable Access Log"
@@ -3744,9 +3648,8 @@ msgstr ""
 "Umiestnenie a meno denníkového súboru pre prístup (access.log keď nezadané)"
 
 #: cps/templates/config_edit.html:163
-#, fuzzy
 msgid "Feature Configuration"
-msgstr "Konfigurácia servera"
+msgstr "Konfigurácia funkcií"
 
 #: cps/templates/config_edit.html:166
 msgid ""
@@ -3831,9 +3734,8 @@ msgid "Goodreads API Key"
 msgstr "Goodreads API kľúč"
 
 #: cps/templates/config_edit.html:239
-#, fuzzy
 msgid "Enable Hardcover Sync"
-msgstr "Povoliť synchronizáciu Kobo"
+msgstr "Zapnúť synchronizáciu Hardcover"
 
 #: cps/templates/config_edit.html:243
 msgid "Hardcover API Key"
@@ -4029,9 +3931,8 @@ msgid "OAuth Metadata URL (for auto-discovery)"
 msgstr "URL adresa metadát OAuth (pre automatické zisťovanie)"
 
 #: cps/templates/config_edit.html:403
-#, fuzzy
 msgid "Test Metadata"
-msgstr "Načítať metadáta"
+msgstr "Testovať metadáta"
 
 #: cps/templates/config_edit.html:406
 msgid "Leave empty to use manual configuration below"
@@ -4051,9 +3952,8 @@ msgstr ""
 " namiesto automatického zisťovania"
 
 #: cps/templates/config_edit.html:418
-#, fuzzy
 msgid "Manual Endpoint Configuration"
-msgstr "Upraviť konfiguráciu používateľského rozhrania"
+msgstr "Ručná konfigurácia koncových bodov"
 
 #: cps/templates/config_edit.html:421
 msgid "OAuth Base URL"
@@ -4064,23 +3964,20 @@ msgid "Authorization Endpoint"
 msgstr "Autorizačný koncový bod"
 
 #: cps/templates/config_edit.html:431
-#, fuzzy
 msgid "Token Endpoint"
-msgstr "Žetón sa nenašiel"
+msgstr "Koncový bod tokenu"
 
 #: cps/templates/config_edit.html:436
 msgid "UserInfo Endpoint"
 msgstr "Koncový bod UserInfo"
 
 #: cps/templates/config_edit.html:444
-#, fuzzy
 msgid "Test Connection"
-msgstr "Chyba spojenia"
+msgstr "Otestovať pripojenie"
 
 #: cps/templates/config_edit.html:453
-#, fuzzy
 msgid "OAuth Scopes"
-msgstr "Nastavenia OAuth"
+msgstr "Rozsahy OAuth"
 
 #: cps/templates/config_edit.html:455
 msgid "Space-separated list of OAuth scopes"
@@ -4109,33 +4006,28 @@ msgstr ""
 " proxy serverom, alebo dostávate chyby \"invalid redirect URI\"."
 
 #: cps/templates/config_edit.html:470
-#, fuzzy
 msgid "OAuth Client Id"
-msgstr "%(provider)s OAuth klientské ID"
+msgstr "ID klienta OAuth"
 
 #: cps/templates/config_edit.html:474
-#, fuzzy
 msgid "OAuth Client Secret"
-msgstr "%(provider)s OAuth klientské tajomstvo"
+msgstr "Tajný kľúč klienta OAuth"
 
 #: cps/templates/config_edit.html:479
-#, fuzzy
 msgid "Field Mapping Configuration"
-msgstr "Zobraziť konfiguráciu"
+msgstr "Konfigurácia mapovania polí"
 
 #: cps/templates/config_edit.html:481
-#, fuzzy
 msgid "Username Field"
-msgstr "Meno používateľa"
+msgstr "Pole používateľského mena"
 
 #: cps/templates/config_edit.html:483
 msgid "JWT field to extract username from"
 msgstr "Pole JWT, z ktorého sa má extrahovať používateľské meno"
 
 #: cps/templates/config_edit.html:486
-#, fuzzy
 msgid "Email Field"
-msgstr "Poštová služba"
+msgstr "Pole e-mailu"
 
 #: cps/templates/config_edit.html:488
 msgid "JWT field to extract email from"
@@ -4179,23 +4071,20 @@ msgid "External binaries"
 msgstr "Externé binárky"
 
 #: cps/templates/config_edit.html:521
-#, fuzzy
 msgid "Path to Calibre Binaries"
-msgstr "Cesta k Calibre prevádzaču e-kníh"
+msgstr "Cesta k binárnym súborom Calibre"
 
 #: cps/templates/config_edit.html:529
-#, fuzzy
 msgid "Calibre E-Book Converter Settings"
-msgstr "Nastavenie Calibre prevádzača e-kníh"
+msgstr "Nastavenia prevodníka e-kníh Calibre"
 
 #: cps/templates/config_edit.html:532
 msgid "Path to Kepubify E-Book Converter"
 msgstr "Cesta Kepubify prevádzaču e-kníh"
 
 #: cps/templates/config_edit.html:540
-#, fuzzy
 msgid "Location of Unrar binary"
-msgstr "Binárny súbor pre UnRar sa nenašiel"
+msgstr "Umiestnenie binárneho súboru Unrar"
 
 #: cps/templates/config_edit.html:551
 msgid "Security Settings"
@@ -4247,9 +4136,8 @@ msgid "Check if file extensions matches file content on upload"
 msgstr "Skontrolovať, či prípona súboru zodpovedá obsahu súboru pri nahrávaní"
 
 #: cps/templates/config_edit.html:581
-#, fuzzy
 msgid "Session protection"
-msgstr "Ochrana sedenia"
+msgstr "Ochrana relácie"
 
 #: cps/templates/config_edit.html:583
 msgid "Basic"
@@ -4320,9 +4208,8 @@ msgstr ""
 "Nastavte na 0 pre zakázanie."
 
 #: cps/templates/config_view_edit.html:63
-#, fuzzy
 msgid "Default Theme"
-msgstr "Zmazať"
+msgstr "Predvolená téma"
 
 #: cps/templates/config_view_edit.html:65
 msgid "caliBlur! Dark Theme"
@@ -4350,9 +4237,10 @@ msgid "Link Read/Unread Status to Calibre Column"
 msgstr "Prepojiť stav Prečítané/Neprečítané do Calibre stĺpca"
 
 #: cps/templates/config_view_edit.html:84
-#, fuzzy
 msgid "Sync read/unread status with a Calibre boolean custom column."
-msgstr "Prepojiť stav Prečítané/Neprečítané do Calibre stĺpca"
+msgstr ""
+"Synchronizovať stav prečítané/neprečítané s vlastným stĺpcom Calibre typu "
+"áno/nie."
 
 #: cps/templates/config_view_edit.html:88
 msgid "View Restrictions based on Calibre column"
@@ -4388,9 +4276,8 @@ msgstr ""
 "kontá."
 
 #: cps/templates/config_view_edit.html:110
-#, fuzzy
 msgid "Permissions"
-msgstr "Verzia"
+msgstr "Oprávnenia"
 
 #: cps/templates/config_view_edit.html:114 cps/templates/user_edit.html:405
 msgid "Admin User"
@@ -4425,27 +4312,24 @@ msgid "Allow Editing Public Shelves"
 msgstr "Povoliť úpravu verejných políc"
 
 #: cps/templates/config_view_edit.html:155
-#, fuzzy
 msgid "Language & Display"
-msgstr "Zobrazenie na jednej stránke"
+msgstr "Jazyk a zobrazenie"
 
 #: cps/templates/config_view_edit.html:157
 msgid "Default Language"
 msgstr "Predvolený jazyk"
 
 #: cps/templates/config_view_edit.html:163
-#, fuzzy
 msgid "Default interface language for new users."
-msgstr "Predvolené nastavenia pre nových používateľov"
+msgstr "Predvolený jazyk rozhrania pre nových používateľov."
 
 #: cps/templates/config_view_edit.html:167
 msgid "Default Visible Language of Books"
 msgstr "Predvolené viditeľné jazyky pre knihy"
 
 #: cps/templates/config_view_edit.html:174
-#, fuzzy
 msgid "Default book language filter for new users."
-msgstr "Predvolené viditeľnosti pre nových používateľov"
+msgstr "Predvolený filter jazyka kníh pre nových používateľov."
 
 #: cps/templates/config_view_edit.html:180
 msgid "Default Visibilities for New Users"
@@ -4472,15 +4356,13 @@ msgstr "Pridať Povolené/Zakázané používateľom definované hodnoty stĺpca
 
 #: cps/templates/cwa_convert_library.html:10
 #: cps/templates/cwa_epub_fixer.html:34
-#, fuzzy
 msgid "Run Archive"
-msgstr "Archivovaný"
+msgstr "Spustiť archiváciu"
 
 #: cps/templates/cwa_convert_library.html:11
 #: cps/templates/cwa_epub_fixer.html:35 cps/templates/cwa_read_log.html:9
-#, fuzzy
 msgid "Download Log"
-msgstr "Stiahnuť"
+msgstr "Stiahnuť záznam"
 
 #: cps/templates/cwa_convert_library.html:24
 #: cps/templates/cwa_epub_fixer.html:39 cps/templates/index.xml:7
@@ -4514,54 +4396,44 @@ msgid "Search by title/author"
 msgstr "Hľadať podľa názvu/autora"
 
 #: cps/templates/cwa_epub_fixer.html:29
-#, fuzzy
 msgid "Run on selected book"
-msgstr "Zlúčiť vybrané knihy"
+msgstr "Spustiť na vybranej knihe"
 
 #: cps/templates/cwa_epub_fixer.html:120
-#, fuzzy
 msgid "EPUB Fixer scheduled successfully"
-msgstr "Zmazaných {} používateľov"
+msgstr "EPUB Fixer bol úspešne naplánovaný"
 
 #: cps/templates/cwa_epub_fixer.html:123
-#, fuzzy
 msgid "Error scheduling EPUB Fixer"
-msgstr "Chyba pri mazaní police"
+msgstr "Chyba pri plánovaní EPUB Fixera"
 
 #: cps/templates/cwa_epub_fixer.html:132
-#, fuzzy
 msgid "No matches found"
-msgstr "Nič sa nenašlo"
+msgstr "Nenašli sa žiadne zhody"
 
 #: cps/templates/cwa_epub_fixer.html:167
-#, fuzzy
 msgid "Enter a search term"
-msgstr "Upraviť meno používateľa"
+msgstr "Zadajte hľadaný výraz"
 
 #: cps/templates/cwa_epub_fixer.html:175
-#, fuzzy
 msgid "Failed to search library"
-msgstr "Prehľadávať knižnicu"
+msgstr "Vyhľadávanie v knižnici zlyhalo"
 
 #: cps/templates/cwa_epub_fixer.html:182
-#, fuzzy
 msgid "Select a book first"
-msgstr "Vytvoriť policu"
+msgstr "Najskôr vyberte knihu"
 
 #: cps/templates/cwa_epub_fixer.html:195
-#, fuzzy
 msgid "EPUB Fixer started for selected book"
-msgstr "Zlúčiť vybrané knihy"
+msgstr "EPUB Fixer bol spustený pre vybranú knihu"
 
 #: cps/templates/cwa_epub_fixer.html:200
-#, fuzzy
 msgid "Error starting EPUB Fixer"
-msgstr "Chyba pri mazaní police"
+msgstr "Chyba pri spúšťaní EPUB Fixera"
 
 #: cps/templates/cwa_settings.html:136
-#, fuzzy
 msgid "Enable/Disable Calibre-Web Automated Services"
-msgstr "Calibre-Web denník: "
+msgstr "Zapnúť/vypnúť služby Calibre-Web Automated"
 
 #: cps/templates/cwa_settings.html:143
 msgid "Enable CWA Auto-Convert"
@@ -4653,9 +4525,8 @@ msgstr ""
 "kódovania s nižšou istotou. Pre väčšinu knižníc sa odporúča bezpečný režim."
 
 #: cps/templates/cwa_settings.html:202
-#, fuzzy
 msgid "Enable Archived Book Cleanup"
-msgstr "Archivované knihy"
+msgstr "Zapnúť čistenie archivovaných kníh"
 
 #: cps/templates/cwa_settings.html:204
 msgid ""
@@ -4805,9 +4676,8 @@ msgstr ""
 "preferovaného poskytovateľa."
 
 #: cps/templates/cwa_settings.html:319
-#, fuzzy
 msgid "Metadata Fields to Update"
-msgstr "Metadáta boli úspešne aktualizované"
+msgstr "Polia metadát na aktualizáciu"
 
 #: cps/templates/cwa_settings.html:321
 msgid ""
@@ -4824,19 +4694,16 @@ msgid "Tags/Genres"
 msgstr "Štítky/Žánre"
 
 #: cps/templates/cwa_settings.html:376 cps/templates/cwa_settings.html:378
-#, fuzzy
 msgid "Publication Date"
 msgstr "Dátum vydania"
 
 #: cps/templates/cwa_settings.html:383 cps/templates/cwa_settings.html:385
-#, fuzzy
 msgid "Identifiers (ISBN, etc.)"
-msgstr "Identifikátory"
+msgstr "Identifikátory (ISBN atď.)"
 
 #: cps/templates/cwa_settings.html:390 cps/templates/cwa_settings.html:392
-#, fuzzy
 msgid "Cover Image"
-msgstr "Obálka knihy"
+msgstr "Obrázok obálky"
 
 #: cps/templates/cwa_settings.html:398 cps/templates/cwa_settings.html:419
 #: cps/templates/cwa_settings.html:526 cps/templates/cwa_settings.html:731
@@ -4977,9 +4844,8 @@ msgid "Unchecked providers are disabled globally."
 msgstr "Nezaškrtnutí poskytovatelia sú globálne zakázaní."
 
 #: cps/templates/cwa_settings.html:550
-#, fuzzy
 msgid "Hardcover Auto-Fetch Settings"
-msgstr "Nastavenia OAuth"
+msgstr "Nastavenia automatického sťahovania z Hardcover"
 
 #: cps/templates/cwa_settings.html:552
 msgid ""
@@ -5007,9 +4873,8 @@ msgstr ""
 "funkcia zakázaná."
 
 #: cps/templates/cwa_settings.html:569
-#, fuzzy
 msgid "Enable Hardcover Auto-Fetch"
-msgstr "Povoliť synchronizáciu Kobo"
+msgstr "Zapnúť automatické sťahovanie z Hardcover"
 
 #: cps/templates/cwa_settings.html:571
 msgid ""
@@ -5091,9 +4956,8 @@ msgstr ""
 "čakajúcich na manuálne schválenie skontrolujte na stránke CWA Štatistiky."
 
 #: cps/templates/cwa_settings.html:738
-#, fuzzy
 msgid "Web UI Settings"
-msgstr "Nastavenia"
+msgstr "Nastavenia webového rozhrania"
 
 #: cps/templates/cwa_settings.html:745
 msgid "Enable CWA Update Notifications"
@@ -5122,9 +4986,8 @@ msgstr ""
 " sú kompletné."
 
 #: cps/templates/cwa_settings.html:765
-#, fuzzy
 msgid "Sync Magic Shelves to Kobo"
-msgstr "Synchronizovať vybrané police s Kobo"
+msgstr "Synchronizovať magické police do Kobo"
 
 #: cps/templates/cwa_settings.html:767
 msgid ""
@@ -5149,9 +5012,8 @@ msgstr ""
 "animáciách."
 
 #: cps/templates/cwa_settings.html:782
-#, fuzzy
 msgid "Automatic Backup Settings"
-msgstr "Nastavenia OAuth"
+msgstr "Nastavenia automatického zálohovania"
 
 #: cps/templates/cwa_settings.html:789
 msgid "Enable CWA Import Auto-Backup"
@@ -5221,9 +5083,8 @@ msgstr ""
 "zozname ignorovaných formátov nižšie)"
 
 #: cps/templates/cwa_settings.html:833
-#, fuzzy
 msgid "Choose a target format:"
-msgstr "Previesť knihu s formátom:"
+msgstr "Vyberte cieľový formát:"
 
 #: cps/templates/cwa_settings.html:845
 msgid ""
@@ -5325,9 +5186,8 @@ msgstr ""
 "duplicít sa nebude spúšťať a nezobrazia sa žiadne notifikácie."
 
 #: cps/templates/cwa_settings.html:978
-#, fuzzy
 msgid "Enable Duplicate Detection"
-msgstr "Povoliť verejnú registráciu"
+msgstr "Zapnúť detekciu duplikátov"
 
 #: cps/templates/cwa_settings.html:982
 msgid "When enabled, CWA will scan for duplicate books after each import"
@@ -5358,9 +5218,8 @@ msgstr ""
 "následne aplikuje robustnú logiku v Pythone na finálne výsledky."
 
 #: cps/templates/cwa_settings.html:1014
-#, fuzzy
 msgid "Automatic Duplicate Scanning"
-msgstr "Nastavenia OAuth"
+msgstr "Automatické hľadanie duplikátov"
 
 #: cps/templates/cwa_settings.html:1017
 msgid ""
@@ -5454,9 +5313,8 @@ msgid "Consider book publisher when detecting duplicates"
 msgstr "Zohľadniť vydavateľa knihy pri detekcii duplicít"
 
 #: cps/templates/cwa_settings.html:1115
-#, fuzzy
 msgid "Format"
-msgstr "Formát nahrávania"
+msgstr "Formát"
 
 #: cps/templates/cwa_settings.html:1116
 msgid "Consider file format when detecting duplicates"
@@ -5515,9 +5373,8 @@ msgstr ""
 "povoľte automatické riešenie."
 
 #: cps/templates/cwa_settings.html:1160
-#, fuzzy
 msgid "Enable Duplicate Notifications"
-msgstr "Povoliť verejnú registráciu"
+msgstr "Zapnúť upozornenia na duplikáty"
 
 #: cps/templates/cwa_settings.html:1162
 msgid ""
@@ -5530,9 +5387,8 @@ msgstr ""
 "Duplicity v bočnom paneli a vyskakovaciu notifikáciu pri prihlásení."
 
 #: cps/templates/cwa_settings.html:1166
-#, fuzzy
 msgid "Enable Automatic Duplicate Resolution"
-msgstr "Povoliť verejnú registráciu"
+msgstr "Zapnúť automatické riešenie duplikátov"
 
 #: cps/templates/cwa_settings.html:1169 cps/templates/duplicates.html:593
 msgid "Warning:"
@@ -5567,9 +5423,8 @@ msgid "Delete newer copies, keep the earliest added"
 msgstr "Vymazať novšie kópie, ponechať najskôr pridanú"
 
 #: cps/templates/cwa_settings.html:1182
-#, fuzzy
 msgid "Merge Formats"
-msgstr "Zmazať formáty:"
+msgstr "Zlúčiť formáty"
 
 #: cps/templates/cwa_settings.html:1182
 msgid "Merge formats into the newest book, delete the rest"
@@ -5585,9 +5440,8 @@ msgstr ""
 "Preferovať formáty na základe vášho poradia priority formátov pre duplicity"
 
 #: cps/templates/cwa_settings.html:1188
-#, fuzzy
 msgid "Keep Most Metadata"
-msgstr "Načítať metadáta"
+msgstr "Ponechať najviac metadát"
 
 #: cps/templates/cwa_settings.html:1188
 msgid "Keep book with most complete information"
@@ -5606,9 +5460,8 @@ msgid "Choose which book to keep when duplicates are automatically resolved."
 msgstr "Vyberte, ktorú knihu ponechať pri automatickom riešení duplicít."
 
 #: cps/templates/cwa_settings.html:1198
-#, fuzzy
 msgid "Rate Limiting"
-msgstr "Hodnotenie"
+msgstr "Obmedzenie počtu požiadaviek"
 
 #: cps/templates/cwa_settings.html:1199
 msgid "Cooldown Period (minutes)"
@@ -5662,14 +5515,12 @@ msgid "Mark As Read"
 msgstr "Označiť ako prečítané"
 
 #: cps/templates/detail.html:539
-#, fuzzy
 msgid "Marked as read"
-msgstr "Označiť ako neprečítané"
+msgstr "Označené ako prečítané"
 
 #: cps/templates/detail.html:540
-#, fuzzy
 msgid "Marked as unread"
-msgstr "Označiť ako neprečítané"
+msgstr "Označené ako neprečítané"
 
 #: cps/templates/detail.html:545 cps/templates/detail.html:546
 #: cps/templates/detail.html:851 cps/templates/listenmp3.html:166
@@ -5686,9 +5537,8 @@ msgid "Archived"
 msgstr "Archivovaný"
 
 #: cps/templates/detail.html:548
-#, fuzzy
 msgid "Restored from archive"
-msgstr "Obnoviť z archívu"
+msgstr "Obnovené z archívu"
 
 #: cps/templates/detail.html:579 cps/templates/detail.html:773
 #: cps/templates/detail.html:774 cps/templates/detail.html:1288
@@ -5706,19 +5556,16 @@ msgid "(Public)"
 msgstr "(Verejné)"
 
 #: cps/templates/detail.html:602 cps/templates/detail.html:767
-#, fuzzy
 msgid "Remove from shelf"
-msgstr "Obnoviť z archívu"
+msgstr "Odstrániť z police"
 
 #: cps/templates/detail.html:640
-#, fuzzy
 msgid "Rating updated"
-msgstr "Nastavenia databáze boli aktualizované"
+msgstr "Hodnotenie bolo aktualizované"
 
 #: cps/templates/detail.html:641
-#, fuzzy
 msgid "Rating cleared"
-msgstr "Hodnotenie lepšie ako"
+msgstr "Hodnotenie bolo vymazané"
 
 #: cps/templates/detail.html:659 cps/templates/listenmp3.html:62
 #, python-format
@@ -5754,14 +5601,12 @@ msgid "Last modified"
 msgstr "Naposledy upravené"
 
 #: cps/templates/detail.html:689
-#, fuzzy
 msgid "File sizes"
-msgstr "Veľkosť písma"
+msgstr "Veľkosti súborov"
 
 #: cps/templates/detail.html:733
-#, fuzzy
 msgid "Remove tag"
-msgstr "Odstrániť"
+msgstr "Odstrániť značku"
 
 #: cps/templates/detail.html:741 cps/templates/detail.html:742
 #: cps/templates/detail.html:1166
@@ -5773,28 +5618,24 @@ msgid "Published"
 msgstr "Vydané"
 
 #: cps/templates/detail.html:793
-#, fuzzy
 msgid "KOReader Progress"
-msgstr "Pokrok v KOReader"
+msgstr "Priebeh v KOReader"
 
 #: cps/templates/detail.html:863 cps/templates/listenmp3.html:177
 msgid "Description:"
 msgstr "Popis:"
 
 #: cps/templates/detail.html:880
-#, fuzzy
 msgid "Select eReader Email Addresses"
-msgstr "Poslať na e-mail čítačky"
+msgstr "Vyberte e-mailové adresy čítačiek"
 
 #: cps/templates/detail.html:893
-#, fuzzy
 msgid "Choose email addresses:"
-msgstr "Poslať na e-mail čítačky"
+msgstr "Vyberte e-mailové adresy:"
 
 #: cps/templates/detail.html:898
-#, fuzzy
 msgid "Select All"
-msgstr "Vytvoriť policu"
+msgstr "Vybrať všetko"
 
 #: cps/templates/detail.html:917
 msgid "Additional email addresses:"
@@ -5813,23 +5654,20 @@ msgid "Enter one or more email addresses separated by commas"
 msgstr "Zadajte jednu alebo viac e-mailových adries oddelených čiarkami"
 
 #: cps/templates/detail.html:925
-#, fuzzy
 msgid "Select format:"
-msgstr "Zmazať formáty:"
+msgstr "Vyberte formát:"
 
 #: cps/templates/detail.html:937
 msgid "Send"
 msgstr "Odoslať"
 
 #: cps/templates/detail.html:1144
-#, fuzzy
 msgid "Failed to update tags"
-msgstr "Vytváranie cesty k obálke knihy zlyhalo"
+msgstr "Aktualizácia značiek zlyhala"
 
 #: cps/templates/detail.html:1252
-#, fuzzy
 msgid "Failed to update shelves"
-msgstr "Vytváranie cesty k obálke knihy zlyhalo"
+msgstr "Aktualizácia políc zlyhala"
 
 #: cps/templates/duplicates.html:497
 msgid "CWA Duplicates Manager"
@@ -5844,28 +5682,24 @@ msgstr ""
 " sa nepovažujú za duplicity."
 
 #: cps/templates/duplicates.html:507
-#, fuzzy
 msgid "Run Full Duplicate Scan"
-msgstr "Zmazať knihu"
+msgstr "Spustiť úplné hľadanie duplikátov"
 
 #: cps/templates/duplicates.html:509
-#, fuzzy
 msgid "Scan for Duplicates Now"
-msgstr "Zobraziť najlepšie hodnotené knihy"
+msgstr "Hľadať duplikáty teraz"
 
 #: cps/templates/duplicates.html:513
 msgid "Select Duplicates"
 msgstr "Vybrať duplicity"
 
 #: cps/templates/duplicates.html:514
-#, fuzzy
 msgid "Select None"
-msgstr "Vybrať"
+msgstr "Zrušiť výber"
 
 #: cps/templates/duplicates.html:515
-#, fuzzy
 msgid "Delete Selected"
-msgstr "Zlúčiť vybrané knihy"
+msgstr "Zmazať vybrané"
 
 #: cps/templates/duplicates.html:529
 msgid "Duplicate scanning needs a one-time full scan."
@@ -5891,9 +5725,8 @@ msgstr ""
 "používať."
 
 #: cps/templates/duplicates.html:541
-#, fuzzy
 msgid "Duplicate scan is running."
-msgstr "Zmazať knihu"
+msgstr "Hľadanie duplikátov prebieha."
 
 #: cps/templates/duplicates.html:542
 msgid "You can keep using CWA while it runs."
@@ -5956,9 +5789,8 @@ msgstr ""
 "súboru"
 
 #: cps/templates/duplicates.html:584
-#, fuzzy
 msgid "Preview"
-msgstr "Predchádzajúci"
+msgstr "Náhľad"
 
 #: cps/templates/duplicates.html:588 cps/templates/duplicates.html:695
 msgid "Execute Resolution"
@@ -5970,9 +5802,8 @@ msgid ""
 msgstr "Toto natrvalo vymaže knihy. Pôvodné súbory budú zálohované do"
 
 #: cps/templates/duplicates.html:612
-#, fuzzy
 msgid "Merge Selected"
-msgstr "Zlúčiť vybrané knihy"
+msgstr "Zlúčiť vybrané"
 
 #: cps/templates/duplicates.html:616
 msgid "Dismiss this duplicate group"
@@ -5983,24 +5814,20 @@ msgid "Dismiss"
 msgstr "Zamietnuť"
 
 #: cps/templates/duplicates.html:629
-#, fuzzy
 msgid "View book details"
-msgstr "Detailu o knihe"
+msgstr "Zobraziť podrobnosti knihy"
 
 #: cps/templates/duplicates.html:656
-#, fuzzy
 msgid "Edit book metadata"
-msgstr "upraviť metadáta"
+msgstr "Upraviť metadáta knihy"
 
 #: cps/templates/duplicates.html:659
-#, fuzzy
 msgid "Archive/delete book"
-msgstr "Zlúčiť vybrané knihy"
+msgstr "Archivovať/zmazať knihu"
 
 #: cps/templates/duplicates.html:673
-#, fuzzy
 msgid "No Duplicate Books Found"
-msgstr "Nič sa nenašlo"
+msgstr "Nenašli sa žiadne duplicitné knihy"
 
 #: cps/templates/duplicates.html:674
 msgid ""
@@ -6030,33 +5857,28 @@ msgstr ""
 "duplicitné knihy."
 
 #: cps/templates/duplicates.html:690
-#, fuzzy
 msgid "Selected strategy:"
-msgstr "Zmazať formáty:"
+msgstr "Vybraná stratégia:"
 
 #: cps/templates/duplicates.html:692 cps/templates/duplicates.html:715
 msgid "This action cannot be undone!"
 msgstr "Túto akciu nie je možné vrátiť späť!"
 
 #: cps/templates/duplicates.html:711
-#, fuzzy
 msgid "The following books will be permanently deleted:"
-msgstr "Táto kniha bude navždy vymazaná z databázy"
+msgstr "Nasledujúce knihy budú natrvalo zmazané:"
 
 #: cps/templates/duplicates.html:730
-#, fuzzy
 msgid "Merge Books"
-msgstr "Neprečítané knihy"
+msgstr "Zlúčiť knihy"
 
 #: cps/templates/duplicates.html:734
-#, fuzzy
 msgid "The following book will be kept:"
-msgstr "Táto kniha bude navždy vymazaná z databázy"
+msgstr "Ponechá sa nasledujúca kniha:"
 
 #: cps/templates/duplicates.html:738
-#, fuzzy
 msgid "The following books will be merged into it (and then deleted):"
-msgstr "Táto kniha bude navždy vymazaná z databázy"
+msgstr "Do nej sa zlúčia nasledujúce knihy (a potom sa zmažú):"
 
 #: cps/templates/duplicates.html:742
 msgid "Note: File formats from source books will be added to the target book."
@@ -6213,14 +6035,12 @@ msgstr ""
 "overenie."
 
 #: cps/templates/hardcover_review_matches.html:81
-#, fuzzy
 msgid "Reject All Pending"
-msgstr "Vytvoriť policu"
+msgstr "Zamietnuť všetky čakajúce"
 
 #: cps/templates/hardcover_review_matches.html:94
-#, fuzzy
 msgid "Search Query"
-msgstr "Vyhľadať výraz:"
+msgstr "Vyhľadávací dopyt"
 
 #: cps/templates/hardcover_review_matches.html:98
 msgid "Candidate Matches"
@@ -6242,18 +6062,16 @@ msgid "Match Reason"
 msgstr "Dôvod zhody"
 
 #: cps/templates/hardcover_review_matches.html:160
-#, fuzzy
 msgid "View on Hardcover"
-msgstr "Zobraziť knihu pri ukladaní"
+msgstr "Zobraziť na Hardcover"
 
 #: cps/templates/hardcover_review_matches.html:168
 msgid "Select This Match"
 msgstr "Vybrať túto zhodu"
 
 #: cps/templates/hardcover_review_matches.html:180
-#, fuzzy
 msgid "Reject All"
-msgstr "Vytvoriť policu"
+msgstr "Zamietnuť všetky"
 
 #: cps/templates/hardcover_review_matches.html:185
 msgid "Skip for Now"
@@ -6263,9 +6081,8 @@ msgstr "Zatiaľ preskočiť"
 #: cps/templates/hardcover_review_matches.html:303
 #: cps/templates/hardcover_review_matches.html:346
 #: cps/templates/hardcover_review_matches.html:380
-#, fuzzy
 msgid "Processing..."
-msgstr "Načítava sa..."
+msgstr "Spracúva sa..."
 
 #: cps/templates/hardcover_review_matches.html:280
 #: cps/templates/hardcover_review_matches.html:289
@@ -6277,11 +6094,12 @@ msgid "Failed to apply match"
 msgstr "Nepodarilo sa aplikovať zhodu"
 
 #: cps/templates/hardcover_review_matches.html:299
-#, fuzzy
 msgid ""
 "Are you sure you want to reject all matches for this book? This cannot be "
 "undone."
-msgstr "Naozaj chcete zmeniť vybrané role pre vybraných používateľov?"
+msgstr ""
+"Naozaj chcete zamietnuť všetky zhody pre túto knihu? Túto akciu nie je možné"
+" vrátiť späť."
 
 #: cps/templates/hardcover_review_matches.html:324
 #: cps/templates/hardcover_review_matches.html:333
@@ -6289,26 +6107,24 @@ msgid "✗ Reject All Matches"
 msgstr "✗ Zamietnuť všetky zhody"
 
 #: cps/templates/hardcover_review_matches.html:328
-#, fuzzy
 msgid "Failed to reject match"
-msgstr "Vytváranie cesty k obálke knihy zlyhalo"
+msgstr "Zhodu sa nepodarilo zamietnuť"
 
 #: cps/templates/hardcover_review_matches.html:342
-#, fuzzy
 msgid ""
 "Are you sure you want to reject all pending matches? This cannot be undone."
-msgstr "Naozaj chcete zmeniť vybrané role pre vybraných používateľov?"
+msgstr ""
+"Naozaj chcete zamietnuť všetky čakajúce zhody? Túto akciu nie je možné "
+"vrátiť späť."
 
 #: cps/templates/hardcover_review_matches.html:361
 #: cps/templates/hardcover_review_matches.html:370
-#, fuzzy
 msgid "✗ Reject All Pending"
-msgstr "Vytvoriť policu"
+msgstr "✗ Zamietnuť všetky čakajúce"
 
 #: cps/templates/hardcover_review_matches.html:365
-#, fuzzy
 msgid "Failed to reject all pending matches"
-msgstr "Vytváranie cesty k obálke knihy zlyhalo"
+msgstr "Všetky čakajúce zhody sa nepodarilo zamietnuť"
 
 #: cps/templates/hardcover_review_matches.html:401
 #: cps/templates/hardcover_review_matches.html:410
@@ -6320,12 +6136,12 @@ msgid "Failed to skip match"
 msgstr "Nepodarilo sa preskočiť zhodu"
 
 #: cps/templates/http_error.html:34
-#, fuzzy
 msgid ""
 "Calibre-Web Automated Instance is unconfigured, please contact your "
 "administrator"
 msgstr ""
-"Inštancia Calibre-Web nie je nastavené, kontaktujte prosím vašeho správcu"
+"Inštancia Calibre-Web Automated nie je nakonfigurovaná, kontaktujte svojho "
+"správcu"
 
 #: cps/templates/http_error.html:44
 msgid "Create Issue"
@@ -6352,33 +6168,28 @@ msgid "Refresh shelf to update with latest changes"
 msgstr "Obnoviť poličku najnovšími zmenami"
 
 #: cps/templates/index.html:135
-#, fuzzy
 msgid "Refresh"
-msgstr "Prehľadávať knižnicu"
+msgstr "Obnoviť"
 
 #: cps/templates/index.html:145
-#, fuzzy
 msgid "Edit shelf rules"
-msgstr "Upraviť policu"
+msgstr "Upraviť pravidlá police"
 
 #: cps/templates/index.html:159
 msgid "Hide this shelf from your sidebar"
 msgstr "Skryť túto poličku z bočného panela"
 
 #: cps/templates/index.html:159
-#, fuzzy
 msgid "Show this shelf in your sidebar"
-msgstr "Synchronizovať túto policu so zariadením Kobo"
+msgstr "Zobraziť túto policu v bočnom paneli"
 
 #: cps/templates/index.html:161
-#, fuzzy
 msgid "Show Shelf"
-msgstr "Zobraziť všetko"
+msgstr "Zobraziť policu"
 
 #: cps/templates/index.html:161
-#, fuzzy
 msgid "Hide Shelf"
-msgstr "Verejná polica"
+msgstr "Skryť policu"
 
 #: cps/templates/index.html:170
 msgid "Sort ascending according to download count"
@@ -6419,9 +6230,8 @@ msgstr ""
 "generovania kontrolných súčtov."
 
 #: cps/templates/kosync_plugin.html:115
-#, fuzzy
 msgid "Open CWA Settings"
-msgstr "Nastavenia"
+msgstr "Otvoriť Nastavenia CWA"
 
 #: cps/templates/kosync_plugin.html:139
 msgid "Download is available after enabling KOReader Sync in CWA Settings."
@@ -6451,29 +6261,25 @@ msgid "Logout"
 msgstr "Odhlásiť sa"
 
 #: cps/templates/layout.html:147
-#, fuzzy
 msgid "Switch Theme"
-msgstr "Štandardná téma"
+msgstr "Prepnúť tému"
 
 #: cps/templates/layout.html:166 cps/templates/read.html:79
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
-#, fuzzy
 msgid "Settings"
 msgstr "Nastavenia"
 
 #: cps/templates/layout.html:168
-#, fuzzy
 msgid "Refresh Library"
-msgstr "Prehľadávať knižnicu"
+msgstr "Obnoviť knižnicu"
 
 #: cps/templates/layout.html:209
 msgid "See Changelog"
 msgstr "Zobraziť zoznam zmien"
 
 #: cps/templates/layout.html:219
-#, fuzzy
 msgid "Open Duplicates"
-msgstr "Zmazať knihu"
+msgstr "Otvoriť duplikáty"
 
 #: cps/templates/layout.html:241
 msgid "Contribute here!"
@@ -6492,7 +6298,6 @@ msgid "Shelves"
 msgstr "Police"
 
 #: cps/templates/layout.html:317
-#, fuzzy
 msgid "Create Shelf"
 msgstr "Vytvoriť policu"
 
@@ -6517,18 +6322,16 @@ msgid "Book Details"
 msgstr "Detailu o knihe"
 
 #: cps/templates/layout.html:446
-#, fuzzy
 msgid "Duplicate Books Detected"
-msgstr "Zmazať knihu"
+msgstr "Zistené duplicitné knihy"
 
 #: cps/templates/layout.html:447
 msgid "You have unresolved duplicate books in your library"
 msgstr "Vo vašej knižnici máte nevyriešené duplicitné knihy"
 
 #: cps/templates/layout.html:452
-#, fuzzy
 msgid "Duplicate Groups Found"
-msgstr "Nič sa nenašlo"
+msgstr "Nájdené skupiny duplikátov"
 
 #: cps/templates/layout.html:460
 msgid "Remind Me Later"
@@ -6548,12 +6351,11 @@ msgstr "Mriežka"
 
 #: cps/templates/listenmp3.html:159
 msgid "Read"
-msgstr "Čítať"
+msgstr "Prečítané"
 
 #: cps/templates/login.html:30
-#, fuzzy
 msgid "Show Password"
-msgstr "SMTP heslo"
+msgstr "Zobraziť heslo"
 
 #: cps/templates/login.html:35
 msgid "Remember Me"
@@ -6564,16 +6366,16 @@ msgid "Forgot Password?"
 msgstr "Zabudli ste heslo?"
 
 #: cps/templates/login.html:55
-#, fuzzy
 msgid ""
 "Log in with Magic\n"
 "      Link"
-msgstr "Prihlásiť sa cez Magic Link"
+msgstr ""
+"Prihlásiť sa magickým\n"
+"      odkazom"
 
 #: cps/templates/login.html:95
-#, fuzzy
 msgid "Log in with SSO"
-msgstr "Prihlásiť sa cez Magic Link"
+msgstr "Prihlásiť sa cez SSO"
 
 #: cps/templates/login.html:102
 msgid ""
@@ -6587,9 +6389,8 @@ msgid "Show Calibre-Web Log: "
 msgstr "Ukázať Calibre-Web denník "
 
 #: cps/templates/logviewer.html:8
-#, fuzzy
 msgid "Calibre-Web Log: "
-msgstr "Ukázať Calibre-Web denník "
+msgstr "Záznam Calibre-Web: "
 
 #: cps/templates/logviewer.html:8
 msgid "Stream output, can't be displayed"
@@ -6616,9 +6417,8 @@ msgid "This is a pre-configured template shelf. You can edit it freely."
 msgstr "Toto je preddefinovaná šablónová polička. Môžete ju voľne upravovať."
 
 #: cps/templates/magic_shelf_edit.html:399
-#, fuzzy
 msgid "Share with Everyone (Public)"
-msgstr "Zdieľať s kýmkoľvek"
+msgstr "Zdieľať so všetkými (verejné)"
 
 #: cps/templates/magic_shelf_edit.html:402
 msgid ""
@@ -6710,9 +6510,8 @@ msgid "Ok"
 msgstr "Ok"
 
 #: cps/templates/osd.xml:5
-#, fuzzy
 msgid "Calibre-Web Automated eBook Catalog"
-msgstr "Katalóg e-kníh Calibre-Web"
+msgstr "Katalóg e-kníh Calibre-Web Automated"
 
 #: cps/templates/read.html:7
 msgid "epub Reader"
@@ -6747,9 +6546,8 @@ msgid "Font"
 msgstr "Písmo"
 
 #: cps/templates/read.html:107
-#, fuzzy
 msgid "Default"
-msgstr "Zmazať"
+msgstr "Predvolené"
 
 #: cps/templates/read.html:108
 msgid "Yahei"
@@ -6760,29 +6558,24 @@ msgid "SimSun"
 msgstr "SimSun"
 
 #: cps/templates/read.html:110
-#, fuzzy
 msgid "KaiTi"
-msgstr "Čakajúca"
+msgstr "KaiTi"
 
 #: cps/templates/read.html:111
-#, fuzzy
 msgid "Arial"
-msgstr "Vertikálne"
+msgstr "Arial"
 
 #: cps/templates/read.html:114
-#, fuzzy
 msgid "Spread"
-msgstr "Čítať"
+msgstr "Dvojstrana"
 
 #: cps/templates/read.html:115
-#, fuzzy
 msgid "Two columns"
-msgstr "Neplatný stĺpec na čítanie"
+msgstr "Dva stĺpce"
 
 #: cps/templates/read.html:116
-#, fuzzy
 msgid "One column"
-msgstr "Neplatný stĺpec na čítanie"
+msgstr "Jeden stĺpec"
 
 #: cps/templates/readcbr.html:8
 msgid "Comic Reader"
@@ -6889,9 +6682,8 @@ msgid "Vertical"
 msgstr "Vertikálne"
 
 #: cps/templates/readcbr.html:150
-#, fuzzy
 msgid "Direction"
-msgstr "Popis"
+msgstr "Smer"
 
 #: cps/templates/readcbr.html:153
 msgid "Left to Right"
@@ -7068,14 +6860,12 @@ msgid "Enable Change order"
 msgstr "Povoliť zmenu poradia"
 
 #: cps/templates/shelf.html:28
-#, fuzzy
 msgid "Sort according to book added to shelf, newest first"
-msgstr "Triediť podľa dátumu knihy, najnovšie najskôr"
+msgstr "Zoradiť podľa pridania na policu, od najnovších"
 
 #: cps/templates/shelf.html:29
-#, fuzzy
 msgid "Sort according to book added to shelf, oldest first"
-msgstr "Triediť podľa dátumu knihy, najstaršie najskôr"
+msgstr "Zoradiť podľa pridania na policu, od najstarších"
 
 #: cps/templates/shelf_edit.html:14
 msgid "Share with Everyone"
@@ -7147,13 +6937,11 @@ msgid "Run Time"
 msgstr "Čas spustenia"
 
 #: cps/templates/tasks.html:20
-#, fuzzy
 msgid "Message"
-msgstr "Zlúčiť"
+msgstr "Správa"
 
 #: cps/templates/tasks.html:22 cps/templates/tasks.html:46
 #: cps/templates/tasks.html:68
-#, fuzzy
 msgid "Actions"
 msgstr "Akcie"
 
@@ -7166,9 +6954,8 @@ msgid "Scheduled Time"
 msgstr "Naplánovaný čas"
 
 #: cps/templates/tasks.html:45 cps/templates/tasks.html:67
-#, fuzzy
 msgid "State"
-msgstr "Otočiť"
+msgstr "Stav"
 
 #: cps/templates/tasks.html:50
 msgid ""
@@ -7210,23 +6997,20 @@ msgstr ""
 "čase."
 
 #: cps/templates/tasks.html:192
-#, fuzzy
 msgid "Scheduled item cancelled successfully"
-msgstr "Zmazaných {} používateľov"
+msgstr "Naplánovaná položka bola úspešne zrušená"
 
 #: cps/templates/tasks.html:197
 msgid "Error cancelling scheduled item"
 msgstr "Chyba pri rušení naplánovanej položky"
 
 #: cps/templates/user_edit.html:173
-#, fuzzy
 msgid "Your Profile"
-msgstr "Váš e-mail"
+msgstr "Váš profil"
 
 #: cps/templates/user_edit.html:173
-#, fuzzy
 msgid "User Settings"
-msgstr "Nastavenia"
+msgstr "Používateľské nastavenia"
 
 #: cps/templates/user_edit.html:181
 msgid "Account Information"
@@ -7244,14 +7028,12 @@ msgid "Reset user Password"
 msgstr "Resetovať heslo používateľa"
 
 #: cps/templates/user_edit.html:212
-#, fuzzy
 msgid "eReader Configuration"
-msgstr "Konfigurácia servera"
+msgstr "Konfigurácia čítačky"
 
 #: cps/templates/user_edit.html:215
-#, fuzzy
 msgid "Send to eReader Email Address"
-msgstr "Poslať na e-mail čítačky"
+msgstr "E-mailová adresa na odoslanie do čítačky"
 
 #: cps/templates/user_edit.html:216
 msgid "Use comma to separate multiple addresses"
@@ -7302,9 +7084,8 @@ msgid "Language & Theme Preferences"
 msgstr "Preferencie jazyka a motívu"
 
 #: cps/templates/user_edit.html:252
-#, fuzzy
 msgid "Interface Language"
-msgstr "Zadajte jazyky"
+msgstr "Jazyk rozhrania"
 
 #: cps/templates/user_edit.html:261 cps/templates/user_edit.html:283
 msgid "Language of Books"
@@ -7316,9 +7097,8 @@ msgstr ""
 "Filtrovať knižnicu tak, aby zobrazovala iba knihy v konkrétnom jazyku."
 
 #: cps/templates/user_edit.html:280
-#, fuzzy
 msgid "Book Language Filter"
-msgstr "Nebolo poskytnuté platné jazykové nastavenie pre knihu"
+msgstr "Filter jazyka kníh"
 
 #: cps/templates/user_edit.html:298
 msgid "OAuth & API Integrations"
@@ -7361,9 +7141,8 @@ msgid "Sync only books in selected shelves with Kobo"
 msgstr "Synchronizovať s Kobo iba knihy vo vybraných policiach"
 
 #: cps/templates/user_edit.html:346
-#, fuzzy
 msgid "Sidebar Display Settings"
-msgstr "Bezpečnostné nastavenia"
+msgstr "Nastavenia zobrazenia bočného panela"
 
 #: cps/templates/user_edit.html:347
 msgid "Choose which sections to display in your sidebar navigation."
@@ -7404,9 +7183,8 @@ msgid "Configure what actions this user is allowed to perform."
 msgstr "Nakonfigurujte, aké akcie je tento používateľ oprávnený vykonávať."
 
 #: cps/templates/user_edit.html:454
-#, fuzzy
 msgid "Magic Shelves Order"
-msgstr "Synchronizovať vybrané police s Kobo"
+msgstr "Poradie magických políc"
 
 #: cps/templates/user_edit.html:455
 msgid "Choose how your magic shelves are ordered in the sidebar."
@@ -7445,9 +7223,8 @@ msgid "Created (oldest first)"
 msgstr "Vytvorené (najstaršie prvé)"
 
 #: cps/templates/user_edit.html:468
-#, fuzzy
 msgid "Recently modified"
-msgstr "Naposledy pridané knihy"
+msgstr "Nedávno upravené"
 
 #: cps/templates/user_edit.html:469
 msgid "Least recently modified"
@@ -7477,9 +7254,8 @@ msgid "Default System Shelves:"
 msgstr "Predvolené systémové police:"
 
 #: cps/templates/user_edit.html:515
-#, fuzzy
 msgid "Public Shelves:"
-msgstr "Upraviť verejné police"
+msgstr "Verejné police:"
 
 #: cps/templates/user_edit.html:540
 #, python-format
@@ -7532,14 +7308,12 @@ msgid "eReader Email"
 msgstr "e-mail pre čítačku"
 
 #: cps/templates/user_table.html:137
-#, fuzzy
 msgid "Enter eReader Email Subject"
-msgstr "Zadať e-mail pre čítačku"
+msgstr "Zadajte predmet e-mailu pre čítačku"
 
 #: cps/templates/user_table.html:137
-#, fuzzy
 msgid "eReader Email Subject"
-msgstr "e-mail pre čítačku"
+msgstr "Predmet e-mailu pre čítačku"
 
 #: cps/templates/user_table.html:138
 msgid "Locale"

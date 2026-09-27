@@ -6548,7 +6548,7 @@ msgstr "Mriežka"
 
 #: cps/templates/listenmp3.html:159
 msgid "Read"
-msgstr "Čítať"
+msgstr "Prečítané"
 
 #: cps/templates/login.html:30
 #, fuzzy

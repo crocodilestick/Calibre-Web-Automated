@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
 "POT-Creation-Date: 2026-09-26 14:44+0000\n"
-"PO-Revision-Date: 2026-02-10 18:28+0800\n"
+"PO-Revision-Date: 2026-09-27 11:09+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
 "Language: zh_CN\n"
@@ -18,7 +18,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 "Generated-By: Babel 2.13.1\n"
-"X-Generator: Poedit 3.8\n"
+"X-Generator: Poedit 3.9\n"
 
 #: cps/about.py:65
 msgid "Statistics"
@@ -2692,7 +2692,7 @@ msgstr "扩展端口"
 
 #: cps/templates/admin.html:123
 msgid "Not set — reverse proxy detected"
-msgstr ""
+msgstr "未设置 - 检测到反向代理"
 
 #: cps/templates/admin.html:134 cps/templates/config_view_edit.html:45
 msgid "Books per Page"
@@ -3127,7 +3127,7 @@ msgstr "加载中..."
 
 #: cps/templates/book_edit.html:312
 msgid "Apply"
-msgstr ""
+msgstr "提交"
 
 #: cps/templates/book_edit.html:369
 msgid "Search error!"
@@ -3586,7 +3586,7 @@ msgstr "服务器扩展端口 (用于转发的 API 调用的端口)"
 msgid ""
 "A reverse proxy was detected. Leave blank unless you need to override the "
 "port for direct access."
-msgstr ""
+msgstr "检测到反向代理。除非你需要覆盖直连端口，否则请留空"
 
 #: cps/templates/config_edit.html:217
 msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
@@ -6055,7 +6055,7 @@ msgstr "上一个"
 
 #: cps/templates/layout.html:353
 msgid "Go to page"
-msgstr ""
+msgstr "前往页面"
 
 #: cps/templates/layout.html:376
 msgid "Book Details"

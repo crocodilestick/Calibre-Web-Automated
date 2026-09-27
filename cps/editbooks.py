@@ -1336,7 +1336,7 @@ def delete_whole_book(book_id, book):
                 elif c.datatype == 'rating':
                     del_cc = getattr(book, cc_string)[0]
                     getattr(book, cc_string).remove(del_cc)
-                    if len(del_cc.books) == 0:
+                    if _no_books_left(calibre_db.session, del_cc):
                         log.debug('remove ' + str(c.id))
                         calibre_db.session.delete(del_cc)
                         calibre_db.session.commit()
@@ -1686,7 +1686,7 @@ def edit_cc_data_string(book, c, to_save, cc_db_value, cc_string):
             # remove old cc_val
             del_cc = getattr(book, cc_string)[0]
             getattr(book, cc_string).remove(del_cc)
-            if len(del_cc.books) == 0:
+            if _no_books_left(calibre_db.session, del_cc):
                 calibre_db.session.delete(del_cc)
                 changed = True
         cc_class = db.cc_classes[c.id]
@@ -1739,7 +1739,7 @@ def edit_cc_data(book_id, book, to_save, cc):
                         # remove old cc_val
                         del_cc = getattr(book, cc_string)[0]
                         getattr(book, cc_string).remove(del_cc)
-                        if not del_cc.books or len(del_cc.books) == 0:
+                        if _no_books_left(calibre_db.session, del_cc):
                             calibre_db.session.delete(del_cc)
                             changed = True
             else:
@@ -1970,13 +1970,25 @@ def search_objects_add(db_book_object, db_type, input_elements):
     return add_elements
 
 
+def _no_books_left(db_session, element):
+    """True if no book links to element (author, tag, series, language, publisher or
+    custom column value) any more.
+
+    Asks the database instead of reading element.books: that loaded every linked book
+    with all of its eager-loaded relationships, e.g. the whole library for a language,
+    on every deletion and on every edit that removes an item. The session autoflushes,
+    so the book being edited is already unlinked when this runs.
+    """
+    return db_session.query(db.Books.id).with_parent(element, type(element).books).first() is None
+
+
 def remove_objects(db_book_object, db_session, del_elements):
     changed = False
     if len(del_elements) > 0:
         for del_element in del_elements:
             db_book_object.remove(del_element)
             changed = True
-            if len(del_element.books) == 0:
+            if _no_books_left(db_session, del_element):
                 db_session.delete(del_element)
                 db_session.flush()
     return changed

@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-09-27 12:01+0000\n"
+"POT-Creation-Date: 2026-09-27 12:53+0000\n"
 "PO-Revision-Date: 2026-02-10 18:28+0800\n"
 "Last-Translator: xlivevil <xlivevil@aliyun.com>\n"
 "Language-Team: zh_Hans_CN <LL@li.org>\n"
@@ -121,7 +121,7 @@ msgstr "基本配置"
 msgid "UI Configuration"
 msgstr "界面配置"
 
-#: cps/admin.py:622 cps/admin.py:1304 cps/db.py:985 cps/search.py:153
+#: cps/admin.py:622 cps/admin.py:1304 cps/db.py:988 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -1072,7 +1072,7 @@ msgstr "头像更新成功。"
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "CWA 头像管理（开发中）"
 
-#: cps/db.py:1270 cps/templates/config_edit.html:295
+#: cps/db.py:1273 cps/templates/config_edit.html:295
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793

@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: CWA\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-09-27 12:01+0000\n"
+"POT-Creation-Date: 2026-09-27 12:53+0000\n"
 "PO-Revision-Date: \n"
 "Last-Translator: PetriiCzech <petriiczech@gmail.com>\n"
 "Language-Team: \n"
@@ -123,7 +123,7 @@ msgstr "Základní konfigurace"
 msgid "UI Configuration"
 msgstr "Konfigurace uživatelského rozhraní"
 
-#: cps/admin.py:622 cps/admin.py:1304 cps/db.py:985 cps/search.py:153
+#: cps/admin.py:622 cps/admin.py:1304 cps/db.py:988 cps/search.py:153
 #: cps/web.py:832
 #, python-format
 msgid "Custom Column No.%(column)d does not exist in calibre database"
@@ -1110,7 +1110,7 @@ msgstr "Profilový obrázek byl úspěšně aktualizován."
 msgid "CWA Profile Picture Management (WIP)"
 msgstr "Správa profilových obrázků CWA (rozpracované)"
 
-#: cps/db.py:1270 cps/templates/config_edit.html:295
+#: cps/db.py:1273 cps/templates/config_edit.html:295
 #: cps/templates/config_view_edit.html:79
 #: cps/templates/config_view_edit.html:90 cps/templates/email_edit.html:41
 #: cps/web.py:645 cps/web.py:679 cps/web.py:724 cps/web.py:764 cps/web.py:793

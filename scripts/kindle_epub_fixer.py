@@ -118,24 +118,35 @@ def exit_if_cancelled() -> None:
             ...
         sys.exit(0)
 
+LOCK_FILE_PATH = os.path.join(tempfile.gettempdir(), 'kindle_epub_fixer.lock')
+lock_acquired = False
+
 ### LOCK FILES
 # Creates a lock file unless one already exists meaning an instance of the script is
 # already running, then the script is closed, the user is notified and the program
 # exits with code 2
-try:
-    lock = open(tempfile.gettempdir() + '/kindle_epub_fixer.lock', 'x')
-    lock.close()
-except FileExistsError:
-    print_and_log("[cwa-kindle-epub-fixer] CANCELLING... kindle-epub-fixer was initiated but is already running")
-    logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}")
-    sys.exit(2)
+def acquire_lock():
+    global lock_acquired
+    try:
+        with open(LOCK_FILE_PATH, 'x'):
+            pass
+        lock_acquired = True
+    except FileExistsError:
+        print_and_log("[cwa-kindle-epub-fixer] CANCELLING... kindle-epub-fixer was initiated but is already running")
+        logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}")
+        sys.exit(2)
 
 # Defining function to delete the lock on script exit
 def removeLock():
+    global lock_acquired
+    if not lock_acquired:
+        return
     try:
-        os.remove(tempfile.gettempdir() + '/kindle_epub_fixer.lock')
+        os.remove(LOCK_FILE_PATH)
     except FileNotFoundError:
         ...
+    finally:
+        lock_acquired = False
 
 # Will automatically run when the script exits
 atexit.register(removeLock)
@@ -143,6 +154,9 @@ atexit.register(removeLock)
 
 class EPUBFixer:
     def __init__(self, manually_triggered:bool=False, current_position:str=None):
+        if not lock_acquired:
+            acquire_lock()
+
         self.manually_triggered = manually_triggered
         self.current_position = current_position # string in the form of "n/n"
 
@@ -311,24 +325,46 @@ class EPUBFixer:
         if charset.startswith('utf-16'):
             charset = 'utf-16'
 
-        http_equiv_pattern = re.compile(
-            r'(<meta[^>]+http-equiv=["\']content-type["\'][^>]*content=["\'][^"\']*charset=)([^"\'>\s;]+)([^"\']*["\'][^>]*>)',
-            re.IGNORECASE
-        )
-        if http_equiv_pattern.search(content):
-            return http_equiv_pattern.sub(rf"\1{charset}\3", content, count=1)
+        http_equiv_meta = f'<meta http-equiv="Content-Type" content="text/html; charset={charset}" />'
+        meta_tag_pattern = re.compile(r'<meta\b[^>]*>', re.IGNORECASE)
+        http_equiv_pattern = re.compile(r'\bhttp-equiv\s*=\s*["\']content-type["\']', re.IGNORECASE)
+        content_attr_pattern = re.compile(r'\bcontent\s*=\s*(["\'])(.*?)\1', re.IGNORECASE | re.DOTALL)
+        charset_pattern = re.compile(r'(charset\s*=\s*)[^;\s"\']+', re.IGNORECASE)
+        replaced_http_equiv = False
 
-        meta_charset_pattern = re.compile(r'<meta[^>]+charset=["\']?[^"\'>\s]+[^>]*>', re.IGNORECASE)
+        def update_http_equiv(match: re.Match) -> str:
+            nonlocal replaced_http_equiv
+            tag = match.group(0)
+            if replaced_http_equiv or not http_equiv_pattern.search(tag):
+                return tag
+
+            content_match = content_attr_pattern.search(tag)
+            if not content_match or not charset_pattern.search(content_match.group(2)):
+                return tag
+
+            content_value = charset_pattern.sub(
+                lambda charset_match: f"{charset_match.group(1)}{charset}",
+                content_match.group(2),
+                count=1,
+            )
+            replaced_http_equiv = True
+            return tag[:content_match.start(2)] + content_value + tag[content_match.end(2):]
+
+        updated_content = meta_tag_pattern.sub(update_http_equiv, content)
+        if replaced_http_equiv:
+            return updated_content
+
+        meta_charset_pattern = re.compile(r'<meta\b[^>]+charset=["\']?[^"\'>\s]+[^>]*>', re.IGNORECASE)
         if meta_charset_pattern.search(content):
-            return meta_charset_pattern.sub(f'<meta charset="{charset}">', content, count=1)
+            return meta_charset_pattern.sub(http_equiv_meta, content, count=1)
 
         head_pattern = re.compile(r'<head[^>]*>', re.IGNORECASE)
         match = head_pattern.search(content)
         if match:
             insert_at = match.end()
-            return content[:insert_at] + f"\n    <meta charset=\"{charset}\">" + content[insert_at:]
+            return content[:insert_at] + f"\n    {http_equiv_meta}" + content[insert_at:]
 
-        return f"<meta charset=\"{charset}\">\n" + content
+        return content
 
     def _extract_book_info_from_path(self, file_path: str) -> tuple[int | None, str]:
         """Extract book ID and format from file path.
@@ -1152,6 +1188,8 @@ def get_all_epubs_in_library() -> list[str]:
 
 
 def main():
+    acquire_lock()
+
     parser = argparse.ArgumentParser(
         prog='kindle-epub-fixer',
         description='Checks the encoding of a given EPUB file and automatically corrects any errors that could \

@@ -259,7 +259,7 @@ is_supported_ingest_file() {
                 [[ "$filepath" == *.$suf ]] && return 1
         done
         [[ "$filepath" == *.cwa.json ]] || [[ "$filepath" == *.cwa.failed.json ]] && return 1
-        [[ "$filepath" =~ $SUPPORTED_EXT_REGEX ]]
+        [[ "${filepath,,}" =~ $SUPPORTED_EXT_REGEX ]]
 }
 
 has_pending_ingest_files() {
@@ -421,7 +421,7 @@ handle_event() {
                 return 0
         fi
         # extension filter
-        if ! [[ "$filepath" =~ $SUPPORTED_EXT_REGEX ]]; then
+        if ! [[ "${filepath,,}" =~ $SUPPORTED_EXT_REGEX ]]; then
                 return 0
         fi
 

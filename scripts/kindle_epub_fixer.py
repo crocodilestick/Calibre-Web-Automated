@@ -44,6 +44,16 @@ except Exception:
 # Compile regex pattern once at module level for performance
 LANGUAGE_TAG_PATTERN = re.compile(r'^[a-z]{2,3}(-[a-z]{2,4})?$', re.IGNORECASE)
 
+# ISO 639-2 defines two 3-letter sets: bibliographic (B) and terminological (T). calibre's
+# canonicalize_lang() only accepts the T codes and silently discards the B variants, which leaves
+# imported books with a B-coded language invisible in the library (#1495). Map B -> T.
+ISO_639_2B_TO_T = {
+    'alb': 'sqi', 'arm': 'hye', 'baq': 'eus', 'bur': 'mya', 'chi': 'zho',
+    'cze': 'ces', 'dut': 'nld', 'fre': 'fra', 'geo': 'kat', 'ger': 'deu',
+    'gre': 'ell', 'ice': 'isl', 'mac': 'mkd', 'mao': 'mri', 'may': 'msa',
+    'per': 'fas', 'rum': 'ron', 'slo': 'slk', 'tib': 'bod', 'wel': 'cym',
+}
+
 ### Global Variables
 dirs_json = "/app/calibre-web-automated/dirs.json"
 change_logs_dir = "/app/calibre-web-automated/metadata_change_logs"
@@ -583,6 +593,11 @@ class EPUBFixer:
             'ssw', 'sot', 'sun', 'swe', 'swa', 'tam', 'tel', 'tgk', 'tha', 'tir', 'tuk', 'tgl', 'tsn', 'ton', 'tur',
             'tso', 'tat', 'twi', 'tah', 'uig', 'ukr', 'urd', 'uzb', 'ven', 'vie', 'vol', 'wln', 'wol', 'xho', 'yid',
             'yor', 'zha', 'chi', 'zul',
+            # ISO 639-2 terminological (T) codes for the 20 languages that also have a
+            # bibliographic (B) form above. calibre's canonicalize_lang() requires the T form,
+            # so B codes are mapped to these before validation (see ISO_639_2B_TO_T).
+            'sqi', 'hye', 'eus', 'mya', 'zho', 'ces', 'nld', 'fra', 'kat', 'deu',
+            'ell', 'isl', 'mkd', 'mri', 'msa', 'fas', 'ron', 'slk', 'bod', 'cym',
         ]
 
         try:
@@ -630,7 +645,7 @@ class EPUBFixer:
                 if LANGUAGE_TAG_PATTERN.match(original_language):
                     # Looks like a proper language tag - extract and normalize base language code
                     simplified_lang = original_language.split('-')[0].lower()
-                    
+
                     if simplified_lang in allowed_languages:
                         # Valid language code - use it
                         language = simplified_lang
@@ -665,6 +680,17 @@ class EPUBFixer:
                     else:
                         language = default_language
                         self.fixed_problems.append(f"Invalid language tag '{original_language}'. Using default: {language}")
+
+            # calibre's canonicalize_lang() only accepts ISO 639-2 terminological (T) codes; it
+            # silently discards the bibliographic (B) variants ('fre', 'ger', 'dut', ...), which
+            # leaves the imported book invisible in the library (#1495). Convert B -> T once the
+            # language has been resolved, so the earlier normalization notes stay accurate.
+            if language in ISO_639_2B_TO_T:
+                converted = ISO_639_2B_TO_T[language]
+                self.fixed_problems.append(
+                    f"Converted ISO 639-2/B language code '{language}' to '{converted}' for calibre compatibility"
+                )
+                language = converted
 
             # Update or create language tag
             if not language_tags:

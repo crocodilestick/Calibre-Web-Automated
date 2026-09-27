@@ -1,4 +1,4 @@
-local _ = require("gettext")
+local _ = require("koinsight_l10n")
 local callApi = require("call_api")
 local InfoMessage = require("ui/widget/infomessage")
 local JSON = require("json")
@@ -30,7 +30,7 @@ function render_response_message(response, prefix, default_text)
   end
 
   UIManager:show(InfoMessage:new({
-    text = _(text),
+    text = text,
   }))
 end
 
@@ -46,7 +46,7 @@ function send_device_data(server_url, silent)
   local ok, response = callApi("POST", url, get_headers(body), body)
 
   if ok ~= true and not silent then
-    render_response_message(response, "Chyba:", "Zariadenie sa nepodarilo zaregistrovať.")
+    render_response_message(response, _("Error:"), _("Unable to register device."))
   end
 end
 
@@ -78,9 +78,9 @@ function send_statistics_data(server_url, silent)
 
   if not silent then
     if ok then
-      render_response_message(response, "Úspech:", "Údaje boli odoslané.")
+      render_response_message(response, _("Success:"), _("Data uploaded."))
     else
-      render_response_message(response, "Chyba:", "Odoslanie údajov zlyhalo.")
+      render_response_message(response, _("Error:"), _("Data upload failed."))
     end
   end
 end
@@ -235,7 +235,7 @@ function KoInsightUpload.syncCurrentBook(server_url, silent)
   end
   if server_url == nil or server_url == "" then
     UIManager:show(InfoMessage:new({
-      text = _("Najprv nastavte URL servera."),
+      text = _("Please configure the server URL first."),
     }))
     return
   end
@@ -248,7 +248,7 @@ end
 function KoInsightUpload.syncAllBooks(server_url, progress_callback)
   if server_url == nil or server_url == "" then
     UIManager:show(InfoMessage:new({
-      text = _("Najprv nastavte URL servera."),
+      text = _("Please configure the server URL first."),
     }))
     return
   end

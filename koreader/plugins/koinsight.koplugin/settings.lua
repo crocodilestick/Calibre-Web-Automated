@@ -1,4 +1,4 @@
-local _ = require("gettext")
+local _ = require("koinsight_l10n")
 local BD = require("ui/bidi")
 local DataStorage = require("datastorage")
 local InfoMessage = require("ui/widget/infomessage")
@@ -120,11 +120,11 @@ function KoInsightSettings:toggleSyncOnSuspend()
   local success = self:setSyncOnSuspendEnabled(new_value)
 
   if success then
-    local message = new_value and _("Synchronizácia pri uspaní zapnutá") or _("Synchronizácia pri uspaní vypnutá")
+    local message = new_value and _("Sync on suspend enabled") or _("Sync on suspend disabled")
     UIManager:show(InfoMessage:new({ text = message, timeout = 2 }))
     logger.info("[KoInsight] Sync on suspend toggled from", current, "to", new_value)
   else
-    UIManager:show(InfoMessage:new({ text = _("Chyba pri prepínaní nastavenia synchronizácie"), timeout = 3 }))
+    UIManager:show(InfoMessage:new({ text = _("Error toggling sync setting"), timeout = 3 }))
     logger.err("[KoInsight] Failed to toggle sync_on_suspend")
   end
 
@@ -151,13 +151,13 @@ function KoInsightSettings:toggleAggressiveSuspend()
   local success = self:setAggressiveSuspendEnabled(new_value)
 
   if success then
-    local message = new_value and _("Agresívna synchronizácia pri uspaní zapnutá")
-      or _("Agresívna synchronizácia pri uspaní vypnutá")
+    local message = new_value and _("Aggressive suspend sync enabled")
+      or _("Aggressive suspend sync disabled")
     UIManager:show(InfoMessage:new({ text = message, timeout = 2 }))
     logger.info("[KoInsight] Aggressive suspend sync toggled from", current, "to", new_value)
   else
     UIManager:show(
-      InfoMessage:new({ text = _("Chyba pri prepínaní agresívnej synchronizácie"), timeout = 3 })
+      InfoMessage:new({ text = _("Error toggling aggressive sync setting"), timeout = 3 })
     )
     logger.err("[KoInsight] Failed to toggle aggressive_suspend_sync")
   end
@@ -190,47 +190,47 @@ end
 
 function KoInsightSettings:editServerSettings()
   self.settings_dialog = MultiInputDialog:new({
-    title = _("Nastavenia KoInsight"),
+    title = _("KoInsight settings"),
     fields = {
       {
         text = self.data.server_url,
-        description = _("URL servera:"),
-        hint = _("http://priklad.sk:port"),
+        description = _("Server URL:"),
+        hint = _("http://example.com:port"),
       },
     },
     buttons = {
       {
         {
-          text = _("Zrušiť"),
+          text = _("Cancel"),
           id = "close",
           callback = function()
             UIManager:close(self.settings_dialog)
           end,
         },
         {
-          text = _("Informácie"),
+          text = _("Info"),
           callback = function()
             UIManager:show(InfoMessage:new({
-              text = _("Zadajte adresu vášho servera KoInsight"),
+              text = _("Enter the location of your KoInsight server"),
             }))
           end,
         },
         {
-          text = _("Použiť"),
+          text = _("Apply"),
           callback = function()
             local myfields = self.settings_dialog:getFields()
             local server_url = myfields[1]
 
             if server_url == "" then
                 UIManager:show(InfoMessage:new({
-                    text = _("Zadajte URL servera."),
+                    text = _("Please enter a server URL."),
                 }))
                 return
             end
 
             if not server_url:match("^https?://") then
                 UIManager:show(InfoMessage:new({
-                    text = _("URL servera musí začínať na 'http://' alebo 'https://'.\n\n"),
+                    text = _("The server URL must start with 'http://' or 'https://'.\n\n"),
                 }))
                 return
             end
@@ -238,7 +238,7 @@ function KoInsightSettings:editServerSettings()
             self:setServerURL(server_url)
             UIManager:close(self.settings_dialog)
             UIManager:show(InfoMessage:new({
-                text = _("Nastavenia KoInsight boli uložené."),
+                text = _("KoInsight settings saved."),
                 timeout = 2,
             }))
           end,
@@ -254,11 +254,11 @@ end
 function KoInsightSettings:editTimeoutDialog()
   local current = tostring(self:getSuspendConnectTimeout())
   self.timeout_dialog = MultiInputDialog:new({
-    title = _("Časový limit pripojenia pri uspaní (sekundy)"),
+    title = _("Suspend connect timeout (seconds)"),
     fields = {
       {
         text = current,
-        description = _("Limit (3..60):"),
+        description = _("Timeout (3..60):"),
         hint = _("10"),
         input_type = "number",
       },
@@ -266,19 +266,19 @@ function KoInsightSettings:editTimeoutDialog()
     buttons = {
       {
         {
-          text = _("Zrušiť"),
+          text = _("Cancel"),
           id = "close",
           callback = function()
             UIManager:close(self.timeout_dialog)
           end,
         },
         {
-          text = _("Použiť"),
+          text = _("Apply"),
           callback = function()
             local fields = self.timeout_dialog:getFields()
             self:setSuspendConnectTimeout(fields[1])
             UIManager:close(self.timeout_dialog)
-            UIManager:show(InfoMessage:new({ text = _("Časový limit bol uložený."), timeout = 2 }))
+            UIManager:show(InfoMessage:new({ text = _("Timeout saved."), timeout = 2 }))
           end,
         },
       },

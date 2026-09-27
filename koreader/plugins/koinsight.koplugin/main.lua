@@ -1,4 +1,4 @@
-local _ = require("gettext")
+local _ = require("koinsight_l10n")
 local Dispatcher = require("dispatcher") -- luacheck:ignore
 local InfoMessage = require("ui/widget/infomessage")
 local logger = require("logger")
@@ -28,7 +28,7 @@ function koinsight:addToMainMenu(menu_items)
     sub_item_table = {
       -- 1) Synchronize data (all books)
       {
-        text = _("Synchronizovať údaje"),
+        text = _("Synchronize data"),
         callback = function()
           self:performFullSync()
         end,
@@ -37,7 +37,7 @@ function koinsight:addToMainMenu(menu_items)
 
       -- 2) Sync on suspend
       {
-        text = _("Synchronizovať pri uspaní"),
+        text = _("Sync on suspend"),
         checked_func = function()
           return self.koinsight_settings:getSyncOnSuspendEnabled()
         end,
@@ -48,7 +48,7 @@ function koinsight:addToMainMenu(menu_items)
 
       -- 3) Aggressive sync on suspend (auto Wi-Fi)
       {
-        text = _("Agresívna synchronizácia pri uspaní (automatické Wi-Fi)"),
+        text = _("Aggressive sync on suspend (auto Wi-Fi)"),
         checked_func = function()
           return self.koinsight_settings:getAggressiveSuspendEnabled()
         end,
@@ -62,7 +62,7 @@ function koinsight:addToMainMenu(menu_items)
 
       -- 4) Set suspend connect timeout
       {
-        text = _("Nastaviť časový limit pripojenia pri uspaní…"),
+        text = _("Set suspend connect timeout…"),
         keep_menu_open = true,
         enabled_func = function()
           return self.koinsight_settings:getSyncOnSuspendEnabled()
@@ -74,7 +74,7 @@ function koinsight:addToMainMenu(menu_items)
 
       -- 5) Set server URL
       {
-        text = _("Nastaviť URL servera"),
+        text = _("Set server URL"),
         keep_menu_open = true,
         separator = true, -- separator line *after* this item (before "About")
         callback = function()
@@ -84,14 +84,15 @@ function koinsight:addToMainMenu(menu_items)
 
       -- 6) About KoInsight
       {
-        text = _("O doplnku KoInsight"),
+        text = _("About KoInsight"),
         keep_menu_open = true,
         callback = function()
           local const = require("./const")
           UIManager:show(InfoMessage:new({
-            text = "KoInsight je synchronizačný doplnok pre inštancie KoInsight.\n\nVerzia doplnku: "
-              .. const.VERSION
-              .. "\n\nViac na https://github.com/GeorgeSG/koinsight.",
+            text = string.format(
+              _("KoInsight is a sync plugin for KoInsight instances.\n\nPlugin version: %s\n\nSee https://github.com/GeorgeSG/koinsight."),
+              const.VERSION
+            ),
           }))
         end,
       },
@@ -104,7 +105,7 @@ function koinsight:onDispatcherRegisterActions()
   Dispatcher:registerAction("koinsight_sync", {
     category = "none",
     event = "KoInsightSync",
-    title = _("KoInsight: Synchronizovať všetky knihy"),
+    title = _("KoInsight: Sync all books"),
     general = true,
   })
 end
@@ -118,14 +119,14 @@ function koinsight:performFullSync()
   local url = self.koinsight_settings:getServerURL()
   if not url or url == "" then
     UIManager:show(
-      InfoMessage:new({ text = _("URL servera KoInsight nie je nastavená."), timeout = 3 })
+      InfoMessage:new({ text = _("KoInsight server URL is not configured."), timeout = 3 })
     )
     return
   end
 
   -- Show initial message
   local progress_info = InfoMessage:new({
-    text = _("Spúšťam synchronizáciu…\nPrehľadávam históriu čítania a hľadám knihy s poznámkami."),
+    text = _("Starting sync..\nScanning reading history for books with annotations."),
   })
   UIManager:show(progress_info)
 
@@ -139,7 +140,7 @@ function koinsight:performFullSync()
           UIManager:close(progress_info)
           progress_info = InfoMessage:new({
             text = string.format(
-              _("Synchronizácia: %d/%d kníh\n%d poznámok v aktuálnej knihe"),
+              _("Syncing: %d/%d books\n%d annotations for current book"),
               progress.current,
               progress.total,
               progress.annotation_count
@@ -150,13 +151,13 @@ function koinsight:performFullSync()
           UIManager:close(progress_info)
           if progress.total == 0 then
             UIManager:show(InfoMessage:new({
-              text = _("V histórii čítania sa nenašli žiadne knihy s poznámkami."),
+              text = _("No books with annotations found in reading history."),
               timeout = 3,
             }))
           else
             UIManager:show(InfoMessage:new({
               text = string.format(
-                _("Synchronizácia dokončená!\n%d/%d kníh úspešne synchronizovaných\nNeúspešné: %d"),
+                _("Sync complete!\n%d/%d books synced successfully\n%d failed"),
                 progress.success,
                 progress.total,
                 progress.failed
@@ -171,7 +172,7 @@ function koinsight:performFullSync()
     if not ok then
       UIManager:close(progress_info)
       logger.err("[KoInsight] Full sync failed: " .. tostring(err))
-      UIManager:show(InfoMessage:new({ text = _("Synchronizácia zlyhala: " .. tostring(err)), timeout = 5 }))
+      UIManager:show(InfoMessage:new({ text = _("Sync failed: ") .. tostring(err), timeout = 5 }))
     end
   end)
 end
@@ -244,10 +245,10 @@ function koinsight:performSyncOnSuspend()
   end)
 
   if not success then
-    message = "Chyba pri automatickej synchronizácii: " .. tostring(error_msg)
+    local message = "Error during auto sync: " .. tostring(error_msg)
     logger.err("[KoInsight] " .. message)
     UIManager:show(InfoMessage:new({
-      text = _(message),
+      text = _("Error during auto sync: ") .. tostring(error_msg),
     }))
   else
     logger.info("[KoInsight] Suspend sync completed successfully")
@@ -311,7 +312,7 @@ function koinsight:performAggressiveSyncOnSuspend()
   end)
 
   if not success then
-    local message = "Chyba pri agresívnej automatickej synchronizácii: " .. tostring(error_msg)
+    local message = "Error during aggressive auto sync: " .. tostring(error_msg)
     logger.err("[KoInsight] " .. message)
 
     -- Try to restore WiFi state in case of error

@@ -6,12 +6,12 @@ local http = require("socket.http")
 local UIManager = require("ui/uimanager")
 local JSON = require("json")
 local InfoMessage = require("ui/widget/infomessage")
-local _ = require("gettext")
+local _ = require("koinsight_l10n")
 
 function response_not_valid(content)
   logger.err("[KoInsight] callApi: response was not valid JSON", content)
   UIManager:show(InfoMessage:new({
-    text = _("Odpoveď servera nie je platná."),
+    text = _("Server response is not valid."),
   }))
 end
 
@@ -65,7 +65,7 @@ return function(method, url, headers, body, filepath, quiet)
     if not quiet then
       logger.err("[KoInsight] callApi: HTTP error", status or code, resp_headers, result)
       UIManager:show(InfoMessage:new({
-        text = _("Chyba servera" .. (result and ": " .. result["error"] or "")),
+        text = _("Server error") .. (result and ": " .. result["error"] or ""),
       }))
     end
 

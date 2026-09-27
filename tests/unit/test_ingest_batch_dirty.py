@@ -4,6 +4,7 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
+import sqlite3
 import subprocess
 from pathlib import Path
 from unittest import mock
@@ -134,3 +135,49 @@ def test_successful_add_format_marks_batch_dirty(monkeypatch, tmp_path):
 
     assert run_mock.call_args.args[0][:3] == ["calibredb", "add_format", "7"]
     assert (tmp_path / "batch_dirty").exists()
+
+
+def test_split_library_checksum_uses_metadata_db_not_books_root(monkeypatch, tmp_path):
+    scripts_dir = Path(__file__).resolve().parents[2] / "scripts"
+    monkeypatch.syspath_prepend(str(scripts_dir))
+
+    import ingest_processor
+
+    processor = build_processor(ingest_processor, tmp_path)
+    metadata_dir = tmp_path / "metadata"
+    metadata_dir.mkdir()
+    processor.metadata_db = str(metadata_dir / "metadata.db")
+
+    book_path = "Author/Book (7)"
+    format_name = "Book - Author"
+    book_dir = Path(processor.library_dir) / book_path
+    book_dir.mkdir(parents=True)
+    ebook_path = book_dir / f"{format_name}.epub"
+    ebook_path.write_bytes(b"epub")
+
+    with sqlite3.connect(processor.metadata_db) as con:
+        con.execute(
+            "CREATE TABLE books (id INTEGER PRIMARY KEY, title TEXT, path TEXT, timestamp TEXT)"
+        )
+        con.execute("CREATE TABLE data (book INTEGER, format TEXT, name TEXT)")
+        con.execute(
+            "INSERT INTO books (id, title, path, timestamp) VALUES (?, ?, ?, ?)",
+            (7, "Book", book_path, "2026-01-01"),
+        )
+        con.execute(
+            "INSERT INTO data (book, format, name) VALUES (?, ?, ?)",
+            (7, "EPUB", format_name),
+        )
+
+    with mock.patch(
+        "cps.progress_syncing.checksums.calculate_koreader_partial_md5",
+        return_value="a" * 32,
+    ) as calculate_mock, mock.patch(
+        "cps.progress_syncing.checksums.store_checksum",
+        return_value=True,
+    ) as store_mock:
+        processor.generate_book_checksums("Book", book_id=7)
+
+    calculate_mock.assert_called_once_with(str(ebook_path))
+    store_mock.assert_called_once()
+    assert not (Path(processor.library_dir) / "metadata.db").exists()

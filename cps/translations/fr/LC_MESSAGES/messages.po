@@ -26,7 +26,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-09-26 14:44+0000\n"
+"POT-Creation-Date: 2026-09-27 12:01+0000\n"
 "PO-Revision-Date: 2026-02-11 09:17+0000\n"
 "Last-Translator: Tex <tex@grosist.fr>\n"
 "Language-Team: French\n"
@@ -1273,7 +1273,7 @@ msgstr ""
 "bibliothèque"
 
 #: cps/editbooks.py:152 cps/editbooks.py:179 cps/templates/book_edit.html:52
-#: cps/templates/layout.html:152
+#: cps/templates/layout.html:153
 msgid "Upload done, processing, please wait..."
 msgstr "Téléversement terminé, traitement en cours, veuillez patienter…."
 
@@ -1868,9 +1868,8 @@ msgstr "Description"
 msgid "{} Stars"
 msgstr "{} Étoiles"
 
-#: cps/remotelogin.py:76 cps/templates/layout.html:135
-#: cps/templates/layout.html:177 cps/templates/login.html:11
-#: cps/templates/login.html:39 cps/web.py:2187
+#: cps/remotelogin.py:76 cps/templates/layout.html:136
+#: cps/templates/layout.html:178 cps/templates/login.html:50 cps/web.py:2187
 msgid "Login"
 msgstr "Connexion"
 
@@ -2052,8 +2051,8 @@ msgstr ""
 
 #: cps/search.py:53 cps/search.py:440 cps/templates/book_edit.html:275
 #: cps/templates/cwa_epub_fixer.html:25 cps/templates/feed.xml:34
-#: cps/templates/index.xml:12 cps/templates/layout.html:114
-#: cps/templates/layout.html:117 cps/templates/search_form.html:247
+#: cps/templates/index.xml:12 cps/templates/layout.html:115
+#: cps/templates/layout.html:118 cps/templates/search_form.html:247
 msgid "Search"
 msgstr "Chercher"
 
@@ -2086,7 +2085,7 @@ msgstr ""
 "Erreur lors de la recherche de colonnes personnalisées, veuillez redémarrer "
 "Calibre-Web"
 
-#: cps/search.py:384 cps/search.py:416 cps/templates/layout.html:125
+#: cps/search.py:384 cps/search.py:416 cps/templates/layout.html:126
 msgid "Advanced Search"
 msgstr "Recherche avancée"
 
@@ -2207,7 +2206,7 @@ msgstr ""
 "Erreur à l’ouverture de l’étagère. Elle n’existe plus ou n’est plus "
 "accessible"
 
-#: cps/tasks_status.py:37 cps/templates/layout.html:163
+#: cps/tasks_status.py:37 cps/templates/layout.html:164
 #: cps/templates/tasks.html:7
 msgid "Tasks"
 msgstr "Tâches"
@@ -2367,7 +2366,7 @@ msgstr "Nom de l'étagère trop long (100 caractères maximum)"
 msgid "Error creating shelf"
 msgstr "Erreur lors de la création de l'étagère"
 
-#: cps/templates/layout.html:326 cps/web.py:1153
+#: cps/templates/layout.html:327 cps/web.py:1153
 msgid "Create Magic Shelf"
 msgstr "Créer une étagère magique"
 
@@ -2487,8 +2486,8 @@ msgstr ""
 msgid "Please wait one minute to register next user"
 msgstr "Merci de patienter une minute pour enregistrer un nouvel utilisateur"
 
-#: cps/templates/layout.html:136 cps/templates/layout.html:178
-#: cps/templates/login.html:48 cps/templates/register.html:17 cps/web.py:2066
+#: cps/templates/layout.html:137 cps/templates/layout.html:179
+#: cps/templates/login.html:106 cps/templates/register.html:17 cps/web.py:2066
 #: cps/web.py:2070 cps/web.py:2075 cps/web.py:2079 cps/web.py:2085
 #: cps/web.py:2110 cps/web.py:2114 cps/web.py:2127 cps/web.py:2130
 msgid "Register"
@@ -2807,7 +2806,7 @@ msgid "Clearing cover thumbnail cache"
 msgstr "Effacement du cache des vignettes de couverture"
 
 #: cps/tasks/upload.py:28 cps/templates/admin.html:22
-#: cps/templates/layout.html:155 cps/templates/user_table.html:146
+#: cps/templates/layout.html:156 cps/templates/user_table.html:146
 msgid "Upload"
 msgstr "Téléverser"
 
@@ -2815,9 +2814,9 @@ msgstr "Téléverser"
 msgid "Users&nbsp;&nbsp;👤"
 msgstr "Utilisateurs&nbsp;&nbsp;👤"
 
-#: cps/templates/admin.html:14 cps/templates/login.html:17
-#: cps/templates/login.html:19 cps/templates/register.html:9
-#: cps/templates/user_edit.html:185 cps/templates/user_table.html:134
+#: cps/templates/admin.html:14 cps/templates/login.html:24
+#: cps/templates/register.html:9 cps/templates/user_edit.html:185
+#: cps/templates/user_table.html:134
 msgid "Username"
 msgstr "Nom d'utilisateur"
 
@@ -2834,13 +2833,13 @@ msgstr "Envoyer à l'eReader E-mail"
 msgid "Send to eReader Subject"
 msgstr "Envoyer à l'eReader - Objet"
 
-#: cps/templates/admin.html:19 cps/templates/layout.html:166
+#: cps/templates/admin.html:19 cps/templates/layout.html:167
 #: cps/templates/user_table.html:144
 msgid "Admin"
 msgstr "Administration"
 
-#: cps/templates/admin.html:20 cps/templates/login.html:22
-#: cps/templates/login.html:23 cps/templates/user_edit.html:204
+#: cps/templates/admin.html:20 cps/templates/login.html:30
+#: cps/templates/user_edit.html:204
 msgid "Password"
 msgstr "Mot de passe"
 
@@ -3210,14 +3209,14 @@ msgid "Convert book"
 msgstr "Convertir le livre"
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:69
-#: cps/templates/layout.html:152 cps/templates/layout.html:283
+#: cps/templates/layout.html:153 cps/templates/layout.html:284
 msgid "Uploading..."
 msgstr "Téléversement en cours..."
 
 #: cps/templates/book_edit.html:52 cps/templates/book_edit.html:292
 #: cps/templates/book_table.html:342 cps/templates/duplicates.html:766
-#: cps/templates/layout.html:152 cps/templates/layout.html:380
-#: cps/templates/layout.html:445 cps/templates/modal_dialogs.html:34
+#: cps/templates/layout.html:153 cps/templates/layout.html:381
+#: cps/templates/layout.html:446 cps/templates/modal_dialogs.html:34
 #: cps/templates/user_edit.html:573
 msgid "Close"
 msgstr "Fermer"
@@ -3231,7 +3230,7 @@ msgstr "Fermer"
 #: cps/templates/hardcover_review_matches.html:369
 #: cps/templates/hardcover_review_matches.html:400
 #: cps/templates/hardcover_review_matches.html:409
-#: cps/templates/layout.html:152
+#: cps/templates/layout.html:153
 msgid "Error"
 msgstr "Erreur"
 
@@ -5762,7 +5761,7 @@ msgstr "Ajouter à l'étagère"
 #: cps/templates/detail.html:590 cps/templates/detail.html:612
 #: cps/templates/detail.html:765 cps/templates/detail.html:1251
 #: cps/templates/feed.xml:88 cps/templates/feed.xml:90
-#: cps/templates/layout.html:314 cps/templates/layout.html:323
+#: cps/templates/layout.html:315 cps/templates/layout.html:324
 #: cps/templates/listenmp3.html:201 cps/templates/listenmp3.html:218
 #: cps/templates/search.html:22
 msgid "(Public)"
@@ -6162,7 +6161,7 @@ msgstr "Limite de la taille de la pièce jointe"
 msgid "Save and Send Test Email"
 msgstr "Sauvegarder les réglages et tester l’envoi d’un courriel"
 
-#: cps/templates/email_edit.html:70 cps/templates/layout.html:93
+#: cps/templates/email_edit.html:70 cps/templates/layout.html:94
 #: cps/templates/shelf_order.html:42 cps/templates/user_table.html:175
 msgid "Back"
 msgstr "Retour"
@@ -6183,7 +6182,7 @@ msgstr "Saisir le nom de domaine"
 msgid "Denied Domains (Blacklist)"
 msgstr "Domaines refusés (Liste noire)"
 
-#: cps/templates/feed.xml:22 cps/templates/layout.html:364
+#: cps/templates/feed.xml:22 cps/templates/layout.html:365
 msgid "Next"
 msgstr "Suivant"
 
@@ -6463,105 +6462,105 @@ msgstr ""
 "Téléchargement disponible après activation de KOReader Sync dans les "
 "paramètres de CWA."
 
-#: cps/templates/layout.html:93 cps/templates/login.html:51
+#: cps/templates/layout.html:94
 msgid "Home"
 msgstr "Accueil"
 
-#: cps/templates/layout.html:100
+#: cps/templates/layout.html:101
 msgid "Toggle Navigation"
 msgstr "Basculer la navigation"
 
-#: cps/templates/layout.html:115
+#: cps/templates/layout.html:116
 msgid "Search Library"
 msgstr "Chercher dans librairie"
 
-#: cps/templates/layout.html:133 cps/templates/layout.html:170
+#: cps/templates/layout.html:134 cps/templates/layout.html:171
 #: cps/templates/user_edit.html:305 cps/templates/user_edit.html:307
 msgid "Account"
 msgstr "Compte"
 
-#: cps/templates/layout.html:139 cps/templates/layout.html:172
+#: cps/templates/layout.html:140 cps/templates/layout.html:173
 msgid "Logout"
 msgstr "Déconnexion"
 
-#: cps/templates/layout.html:147
+#: cps/templates/layout.html:148
 msgid "Switch Theme"
 msgstr "Changer de thème"
 
-#: cps/templates/layout.html:166 cps/templates/read.html:79
+#: cps/templates/layout.html:167 cps/templates/read.html:79
 #: cps/templates/readcbr.html:70 cps/templates/readcbr.html:96
 msgid "Settings"
 msgstr "Paramètres"
 
-#: cps/templates/layout.html:168
+#: cps/templates/layout.html:169
 msgid "Refresh Library"
 msgstr "Actualiser la bibliothèque"
 
-#: cps/templates/layout.html:209
+#: cps/templates/layout.html:210
 msgid "See Changelog"
 msgstr "Voir le Changelog"
 
-#: cps/templates/layout.html:219
+#: cps/templates/layout.html:220
 msgid "Open Duplicates"
 msgstr "Ouvrir les doublons"
 
-#: cps/templates/layout.html:241
+#: cps/templates/layout.html:242
 msgid "Contribute here!"
 msgstr "Contribuer ici !"
 
-#: cps/templates/layout.html:284
+#: cps/templates/layout.html:285
 msgid "Please do not refresh the page"
 msgstr "Veuillez ne pas rafraîchir la page"
 
-#: cps/templates/layout.html:294
+#: cps/templates/layout.html:295
 msgid "Browse"
 msgstr "Explorer"
 
-#: cps/templates/layout.html:311 cps/templates/search_form.html:88
+#: cps/templates/layout.html:312 cps/templates/search_form.html:88
 msgid "Shelves"
 msgstr "Etagères"
 
-#: cps/templates/layout.html:317
+#: cps/templates/layout.html:318
 msgid "Create Shelf"
 msgstr "Créer une étagère"
 
-#: cps/templates/layout.html:321
+#: cps/templates/layout.html:322
 msgid "Magic Shelves ✨"
 msgstr "Étagères magiques ✨"
 
-#: cps/templates/layout.html:330 cps/templates/stats.html:3
+#: cps/templates/layout.html:331 cps/templates/stats.html:3
 msgid "About"
 msgstr "À propos"
 
-#: cps/templates/layout.html:342
+#: cps/templates/layout.html:343
 msgid "Previous"
 msgstr "Précédent"
 
-#: cps/templates/layout.html:353
+#: cps/templates/layout.html:354
 msgid "Go to page"
 msgstr ""
 
-#: cps/templates/layout.html:376
+#: cps/templates/layout.html:377
 msgid "Book Details"
 msgstr "Détails du livre"
 
-#: cps/templates/layout.html:446
+#: cps/templates/layout.html:447
 msgid "Duplicate Books Detected"
 msgstr "Livres en double détectés"
 
-#: cps/templates/layout.html:447
+#: cps/templates/layout.html:448
 msgid "You have unresolved duplicate books in your library"
 msgstr "Vous avez des livres en double non résolus dans votre bibliothèque"
 
-#: cps/templates/layout.html:452
+#: cps/templates/layout.html:453
 msgid "Duplicate Groups Found"
 msgstr "Groupes en double trouvés"
 
-#: cps/templates/layout.html:460
+#: cps/templates/layout.html:461
 msgid "Remind Me Later"
 msgstr "Rappelez-moi plus tard"
 
-#: cps/templates/layout.html:463
+#: cps/templates/layout.html:464
 msgid "View & Resolve Duplicates"
 msgstr "Afficher et résoudre les doublons"
 
@@ -6577,34 +6576,57 @@ msgstr "Grille"
 msgid "Read"
 msgstr "Lu"
 
-#: cps/templates/login.html:30
+#: cps/templates/login.html:11
+#, fuzzy
+msgid "Sign in to your library"
+msgstr "Séries dans la librairie"
+
+#: cps/templates/login.html:34
 msgid "Show Password"
 msgstr "Afficher le mot de passe"
 
-#: cps/templates/login.html:35
+#: cps/templates/login.html:43
 msgid "Remember Me"
 msgstr "Se rappeler de moi"
 
-#: cps/templates/login.html:41
+#: cps/templates/login.html:46
 msgid "Forgot Password?"
 msgstr "Mot de passe oublié ?"
 
-#: cps/templates/login.html:55
-msgid ""
-"Log in with Magic\n"
-"      Link"
-msgstr "Connectez-vous avec Magic Link"
+#: cps/templates/login.html:56
+#, fuzzy
+msgid "or"
+msgstr "Port"
 
-#: cps/templates/login.html:95
+#: cps/templates/login.html:63
 msgid "Log in with SSO"
 msgstr "Se connecter avec SSO"
 
-#: cps/templates/login.html:102
+#: cps/templates/login.html:72
+#, fuzzy
+msgid "Login with GitHub"
+msgstr "Échec de la connexion avec GitHub."
+
+#: cps/templates/login.html:83
+#, fuzzy
+msgid "Login with Google"
+msgstr "Échec de la connexion avec Google."
+
+#: cps/templates/login.html:90
+#, fuzzy
+msgid "Log in with Magic Link"
+msgstr "Connectez-vous avec Magic Link"
+
+#: cps/templates/login.html:98
 msgid ""
 "Standard login is disabled. Please use one of the alternative login methods."
 msgstr ""
 "La connexion standard est désactivée. Veuillez utiliser l'une des autres "
 "méthodes de connexion."
+
+#: cps/templates/login.html:109
+msgid "Continue as guest"
+msgstr ""
 
 #: cps/templates/logviewer.html:6
 msgid "Show Calibre-Web Log: "
@@ -7626,9 +7648,6 @@ msgstr "Afficher la section Lu / Non lu"
 
 #~ msgid "Error scheduling EPUB Fixer"
 #~ msgstr "Erreur de planification EPUB Fixer"
-
-#~ msgid "Port"
-#~ msgstr "Port"
 
 #~ msgid "Scanning for duplicates"
 #~ msgstr "Recherche de doublons"

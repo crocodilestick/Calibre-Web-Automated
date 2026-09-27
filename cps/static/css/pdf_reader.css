@@ -1,0 +1,638 @@
+:root {
+  --cwa-toolbar-height: 48px;
+  --cwa-notes-width: 360px;
+  --cwa-surface: #f7f7f5;
+  --cwa-surface-raised: #ffffff;
+  --cwa-surface-muted: #efefec;
+  --cwa-border: #d8d8d2;
+  --cwa-text: #242522;
+  --cwa-text-muted: #686a64;
+  --cwa-accent: #b14432;
+  --cwa-accent-strong: #933827;
+  --cwa-shadow: 0 16px 48px rgb(0 0 0 / 0.16);
+}
+
+:root[data-cwa-theme="dark"] {
+  --cwa-surface: #191b1f;
+  --cwa-surface-raised: #22252a;
+  --cwa-surface-muted: #2b2e34;
+  --cwa-border: #3a3e45;
+  --cwa-text: #ece8df;
+  --cwa-text-muted: #aba79f;
+  --cwa-accent: #df745d;
+  --cwa-accent-strong: #ec8a74;
+  --cwa-shadow: 0 16px 48px rgb(0 0 0 / 0.45);
+}
+
+:root[data-cwa-theme="sepia"] {
+  --cwa-surface: #e9dfc7;
+  --cwa-surface-raised: #f6eedc;
+  --cwa-surface-muted: #dfd3b8;
+  --cwa-border: #cabea4;
+  --cwa-text: #3d3528;
+  --cwa-text-muted: #756a59;
+  --cwa-accent: #9a4c36;
+  --cwa-accent-strong: #7e3c2b;
+}
+
+html,
+body {
+  color-scheme: light;
+}
+
+:root[data-cwa-theme="dark"],
+:root[data-cwa-theme="dark"] body {
+  color-scheme: dark;
+}
+
+#toolbarContainer,
+#toolbarViewer {
+  height: var(--cwa-toolbar-height);
+}
+
+#toolbarContainer {
+  background: var(--cwa-surface-raised);
+  border-bottom: 1px solid var(--cwa-border);
+  box-shadow: 0 1px 7px rgb(0 0 0 / 0.08);
+}
+
+#toolbarViewer {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+}
+
+#toolbarViewer::-webkit-scrollbar {
+  display: none;
+}
+
+#toolbarViewerLeft,
+#toolbarViewerMiddle,
+#toolbarViewerRight {
+  position: static;
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  float: none;
+  transform: none;
+}
+
+#toolbarViewerMiddle {
+  margin: 0 auto;
+}
+
+#toolbarViewerRight {
+  margin-inline-start: auto;
+}
+
+#toolbarViewerLeft > *,
+#toolbarViewerMiddle > *,
+#toolbarViewerRight > * {
+  float: none;
+  flex: 0 0 auto;
+}
+
+#toolbarViewer .toolbarButton,
+#toolbarViewer .cwaReaderAction {
+  width: 40px;
+  height: 40px;
+  margin: 4px 1px;
+  border-radius: 7px;
+}
+
+#toolbarViewer .toolbarButton::before {
+  top: 12px;
+  left: 12px;
+}
+
+#sidebarContainer {
+  inset-block-start: var(--cwa-toolbar-height);
+}
+
+#viewerContainer {
+  inset-block-start: var(--cwa-toolbar-height);
+  background: var(--body-bg-color);
+}
+
+#loadingBar {
+  top: calc(var(--cwa-toolbar-height) - 4px);
+}
+
+.cwaReaderAction {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  box-sizing: border-box;
+  padding: 0 9px;
+  border: 0;
+  background: transparent;
+  color: var(--main-color);
+  text-decoration: none;
+  font: 600 12px/1 system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.cwaReaderAction:hover,
+.cwaReaderAction:focus-visible,
+.cwaReaderAction[aria-expanded="true"] {
+  color: var(--main-color);
+  background: var(--button-hover-color);
+  outline: none;
+}
+
+#cwaBackToBook {
+  width: auto !important;
+  min-width: 66px;
+}
+
+#cwaNotesToggle {
+  width: auto !important;
+  min-width: 74px;
+}
+
+.cwaReaderActionIcon,
+.cwaReaderActionLabel {
+  display: inline-block !important;
+  width: auto !important;
+  height: auto !important;
+  overflow: visible !important;
+}
+
+.cwaReaderActionIcon {
+  font-size: 17px;
+  line-height: 1;
+}
+
+.cwaThemeControl {
+  display: flex;
+  align-items: center;
+  height: 36px;
+  margin: 4px 2px;
+  padding-inline-start: 9px;
+  border: 1px solid var(--cwa-border);
+  border-radius: 7px;
+  background: var(--cwa-surface-muted);
+  color: var(--cwa-text);
+}
+
+.cwaThemeIcon {
+  font-size: 17px;
+}
+
+#cwaThemeSelect {
+  width: 82px;
+  height: 34px;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: 600 12px/1 system-ui, sans-serif;
+}
+
+.cwaVisuallyHidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0, 0, 0, 0) !important;
+  white-space: nowrap !important;
+  border: 0 !important;
+}
+
+#cwaNotesPanel {
+  position: absolute;
+  z-index: 10002;
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: var(--cwa-notes-width);
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  overflow: auto;
+  border-inline-start: 1px solid var(--cwa-border);
+  background: var(--cwa-surface);
+  color: var(--cwa-text);
+  box-shadow: var(--cwa-shadow);
+  transform: translateX(calc(100% * var(--dir-factor)));
+  visibility: hidden;
+  transition: transform 180ms ease, visibility 180ms;
+  font: 14px/1.45 system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+body.cwaNotesOpen #cwaNotesPanel {
+  transform: translateX(0);
+  visibility: visible;
+}
+
+body.cwaNotesOpen #mainContainer {
+  inset-inline-end: var(--cwa-notes-width);
+}
+
+.cwaNotesHeader,
+.cwaNotesMeta,
+.cwaNoteComposerFooter,
+.cwaNotesListHeader,
+.cwaNoteCardHeader,
+.cwaNoteCardActions,
+.cwaComposerActions {
+  display: flex;
+  align-items: center;
+}
+
+.cwaNotesHeader {
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.cwaNotesEyebrow {
+  margin: 0 0 2px;
+  color: var(--cwa-accent);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.cwaNotesHeader h1,
+.cwaNotesListHeader h2 {
+  margin: 0;
+  color: var(--cwa-text);
+}
+
+.cwaNotesHeader h1 {
+  font-size: 21px;
+}
+
+.cwaNotesListHeader h2 {
+  font-size: 14px;
+}
+
+.cwaIconButton,
+.cwaTextButton,
+.cwaPrimaryButton,
+.cwaNotePageButton {
+  border: 0;
+  border-radius: 7px;
+  font: 700 12px/1 system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.cwaIconButton {
+  width: 36px;
+  height: 36px;
+  background: var(--cwa-surface-muted);
+  color: var(--cwa-text);
+  font-size: 23px;
+}
+
+.cwaNotesMeta {
+  justify-content: space-between;
+  margin: 16px 0 10px;
+  color: var(--cwa-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.cwaSyncStatus {
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: var(--cwa-surface-muted);
+}
+
+.cwaSyncStatus[data-state="saving"] {
+  color: var(--cwa-accent);
+}
+
+.cwaSyncStatus[data-state="error"] {
+  color: #b42318;
+}
+
+.cwaNoteComposer {
+  padding: 13px;
+  border: 1px solid var(--cwa-border);
+  border-radius: 10px;
+  background: var(--cwa-surface-raised);
+}
+
+.cwaNoteComposer > label {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+#cwaNoteBody {
+  width: 100%;
+  min-height: 94px;
+  resize: vertical;
+  box-sizing: border-box;
+  padding: 10px;
+  border: 1px solid var(--cwa-border);
+  border-radius: 7px;
+  outline: none;
+  background: var(--cwa-surface);
+  color: var(--cwa-text);
+  font: inherit;
+}
+
+#cwaNoteBody:focus {
+  border-color: var(--cwa-accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--cwa-accent) 22%, transparent);
+}
+
+.cwaNoteComposerFooter {
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.cwaColorPicker {
+  display: flex;
+  gap: 5px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.cwaColorChoice {
+  position: relative;
+  display: block;
+  width: 24px;
+  height: 24px;
+}
+
+.cwaColorChoice input {
+  position: absolute;
+  opacity: 0;
+}
+
+.cwaColorChoice span {
+  display: block;
+  width: 18px;
+  height: 18px;
+  margin: 3px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  box-sizing: border-box;
+  background: var(--note-color);
+}
+
+.cwaColorChoice input:checked + span {
+  outline: 2px solid var(--cwa-text);
+  outline-offset: 2px;
+}
+
+.cwaColor-yellow { --note-color: #f2cf54; }
+.cwaColor-green { --note-color: #67b77d; }
+.cwaColor-blue { --note-color: #68a9dd; }
+.cwaColor-pink { --note-color: #dc82a5; }
+.cwaColor-purple { --note-color: #9878c2; }
+
+.cwaComposerActions,
+.cwaNoteCardActions {
+  gap: 6px;
+}
+
+.cwaTextButton,
+.cwaPrimaryButton {
+  min-height: 34px;
+  padding: 0 11px;
+}
+
+.cwaTextButton {
+  background: transparent;
+  color: var(--cwa-text-muted);
+}
+
+.cwaPrimaryButton {
+  background: var(--cwa-accent);
+  color: #fff;
+}
+
+.cwaPrimaryButton:hover {
+  background: var(--cwa-accent-strong);
+}
+
+.cwaNotesNotice {
+  margin: 12px 0 18px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--cwa-surface-muted);
+  color: var(--cwa-text-muted);
+  font-size: 12px;
+}
+
+.cwaNotesListHeader {
+  justify-content: space-between;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--cwa-border);
+}
+
+#cwaNotesCount {
+  min-width: 24px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  background: var(--cwa-surface-muted);
+  color: var(--cwa-text-muted);
+  text-align: center;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.cwaNotesList {
+  display: grid;
+  gap: 9px;
+  padding-block: 10px 28px;
+}
+
+.cwaNoteCard {
+  position: relative;
+  padding: 11px 11px 11px 15px;
+  border: 1px solid var(--cwa-border);
+  border-radius: 9px;
+  background: var(--cwa-surface-raised);
+}
+
+.cwaNoteCard::before {
+  position: absolute;
+  inset-block: 8px;
+  inset-inline-start: 0;
+  width: 4px;
+  border-radius: 0 4px 4px 0;
+  background: var(--note-color, #f2cf54);
+  content: "";
+}
+
+.cwaNoteCard[data-current="true"] {
+  border-color: var(--cwa-accent);
+}
+
+.cwaNoteCardHeader {
+  justify-content: space-between;
+}
+
+.cwaNotePageButton {
+  padding: 5px 7px;
+  background: var(--cwa-surface-muted);
+  color: var(--cwa-text);
+}
+
+.cwaNoteCardBody {
+  margin: 9px 0 0;
+  color: var(--cwa-text);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.cwaNoteAction {
+  padding: 5px;
+  border: 0;
+  background: transparent;
+  color: var(--cwa-text-muted);
+  font: 700 11px/1 system-ui, sans-serif;
+  cursor: pointer;
+}
+
+.cwaNoteAction:hover,
+.cwaNoteAction:focus-visible {
+  color: var(--cwa-accent);
+}
+
+.cwaNotesEmpty {
+  display: grid;
+  gap: 4px;
+  padding: 28px 8px;
+  color: var(--cwa-text-muted);
+  text-align: center;
+}
+
+.cwaNotesEmpty[hidden] {
+  display: none;
+}
+
+.cwaNotesEmpty strong {
+  color: var(--cwa-text);
+}
+
+@media (max-width: 1050px) {
+  #scaleSelectContainer {
+    display: none;
+  }
+}
+
+@media (max-width: 900px) {
+  body.cwaNotesOpen #mainContainer {
+    inset-inline-end: 0;
+  }
+
+  #cwaNotesPanel {
+    width: min(92vw, var(--cwa-notes-width));
+  }
+
+  #toolbarViewerMiddle {
+    display: none;
+  }
+}
+
+@media (max-width: 620px) {
+  :root {
+    --cwa-toolbar-height: 52px;
+  }
+
+  #toolbarViewer .toolbarButton,
+  #toolbarViewer .cwaReaderAction {
+    width: 44px;
+    height: 44px;
+  }
+
+  #toolbarViewer .toolbarButton::before {
+    top: 14px;
+    left: 14px;
+  }
+
+  #cwaBackToBook,
+  #cwaNotesToggle {
+    width: 44px !important;
+    min-width: 44px;
+    padding: 0;
+  }
+
+  .cwaReaderActionLabel {
+    display: none !important;
+  }
+
+  .cwaThemeControl {
+    width: 44px;
+    height: 44px;
+    margin: 4px 1px;
+    padding: 0;
+    justify-content: center;
+  }
+
+  #cwaThemeSelect {
+    position: absolute;
+    width: 44px;
+    height: 44px;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  #toolbarViewerLeft .toolbarButtonSpacer,
+  #numPages {
+    display: none;
+  }
+
+  #pageNumber {
+    width: 42px;
+  }
+
+  #cwaNotesPanel {
+    width: 100vw;
+    padding: 16px;
+  }
+
+  .cwaNoteComposerFooter {
+    align-items: flex-end;
+  }
+
+  .cwaColorPicker {
+    flex-wrap: wrap;
+    max-width: 142px;
+  }
+
+  .cwaColorChoice {
+    width: 44px;
+    height: 44px;
+  }
+
+  .cwaColorChoice span {
+    width: 24px;
+    height: 24px;
+    margin: 10px;
+  }
+
+  .cwaIconButton,
+  .cwaTextButton,
+  .cwaPrimaryButton,
+  .cwaNotePageButton,
+  .cwaNoteAction {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+@media print {
+  #cwaNotesPanel,
+  .cwaReaderAction,
+  .cwaThemeControl {
+    display: none !important;
+  }
+}

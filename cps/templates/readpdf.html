@@ -33,22 +33,68 @@ See https://github.com/adobe-type-tools/cmap-resources
 
     <link rel="apple-touch-icon" sizes="140x140" href="{{ url_for('static', filename='favicon.ico') }}">
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}"> 
+
     <link rel="stylesheet" href="{{ url_for('static', filename='css/libs/viewer.css') }}">
-	  <!-- This snippet is used in production (included from viewer.html) -->
-	  <link rel="resource" type="application/l10n" href="{{ url_for('static', filename='locale/locale.json') }}">
-	  <script src="{{ url_for('static', filename='js/libs/pdf.mjs') }}" type="module"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/pdf_reader.css') }}">
+		  <!-- This snippet is used in production (included from viewer.html) -->
+		  <link rel="resource" type="application/l10n" href="{{ url_for('static', filename='locale/locale.json') }}">
+		  <script src="{{ url_for('static', filename='js/libs/pdf.mjs') }}" type="module"></script>
 
     <script type="text/javascript">
+    window.CWA_PDF_READER = {
+        bookId: {{ pdffile|tojson }},
+        title: {{ title|tojson }},
+        authenticated: {{ reader_authenticated|tojson }},
+        csrfToken: {{ csrf_token()|tojson }},
+        stateUrl: {{ url_for('web.pdf_reader_state', book_id=pdffile)|tojson }},
+        notesUrl: {{ url_for('web.pdf_reader_notes', book_id=pdffile)|tojson }},
+        backUrl: {{ url_for('web.show_book', book_id=pdffile)|tojson }},
+        storageKey: "cwa.pdfReader.{{ reader_storage_identity }}.{{ pdffile }}",
+        notesStorageKey: "cwa.pdfReader.notes.{{ reader_storage_identity }}.{{ pdffile }}"
+    };
+
+    (function(config) {
+        var state = {};
+        try {
+            state = JSON.parse(localStorage.getItem(config.storageKey) || "{}");
+        } catch (error) {
+            state = {};
+        }
+        if (!state || Object.prototype.toString.call(state) !== "[object Object]") {
+            state = {};
+        }
+        config.initialState = state;
+        config.initialTheme = ["system", "light", "sepia", "dark"].indexOf(state.theme) >= 0
+            ? state.theme
+            : "system";
+        config.resolvedTheme = config.initialTheme === "system"
+            ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+            : config.initialTheme;
+        document.documentElement.dataset.cwaTheme = config.resolvedTheme;
+    })(window.CWA_PDF_READER);
+
     window.addEventListener('webviewerloaded', function() {
+        var config = window.CWA_PDF_READER;
+        var darkPages = config.resolvedTheme === "dark";
+        var sepiaPages = config.resolvedTheme === "sepia";
+
         PDFViewerApplicationOptions.set('disableAutoFetch', true);
         PDFViewerApplicationOptions.set('disableRange', false);
         PDFViewerApplicationOptions.set('disableStream', true);
         PDFViewerApplicationOptions.set('disablePreferences', true);
+        PDFViewerApplicationOptions.set('annotationEditorMode', 0);
+        PDFViewerApplicationOptions.set('enableHighlightEditor', true);
+        PDFViewerApplicationOptions.set('enableHighlightFloatingButton', true);
+        PDFViewerApplicationOptions.set('enableUpdatedAddImage', true);
+        PDFViewerApplicationOptions.set('viewerCssTheme', darkPages ? 2 : 1);
+        PDFViewerApplicationOptions.set('forcePageColors', darkPages || sepiaPages);
+        PDFViewerApplicationOptions.set('pageColorsBackground', darkPages ? '#181a1f' : '#f4ecd8');
+        PDFViewerApplicationOptions.set('pageColorsForeground', darkPages ? '#e8e3d9' : '#3d3528');
         PDFViewerApplicationOptions.set('cMapUrl', "{{ url_for('static', filename='cmaps/') }}");
         PDFViewerApplicationOptions.set('sidebarViewOnLoad', 0);
         PDFViewerApplicationOptions.set('imageResourcesPath', "{{ url_for('static', filename='css/images/') }}");
         PDFViewerApplicationOptions.set('workerSrc', "{{ url_for('static', filename='js/libs/pdf.worker.mjs') }}");
-        PDFViewerApplicationOptions.set('defaultUrl',"{{ url_for('web.serve_book', book_id=pdffile, book_format='pdf') }}")
+        PDFViewerApplicationOptions.set('defaultUrl',"{{ url_for('web.serve_book', book_id=pdffile, book_format='pdf') }}");
     });
     </script>
 
@@ -290,12 +336,20 @@ See https://github.com/adobe-type-tools/cmap-resources
           <div id="toolbarContainer">
             <div id="toolbarViewer">
               <div id="toolbarViewerLeft">
+                <a id="cwaBackToBook" class="cwaReaderAction" href="{{ url_for('web.show_book', book_id=pdffile) }}" title="{{_('Back to book')}}" aria-label="{{_('Back to book')}}">
+                  <span class="cwaReaderActionIcon" aria-hidden="true">&#8592;</span>
+                  <span class="cwaReaderActionLabel">{{_('Book')}}</span>
+                </a>
                 <button id="sidebarToggle" class="toolbarButton" title="Toggle Sidebar" tabindex="11" data-l10n-id="pdfjs-toggle-sidebar-button" aria-expanded="false" aria-controls="sidebarContainer">
                   <span data-l10n-id="pdfjs-toggle-sidebar-button-label">Toggle Sidebar</span>
                 </button>
                 <div class="toolbarButtonSpacer"></div>
                 <button id="viewFind" class="toolbarButton" title="Find in Document" tabindex="12" data-l10n-id="pdfjs-findbar-button" aria-expanded="false" aria-controls="findbar">
                   <span data-l10n-id="pdfjs-findbar-button-label">Find</span>
+                </button>
+                <button id="cwaNotesToggle" class="cwaReaderAction" type="button" title="{{_('Page notes')}}" aria-label="{{_('Page notes')}}" aria-expanded="false" aria-controls="cwaNotesPanel">
+                  <span class="cwaReaderActionIcon" aria-hidden="true">&#9998;</span>
+                  <span class="cwaReaderActionLabel">{{_('Notes')}}</span>
                 </button>
                 <div class="splitToolbarButton hiddenSmallView">
                   <button class="toolbarButton" title="Previous Page" id="previous" tabindex="13" data-l10n-id="pdfjs-previous-button">
@@ -322,7 +376,7 @@ See https://github.com/adobe-type-tools/cmap-resources
                   <button id="editorInk" class="toolbarButton" disabled="disabled" title="Draw" role="radio" aria-checked="false" aria-controls="editorInkParamsToolbar" tabindex="33" data-l10n-id="pdfjs-editor-ink-button">
                     <span data-l10n-id="pdfjs-editor-ink-button-label">Draw</span>
                   </button>
-                  <button id="editorStamp" class="toolbarButton hidden" disabled="disabled" title="Add or edit images" role="radio" aria-checked="false" aria-controls="editorStampParamsToolbar" tabindex="34" data-l10n-id="pdfjs-editor-stamp-button">
+                  <button id="editorStamp" class="toolbarButton" disabled="disabled" title="Add or edit images" role="radio" aria-checked="false" aria-controls="editorStampParamsToolbar" tabindex="34" data-l10n-id="pdfjs-editor-stamp-button">
                     <span data-l10n-id="pdfjs-editor-stamp-button-label">Add or edit images</span>
                   </button>
                 </div>
@@ -338,6 +392,17 @@ See https://github.com/adobe-type-tools/cmap-resources
                 </button>
 {% endif %}
                 <div class="verticalToolbarSeparator hiddenMediumView"></div>
+
+                <label class="cwaThemeControl" for="cwaThemeSelect">
+                  <span class="cwaThemeIcon" aria-hidden="true">&#9681;</span>
+                  <span class="cwaVisuallyHidden">{{_('Reader theme')}}</span>
+                  <select id="cwaThemeSelect" title="{{_('Reader theme')}}" aria-label="{{_('Reader theme')}}">
+                    <option value="system">{{_('System')}}</option>
+                    <option value="light">{{_('Light')}}</option>
+                    <option value="sepia">{{_('Sepia')}}</option>
+                    <option value="dark">{{_('Dark')}}</option>
+                  </select>
+                </label>
 
                 <button id="secondaryToolbarToggle" class="toolbarButton" title="Tools" tabindex="43" data-l10n-id="pdfjs-tools-button" aria-expanded="false" aria-controls="secondaryToolbar">
                   <span data-l10n-id="pdfjs-tools-button-label">Tools</span>
@@ -385,6 +450,57 @@ See https://github.com/adobe-type-tools/cmap-resources
           <div id="viewer" class="pdfViewer"></div>
         </div>
       </div> <!-- mainContainer -->
+
+      <aside id="cwaNotesPanel" aria-label="{{_('Page notes')}}" aria-hidden="true">
+        <header class="cwaNotesHeader">
+          <div>
+            <p class="cwaNotesEyebrow">{{_('Research workspace')}}</p>
+            <h1>{{_('Page notes')}}</h1>
+          </div>
+          <button id="cwaNotesClose" class="cwaIconButton" type="button" aria-label="{{_('Close notes')}}">&#215;</button>
+        </header>
+
+        <div class="cwaNotesMeta">
+          <span id="cwaCurrentPage">{{_('Page')}} 1</span>
+          <span id="cwaSyncStatus" class="cwaSyncStatus" aria-live="polite">
+            {% if reader_authenticated %}{{_('Synced')}}{% else %}{{_('On this device')}}{% endif %}
+          </span>
+        </div>
+
+        <form id="cwaNoteForm" class="cwaNoteComposer">
+          <label for="cwaNoteBody">{{_('Note for this page')}}</label>
+          <textarea id="cwaNoteBody" rows="4" maxlength="10000" placeholder="{{_('Capture a thought, question, or summary…')}}" required></textarea>
+          <div class="cwaNoteComposerFooter">
+            <fieldset id="cwaNoteColors" class="cwaColorPicker" aria-label="{{_('Note color')}}">
+              <legend class="cwaVisuallyHidden">{{_('Note color')}}</legend>
+              {% for color in ['yellow', 'green', 'blue', 'pink', 'purple'] %}
+                <label class="cwaColorChoice cwaColor-{{ color }}" title="{{ color|capitalize }}">
+                  <input type="radio" name="noteColor" value="{{ color }}" {% if color == 'yellow' %}checked{% endif %}>
+                  <span aria-hidden="true"></span>
+                </label>
+              {% endfor %}
+            </fieldset>
+            <div class="cwaComposerActions">
+              <button id="cwaNoteCancel" class="cwaTextButton" type="button" hidden>{{_('Cancel')}}</button>
+              <button id="cwaNoteSave" class="cwaPrimaryButton" type="submit">{{_('Add note')}}</button>
+            </div>
+          </div>
+        </form>
+
+        <div class="cwaNotesNotice">
+          {{_('Highlights, text, drawings, and images are embedded when you use Save PDF. Page notes sync separately.')}}
+        </div>
+
+        <div class="cwaNotesListHeader">
+          <h2>{{_('Notes in this document')}}</h2>
+          <span id="cwaNotesCount">0</span>
+        </div>
+        <div id="cwaNotesEmpty" class="cwaNotesEmpty">
+          <strong>{{_('No notes yet')}}</strong>
+          <span>{{_('Add a note above and it will stay linked to this page.')}}</span>
+        </div>
+        <div id="cwaNotesList" class="cwaNotesList"></div>
+      </aside>
 
       <div id="dialogContainer">
         <dialog id="passwordDialog">
@@ -522,5 +638,6 @@ See https://github.com/adobe-type-tools/cmap-resources
 
     </div> <!-- outerContainer -->
     <div id="printContainer"></div>
+    <script src="{{ url_for('static', filename='js/pdf_reader.js') }}"></script>
   </body>
 </html>

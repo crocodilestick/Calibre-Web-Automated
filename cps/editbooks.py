@@ -1294,6 +1294,8 @@ def delete_whole_book(book_id, book):
     ub.session.query(ub.BookShelf).filter(ub.BookShelf.book_id == book_id).delete()
     ub.session.query(ub.ReadBook).filter(ub.ReadBook.book_id == book_id).delete()
     ub.session.query(ub.ArchivedBook).filter(ub.ArchivedBook.book_id == book_id).delete()
+    ub.session.query(ub.PdfReaderState).filter(ub.PdfReaderState.book_id == book_id).delete()
+    ub.session.query(ub.PdfReaderNote).filter(ub.PdfReaderNote.book_id == book_id).delete()
     ub.delete_download(book_id)
     ub.session_commit()
 
@@ -1386,6 +1388,10 @@ def delete_book_from_table(book_id, book_format, json_response, location=""):
                 else:
                     calibre_db.session.query(db.Data).filter(db.Data.book == book.id).\
                         filter(db.Data.format == book_format).delete()
+                    if book_format.upper() == 'PDF':
+                        ub.session.query(ub.PdfReaderState).filter(ub.PdfReaderState.book_id == book_id).delete()
+                        ub.session.query(ub.PdfReaderNote).filter(ub.PdfReaderNote.book_id == book_id).delete()
+                        ub.session_commit()
                     if book_format.upper() in ['KEPUB', 'EPUB', 'EPUB3']:
                         kobo_sync_status.remove_synced_book(book.id, True)
                 calibre_db.session.commit()

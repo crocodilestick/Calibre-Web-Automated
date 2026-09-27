@@ -196,6 +196,256 @@ def set_bookmark(book_id, book_format):
     return "", 201
 
 
+PDF_READER_STATE_FIELDS = {
+    'page_number', 'scale_value', 'rotation', 'sidebar_view',
+    'sidebar_open', 'notes_open', 'theme'
+}
+PDF_READER_THEMES = {'system', 'light', 'sepia', 'dark'}
+PDF_READER_NOTE_COLORS = {'yellow', 'green', 'blue', 'pink', 'purple'}
+PDF_READER_NOTE_FIELDS = {'page_number', 'body', 'color'}
+
+
+def _pdf_reader_book_is_available(book_id):
+    return (calibre_db.get_filtered_book(book_id) is not None and
+            calibre_db.get_book_format(book_id, 'PDF') is not None)
+
+
+def _validated_pdf_reader_state(payload):
+    if not isinstance(payload, dict):
+        raise ValueError("Reader state must be an object")
+
+    state = {}
+    unknown = set(payload) - PDF_READER_STATE_FIELDS
+    if unknown:
+        raise ValueError("Unknown reader state field")
+
+    if 'page_number' in payload:
+        if isinstance(payload['page_number'], bool) or not isinstance(payload['page_number'], int):
+            raise ValueError("Invalid page number")
+        page_number = payload['page_number']
+        if page_number < 1 or page_number > 1000000:
+            raise ValueError("Invalid page number")
+        state['page_number'] = page_number
+
+    if 'scale_value' in payload:
+        if not isinstance(payload['scale_value'], str):
+            raise ValueError("Invalid scale")
+        scale_value = payload['scale_value']
+        if len(scale_value) > 32 or not re.fullmatch(r'(auto|page-actual|page-fit|page-width|\d+(?:\.\d+)?)', scale_value):
+            raise ValueError("Invalid scale")
+        if scale_value[0].isdigit() and not 0.1 <= float(scale_value) <= 10.0:
+            raise ValueError("Invalid scale")
+        state['scale_value'] = scale_value
+
+    if 'rotation' in payload:
+        if isinstance(payload['rotation'], bool) or not isinstance(payload['rotation'], int):
+            raise ValueError("Invalid rotation")
+        rotation = payload['rotation']
+        if rotation not in (0, 90, 180, 270):
+            raise ValueError("Invalid rotation")
+        state['rotation'] = rotation
+
+    if 'sidebar_view' in payload:
+        if isinstance(payload['sidebar_view'], bool) or not isinstance(payload['sidebar_view'], int):
+            raise ValueError("Invalid sidebar view")
+        sidebar_view = payload['sidebar_view']
+        if sidebar_view < 0 or sidebar_view > 4:
+            raise ValueError("Invalid sidebar view")
+        state['sidebar_view'] = sidebar_view
+
+    for key in ('sidebar_open', 'notes_open'):
+        if key in payload:
+            if not isinstance(payload[key], bool):
+                raise ValueError("Invalid boolean reader state")
+            state[key] = payload[key]
+
+    if 'theme' in payload:
+        if not isinstance(payload['theme'], str):
+            raise ValueError("Invalid reader theme")
+        theme = payload['theme']
+        if theme not in PDF_READER_THEMES:
+            raise ValueError("Invalid reader theme")
+        state['theme'] = theme
+
+    return state
+
+
+def _validated_pdf_reader_note(payload, partial=False):
+    if not isinstance(payload, dict):
+        raise ValueError("Note must be an object")
+
+    unknown = set(payload) - PDF_READER_NOTE_FIELDS
+    if unknown:
+        raise ValueError("Unknown note field")
+
+    note = {}
+    if not partial or 'page_number' in payload:
+        page_number = payload.get('page_number')
+        if isinstance(page_number, bool) or not isinstance(page_number, int):
+            raise ValueError("Invalid page number")
+        if page_number < 1 or page_number > 1000000:
+            raise ValueError("Invalid page number")
+        note['page_number'] = page_number
+
+    if not partial or 'body' in payload:
+        body = payload.get('body')
+        if not isinstance(body, str):
+            raise ValueError("Invalid note text")
+        body = body.strip()
+        if not body or len(body) > 10000:
+            raise ValueError("Note text must contain between 1 and 10000 characters")
+        note['body'] = body
+
+    if 'color' in payload or not partial:
+        color = payload.get('color', 'yellow')
+        if not isinstance(color, str):
+            raise ValueError("Invalid note color")
+        if color not in PDF_READER_NOTE_COLORS:
+            raise ValueError("Invalid note color")
+        note['color'] = color
+
+    if partial and not note:
+        raise ValueError("No note fields supplied")
+    return note
+
+
+def _serialize_pdf_reader_note(note):
+    return {
+        'id': note.id,
+        'page_number': note.page_number,
+        'body': note.body,
+        'color': note.color,
+        'created_at': note.created_at.isoformat() if note.created_at else None,
+        'updated_at': note.updated_at.isoformat() if note.updated_at else None,
+    }
+
+
+def _pdf_reader_json_payload():
+    payload = request.get_json(silent=True)
+    if payload is None:
+        raise ValueError("Request body must be a JSON object")
+    return payload
+
+
+@web.route("/ajax/pdf-reader/<int:book_id>/state", methods=['GET', 'PUT'])
+@user_login_required
+@viewer_required
+def pdf_reader_state(book_id):
+    if not _pdf_reader_book_is_available(book_id):
+        return jsonify({'error': 'Book not found'}), 404
+
+    user_id = int(current_user.id)
+    reader_state = ub.session.query(ub.PdfReaderState).filter(and_(
+        ub.PdfReaderState.user_id == user_id,
+        ub.PdfReaderState.book_id == book_id
+    )).first()
+
+    if request.method == 'GET':
+        return jsonify({
+            'state': reader_state.state if reader_state else {},
+            'updated_at': reader_state.updated_at.isoformat() if reader_state and reader_state.updated_at else None,
+        })
+
+    try:
+        payload = _pdf_reader_json_payload()
+        if not isinstance(payload, dict):
+            raise ValueError("Reader state must be an object")
+        state = _validated_pdf_reader_state(payload.get('state', payload))
+    except (TypeError, ValueError) as ex:
+        return jsonify({'error': str(ex)}), 400
+
+    if reader_state is None:
+        reader_state = ub.PdfReaderState(user_id=user_id, book_id=book_id, state=state)
+        ub.session.add(reader_state)
+    else:
+        reader_state.state = state
+        flag_modified(reader_state, 'state')
+
+    try:
+        ub.session.commit()
+    except Exception as ex:
+        ub.session.rollback()
+        log.error("Failed to save PDF reader state for user %s book %s: %s", user_id, book_id, ex)
+        return jsonify({'error': 'Could not save reader state'}), 500
+
+    return jsonify({
+        'state': reader_state.state,
+        'updated_at': reader_state.updated_at.isoformat() if reader_state.updated_at else None,
+    })
+
+
+@web.route("/ajax/pdf-reader/<int:book_id>/notes", methods=['GET', 'POST'])
+@user_login_required
+@viewer_required
+def pdf_reader_notes(book_id):
+    if not _pdf_reader_book_is_available(book_id):
+        return jsonify({'error': 'Book not found'}), 404
+
+    user_id = int(current_user.id)
+    if request.method == 'GET':
+        notes = ub.session.query(ub.PdfReaderNote).filter(and_(
+            ub.PdfReaderNote.user_id == user_id,
+            ub.PdfReaderNote.book_id == book_id
+        )).order_by(ub.PdfReaderNote.page_number, ub.PdfReaderNote.id).all()
+        return jsonify({'notes': [_serialize_pdf_reader_note(note) for note in notes]})
+
+    try:
+        values = _validated_pdf_reader_note(_pdf_reader_json_payload())
+    except (TypeError, ValueError) as ex:
+        return jsonify({'error': str(ex)}), 400
+
+    note = ub.PdfReaderNote(user_id=user_id, book_id=book_id, **values)
+    ub.session.add(note)
+    try:
+        ub.session.commit()
+    except Exception as ex:
+        ub.session.rollback()
+        log.error("Failed to create PDF note for user %s book %s: %s", user_id, book_id, ex)
+        return jsonify({'error': 'Could not save note'}), 500
+    return jsonify({'note': _serialize_pdf_reader_note(note)}), 201
+
+
+@web.route("/ajax/pdf-reader/<int:book_id>/notes/<int:note_id>", methods=['PATCH', 'DELETE'])
+@user_login_required
+@viewer_required
+def pdf_reader_note(book_id, note_id):
+    if not _pdf_reader_book_is_available(book_id):
+        return jsonify({'error': 'Book not found'}), 404
+
+    user_id = int(current_user.id)
+    note = ub.session.query(ub.PdfReaderNote).filter(and_(
+        ub.PdfReaderNote.id == note_id,
+        ub.PdfReaderNote.user_id == user_id,
+        ub.PdfReaderNote.book_id == book_id
+    )).first()
+    if note is None:
+        return jsonify({'error': 'Note not found'}), 404
+
+    if request.method == 'DELETE':
+        ub.session.delete(note)
+        try:
+            ub.session.commit()
+        except Exception as ex:
+            ub.session.rollback()
+            log.error("Failed to delete PDF note %s: %s", note_id, ex)
+            return jsonify({'error': 'Could not delete note'}), 500
+        return "", 204
+
+    try:
+        values = _validated_pdf_reader_note(_pdf_reader_json_payload(), partial=True)
+    except (TypeError, ValueError) as ex:
+        return jsonify({'error': str(ex)}), 400
+    for key, value in values.items():
+        setattr(note, key, value)
+    try:
+        ub.session.commit()
+    except Exception as ex:
+        ub.session.rollback()
+        log.error("Failed to update PDF note %s: %s", note_id, ex)
+        return jsonify({'error': 'Could not update note'}), 500
+    return jsonify({'note': _serialize_pdf_reader_note(note)})
+
+
 @web.route("/ajax/toggleread/<int:book_id>", methods=['POST'])
 @user_login_required
 def toggle_read(book_id):
@@ -2852,7 +3102,12 @@ def read_book(book_id, book_format):
                                      book_format=book_format.lower())
     elif book_format.lower() == "pdf":
         log.debug("Start pdf reader for %d", book_id)
-        return render_title_template('readpdf.html', pdffile=book_id, title=book.title)
+        reader_authenticated = bool(current_user.is_authenticated)
+        return render_title_template(
+            'readpdf.html', pdffile=book_id, title=book.title,
+            reader_authenticated=reader_authenticated,
+            reader_storage_identity=str(current_user.id) if reader_authenticated else 'anonymous'
+        )
     elif book_format.lower() == "txt":
         log.debug("Start txt reader for %d", book_id)
         return render_title_template('readtxt.html', txtfile=book_id, title=book.title)

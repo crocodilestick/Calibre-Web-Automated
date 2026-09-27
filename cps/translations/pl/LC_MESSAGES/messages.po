@@ -25,7 +25,7 @@ msgstr "Statystyki"
 
 #: cps/admin.py:128
 msgid "Calibre database unavailable. Please reconfigure the library path."
-msgstr ""
+msgstr "Baza danych Calibre są nie dostępne. Prosze ustawić ponowie ścieżka do biblioteki"
 
 #: cps/admin.py:180
 msgid "Server restarted, please reload page."
@@ -54,21 +54,21 @@ msgstr ""
 msgid ""
 "Error: No Hardcover token available. Set HARDCOVER_TOKEN environment "
 "variable or configure in Basic Configuration."
-msgstr ""
+msgstr "Bląd: nie ma dostępnych tokenów dla Hardcover. Prosze ustawić środowisko HARDCOVER_TOKEN  "
 
 #: cps/admin.py:252
 msgid ""
 "Success! Hardcover auto-fetch task started. Check Tasks panel for progress."
-msgstr ""
+msgstr "Sukces ! Zadanie automatycznego pobierania Hardcovera rozpoczył się. Sprawdź postęp w panelu zadań."
 
 #: cps/admin.py:257
 #, python-format
 msgid "Error starting Hardcover auto-fetch task: %(error)s"
-msgstr ""
+msgstr "Bląd podczas uruchamiania zadania automatycznego pobierania Hardcover-a: %(error)s"
 
 #: cps/admin.py:296 cps/templates/admin.html:223
 msgid "Review Hardcover Matches"
-msgstr ""
+msgstr "Sprawdz "
 
 #: cps/admin.py:303
 #, python-format
@@ -78,7 +78,7 @@ msgstr ""
 #: cps/admin.py:384
 #, fuzzy
 msgid "Hardcover ID applied successfully"
-msgstr "{} użytkowników usuniętych pomyślnie"
+msgstr "ID Hardcover został skutecznie zastosowany"
 
 #: cps/admin.py:401
 #, python-format

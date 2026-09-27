@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bash
 
-# Drop privileges to abc (LinuxServer PUID/PGID user)
-if [ "$(id -u)" = "0" ]; then
+# Drop privileges to abc (LinuxServer PUID/PGID user); not when sourced by tests
+if [ "$(id -u)" = "0" ] && [ "${CWA_INGEST_SERVICE_TEST_MODE:-0}" != "1" ]; then
     exec s6-setuidgid abc "$0" "$@"
 fi
 
@@ -260,6 +260,20 @@ is_supported_ingest_file() {
         done
         [[ "$filepath" == *.cwa.json ]] || [[ "$filepath" == *.cwa.failed.json ]] && return 1
         [[ "$filepath" =~ $SUPPORTED_EXT_REGEX ]]
+}
+
+# Supported files already in the ingest folder, oldest first, as watcher-style lines.
+# inotify only reports new writes/moves, so books that were already there when the
+# service started (copied in while CWA was down, or left by a crash) never got imported.
+list_existing_ingest_files() {
+        local mtime path
+        [ -d "$WATCH_FOLDER" ] || return 0
+        find "$WATCH_FOLDER" -type f -printf '%T@ %p\n' 2>/dev/null | sort -n |
+        while read -r mtime path; do
+                if is_supported_ingest_file "$path"; then
+                        printf 'EXISTING %s\n' "$path"
+                fi
+        done
 }
 
 has_pending_ingest_files() {
@@ -542,8 +556,20 @@ if [ -n "$(get_stale_temp_interval_from_db)" ]; then
         ) &
 fi
 
+# Start the watcher first, then list what is already there, so nothing that arrives
+# in between is missed. Both feed the same loop, so files are still handled one at a
+# time and a file seen twice is skipped by the recent/in-flight checks. If inotify
+# fails, the polling fallback also reports files that are already present.
 ( set -o pipefail
-        inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" | \
+        {
+                inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" &
+                inotify_pid=$!
+                sleep "${CWA_INGEST_STARTUP_SWEEP_DELAY:-2}"
+                if kill -0 "$inotify_pid" 2>/dev/null; then
+                        list_existing_ingest_files
+                fi
+                wait "$inotify_pid"
+        } | \
         while read -r events filepath; do
                 handle_event "$filepath"
         done

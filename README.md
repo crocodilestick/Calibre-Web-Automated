@@ -334,6 +334,8 @@ docker compose up -d
 
 And that's you off to the races! 🥳 HOWEVER to avoid potential problems and ensure maximum functionality, we recommend carrying out these [Post-Install Tasks Here](#post-install-tasks).
 
+You can also deploy Calibre-Web Automated with one click using the official [Easypanel](https://easypanel.io/) template: https://easypanel.io/templates/calibre-web-automated
+
 ---
 ## Using Docker Compose 🐋⭐(Recommended)
 

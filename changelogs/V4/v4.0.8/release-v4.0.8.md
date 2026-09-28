@@ -9,6 +9,7 @@
 ### Ingest
 * **Books Waiting at Startup:** Books already in the ingest folder when CWA starts (copied in while it was down, or left behind by a restart) are now imported straight away, instead of sitting there until something touched them.
 * **Polling Mode Repeats:** With `NETWORK_SHARE_MODE`, `CWA_WATCH_MODE=poll` or Docker Desktop, any file left in the ingest folder was handed to the importer again every 5 seconds. Each file is now picked up once, and again only if it changes.
+* **Date Added in Non-UTC Timezones:** On containers with a `TZ` other than UTC, v4.0.7 stored the local time as UTC in a new book's "date added", so fresh imports could sort below books added earlier the same day. Imports now record the real UTC time. The OPDS feed's "updated" time had the same mix-up and is fixed too. (Fixes #1563)
 
 ### Duplicates
 * **Bulk Delete & Merge Freeze:** Deleting or merging many books from the Duplicate Manager froze the whole web UI until it finished, because the duplicate list was rebuilt after every single book. It's now rebuilt once per operation. (Thanks to @cd-dr, who found this in PR #1095)
@@ -38,6 +39,7 @@
 - **[@I-Would-Like-To-Report-A-Bug-Please](https://github.com/I-Would-Like-To-Report-A-Bug-Please)** — Healthcheck time limits (#1335)
 - **[@mjz1](https://github.com/mjz1)** — Tracked down the Kobo first-sync failure and tested the fix on a factory-reset device (#1476)
 - **[@captain-marlow](https://github.com/captain-marlow)** — Diagnosed the custom column save error (#1536)
+- **[@ghepting](https://github.com/ghepting)** — Pinned down the "date added" timezone bug, with the fix (#1563)
 - **[@FabulousSpaceCat](https://github.com/FabulousSpaceCat)**, **[@Bugg6](https://github.com/Bugg6)** and **[@blurrycontour](https://github.com/blurrycontour)** — Reported the checksum errors and the constant duplicate status polling (#1086, #1183, #1288)
 
 ---

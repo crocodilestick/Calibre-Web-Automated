@@ -85,8 +85,17 @@
 * **Docker Compose:** Fixed the invalid timezone example. (PR #1229, Fixes #1197)
 
 ## 🌍 Translations
-* Merged 48 community translation PRs across 12 languages: Czech, Hungarian, Korean, Turkish, Dutch, Ukrainian, Traditional Chinese, Simplified Chinese, Spanish, Russian, German and French. Thank you to everyone who contributed!
+* Merged 40 community translation PRs across 12 languages. German, French, Korean and Simplified Chinese were fully translated when merged; a handful of strings added later in this release still need translating. Thank you to everyone who contributed!
 * **Slovak:** Fixed a missing placeholder that broke compilation.
+
+| Language | Coverage | Language | Coverage |
+|----------|----------|----------|----------|
+| German (de) | 99% | French (fr) | 99% |
+| Korean (ko) | 99% | Chinese Simplified (zh_Hans_CN) | 99% |
+| Chinese Traditional (zh_Hant_TW) | 98% | Czech (cs) | 98% |
+| Turkish (tr) | 96% | Spanish (es) | 93% |
+| Hungarian (hu) | 90% | Russian (ru) | 73% |
+| Dutch (nl) | 66% | Ukrainian (uk) | 35% |
 
 ## 🔧 Technical & CI
 * **Test Suite:** Unit tests no longer share the real `/config/cwa.db`, which was making CI fail at random. New tests cover route authentication.
@@ -96,3 +105,54 @@
 ## ⚠️ Upgrade Notes
 * **Duplicates:** After upgrading, run one full scan from the Duplicates page to build the new duplicate index.
 * **File Ownership:** The ingest service now runs as the `abc` user (your `PUID`/`PGID`). If earlier versions left root-owned books in your library, fix their ownership once if you see "Permission denied" errors when editing or deleting them.
+
+---
+
+# Thanks to our Contributors! 🙏
+
+This release is built on a huge amount of community work. Thank you to everyone who sent a fix or a feature:
+
+- **[@SethMilliken](https://github.com/SethMilliken)** — KOReader progress shared across copies (#1225), plugin menu under Tools and no-book guards (#1371, #1074), older KOReader sync fix (#1131), Safari form and metadata search fixes (#1104, #1096)
+- **[@navels](https://github.com/navels)** — Incremental duplicate scanning (#1353), smarter ingest (#1349), thumbnail deadlock fix (#1346)
+- **[@shavitmichael](https://github.com/shavitmichael)** — Much faster Kobo sync and on-demand KEPUBs (#1344), KEPUB support in the web reader (#1318)
+- **[@I-Would-Like-To-Report-A-Bug-Please](https://github.com/I-Would-Like-To-Report-A-Bug-Please)** — Metadata save loss (#1331), fetched descriptions (#1336), metadata modal crash (#1330)
+- **[@burakemirsezen](https://github.com/burakemirsezen)** — Kobo shelf-only sync (#1443), web reader back button (#1231), timezone example (#1229)
+- **[@scottjamesrogers](https://github.com/scottjamesrogers)** — Email metadata fallback (#1236), magic shelf author sort (#1233)
+- **[@dbraendle](https://github.com/dbraendle)** — Recently Added timestamps (#1280), intermittent 500 errors (#1279)
+- **[@AsherMaximum](https://github.com/AsherMaximum)** — Page jump (#1387), dev mode auto-reload (#1378)
+- **[@frbncis](https://github.com/frbncis)** — KOReader progress to Hardcover (#1324)
+- **[@thijsdezoete](https://github.com/thijsdezoete)** — Kobo fully-local sync on modern firmware (#1367)
+- **[@ajn142](https://github.com/ajn142)** — Ingest service runs as `abc` (#1145)
+- **[@antifuchs](https://github.com/antifuchs)** — Ingest folder ownership fix (#1226)
+- **[@EuanKerr](https://github.com/EuanKerr)** — Auto-send subfolder routing (#1221)
+- **[@vijaykalam](https://github.com/vijaykalam)** — Custom columns in OPDS (#1129)
+- **[@Sheol27](https://github.com/Sheol27)** — Currently Reading magic shelf (#1201)
+- **[@austin-rt](https://github.com/austin-rt)** — Kobo URLs behind reverse proxies (#1143)
+- **[@rjmcnamara](https://github.com/rjmcnamara)** — Cached OPDS covers (#1447)
+- **[@luisalduucin](https://github.com/luisalduucin)** — Restore Database button (#1444)
+- **[@jdbway](https://github.com/jdbway)** — Duplicate cooldown and local timestamps (#1435)
+- **[@hsttlrjeff](https://github.com/hsttlrjeff)** — Kobo bookmark crash (#1213)
+- **[@raphi011](https://github.com/raphi011)** — Kobo 0% progress (#1362)
+- **[@black-dragon74](https://github.com/black-dragon74)** — Kobo highlight colours (#1166)
+- **[@kurtlieber](https://github.com/kurtlieber)** — eReader send TypeError (#1406)
+- **[@Sycha](https://github.com/Sycha)** — Comic MIME types (#1322)
+- **[@rancur](https://github.com/rancur)** — Healthcheck redirect (#1298)
+- **[@mihneabulu](https://github.com/mihneabulu)** — Quick send for users without upload permission (#1164)
+- **[@chloeroform](https://github.com/chloeroform)** — Profile pictures behind a path prefix (#1283)
+- **[@jgoguen](https://github.com/jgoguen)** — Groundwork for per-user OPDS shelves (#1258)
+
+A special welcome to our first-time contributors: @antifuchs, @ajn142, @shavitmichael, @Sycha, @EuanKerr, @vijaykalam, @rancur, @hsttlrjeff, @raphi011, @black-dragon74, @kurtlieber and @AsherMaximum! 🎉
+
+## Translators 🌍
+@6112562a, @Blistex77, @Demelja, @GSAlex, @HaruIjima-kun, @Krux86, @Marodeur80, @RFrens, @SkyLull, @Yeerayy, @adocampo, @amatorkoleksiyoner, @antocpu, @area57, @arths31, @baptistesavinve, @brushax, @cebo29, @coutadeurf, @djalexz85, @euneuneu, @finevine, @fucx, @futurelook, @julien-noblet, @koma52, @krylus, @leolivier, @lexis11mob, @martinlehanneur, @michaelkastner, @moduvoice, @pablo-alcaniz, @petriiczech, @pfederi, @slauns, @tJ-ek0, @ynaciri and @zdeubeu. Your work brings CWA to readers around the world!
+
+---
+
+# Supporting the Project ❤️
+
+CWA is and always will be free and open source. If it makes your library life easier and you're able to support development, contributions go directly to:
+- Testing hardware (ereader devices & tablets etc.)
+- Development tools and infrastructure
+- Coffee ☕ (lots of coffee)
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/crocodilestick)

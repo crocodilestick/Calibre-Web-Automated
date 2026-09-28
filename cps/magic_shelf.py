@@ -167,8 +167,8 @@ SYSTEM_SHELF_TEMPLATES = {
                     'field': 'timestamp',
                     'type': 'date',
                     'input': 'text',
-                    'operator': 'greater',
-                    'value': (datetime.now(timezone.utc) - timedelta(days=30)).strftime('%Y-%m-%d')
+                    'operator': 'newer_than',
+                    'value': '30'
                 }
             ]
         }
@@ -253,8 +253,8 @@ SYSTEM_SHELF_TEMPLATES = {
                     'field': 'pubdate',
                     'type': 'date',
                     'input': 'text',
-                    'operator': 'greater',
-                    'value': (datetime.now(timezone.utc) - timedelta(days=730)).strftime('%Y-%m-%d')
+                    'operator': 'newer_than',
+                    'value': '730'
                 }
             ]
         }

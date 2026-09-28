@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-09-27 15:39+0000\n"
+"POT-Creation-Date: 2026-09-28 13:53+0000\n"
 "PO-Revision-Date: 2026-05-14 01:36+0300\n"
 "Last-Translator: İsmail Hakkı Şen <hakki@outlook.com>\n"
 "Language-Team: \n"
@@ -138,7 +138,7 @@ msgstr "Özel Sütun No %(column)d calibre veri tabanında bulunamadı"
 msgid "Edit Users"
 msgstr "Kullanıcıları Düzenle"
 
-#: cps/admin.py:684 cps/opds.py:804 cps/templates/grid.html:14
+#: cps/admin.py:684 cps/opds.py:803 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Tümü"

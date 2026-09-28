@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-09-27 15:39+0000\n"
+"POT-Creation-Date: 2026-09-28 13:53+0000\n"
 "PO-Revision-Date: 2026-05-17 20:18+0800\n"
 "Last-Translator: SkyLull <https://github.com/SkyLull>\n"
 "Language-Team: zh_Hans_TW <LL@li.org>\n"
@@ -131,7 +131,7 @@ msgstr "自訂欄位編號 %(column)d 在 Calibre 資料庫中不存在"
 msgid "Edit Users"
 msgstr "管理使用者"
 
-#: cps/admin.py:684 cps/opds.py:804 cps/templates/grid.html:14
+#: cps/admin.py:684 cps/opds.py:803 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "全部"

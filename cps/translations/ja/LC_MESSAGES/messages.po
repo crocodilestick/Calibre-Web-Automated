@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version:  Calibre-Web Automated\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-09-27 15:39+0000\n"
+"POT-Creation-Date: 2026-09-28 13:53+0000\n"
 "PO-Revision-Date: 2018-02-07 02:20-0500\n"
 "Last-Translator: subdiox <subdiox@gmail.com>\n"
 "Language-Team: ja <LL@li.org>\n"
@@ -131,7 +131,7 @@ msgstr "カスタムカラムの%(column)d列目がcalibreのDBに存在しま�
 msgid "Edit Users"
 msgstr "ユーザーを編集"
 
-#: cps/admin.py:684 cps/opds.py:804 cps/templates/grid.html:14
+#: cps/admin.py:684 cps/opds.py:803 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "全て"

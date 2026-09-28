@@ -4,7 +4,7 @@ msgstr ""
 "Project-Id-Version: CWA\n"
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
-"POT-Creation-Date: 2026-09-27 15:39+0000\n"
+"POT-Creation-Date: 2026-09-28 13:53+0000\n"
 "PO-Revision-Date: \n"
 "Last-Translator: PetriiCzech <petriiczech@gmail.com>\n"
 "Language-Team: \n"
@@ -133,7 +133,7 @@ msgstr "Vlastní sloupec %(column)d neexistuje v databázi"
 msgid "Edit Users"
 msgstr "Upravit uživatele"
 
-#: cps/admin.py:684 cps/opds.py:804 cps/templates/grid.html:14
+#: cps/admin.py:684 cps/opds.py:803 cps/templates/grid.html:14
 #: cps/templates/list.html:19
 msgid "All"
 msgstr "Vše"

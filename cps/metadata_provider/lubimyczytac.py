@@ -73,20 +73,20 @@ class LubimyCzytac(Metadata):
     BASE_URL = "https://lubimyczytac.pl"
 
     BOOK_SEARCH_RESULT_XPATH = (
-        "*//div[@class='listSearch']//div[@class='authorAllBooks__single']"
+        "*//div[@class='listSearch']//div[contains(@class,'book-card--l')]"
     )
-    SINGLE_BOOK_RESULT_XPATH = ".//div[contains(@class,'authorAllBooks__singleText')]"
-    TITLE_PATH = "/div/a[contains(@class,'authorAllBooks__singleTextTitle')]"
+    SINGLE_BOOK_RESULT_XPATH = ".//div[contains(@class,'book-card__info-box')]"
+    TITLE_PATH = "/a[contains(@class,'book-card__title')]"
     TITLE_TEXT_PATH = f"{TITLE_PATH}//text()"
     URL_PATH = f"{TITLE_PATH}/@href"
-    AUTHORS_PATH = "/div/a[contains(@href,'autor')]//text()"
+    AUTHORS_PATH = "/div[contains(@class,'book-card__author')]/a//text()"
 
     SIBLINGS = "/following-sibling::dd"
 
     CONTAINER = "//section[@class='container book']"
-    PUBLISHER = f"{CONTAINER}//dt[contains(text(),'Wydawnictwo:')]{SIBLINGS}/a/text()"
+    PUBLISHER = f"{CONTAINER}//span[contains(text(),'Wydawnictwo:')]/a/text()"
     LANGUAGES = f"{CONTAINER}//dt[contains(text(),'Język:')]{SIBLINGS}/text()"
-    DESCRIPTION = f"{CONTAINER}//div[@class='collapse-content']"
+    DESCRIPTION = f"{CONTAINER}//*[@id='book-description']"
     SERIES = f"{CONTAINER}//span/a[contains(@href,'/cykl/')]/text()"
     TRANSLATOR = f"{CONTAINER}//dt[contains(text(),'Tłumacz:')]{SIBLINGS}/a/text()"
 
@@ -288,11 +288,19 @@ class LubimyCzytacParser:
         return []
 
     def _parse_from_summary(self, attribute_name: str) -> Optional[str]:
+        # Several ld+json blocks are emitted (Organization first), so find the Book one.
         value = None
-        summary_text = self._parse_xpath_node(xpath=LubimyCzytac.SUMMARY)
-        if summary_text:
-            data = json.loads(summary_text)
-            value = data.get(attribute_name)
+        summary_texts = self._parse_xpath_node(
+            xpath=LubimyCzytac.SUMMARY, take_first=False
+        )
+        for summary_text in summary_texts or []:
+            try:
+                data = json.loads(summary_text)
+            except ValueError:
+                continue
+            if isinstance(data, dict) and data.get("@type") == "Book":
+                value = data.get(attribute_name)
+                break
         return value.strip() if value is not None else value
 
     def _parse_rating(self) -> Optional[str]:

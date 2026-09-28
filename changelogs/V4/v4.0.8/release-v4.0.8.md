@@ -46,6 +46,8 @@
 - **[@mjz1](https://github.com/mjz1)** — Tracked down the Kobo first-sync failure and tested the fix on a factory-reset device (#1476)
 - **[@captain-marlow](https://github.com/captain-marlow)** — Diagnosed the custom column save error (#1536)
 - **[@ghepting](https://github.com/ghepting)** — Pinned down the "date added" timezone bug, with the fix (#1563)
+- **[@vincentderodela](https://github.com/vincentderodela)** — Traced the checksum errors through every caller, including Kobo sync (#1183)
+- **[@kellyatkinson](https://github.com/kellyatkinson)** — Traced the Kobo sync regression behind "shelves sync but no books" (#1470)
 - **[@FabulousSpaceCat](https://github.com/FabulousSpaceCat)**, **[@Bugg6](https://github.com/Bugg6)** and **[@blurrycontour](https://github.com/blurrycontour)** — Reported the checksum errors and the constant duplicate status polling (#1086, #1183, #1288)
 
 ---

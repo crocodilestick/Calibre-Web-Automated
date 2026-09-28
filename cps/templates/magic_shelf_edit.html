@@ -580,6 +580,13 @@ $(function() {
             description: 'When book was added to library'
         },
         {
+            id: 'last_modified',
+            label: 'Last Modified',
+            type: 'date',
+            validation: {format: 'YYYY-MM-DD'},
+            description: 'When book was last modified'
+        },
+        {
             id: 'has_cover', 
             label: 'Has Cover', 
             type: 'integer', 
@@ -660,7 +667,7 @@ $(function() {
         // Check all filter dropdowns for date fields
         $('#builder .rule-filter-container select').each(function() {
             var filterId = $(this).val();
-            if (filterId === 'pubdate' || filterId === 'timestamp') {
+            if (filterId === 'pubdate' || filterId === 'timestamp' || filterId === 'last_modified') {
                 hasDateField = true;
                 return false; // break out of each loop
             }
@@ -692,7 +699,7 @@ $(function() {
             var $rule = $input.closest('.rule-container');
             var filterId = $rule.find('.rule-filter-container select').val();
             
-            if (filterId === 'pubdate' || filterId === 'timestamp') {
+            if (filterId === 'pubdate' || filterId === 'timestamp' || filterId === 'last_modified') {
                 $input.off('blur.dateValidation').on('blur.dateValidation', function() {
                     var value = $(this).val();
                     if (value && !isValidDate(value)) {

@@ -289,6 +289,7 @@ FIELD_MAP = {
     'language': (db.Languages, 'lang_code'),
     'pubdate': (db.Books, 'pubdate'),
     'timestamp': (db.Books, 'timestamp'),
+    'last_modified': (db.Books, 'last_modified'),
     'has_cover': (db.Books, 'has_cover'),
     'series_index': (db.Books, 'series_index'),
     'comments': (db.Comments, 'text'),  # Fixed: Points to actual text column, not relationship

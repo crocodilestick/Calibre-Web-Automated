@@ -15,7 +15,7 @@
 * **Root-Owned Files After Metadata Changes:** The cover & metadata enforcer, which runs after every metadata edit, ran as root, so files it created could end up owned by root and block later edits, deletes and folder moves. It now runs as the same `abc` user as the web app. Together with v4.0.7's change to the ingest service, the services that write into your library all run as `abc` now. (Fixes #1472)
 
 ### Duplicates
-* **Bulk Delete & Merge Freeze:** Deleting or merging many books from the Duplicate Manager froze the whole web UI until it finished, because the duplicate list was rebuilt after every single book. It's now rebuilt once per operation. (Thanks to @cd-dr, who found this in PR #1095)
+* **Bulk Delete & Merge:** Deleting or merging many books from the Duplicate Manager rebuilt the whole duplicate list after every single book, keeping the web UI busy for the whole operation. It's now rebuilt once per operation, which makes large bulk deletes noticeably quicker. (Thanks to @cd-dr, who found this in PR #1095)
 
 ### Editing
 * **Custom Columns:** Saving a book with custom columns no longer fails with a 500 error when the database reconnects mid-save (e.g. while a book is being imported). (Fixes #1536)
@@ -24,7 +24,6 @@
 * **Checksum Errors:** With KOReader sync turned off, downloads, imports, the cover enforcer and the EPUB fixer no longer try to store KOReader checksums, which filled the logs with "no such table: book_format_checksums" errors and checksum warnings. (Fixes #1086, #1183)
 
 ## 🚀 Improvements
-* **Much Faster Deletes on Large Libraries:** Deleting a book, or removing an author, tag, series, language or publisher from one, no longer loads every other book that uses it (for a language, that was the whole library). On a 2,000-book library, deleting 30 books from the Duplicate Manager went from 16 seconds, with the web UI frozen the whole time, to under 1.5 seconds.
 * **Less Background Load:** Open pages no longer ask the server for the duplicate status every 2.5 seconds. It's checked when a page loads, when you come back to the tab and every few minutes, and only polled continuously while a duplicate refresh is running. (Fixes #1288)
 * **Background Services Stop Cleanly:** The ingest service and metadata change detector now stop and restart properly. The ingest service ignored stop requests, and each restart of the metadata change detector left an extra watcher running, so metadata changes could be processed more than once.
 * **Healthcheck:** The Docker healthcheck now gives up on its own after a couple of seconds, so a hung web server is reported as unhealthy cleanly instead of leaving connections open. (From PR #1335)

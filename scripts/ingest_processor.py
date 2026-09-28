@@ -1267,6 +1267,11 @@ class NewBookProcessor:
             sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
             from cps.progress_syncing.checksums import calculate_koreader_partial_md5, store_checksum, CHECKSUM_VERSION
 
+            # Checksums are only kept (and the table only exists) with KOReader sync enabled
+            from cps.progress_syncing.settings import is_koreader_sync_enabled
+            if not is_koreader_sync_enabled():
+                return
+
             calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
 
             with sqlite3.connect(calibre_db_path, timeout=30) as con:

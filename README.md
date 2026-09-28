@@ -77,6 +77,17 @@ ___
 [<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/en/packages/de.doen1el.calibreWebCompanion/)
 [<img src="https://raw.githubusercontent.com/vadret/android/master/assets/get-github.png" alt="Get it on GitHub" height="80">](https://github.com/doen1el/calibre-web-companion)
 
+___
+
+### Quire
+
+- [**Quire**](https://github.com/vitofico/quire) is a **privacy-first, native Android EPUB reader** for **Calibre-Web** & **Calibre-Web-Automated**, built with **Kotlin, Jetpack Compose and Readium**. It connects to your instance over OPDS, keeps your **reading position and progress in sync** via an optional self-hosted companion server, and offers **opt-in, self-hosted AI features** (book insights, recommendations, barcode book-scanning) that only ever talk to an endpoint *you* control. **No telemetry, no third-party cloud**
+
+<br>
+
+[<img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="80">](https://f-droid.org/en/packages/io.theficos.quire/)
+[<img src="https://raw.githubusercontent.com/vadret/android/master/assets/get-github.png" alt="Get it on GitHub" height="80">](https://github.com/vitofico/quire)
+
 ## Join our Community! ❤️
 
 - I want to say a **big thanks** 🙏 to all the members of this community that have taken the time to participate in the testing and development of this project and we encourage anyone who would like to to contribute in some way. Anyone of any level is welcome and every little helps!

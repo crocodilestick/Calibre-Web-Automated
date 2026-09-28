@@ -11,6 +11,9 @@
 * **Polling Mode Repeats:** With `NETWORK_SHARE_MODE`, `CWA_WATCH_MODE=poll` or Docker Desktop, any file left in the ingest folder was handed to the importer again every 5 seconds. Each file is now picked up once, and again only if it changes.
 * **Date Added in Non-UTC Timezones:** On containers with a `TZ` other than UTC, v4.0.7 stored the local time as UTC in a new book's "date added", so fresh imports could sort below books added earlier the same day. Imports now record the real UTC time. The OPDS feed's "updated" time had the same mix-up and is fixed too. (Fixes #1563)
 
+### File Ownership
+* **Root-Owned Files After Metadata Changes:** The cover & metadata enforcer, which runs after every metadata edit, ran as root, so files it created could end up owned by root and block later edits, deletes and folder moves. It now runs as the same `abc` user as the web app. Together with v4.0.7's change to the ingest service, the services that write into your library all run as `abc` now. (Fixes #1472)
+
 ### Duplicates
 * **Bulk Delete & Merge Freeze:** Deleting or merging many books from the Duplicate Manager froze the whole web UI until it finished, because the duplicate list was rebuilt after every single book. It's now rebuilt once per operation. (Thanks to @cd-dr, who found this in PR #1095)
 
@@ -18,7 +21,7 @@
 * **Custom Columns:** Saving a book with custom columns no longer fails with a 500 error when the database reconnects mid-save (e.g. while a book is being imported). (Fixes #1536)
 
 ### KOReader Sync
-* **Checksum Errors:** With KOReader sync turned off, downloads, imports, the cover enforcer and the EPUB fixer no longer try to store KOReader checksums, which filled the logs with "no such table: book_format_checksums" errors. (Fixes #1086, #1183)
+* **Checksum Errors:** With KOReader sync turned off, downloads, imports, the cover enforcer and the EPUB fixer no longer try to store KOReader checksums, which filled the logs with "no such table: book_format_checksums" errors and checksum warnings. (Fixes #1086, #1183)
 
 ## 🚀 Improvements
 * **Much Faster Deletes on Large Libraries:** Deleting a book, or removing an author, tag, series, language or publisher from one, no longer loads every other book that uses it (for a language, that was the whole library). On a 2,000-book library, deleting 30 books from the Duplicate Manager went from 16 seconds, with the web UI frozen the whole time, to under 1.5 seconds.
@@ -26,6 +29,9 @@
 * **Background Services Stop Cleanly:** The ingest service and metadata change detector now stop and restart properly. The ingest service ignored stop requests, and each restart of the metadata change detector left an extra watcher running, so metadata changes could be processed more than once.
 * **Healthcheck:** The Docker healthcheck now gives up on its own after a couple of seconds, so a hung web server is reported as unhealthy cleanly instead of leaving connections open. (From PR #1335)
 * **Book Loading:** The edit page now loads a book's authors, tags, formats, identifiers and custom columns with a few small queries instead of one large combined one.
+
+## ⚠️ Upgrade Notes
+* **Kobo books that never arrived:** If your Kobo synced shelves but no books while on v4.0.6, CWA may have marked those books as already sent. After updating, press **Force full kobo sync** once in your profile so they're sent again. (#1470)
 
 ## 🔧 Technical & CI
 * **Tests:** The ingest service tests run in CI again, with new coverage for the startup import, the polling watcher, KOReader checksum handling, custom column loading, bulk deletes and the healthcheck.

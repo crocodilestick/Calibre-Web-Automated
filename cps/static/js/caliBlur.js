@@ -1031,23 +1031,25 @@ $(function() {
                 return f.trim(); 
             });
             
-            var formatPriority = ['epub', 'pdf', 'txt', 'html', 'mobi', 'azw3', 'fb2'];
+            // Only the formats the built-in reader can actually render. Keep in sync
+            // with check_read_formats() in cps/helper.py and read_book() in cps/web.py;
+            // any other format falls through read_book()'s final else and redirects to
+            // the index with "Oops! Selected book is unavailable."
+            var readableFormats = ['epub', 'kepub', 'pdf', 'txt', 'cbz', 'cbt', 'cbr', 'djvu', 'djv'];
             var selectedFormat = null;
             
-            for (var i = 0; i < formatPriority.length; i++) {
-                if (formats.indexOf(formatPriority[i]) !== -1) {
-                    selectedFormat = formatPriority[i];
+            for (var i = 0; i < readableFormats.length; i++) {
+                if (formats.indexOf(readableFormats[i]) !== -1) {
+                    selectedFormat = readableFormats[i];
                     break;
                 }
-            }
-            
-            if (!selectedFormat && formats.length > 0) {
-                selectedFormat = formats[0];
             }
             
             if (selectedFormat) {
                 window.open(window.scriptRoot + '/read/' + bookId + '/' + selectedFormat, '_blank');
             } else {
+                // Nothing the reader can open (e.g. a MOBI/AZW3-only book) - follow the
+                // normal link to the book detail page instead of opening a broken reader.
                 window.location.href = $link.attr('href');
             }
         }

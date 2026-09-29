@@ -374,6 +374,7 @@
     'source': {{_('Source')|safe|tojson}},
   };
   var language = '{{ current_user.locale }}';
+  var pubdateDayFirst = {{ pubdate_format_is_day_first()|tojson }};
 
   $("#add-identifier-line").click(function() {
     // create a random identifier type to have a valid name in form. This will not be used when dealing with the form

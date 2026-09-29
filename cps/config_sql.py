@@ -99,6 +99,10 @@ class _Settings(_Base):
     config_default_show = Column(SmallInteger, default=constants.ADMIN_USER_SIDEBAR)
     config_default_language = Column(String(3), default="all")
     config_default_locale = Column(String(2), default="en")
+    # Custom strftime-style format string for displaying dates (e.g. Date Added, Published).
+    # Empty string means "use Babel's locale-aware default ('medium') formatting", which
+    # preserves existing behavior for anyone who doesn't set this.
+    config_date_format = Column(String, default="")
     config_columns_to_ignore = Column(String)
 
     config_denied_tags = Column(String, default="")

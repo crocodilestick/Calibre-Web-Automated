@@ -162,6 +162,18 @@
         </select>
         <p class="settings-explanation">{{_('Default interface language for new users.')}}</p>
       </div>
+
+      <div class="form-group">
+        <label for="config_date_format">{{_('Date Format')}}</label>
+        <input type="text" class="form-control" name="config_date_format" id="config_date_format"
+               value="{{ conf.config_date_format }}" placeholder="%d %b, %Y">
+        <p class="settings-explanation">
+          {{_('Custom format for displaying dates (Date Added, Published, etc.), using strftime-style codes.')}}
+          (%d = {{_('day')}}, %m = {{_('month number')}}, %b = {{_('short month name')}}, %Y = {{_('4-digit year')}}).
+          {{_('Leave blank to use the default locale-based format.')}}
+          {{_('Example:')}} <code>%d %b, %Y</code> {{_('displays as')}} <code>03 Aug, 2021</code>.
+        </p>
+      </div>
       
       <div class="form-group">
         <label for="config_default_language">{{_('Default Visible Language of Books')}}</label>

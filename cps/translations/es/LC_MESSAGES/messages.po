@@ -1202,6 +1202,8 @@ msgstr "No se ha descartado el grupo de duplicados"
 #: cps/duplicates.py:1316
 msgid "Import is in progress. Run a full duplicate scan after ingest finishes."
 msgstr ""
+"La importación está en curso. Ejecuta un escaneo completo de duplicados "
+"cuando termine la ingesta."
 
 #: cps/duplicates.py:1337
 msgid "Duplicate scan queued"
@@ -1219,6 +1221,8 @@ msgstr "Estrategia de resolución no válida"
 msgid ""
 "Import is in progress. Execute duplicate resolution after ingest finishes."
 msgstr ""
+"La importación está en curso. Ejecuta la resolución de duplicados cuando "
+"termine la ingesta."
 
 #: cps/editbooks.py:112 cps/editbooks.py:169
 msgid ""
@@ -1843,6 +1847,9 @@ msgid ""
 "Duplicate scanning needs a one-time full scan before fast duplicate checks "
 "can run after imports and metadata changes. "
 msgstr ""
+"El escaneo de duplicados necesita un escaneo completo una sola vez antes de "
+"que puedan ejecutarse las comprobaciones rápidas de duplicados tras las "
+"importaciones y los cambios de metadatos. "
 
 #: cps/render_template.py:74
 msgid "Books"
@@ -2674,16 +2681,16 @@ msgstr "Escaneo de duplicados completado: %(count)s grupos nuevos"
 
 #: cps/tasks/duplicate_scan.py:90
 msgid "Building duplicate index"
-msgstr ""
+msgstr "Construyendo índice de duplicados"
 
 #: cps/tasks/duplicate_scan.py:98
 #, python-format
 msgid "Building duplicate index: %(processed)s/%(total)s books"
-msgstr ""
+msgstr "Construyendo índice de duplicados: %(processed)s/%(total)s libros"
 
 #: cps/tasks/duplicate_scan.py:104
 msgid "Building duplicate index: no books"
-msgstr ""
+msgstr "Construyendo índice de duplicados: no hay libros"
 
 #: cps/tasks/duplicate_scan.py:108
 #, fuzzy
@@ -2885,7 +2892,7 @@ msgstr "Puerto Externo"
 
 #: cps/templates/admin.html:123
 msgid "Not set — reverse proxy detected"
-msgstr ""
+msgstr "No establecido — proxy inverso detectado"
 
 #: cps/templates/admin.html:134 cps/templates/config_view_edit.html:45
 msgid "Books per Page"
@@ -3323,7 +3330,7 @@ msgstr "Cargando..."
 
 #: cps/templates/book_edit.html:312
 msgid "Apply"
-msgstr ""
+msgstr "Aplicar"
 
 #: cps/templates/book_edit.html:369
 msgid "Search error!"
@@ -3814,6 +3821,8 @@ msgid ""
 "A reverse proxy was detected. Leave blank unless you need to override the "
 "port for direct access."
 msgstr ""
+"Se ha detectado un proxy inverso. Déjelo en blanco a menos que necesite "
+"sobrescribir el puerto para el acceso directo."
 
 #: cps/templates/config_edit.html:217
 msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
@@ -5867,7 +5876,7 @@ msgstr "Eliminar Seleccionados"
 
 #: cps/templates/duplicates.html:529
 msgid "Duplicate scanning needs a one-time full scan."
-msgstr ""
+msgstr "El escaneo de duplicados necesita un escaneo completo una sola vez."
 
 #: cps/templates/duplicates.html:531
 msgid ""
@@ -5875,12 +5884,19 @@ msgid ""
 "and metadata changes. Before incremental scans can run, the index needs an "
 "initial baseline."
 msgstr ""
+"CWA ahora utiliza un índice de duplicados para que las comprobaciones de "
+"duplicados sean rápidas durante las importaciones y los cambios de "
+"metadatos. Antes de que puedan ejecutarse los escaneos incrementales, el "
+"índice necesita una línea base inicial."
 
 #: cps/templates/duplicates.html:534
 msgid ""
 "Click \"Run Full Duplicate Scan\" to build it. This may take several minutes "
 "on large libraries, and you can keep using CWA while it runs."
 msgstr ""
+"Haz clic en \"Ejecutar escaneo completo de duplicados\" para construirlo. "
+"Esto puede tardar varios minutos en bibliotecas grandes y puedes seguir "
+"usando CWA mientras se ejecuta."
 
 #: cps/templates/duplicates.html:541
 #, fuzzy
@@ -5889,7 +5905,7 @@ msgstr "Duplicados"
 
 #: cps/templates/duplicates.html:542
 msgid "You can keep using CWA while it runs."
-msgstr ""
+msgstr "Puedes seguir usando CWA mientras se ejecuta."
 
 #: cps/templates/duplicates.html:545 cps/templates/tasks.html:17
 msgid "Progress"
@@ -6018,6 +6034,8 @@ msgid ""
 "CWA will resolve duplicate groups using the selected strategy and "
 "permanently delete duplicate books."
 msgstr ""
+"CWA resolverá los grupos de duplicados usando la estrategia seleccionada y "
+"eliminará de forma permanente los libros duplicados."
 
 #: cps/templates/duplicates.html:690
 #, fuzzy
@@ -6487,7 +6505,7 @@ msgstr "Anterior"
 
 #: cps/templates/layout.html:354
 msgid "Go to page"
-msgstr ""
+msgstr "Ir a la página"
 
 #: cps/templates/layout.html:377
 msgid "Book Details"

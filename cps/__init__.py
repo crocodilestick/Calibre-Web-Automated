@@ -115,6 +115,21 @@ else:
     limiter = None
 
 
+def _autodetect_subtitle_column():
+    try:
+        matches = calibre_db.session.query(db.CustomColumns).filter(
+            db.CustomColumns.label == "subtitle",
+            db.CustomColumns.mark_for_delete == 0,
+            db.CustomColumns.datatype.in_(["text", "comments"])
+        ).all()
+        if len(matches) == 1:
+            config.config_subtitle_column = matches[0].id
+            config.save()
+            log.info("[autoconfig] Set subtitle column to '%s' (id=%d)", matches[0].name, matches[0].id)
+    except Exception as e:
+        log.warning("[autoconfig] Subtitle column autodetection failed: %s", e)
+
+
 def create_app():
     if csrf:
         csrf.init_app(app)
@@ -125,7 +140,7 @@ def create_app():
     # pylint: disable=no-member
     encrypt_key, error = config_sql.get_encryption_key(os.path.dirname(cli_param.settings_path))
 
-    config_sql.load_configuration(ub.session, encrypt_key)
+    needs_subtitle_autodetect = config_sql.load_configuration(ub.session, encrypt_key)
     config.init_config(ub.session, encrypt_key, cli_param)
 
     # Intelligent Security Configuration
@@ -169,6 +184,9 @@ def create_app():
     from .calibre_init import init_calibre_db_from_config
     init_calibre_db_from_config(config, cli_param.settings_path)
     calibre_db.init_db()
+
+    if needs_subtitle_autodetect and calibre_db.session is not None:
+        _autodetect_subtitle_column()
 
     updater_thread.init_updater(config, web_server)
     # Perform dry run of updater and exit afterward

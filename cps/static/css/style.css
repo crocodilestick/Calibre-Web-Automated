@@ -293,6 +293,10 @@ span.glyphicon.glyphicon-tags {
   padding-bottom: 20px;
 }
 
+.book-meta .booktitle { margin-bottom: 10px;}
+.book-meta #title { margin-bottom: 5px; }
+.book-meta #subtitle { margin-top: 5px; }
+
 .navbar-default .navbar-toggle .icon-bar {
   background-color: #000;
 }

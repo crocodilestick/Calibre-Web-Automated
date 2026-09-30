@@ -298,6 +298,8 @@ VOLUME /calibre-library
 
 # Health check for container orchestration
 # Uses shell form to support environment variable substitution for CWA_PORT_OVERRIDE
-# -L follows redirects so the 302 to /login on the root path is treated as healthy
+# -L follows redirects so the 302 to /login on the root path is treated as healthy.
+# curl gets its own time limits so a hung web server fails the check cleanly instead of
+# Docker killing curl at --timeout and leaving the connection open (from #1335).
 HEALTHCHECK --interval=30s --timeout=3s --start-period=120s --retries=3 \
-  CMD curl -fsL http://localhost:${CWA_PORT_OVERRIDE:-8083}/ || curl -fsL -k https://localhost:${CWA_PORT_OVERRIDE:-8083}/ || exit 1
+  CMD curl -fsL --connect-timeout 1 --max-time 2 http://localhost:${CWA_PORT_OVERRIDE:-8083}/ || curl -fsL -k --connect-timeout 1 --max-time 2 https://localhost:${CWA_PORT_OVERRIDE:-8083}/ || exit 1

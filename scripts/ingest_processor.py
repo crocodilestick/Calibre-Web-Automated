@@ -15,7 +15,7 @@ import shutil
 import sqlite3
 import fcntl
 import threading
-from datetime import datetime
+from datetime import datetime, timezone
 from pathlib import Path
 
 # ── Lazy-initialization sentinels ──────────────────────────────────────────
@@ -1001,7 +1001,9 @@ class NewBookProcessor:
                             print("[ingest-processor] INFO: Skipping timestamp adjust (title_sort SQL function unavailable).", flush=True)
                         else:
                             cur = con.cursor()
-                            now = datetime.now().strftime("%Y-%m-%d %H:%M:%S+00:00")
+                            # UTC, like calibre's own timestamps: naive local time labelled
+                            # +00:00 put new books hours off in non-UTC containers (#1563)
+                            now = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S+00:00")
                             cur.execute('UPDATE books SET timestamp = ? WHERE id = ?', (now, self.last_added_book_id))
                             print(f"[ingest-processor] INFO: Set timestamp to {now} for newly imported book id={self.last_added_book_id}.", flush=True)
                 except Exception as e:
@@ -1264,6 +1266,11 @@ class NewBookProcessor:
             # Import the centralized partial MD5 calculation function
             sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
             from cps.progress_syncing.checksums import calculate_koreader_partial_md5, store_checksum, CHECKSUM_VERSION
+
+            # Checksums are only kept (and the table only exists) with KOReader sync enabled
+            from cps.progress_syncing.settings import is_koreader_sync_enabled
+            if not is_koreader_sync_enabled():
+                return
 
             calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
 

@@ -132,11 +132,26 @@ cleanup_orphaned_processes() {
     fi
 }
 
+# The ingest service runs as abc, but this script runs as root and can create the status
+# file (fresh installs), and older versions left these files root-owned. cwa-init's
+# recursive chown is skipped in NETWORK_SHARE_MODE, so fix just these files here.
+fix_ingest_state_ownership() {
+    local f
+    for f in /config/cwa_ingest_status /config/cwa_ingest_retry_queue /config/cwa_ingest_batch_dirty; do
+        if [ -e "$f" ] && [ "$(stat -c %U "$f" 2>/dev/null)" != "abc" ]; then
+            chown abc:abc "$f" 2>/dev/null \
+                && echo "[cwa-process-recovery] Handed $f to abc for the ingest service" \
+                || echo "[cwa-process-recovery] WARN: could not chown $f; the ingest service may not be able to update it"
+        fi
+    done
+}
+
 # Main recovery sequence
 echo "[cwa-process-recovery] ========== Starting Recovery Sequence =========="
 
-cleanup_temp_files  
+cleanup_temp_files
 reset_processing_status
+fix_ingest_state_ownership
 cleanup_orphaned_processes
 
 echo "[cwa-process-recovery] ========== Recovery Sequence Complete =========="

@@ -21,7 +21,7 @@ import sqlite3
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, ForeignKey, CheckConstraint
 from sqlalchemy import String, Integer, Boolean, TIMESTAMP, Float
-from sqlalchemy.orm import relationship, sessionmaker, scoped_session, joinedload, object_session
+from sqlalchemy.orm import relationship, sessionmaker, scoped_session, joinedload, selectinload, object_session
 from sqlalchemy.orm.collections import InstrumentedList
 from sqlalchemy.ext.declarative import DeclarativeMeta
 from sqlalchemy.exc import OperationalError
@@ -404,15 +404,15 @@ class Books(Base):
     has_cover = Column(Integer, default=0)
     uuid = Column(String)
 
-    authors = relationship(Authors, secondary=books_authors_link, backref='books', lazy='subquery')
-    tags = relationship(Tags, secondary=books_tags_link, backref='books', order_by="Tags.name", lazy='subquery')
-    comments = relationship(Comments, backref='books', lazy='subquery')
-    data = relationship(Data, backref='books', lazy='subquery')
-    series = relationship(Series, secondary=books_series_link, backref='books', lazy='subquery')
-    ratings = relationship(Ratings, secondary=books_ratings_link, backref='books', lazy='subquery')
-    languages = relationship(Languages, secondary=books_languages_link, backref='books', lazy='subquery')
-    publishers = relationship(Publishers, secondary=books_publishers_link, backref='books', lazy='subquery')
-    identifiers = relationship(Identifiers, backref='books', lazy='subquery')
+    authors = relationship(Authors, secondary=books_authors_link, backref='books', lazy='selectin')
+    tags = relationship(Tags, secondary=books_tags_link, backref='books', order_by="Tags.name", lazy='selectin')
+    comments = relationship(Comments, backref='books', lazy='selectin')
+    data = relationship(Data, backref='books', lazy='selectin')
+    series = relationship(Series, secondary=books_series_link, backref='books', lazy='selectin')
+    ratings = relationship(Ratings, secondary=books_ratings_link, backref='books', lazy='selectin')
+    languages = relationship(Languages, secondary=books_languages_link, backref='books', lazy='selectin')
+    publishers = relationship(Publishers, secondary=books_publishers_link, backref='books', lazy='selectin')
+    identifiers = relationship(Identifiers, backref='books', lazy='selectin')
 
     def __init__(self, title, sort, author_sort, timestamp, pubdate, series_index, last_modified, path, has_cover,
                  authors, tags, languages=None):
@@ -860,19 +860,22 @@ class CalibreDB:
         self.ensure_session()
         return self.session.query(Books).filter(Books.id == book_id).first()
 
+    @staticmethod
+    def _book_load_options():
+        rels = [Books.authors, Books.tags, Books.comments, Books.data, Books.series,
+                Books.ratings, Books.languages, Books.publishers, Books.identifiers]
+        rels += [rel for rel in (getattr(Books, 'custom_column_' + str(cc_id), None) for cc_id in cc_classes)
+                 if rel is not None]
+        return [selectinload(rel) for rel in rels]
+
     def get_filtered_book(self, book_id, allow_show_archived=False):
         self.ensure_session()
-        # Eagerly load all relationships to prevent detached instance errors during editing
+        # Eagerly load every relationship, custom columns included, so editing still works
+        # if a db reconnect detaches the book mid-request (#1536). selectinload runs one
+        # small query per relationship; joinedload on all of them multiplied the rows
+        # (authors x tags x formats x identifiers ...) into one large join.
         return (self.session.query(Books)
-                .options(joinedload(Books.authors),
-                         joinedload(Books.tags),
-                         joinedload(Books.comments),
-                         joinedload(Books.data),
-                         joinedload(Books.series),
-                         joinedload(Books.ratings),
-                         joinedload(Books.languages),
-                         joinedload(Books.publishers),
-                         joinedload(Books.identifiers))
+                .options(*self._book_load_options())
                 .filter(Books.id == book_id)
                 .filter(self.common_filters(allow_show_archived))
                 .first())

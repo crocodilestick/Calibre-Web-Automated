@@ -22,6 +22,40 @@ log = logger.create()
 auth = HTTPBasicAuth()
 
 
+def _email_taken(email):
+    return ub.session.query(ub.User).filter(func.lower(ub.User.email) == email.lower()).first() is not None
+
+
+def _auto_create_email(username, proxy_email=None):
+    """Pick the email for a user auto-created from proxy headers.
+
+    Tries the proxy's email header, then the username. Header-auth proxies such as
+    Cloudflare Access, Authelia and authentik often send no email header and put the
+    address in the username header, so the username is usually the user's email.
+    A candidate is skipped if it isn't a single valid address or another account
+    already has it: User.email is unique, so a clash would fail the insert on every
+    login attempt and the person could never get in. Falls back to a placeholder,
+    <username>@localhost, with any @ in the username turned into a dot: a double-@
+    fails valid_email() on the next profile save, and the user could never set a
+    password.
+    """
+    from .helper import valid_email
+    for candidate in (proxy_email, username):
+        candidate = (candidate or "").strip()
+        if "@" not in candidate or "," in candidate:
+            continue
+        try:
+            candidate = valid_email(candidate)
+        except Exception:
+            continue
+        if _email_taken(candidate):
+            log.warning("Email %s already belongs to another account, not using it for new user '%s'",
+                        candidate, username)
+            continue
+        return candidate
+    return f"{username.replace('@', '.')}@localhost"
+
+
 def create_authenticated_user(username, email=None, auth_source="unknown"):
     """Create new user with default configuration settings for external authentication"""
     try:
@@ -45,19 +79,7 @@ def create_authenticated_user(username, email=None, auth_source="unknown"):
             log.warning("User '%s' already exists, returning existing user", username)
             return existing_user
             
-        # Generate email if not provided by the proxy.
-        # Header-auth proxies (e.g. Cloudflare Access, Authelia, authentik) put
-        # the identity in the username header and often send no Remote-Email, so
-        # the username is itself the user's email. Use it directly when it
-        # validates; only fall back to a placeholder otherwise. Blindly appending
-        # @localhost to an address produces a double-@ that valid_email() rejects
-        # on the next profile save, leaving the user unable to set a password.
-        if not email:
-            from .helper import valid_email
-            try:
-                email = valid_email(username)
-            except Exception:
-                email = f"{username}@localhost"
+        email = _auto_create_email(username, email)
 
         # Create user with same defaults as OAuth users
         user = ub.User()

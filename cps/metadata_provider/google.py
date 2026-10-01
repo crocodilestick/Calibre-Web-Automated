@@ -12,7 +12,7 @@ from datetime import datetime
 
 import requests
 
-from cps import logger
+from cps import logger, config
 from cps.isoLanguages import get_lang3, get_language_name
 from cps.services.Metadata import MetaRecord, MetaSourceInfo, Metadata
 
@@ -39,7 +39,11 @@ class Google(Metadata):
                 tokens = [quote(t.encode("utf-8")) for t in title_tokens]
                 query = "+".join(tokens)
             try:
-                results = requests.get(Google.SEARCH_URL + query, timeout=15)
+                api_key = getattr(config, "config_google_api_key", None)
+                url = Google.SEARCH_URL + query
+                if api_key:
+                    url += "&key=" + api_key
+                results = requests.get(url, timeout=15)
                 results.raise_for_status()
             except Exception as e:
                 log.warning(e)

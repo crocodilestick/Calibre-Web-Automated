@@ -96,6 +96,50 @@ def test_invalid_or_multi_address_proxy_email_is_ignored(um):
         assert um._auto_create_email("reader", "a@b@example.com") == "reader@localhost"
 
 
+def _header_request(**headers):
+    req = MagicMock()
+    req.headers = headers
+    return req
+
+
+def _no_user_by_name(um):
+    um.config.config_reverse_proxy_login_header_name = "Cf-Access-Authenticated-User-Email"
+    um.ub.session.query.return_value.filter.return_value.first.return_value = None
+
+
+def test_header_email_logs_into_the_account_that_has_it(um):
+    _no_user_by_name(um)
+    rob = MagicMock(name="rob")
+    with patch.object(um, "_user_with_email", lambda a: rob if a == "rob@example.com" else None), \
+            patch.object(um, "create_authenticated_user") as create:
+        user = um.load_user_from_reverse_proxy_header(
+            _header_request(**{"Cf-Access-Authenticated-User-Email": "rob@example.com"}))
+    assert user is rob
+    create.assert_not_called()
+
+
+def test_remote_email_header_is_never_used_to_match_an_account(um):
+    # Behind Cloudflare Access a client can send Remote-Email itself. Matching on it
+    # would let anyone who passes Access log in as whoever owns that address.
+    _no_user_by_name(um)
+    um.config.config_reverse_proxy_auto_create_users = False
+    admin = MagicMock(name="admin")
+    owners = {"admin@example.com": admin}
+    with patch.object(um, "_user_with_email", lambda a: owners.get(a)):
+        user = um.load_user_from_reverse_proxy_header(_header_request(**{
+            "Cf-Access-Authenticated-User-Email": "stranger@example.com",
+            "Remote-Email": "admin@example.com",
+            "X-Remote-Email": "admin@example.com",
+        }))
+    assert user is None
+
+
+def test_user_with_email_ignores_values_that_are_not_one_address(um):
+    for value in ("rob", "", None, "a@example.com,b@example.com", "a@b@example.com"):
+        assert um._user_with_email(value) is None
+    um.ub.session.query.assert_not_called()
+
+
 def test_create_authenticated_user_stores_the_picked_email(um):
     um.ub.session.query.return_value.filter.return_value.first.return_value = None
     with patch.object(um, "_email_taken", _taken("rob@example.com")):

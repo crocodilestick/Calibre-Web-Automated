@@ -65,6 +65,11 @@ def fetch_and_apply_metadata(book_id: int, user_enabled: bool = False) -> bool:
             cwa_settings.get('metadata_providers_enabled', '{}')
         )
             
+        try:
+            min_confidence = float(cwa_settings.get('hardcover_auto_fetch_min_confidence', 0.85))
+        except (TypeError, ValueError):
+            min_confidence = 0.85
+
         # Try each provider in order
         metadata_found = False
         for provider_id in provider_hierarchy:
@@ -91,9 +96,11 @@ def fetch_and_apply_metadata(book_id: int, user_enabled: bool = False) -> bool:
                 if not results or len(results) == 0:
                     continue
                     
-                # Use the first result
-                metadata = results[0]
-                
+                metadata = _select_result(provider, results, book, min_confidence)
+                if metadata is None:
+                    log.info(f"No confident {provider.__name__} match for: {search_query}")
+                    continue
+
                 # Apply metadata to book
                 if _apply_metadata_to_book(book, metadata, calibre_db_instance):
                     log.info(f"Successfully applied metadata from {provider.__name__} for book: {book.title}")
@@ -110,6 +117,39 @@ def fetch_and_apply_metadata(book_id: int, user_enabled: bool = False) -> bool:
     except Exception as e:
         log.error(f"Error in fetch_and_apply_metadata: {e}", exc_info=True)
         return False
+
+
+def _select_result(provider, results, book, min_confidence: float):
+    """
+    Pick the search result to apply to a book.
+
+    Providers that can score a match (Hardcover) return their best-scoring
+    result, or None when nothing reaches min_confidence. Search relevance
+    often ranks box sets, study guides and similarly named titles above the
+    book itself, so the first result is only used when no scoring is available.
+    """
+    score_match = getattr(provider, 'calculate_confidence_score', None)
+    if score_match is None:
+        return results[0]
+
+    isbn = next((i.val for i in book.identifiers if i.type.lower() == 'isbn'), None)
+    series = book.series[0].name if book.series else None
+    best, best_score = None, 0.0
+    for result in results:
+        score, _ = score_match(
+            result=result,
+            query_title=book.title,
+            query_authors=[author.name for author in book.authors],
+            query_isbn=isbn,
+            query_series=series,
+            query_series_index=book.series_index if series else None,
+            query_publisher=book.publishers[0].name if book.publishers else None,
+            query_year=str(book.pubdate)[:4] if book.pubdate else None,
+        )
+        if score > best_score:
+            best, best_score = result, score
+
+    return best if best_score >= min_confidence else None
 
 
 def _apply_metadata_to_book(book, metadata, calibre_db_instance) -> bool:

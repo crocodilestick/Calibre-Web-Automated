@@ -10,7 +10,8 @@ import os
 import subprocess
 import re
 
-def process_open(command, quotes=(), env=None, sout=subprocess.PIPE, serr=subprocess.PIPE, newlines=True):
+def process_open(command, quotes=(), env=None, sout=subprocess.PIPE, serr=subprocess.PIPE, newlines=True,
+                 stdin_payload=None):
     # Linux py2.7 encode as list without quotes no empty element for parameters
     # linux py3.x no encode and as list without quotes no empty element for parameters
     # windows py2.7 encode as string with quotes empty element for parameters is okay
@@ -24,7 +25,17 @@ def process_open(command, quotes=(), env=None, sout=subprocess.PIPE, serr=subpro
     else:
         exc_command = [x for x in command]
 
-    return subprocess.Popen(exc_command, shell=False, stdout=sout, stderr=serr, universal_newlines=newlines, env=env) # nosec
+    stdin = subprocess.PIPE if stdin_payload is not None else None
+    p = subprocess.Popen(exc_command, shell=False, stdout=sout, stderr=serr, universal_newlines=newlines, env=env, stdin=stdin) # nosec
+    if stdin_payload is not None:
+        # calibredb reads --password <stdin> before it does anything else,
+        # so the pipe is closed straight away to signal end of input.
+        try:
+            p.stdin.write(stdin_payload if newlines else stdin_payload.encode('utf-8'))
+            p.stdin.close()
+        except (OSError, ValueError):
+            pass
+    return p
 
 
 def process_wait(command, serr=subprocess.PIPE, pattern=""):

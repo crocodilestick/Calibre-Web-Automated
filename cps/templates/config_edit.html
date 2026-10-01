@@ -222,6 +222,45 @@
       </div>
     </div>
     {% endif %}
+    <div class="form-group">
+      <input type="checkbox" id="config_calibre_server_enabled" name="config_calibre_server_enabled" data-control="calibre-server-settings" {% if config.config_calibre_server_enabled %}checked{% endif %}>
+      <label for="config_calibre_server_enabled">{{_('Enable Calibre Content Server')}}</label>
+    </div>
+    <div data-related="calibre-server-settings">
+      <div class="form-group" style="margin-left:10px;">
+        <label for="config_calibre_server_port">{{_('Content Server Port')}}</label>
+        <input type="number" min="1" max="65535" class="form-control" name="config_calibre_server_port" id="config_calibre_server_port" value="{% if config.config_calibre_server_port != None %}{{ config.config_calibre_server_port }}{% endif %}" autocomplete="off" {% if config.config_calibre_server_env['port'] %}disabled{% endif %}>
+      </div>
+      <div class="form-group" style="margin-left:10px;">
+        <label for="config_calibre_server_listen">{{_('Content Server Listen Address')}}</label>
+        <input type="text" class="form-control" name="config_calibre_server_listen" id="config_calibre_server_listen" value="{% if config.config_calibre_server_listen != None %}{{ config.config_calibre_server_listen }}{% endif %}" autocomplete="off" placeholder="127.0.0.1">
+        <p class="help-block">{{_('127.0.0.1 keeps the content server reachable only from this machine. Enter 0.0.0.0 to expose it on the network, which is required to reach it from another container or host.')}}</p>
+      </div>
+      <div class="form-group" style="margin-left:10px;">
+        <input type="checkbox" id="config_calibre_server_anonymous_writes" name="config_calibre_server_anonymous_writes" data-control="calibre-server-trusted" data-control-invert="calibre-server-auth" {% if config.config_calibre_server_anonymous_writes %}checked{% endif %}>
+        <label for="config_calibre_server_anonymous_writes">{{_('Allow Anonymous Writes (no username or password required)')}}</label>
+      </div>
+      <div data-related="calibre-server-trusted">
+        <div class="form-group" style="margin-left:10px;">
+          <label for="config_calibre_server_trusted_ips">{{_('Addresses Allowed to Write Without a Password (Comma Separated IPs/CIDRs)')}}</label>
+          <input type="text" class="form-control" name="config_calibre_server_trusted_ips" id="config_calibre_server_trusted_ips" value="{% if config.config_calibre_server_trusted_ips != None %}{{ config.config_calibre_server_trusted_ips }}{% endif %}" autocomplete="off">
+          <p class="help-block">{{_('Leave empty to allow unauthenticated writes only from this machine. Every address listed here can add, edit and delete books in the library without any credentials, so keep it as narrow as possible.')}}</p>
+        </div>
+      </div>
+      <div data-related="calibre-server-auth">
+        <div class="form-group" style="margin-left:10px;">
+          <label for="config_calibre_server_username">{{_('Content Server Username')}}</label>
+          <input type="text" class="form-control" name="config_calibre_server_username" id="config_calibre_server_username" value="{% if config.config_calibre_server_username != None %}{{ config.config_calibre_server_username }}{% endif %}" autocomplete="off" {% if config.config_calibre_server_env['username'] %}disabled{% endif %}>
+        </div>
+        <div class="form-group" style="margin-left:10px;">
+          <label for="config_calibre_server_password_e">{{_('Content Server Password')}}</label>
+          <input type="password" class="form-control" name="config_calibre_server_password_e" id="config_calibre_server_password_e" value="" autocomplete="off" {% if config.config_calibre_server_password_e %}placeholder="********" disabled{% endif %} {% if config.config_calibre_server_env['password'] %}disabled{% endif %}>
+        </div>
+        <div class="form-group" id="calibre_server_password_clear_group" style="margin-left:10px;{% if not config.config_calibre_server_password_e or config.config_calibre_server_env['password'] %}display:none;{% endif %}">
+          <button type="button" id="config_calibre_server_password_clear" class="btn btn-default">{{_('Reset Password')}}</button>
+        </div>
+      </div>
+    </div>
     {% if feature_support['goodreads'] %}
     <div class="form-group">
       <input type="checkbox" id="config_use_goodreads" name="config_use_goodreads" data-control="goodreads-settings" {% if config.config_use_goodreads %}checked{% endif %}>

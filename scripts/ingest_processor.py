@@ -8,6 +8,7 @@ import atexit
 import json
 import os
 import subprocess
+from calibre_library_target import library_target
 import sys
 import tempfile
 import time
@@ -903,9 +904,11 @@ class NewBookProcessor:
 
         try:
             if text:
+                target = library_target(self.library_dir)
                 result = subprocess.run([
-                    "calibredb", "add", str(staged_path), "--automerge", self.cwa_settings['auto_ingest_automerge'], f"--library-path={self.library_dir}"
-                ], env=self.calibre_env, check=True, capture_output=True, text=True)
+                    "calibredb", "add", str(staged_path), "--automerge", self.cwa_settings['auto_ingest_automerge']
+                ] + target.args, env=self.calibre_env, check=True, capture_output=True, text=True,
+                    input=target.stdin)
                 added_ids = self._parse_added_book_ids((result.stdout or '') + '\n' + (result.stderr or ''))
                 if added_ids:
                     self.last_added_book_ids = added_ids
@@ -924,10 +927,10 @@ class NewBookProcessor:
                 _languages = str(meta[9]) if meta[9] else ""
                 _cover = meta[4] if meta[4] and isinstance(meta[4], str) else None
 
+                audio_target = library_target(self.library_dir)
                 add_command = [
                     "calibredb", "add", str(staged_path), "--automerge", self.cwa_settings['auto_ingest_automerge'],
-                    f"--library-path={self.library_dir}",
-                ]
+                ] + audio_target.args
                 if _title:
                     add_command.extend(["--title", _title])
                 if _authors:
@@ -952,7 +955,8 @@ class NewBookProcessor:
                     if isinstance(ident, str) and ":" in ident and ident.strip():
                         add_command.extend(["--identifier", ident.strip()])
 
-                result = subprocess.run(add_command, env=self.calibre_env, check=True, capture_output=True, text=True)
+                result = subprocess.run(add_command, env=self.calibre_env, check=True, capture_output=True,
+                                        text=True, input=audio_target.stdin)
                 added_ids = self._parse_added_book_ids((result.stdout or '') + '\n' + (result.stderr or ''))
                 if added_ids:
                     self.last_added_book_ids = added_ids
@@ -1073,9 +1077,11 @@ class NewBookProcessor:
             return
 
         try:
+            target = library_target(self.library_dir)
             result = subprocess.run([
-                "calibredb", "add_format", str(book_id), str(staged_path), f"--library-path={self.library_dir}"
-            ], env=self.calibre_env, check=True, capture_output=True, text=True)
+                "calibredb", "add_format", str(book_id), str(staged_path)
+            ] + target.args, env=self.calibre_env, check=True, capture_output=True, text=True,
+                input=target.stdin)
             print(f"[ingest-processor] Added new format for book id {book_id}: {os.path.basename(str(staged_path))}", flush=True)
             mark_ingest_batch_dirty()
             if self.cwa_settings['auto_backup_imports']:

@@ -11,6 +11,7 @@ import os
 import re
 import sqlite3
 import subprocess
+from calibre_library_target import library_target
 import sys
 import tempfile
 import time
@@ -170,9 +171,11 @@ class Book:
                     # Small initial delay to ensure database writes are flushed
                     time.sleep(0.5)
                 
+                target = library_target(self.calibre_library)
                 result = subprocess.run(
-                    ["calibredb", "export", "--with-library", self.calibre_library, "--to-dir", metadata_temp_dir, self.book_id],
-                    env=self.calibre_env, check=False, capture_output=True, text=True, timeout=60
+                    ["calibredb", "export", "--to-dir", metadata_temp_dir, self.book_id] + target.args,
+                    env=self.calibre_env, check=False, capture_output=True, text=True, timeout=60,
+                    input=target.stdin
                 )
                 
                 if result.returncode == 0:
@@ -634,7 +637,9 @@ class Enforcer:
 
     def print_library_list(self) -> None:
         """Uses the calibredb command line utility to list the books in the library"""
-        subprocess.run(["calibredb", "list", "--with-library", self.calibre_library], env=self.calibre_env, check=True)
+        target = library_target(self.calibre_library)
+        subprocess.run(["calibredb", "list"] + target.args, env=self.calibre_env, check=True,
+                       input=target.stdin, text=target.stdin is not None)
 
 
     def delete_log(self, auto=True, log_path="None"):

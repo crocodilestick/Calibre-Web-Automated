@@ -10,7 +10,7 @@ import os
 
 from .file_helper import get_temp_dir
 from .subproc_wrapper import process_open
-from . import logger, config
+from . import logger, config, content_server
 from .constants import SUPPORTED_CALIBRE_BINARIES
 
 log = logger.create()
@@ -18,7 +18,6 @@ log = logger.create()
 
 def do_calibre_export(book_id, book_format):
     try:
-        quotes = [4, 6]
         tmp_dir = get_temp_dir()
         calibredb_binarypath = get_calibre_binarypath("calibredb")
         temp_file_name = str(uuid4())
@@ -26,10 +25,17 @@ def do_calibre_export(book_id, book_format):
         if config.config_calibre_split:
             my_env['CALIBRE_OVERRIDE_DATABASE_PATH'] = os.path.join(config.config_calibre_dir, "metadata.db")
         library_path = config.get_book_path()
-        opf_command = [calibredb_binarypath, 'export', '--dont-write-opf', '--with-library', library_path,
-                       '--to-dir', tmp_dir, '--formats', book_format, "--template", "{}".format(temp_file_name),
-                       str(book_id)]
-        p = process_open(opf_command, quotes, my_env)
+        target = content_server.library_target()
+        library_args = target.args or ['--with-library', library_path]
+        opf_command = ([calibredb_binarypath, 'export', '--dont-write-opf']
+                       + library_args
+                       + ['--to-dir', tmp_dir, '--formats', book_format, "--template", "{}".format(temp_file_name),
+                          str(book_id)])
+        # Windows quoting is positional and the library arguments vary in
+        # length, so the indices are derived from the command that was built:
+        # the library itself, and the output directory.
+        quotes = [2 + len(library_args), 4 + len(library_args)]
+        p = process_open(opf_command, quotes, my_env, stdin_payload=target.stdin)
         _, err = p.communicate()
         if err:
             log.error('Metadata embedder encountered an error: %s', err)

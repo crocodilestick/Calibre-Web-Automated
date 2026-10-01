@@ -7,7 +7,7 @@
 from flask import Blueprint, redirect, flash, url_for, request, send_from_directory, abort, jsonify, current_app
 from flask_babel import gettext as _, lazy_gettext as _l
 
-from . import logger, config, constants, csrf, helper, ub, calibre_db
+from . import logger, config, constants, csrf, helper, ub, calibre_db, content_server
 from .usermanagement import login_required_if_no_ano, user_login_required
 from .admin import admin_required
 from .render_template import render_title_template
@@ -1838,9 +1838,17 @@ def get_log_dates(logs) -> dict[str,str]:
 
 ##———————————————————END OF SHARED VARIABLES & FUNCTIONS———————————————————————##
 
+def _restart_content_server_when_done(process):
+    process.wait()
+    content_server.start()
+
+
 def convert_library_start(queue):
+    # convert_library works on the format files on disk, so it needs the library to itself
+    content_server.stop()
     cl_process = subprocess.Popen(['python3', '/app/calibre-web-automated/scripts/convert_library.py'])
     queue.put(cl_process)
+    Thread(target=_restart_content_server_when_done, args=(cl_process,), daemon=True).start()
 
 def get_tmp_conversion_dir() -> str:
     dirs = {}

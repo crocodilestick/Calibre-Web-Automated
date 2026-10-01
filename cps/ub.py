@@ -44,6 +44,7 @@ from sqlalchemy.orm import backref, relationship, sessionmaker, Session, scoped_
 from werkzeug.security import generate_password_hash
 
 from . import constants, logger
+from .db_pragmas import enable_sqlite_foreign_keys
 from .string_helper import strip_whitespaces
 
 log = logger.create()
@@ -1290,6 +1291,7 @@ def init_db_thread():
     global app_DB_path
     engine = create_engine('sqlite:///{0}'.format(app_DB_path), echo=False,
                            connect_args={'timeout': 30})
+    enable_sqlite_foreign_keys(engine)
 
     Session = scoped_session(sessionmaker())
     Session.configure(bind=engine)
@@ -1304,6 +1306,7 @@ def init_db(app_db_path):
     app_DB_path = app_db_path
     engine = create_engine('sqlite:///{0}'.format(app_db_path), echo=False,
                            connect_args={'timeout': 30})
+    enable_sqlite_foreign_keys(engine)
 
     Session = scoped_session(sessionmaker())
     Session.configure(bind=engine)
@@ -1375,6 +1378,7 @@ def password_change(user_credentials=None):
 def get_new_session_instance():
     new_engine = create_engine('sqlite:///{0}'.format(app_DB_path), echo=False,
                                connect_args={'timeout': 30})
+    enable_sqlite_foreign_keys(new_engine)
     new_session = scoped_session(sessionmaker())
     new_session.configure(bind=new_engine)
 

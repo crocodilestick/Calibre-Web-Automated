@@ -39,6 +39,7 @@ from flask_babel import get_locale
 from flask import flash
 
 from . import logger, ub, isoLanguages
+from .db_pragmas import enable_sqlite_foreign_keys
 from .pagination import Pagination
 from .string_helper import strip_whitespaces
 
@@ -732,6 +733,7 @@ class CalibreDB:
                                          isolation_level="SERIALIZABLE",
                                          connect_args={'check_same_thread': False, 'timeout': 30},
                                          poolclass=StaticPool)
+            enable_sqlite_foreign_keys(check_engine)
             with check_engine.begin() as connection:
                 connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
                 connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))
@@ -792,6 +794,7 @@ class CalibreDB:
                                            isolation_level="SERIALIZABLE",
                                            connect_args={'check_same_thread': False, 'timeout': 30},
                                            poolclass=StaticPool)
+                enable_sqlite_foreign_keys(cls.engine)
                 with cls.engine.begin() as connection:
                     connection.execute(text("attach database '{}' as calibre;".format(dbpath)))
                     connection.execute(text("attach database '{}' as app_settings;".format(app_db_path)))

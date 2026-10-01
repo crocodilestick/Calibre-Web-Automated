@@ -194,3 +194,63 @@ def test_team_domain_check_skips_an_empty_domain():
     with mock.patch.object(cloudflare_access.jwt, "PyJWKClient") as client_cls:
         assert cloudflare_access.team_domain_problem("  ") is None
     client_cls.assert_not_called()
+
+
+# --- saving the settings -----------------------------------------------------
+# A refused save does not roll back values already set on config, so the Access
+# fields are validated before they're applied. These check that a refusal leaves
+# the live settings exactly as they were.
+
+
+@pytest.fixture
+def admin_save():
+    from cps import admin as cps_admin
+    with mock.patch.object(config, "config_reverse_proxy_access_team_domain", "", create=True), \
+            mock.patch.object(config, "config_reverse_proxy_access_aud", "", create=True), \
+            mock.patch.object(cps_admin, "_", lambda s, **kw: s % kw if kw else s), \
+            mock.patch.object(cloudflare_access, "team_domain_problem", return_value=None) as problem:
+        yield cps_admin, problem
+
+
+def _live():
+    return config.config_reverse_proxy_access_team_domain, config.config_reverse_proxy_access_aud
+
+
+def test_save_with_only_one_access_field_is_refused_and_changes_nothing(admin_save):
+    cps_admin, problem = admin_save
+    error = cps_admin._cloudflare_access_error({"config_reverse_proxy_access_team_domain": TEAM,
+                                                "config_reverse_proxy_access_aud": ""})
+    assert "both a team domain and an AUD tag" in error
+    assert _live() == ("", "")
+    problem.assert_not_called()
+
+
+def test_save_with_an_unreachable_team_domain_is_refused_and_changes_nothing(admin_save):
+    cps_admin, problem = admin_save
+    problem.return_value = "Fail to fetch data from the url"
+    error = cps_admin._cloudflare_access_error({"config_reverse_proxy_access_team_domain": TEAM,
+                                                "config_reverse_proxy_access_aud": AUD})
+    assert "Fail to fetch data from the url" in error
+    assert _live() == ("", "")
+
+
+def test_save_with_a_working_team_domain_is_accepted(admin_save):
+    cps_admin, problem = admin_save
+    assert cps_admin._cloudflare_access_error({"config_reverse_proxy_access_team_domain": TEAM,
+                                               "config_reverse_proxy_access_aud": AUD}) is None
+    problem.assert_called_once_with(TEAM)
+
+
+def test_unchanged_team_domain_is_not_fetched_again(admin_save):
+    cps_admin, problem = admin_save
+    config.config_reverse_proxy_access_team_domain = TEAM
+    config.config_reverse_proxy_access_aud = AUD
+    assert cps_admin._cloudflare_access_error({"config_reverse_proxy_access_team_domain": TEAM,
+                                               "config_reverse_proxy_access_aud": AUD}) is None
+    problem.assert_not_called()
+
+
+def test_clearing_both_fields_is_accepted(admin_save):
+    cps_admin, problem = admin_save
+    assert cps_admin._cloudflare_access_error({"config_reverse_proxy_access_team_domain": "",
+                                               "config_reverse_proxy_access_aud": ""}) is None

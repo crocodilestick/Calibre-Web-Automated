@@ -2284,6 +2284,29 @@ def _db_configuration_update_helper():
     return _db_configuration_result(None, gdrive_error)
 
 
+def _cloudflare_access_error(to_save):
+    """Check the submitted Cloudflare Access fields. Return an error message, or None.
+
+    This only reads. A refused save does not roll back values already set on config
+    (load() finds nothing to copy back once the settings row has been committed), so
+    the fields are validated here before _config_string applies them.
+    """
+    team = strip_whitespaces(to_save.get("config_reverse_proxy_access_team_domain",
+                                         config.config_reverse_proxy_access_team_domain) or "")
+    aud = strip_whitespaces(to_save.get("config_reverse_proxy_access_aud",
+                                        config.config_reverse_proxy_access_aud) or "")
+    if bool(team) != bool(aud):
+        return _('Cloudflare Access verification needs both a team domain and an AUD tag')
+    # A wrong team domain would refuse every header login, so check it can serve
+    # signing keys before saving. Only when it changed, so other saves don't call out.
+    if team and team != (config.config_reverse_proxy_access_team_domain or ""):
+        from . import cloudflare_access
+        problem = cloudflare_access.team_domain_problem(team)
+        if problem:
+            return _('Could not get signing keys from that Cloudflare Access team domain: %(error)s', error=problem)
+    return None
+
+
 def _configuration_update_helper():
     reboot_required = False
     to_save = request.form.to_dict()
@@ -2364,7 +2387,12 @@ def _configuration_update_helper():
         _config_checkbox(to_save, "config_allow_reverse_proxy_header_login")
         _config_string(to_save, "config_reverse_proxy_login_header_name")
         _config_checkbox(to_save, "config_reverse_proxy_auto_create_users")
-        access_team_changed = _config_string(to_save, "config_reverse_proxy_access_team_domain")
+
+        # Validate the Cloudflare Access fields before applying them, see _cloudflare_access_error()
+        access_error = _cloudflare_access_error(to_save)
+        if access_error:
+            return _configuration_result(access_error)
+        _config_string(to_save, "config_reverse_proxy_access_team_domain")
         _config_string(to_save, "config_reverse_proxy_access_aud")
 
         # Validate reverse proxy configuration
@@ -2373,18 +2401,6 @@ def _configuration_update_helper():
 
         if config.config_reverse_proxy_auto_create_users and not config.config_reverse_proxy_login_header_name:
             return _configuration_result(_('Auto-create users requires a valid reverse proxy header name'))
-
-        if bool(config.config_reverse_proxy_access_team_domain) != bool(config.config_reverse_proxy_access_aud):
-            return _configuration_result(_('Cloudflare Access verification needs both a team domain and an AUD tag'))
-
-        # A wrong team domain would refuse every header login, so check it can serve
-        # signing keys before saving. Only when it changed, so other saves don't call out.
-        if access_team_changed and config.config_reverse_proxy_access_team_domain:
-            from . import cloudflare_access
-            problem = cloudflare_access.team_domain_problem(config.config_reverse_proxy_access_team_domain)
-            if problem:
-                return _configuration_result(
-                    _('Could not get signing keys from that Cloudflare Access team domain: %(error)s', error=problem))
 
         # OAuth configuration
         oauth_redirect_host_changed = False

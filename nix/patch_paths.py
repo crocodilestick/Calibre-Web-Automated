@@ -175,11 +175,11 @@ for script in _scripts:
         # /config/processed_books/ (trailing slash variant)
         ('"/config/processed_books/"',
          f'os.path.join({_cfg}, "processed_books") + "/"'),
-        # dirs.json → alongside the installed script (site-packages after install)
+        # dirs.json → config dir, where the module's preStart writes it
         ('"/app/calibre-web-automated/dirs.json"',
-         'os.path.join(os.path.dirname(os.path.abspath(__file__)), "dirs.json")'),
+         f'os.path.join({_cfg}, "dirs.json")'),
         ("'/app/calibre-web-automated/dirs.json'",
-         "os.path.join(os.path.dirname(os.path.abspath(__file__)), 'dirs.json')"),
+         f"os.path.join({_cfg}, 'dirs.json')"),
         # metadata_change_logs / metadata_temp → config dir
         ('"/app/calibre-web-automated/metadata_change_logs"',
          f'os.path.join({_cfg}, "metadata_change_logs")'),

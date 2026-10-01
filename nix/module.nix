@@ -143,7 +143,7 @@ in
 
         # Write dirs.json so background workers (ingest, convert, cover) know
         # where to find the library, ingest folder, and temp dir.
-        printf '{"ingest_folder":"%s","library_dir":"%s","tmp_conversion_dir":"%s"}\n' \
+        printf '{"ingest_folder":"%s","calibre_library_dir":"%s","tmp_conversion_dir":"%s"}\n' \
           ${lib.escapeShellArg cfg.ingestDir} \
           ${lib.escapeShellArg cfg.libraryDir} \
           ${lib.escapeShellArg cfg.configDir}/tmp \

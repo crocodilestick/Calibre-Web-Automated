@@ -11,6 +11,7 @@ import os
 import re
 import sys
 import shutil
+import signal
 from pathlib import Path
 import subprocess
 import tempfile
@@ -64,13 +65,61 @@ def print_and_log(string) -> None:
     print(string)
 
 
-# Creates a lock file unless one already exists meaning an instance of the script is
-# already running, then the script is closed, the user is notified and the program
-# exits with code 2
-try:
-    lock = open(tempfile.gettempdir() + '/convert_library.lock', 'x')
-    lock.close()
-except FileExistsError:
+LOCK_PATH = os.path.join(tempfile.gettempdir(), 'convert_library.lock')
+
+
+def _lock_owner_alive(path):
+    """True if the lock names a convert_library process that is still running.
+
+    The lock holds the owner's PID. A run killed with SIGKILL (or by the OOM killer)
+    never reaches atexit, so its lock stays behind; before this, every later run
+    then refused to start until the container restarted. An empty or unreadable
+    lock, or one naming a dead process or a reused PID, counts as stale.
+    """
+    try:
+        with open(path) as f:
+            pid = int(f.read().strip())
+    except (OSError, ValueError):
+        return False
+    try:
+        with open(f"/proc/{pid}/cmdline", "rb") as f:
+            return b"convert_library" in f.read()
+    except FileNotFoundError:
+        return False
+    except OSError:
+        # No /proc (not Linux): fall back to "does that PID exist".
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return False
+        except PermissionError:
+            return True
+        return True
+
+
+def acquire_lock(path=None):
+    """Take the lock, clearing one left by a run that was killed. False if another run holds it."""
+    path = path or LOCK_PATH
+    for _ in range(2):
+        try:
+            fd = os.open(path, os.O_CREAT | os.O_EXCL | os.O_WRONLY, 0o644)
+        except FileExistsError:
+            if _lock_owner_alive(path):
+                return False
+            print_and_log("[convert-library]: Removing a stale lock left by a run that was killed")
+            try:
+                os.remove(path)
+            except FileNotFoundError:
+                pass
+            continue
+        with os.fdopen(fd, "w") as f:
+            f.write(str(os.getpid()))
+        return True
+    return False
+
+
+# Take the lock, or tell the user another run is in progress and exit with code 2
+if not acquire_lock():
     print_and_log("[convert-library]: CANCELLING... convert-library was initiated but is already running")
     logger.info(f"\nCWA Convert Library Service - Run Cancelled: {datetime.now()}")
     sys.exit(2)
@@ -78,12 +127,33 @@ except FileExistsError:
 # Defining function to delete the lock on script exit
 def removeLock():
     try:
-        os.remove(tempfile.gettempdir() + '/convert_library.lock')
+        os.remove(LOCK_PATH)
     except FileNotFoundError:
         ...
 
 # Will automatically run when the script exits
 atexit.register(removeLock)
+
+# The ebook-convert / kepubify / calibredb process currently running, if any.
+_current_child = None
+
+
+def _stop_on_sigterm(signum, frame):
+    """Stop the running tool, then exit normally so atexit removes the lock.
+
+    The web UI's Cancel sends SIGTERM to this script. Python's default for SIGTERM
+    exits without running atexit and leaves the child running, so a cancelled run
+    kept converting in the background and left its lock behind.
+    """
+    child = _current_child
+    if child is not None and child.poll() is None:
+        child.terminate()
+        try:
+            child.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            child.kill()
+    print_and_log("[convert-library]: Cancelled, stopping now...")
+    sys.exit(128 + signum)
 
 backup_destinations = {
         entry.name: entry.path
@@ -562,12 +632,17 @@ class LibraryConverter:
                 encoding='utf-8',
                 errors='replace'
             ) as process:
-                for line in process.stdout:  # Read from the combined stdout (which includes stderr)
-                    output_tail.append(line)
-                    if self.verbose:
-                        print_and_log(line)
-                    else:
-                        print(line)
+                global _current_child
+                _current_child = process
+                try:
+                    for line in process.stdout:  # Read from the combined stdout (which includes stderr)
+                        output_tail.append(line)
+                        if self.verbose:
+                            print_and_log(line)
+                        else:
+                            print(line)
+                finally:
+                    _current_child = None
         except OSError as error:
             # A missing or unexecutable tool fails this book, not the whole run.
             raise subprocess.CalledProcessError(127, args, output=str(error), stderr=str(error)) from error
@@ -638,6 +713,7 @@ def main():
     parser.add_argument('--verbose', '-v', action='store_true', required=False, dest='verbose', help='When passed, the output from the ebook-convert command will be included in what is shown to the user in the Web UI', default=False)
     args = parser.parse_args()
 
+    signal.signal(signal.SIGTERM, _stop_on_sigterm)
     logger.info(f"CWA Convert Library Service - Run Started: {datetime.now()}\n")
     converter = LibraryConverter(args)
     if len(converter.to_convert) > 0:

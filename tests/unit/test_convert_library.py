@@ -253,3 +253,78 @@ def test_output_with_no_book_list_is_still_reported_unparseable(convert_library,
     converter = _converter_with_fake_calibredb(convert_library, tmp_path, WARNING + "\n")
     assert converter.get_library_book_formats() == {}
     assert any("Failed to parse calibredb command output" in line for line in log_lines)
+
+
+# --- lock and cancel ---------------------------------------------------------
+# A run killed with SIGKILL or by the OOM killer never reaches atexit, so before
+# this its lock stayed and every later run exited with "already running" until the
+# container restarted. The web UI's Cancel sends SIGTERM, whose default action
+# also skips atexit and leaves the running ebook-convert going.
+
+
+def _sleeper(*extra):
+    """A real process; extra args land in its /proc cmdline."""
+    return subprocess.Popen([sys.executable, "-c", "import time; time.sleep(30)", *extra])
+
+
+def test_lock_is_taken_and_records_our_pid(convert_library, tmp_path):
+    lock = tmp_path / "convert_library.lock"
+    assert convert_library.acquire_lock(str(lock))
+    assert lock.read_text() == str(os.getpid())
+
+
+def test_lock_held_by_a_running_convert_library_is_respected(convert_library, tmp_path):
+    lock = tmp_path / "convert_library.lock"
+    owner = _sleeper("convert_library")
+    try:
+        lock.write_text(str(owner.pid))
+        assert not convert_library.acquire_lock(str(lock))
+        assert lock.read_text() == str(owner.pid)
+    finally:
+        owner.kill()
+        owner.wait()
+
+
+@pytest.mark.parametrize("content", ["", "not-a-pid", "dead", "reused"])
+def test_stale_lock_is_cleared(convert_library, tmp_path, log_lines, content):
+    lock = tmp_path / "convert_library.lock"
+    other = None
+    if content == "dead":
+        gone = _sleeper()
+        gone.kill()
+        gone.wait()
+        content = str(gone.pid)
+    elif content == "reused":
+        # a live process that isn't convert_library holds the recorded PID
+        other = _sleeper()
+        content = str(other.pid)
+    try:
+        lock.write_text(content)
+        assert convert_library.acquire_lock(str(lock))
+        assert lock.read_text() == str(os.getpid())
+        assert any("stale lock" in line for line in log_lines)
+    finally:
+        if other:
+            other.kill()
+            other.wait()
+
+
+def test_sigterm_stops_the_running_tool_and_exits_through_atexit(convert_library, monkeypatch, log_lines):
+    child = _sleeper()
+    monkeypatch.setattr(convert_library, "_current_child", child)
+    with pytest.raises(SystemExit) as exit_info:
+        convert_library._stop_on_sigterm(15, None)
+    assert exit_info.value.code == 143
+    assert child.poll() is not None
+
+
+def test_sigterm_with_nothing_running_still_exits(convert_library, monkeypatch, log_lines):
+    monkeypatch.setattr(convert_library, "_current_child", None)
+    with pytest.raises(SystemExit):
+        convert_library._stop_on_sigterm(15, None)
+
+
+def test_run_streaming_clears_the_current_child(convert_library, tmp_path):
+    converter = _converter(convert_library, tmp_path)
+    converter._run_streaming([sys.executable, "-c", "print('ok')"])
+    assert convert_library._current_child is None

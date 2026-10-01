@@ -369,9 +369,9 @@ def get_sort_function(sort_param, data):
     else:
         current_user.set_view_property(data, 'stored', sort_param)
     if sort_param == 'pubnew':
-        order = [db.Books.pubdate.desc()]
+        order = [db.Books.pubdate.desc(), db.Books.series_index]
     if sort_param == 'pubold':
-        order = [db.Books.pubdate]
+        order = [db.Books.pubdate, db.Books.series_index]
     if sort_param == 'abc':
         order = [db.Books.sort]
     if sort_param == 'zyx':

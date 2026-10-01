@@ -58,6 +58,12 @@ def store_checksum(
         >>> store_checksum(123, 'EPUB', 'abc123...')
         True
     """
+    # The checksum table only exists (and is only useful) with KOReader sync on.
+    # Every writer (downloads, ingest, cover enforcer, EPUB fixer) goes through here.
+    from ..settings import is_koreader_sync_enabled
+    if not is_koreader_sync_enabled():
+        return False
+
     try:
         from ... import calibre_db
         from sqlalchemy import text
@@ -151,7 +157,8 @@ def calculate_and_store_checksum(
         >>> calculate_and_store_checksum(123, 'EPUB', '/path/to/book.epub')
         'abc123def456...'
     """
-    if not os.path.exists(file_path):
+    from ..settings import is_koreader_sync_enabled
+    if not is_koreader_sync_enabled() or not os.path.exists(file_path):
         return None
 
     checksum = calculate_koreader_partial_md5(file_path)

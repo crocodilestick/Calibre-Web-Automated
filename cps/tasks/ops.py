@@ -12,7 +12,7 @@ import re
 from flask_babel import lazy_gettext as N_
 
 from cps.services.worker import CalibreTask, STAT_CANCELLED, STAT_ENDED
-from cps import logger, helper
+from cps import logger
 
 log = logger.create()
 
@@ -20,7 +20,7 @@ log = logger.create()
 class TaskConvertLibraryRun(CalibreTask):
     """Lightweight wrapper to surface Convert Library run in Tasks UI.
 
-    It triggers the existing web endpoint and then tails the log for completion,
+    It starts the run in-process and then tails the log for completion,
     updating progress heuristically if counts are present in the log.
     """
 
@@ -30,11 +30,10 @@ class TaskConvertLibraryRun(CalibreTask):
         self._finished_marker = "CWA Convert Library Service - Run Ended: "
 
     def run(self, worker_thread):
-        # trigger run via internal route
+        # Imported here: cps.cwa_functions imports this module at load time.
+        from cps.cwa_functions import start_convert_library_run, request_convert_library_cancel
         try:
-            import requests
-            url = helper.get_internal_api_url("/cwa-convert-library-start")
-            requests.get(url, timeout=10, verify=False)
+            start_convert_library_run()
         except Exception as e:
             self._handleError(f"Failed to start Convert Library: {e}")
             return
@@ -45,9 +44,7 @@ class TaskConvertLibraryRun(CalibreTask):
             # cancellation check
             if self.stat in (STAT_CANCELLED, STAT_ENDED):
                 try:
-                    import requests
-                    url = helper.get_internal_api_url("/convert-library-cancel")
-                    requests.get(url, timeout=5, verify=False)
+                    request_convert_library_cancel()
                 except Exception:
                     pass
                 # treat as clean end; UI already shows cancelled/ended state
@@ -97,11 +94,10 @@ class TaskEpubFixerRun(CalibreTask):
         self._finished_marker = "CWA Kindle EPUB Fixer Service - Run Ended: "
 
     def run(self, worker_thread):
-        # trigger run via internal route
+        # Imported here: cps.cwa_functions imports this module at load time.
+        from cps.cwa_functions import start_epub_fixer_run, request_epub_fixer_cancel
         try:
-            import requests
-            url = helper.get_internal_api_url("/cwa-epub-fixer-start")
-            requests.get(url, timeout=10, verify=False)
+            start_epub_fixer_run()
         except Exception as e:
             self._handleError(f"Failed to start EPUB Fixer: {e}")
             return
@@ -110,9 +106,7 @@ class TaskEpubFixerRun(CalibreTask):
         while True:
             if self.stat in (STAT_CANCELLED, STAT_ENDED):
                 try:
-                    import requests
-                    url = helper.get_internal_api_url("/epub-fixer-cancel")
-                    requests.get(url, timeout=5, verify=False)
+                    request_epub_fixer_cancel()
                 except Exception:
                     pass
                 return

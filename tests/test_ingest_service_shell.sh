@@ -163,3 +163,37 @@ if [ "$(wc -l < "$post_batch_log" | tr -d ' ')" != "1" ]; then
         cat "$post_batch_log" >&2
         exit 1
 fi
+
+# Startup sweep: files already in the ingest folder are listed oldest first,
+# skipping partial downloads, sidecar manifests and unsupported files.
+sweep_dir="$WATCH_FOLDER/sweep"
+mkdir -p "$sweep_dir/sub dir"
+printf 'x' > "$sweep_dir/newer.epub"; touch -d '1 minute ago' "$sweep_dir/newer.epub"
+printf 'x' > "$sweep_dir/sub dir/older book.mobi"; touch -d '10 minutes ago' "$sweep_dir/sub dir/older book.mobi"
+printf 'x' > "$sweep_dir/partial.epub.crdownload"
+printf 'x' > "$sweep_dir/newer.epub.cwa.json"
+printf 'x' > "$sweep_dir/cover.jpg"
+expected=$(printf 'EXISTING %s\nEXISTING %s' "$sweep_dir/sub dir/older book.mobi" "$sweep_dir/newer.epub")
+actual=$(list_existing_ingest_files)
+if [ "$actual" != "$expected" ]; then
+        printf 'Unexpected startup sweep output.\nExpected:\n%s\nActual:\n%s\n' "$expected" "$actual" >&2
+        exit 1
+fi
+
+# Swept files go through handle_event like live events; a second event for the
+# same file (e.g. inotify firing while the sweep runs) is skipped.
+: > "$processor_log"
+export PROCESSOR_EXIT_CODE=0
+while read -r events filepath; do
+        handle_event "$filepath" > "$tmpdir/sweep_handle.log" 2>&1 || { rc=$?; cat "$tmpdir/sweep_handle.log" >&2; printf 'handle_event failed (%s) for %s\n' "$rc" "$filepath" >&2; exit 1; }
+done <<< "$actual"
+output=$(handle_event "$sweep_dir/newer.epub" 2>&1)
+assert_contains "$output" "Skipping duplicate recent event"
+if [ "$(wc -l < "$processor_log" | tr -d ' ')" != "2" ]; then
+        printf 'Expected each swept file to be processed exactly once\n' >&2
+        cat "$processor_log" >&2
+        exit 1
+fi
+rm -rf "$sweep_dir"
+
+echo "ingest service shell tests passed"

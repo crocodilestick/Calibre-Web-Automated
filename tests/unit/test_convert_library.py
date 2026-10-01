@@ -365,3 +365,15 @@ def test_leftovers_from_killed_runs_are_removed(convert_library, tmp_path, monke
     convert_library.make_private_tmp_dir(str(unrelated) + "/")
     assert not leftover.exists()
     assert (unrelated / "ingest.epub").exists(), "the shared dir belongs to ingest"
+
+
+def test_remove_lock_only_removes_our_own_lock(convert_library, tmp_path):
+    """Cancel deletes the lock right after SIGTERM; a new run may take it before this one exits."""
+    lock = tmp_path / "convert_library.lock"
+    lock.write_text(str(os.getpid()))
+    convert_library.removeLock(str(lock))
+    assert not lock.exists()
+
+    lock.write_text("999999999")  # another run's lock
+    convert_library.removeLock(str(lock))
+    assert lock.read_text() == "999999999"

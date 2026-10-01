@@ -493,7 +493,8 @@ class LibraryConverter:
 
     def convert_to_kepub(self, filepath:str ,import_format:str) -> tuple[bool, str]:
         """Kepubify is limited in that it can only convert from epub to kepub, therefore any files not already in epub need to first be converted to epub, and then to kepub"""
-        if import_format == "epub":
+        # The caller passes Path(file).suffix, which keeps the dot (".epub").
+        if import_format.lstrip(".").lower() == "epub":
             print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) File already in epub format, converting directly to kepub...")
 
             if self.cwa_settings['auto_backup_conversions']:
@@ -513,7 +514,7 @@ class LibraryConverter:
                 print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Intermediate conversion of {os.path.basename(filepath)} to epub from {import_format} successful, now converting to kepub...")
                 epub_ready = True
             except subprocess.CalledProcessError as e:
-                print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Intermediate conversion of {os.path.basename(filepath)} to epub was unsuccessful. Cancelling kepub conversion and moving on to next file. See the following error:\n{e}")
+                print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Intermediate conversion of {os.path.basename(filepath)} to epub was unsuccessful. Cancelling kepub conversion and moving on to next file. See the following error:\n{e}{self._output_tail(e)}")
                 return False, ""
 
         if epub_ready:

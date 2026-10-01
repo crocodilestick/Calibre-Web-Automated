@@ -253,3 +253,60 @@ def test_output_with_no_book_list_is_still_reported_unparseable(convert_library,
     converter = _converter_with_fake_calibredb(convert_library, tmp_path, WARNING + "\n")
     assert converter.get_library_book_formats() == {}
     assert any("Failed to parse calibredb command output" in line for line in log_lines)
+
+
+# --- kepub target ------------------------------------------------------------
+# convert_library() passes Path(file).suffix (".epub", with the dot) and
+# convert_to_kepub() compared it to "epub", so an epub source never took the
+# direct path and always went through a redundant ebook-convert epub -> epub.
+
+
+def _kepub_converter(convert_library, tmp_path, monkeypatch):
+    converter = _converter(convert_library, tmp_path / "cwa_conversion_tmp")
+    converter.ensure_tmp_conversion_dir()
+    converter.target_format = "kepub"
+    converter.to_convert = ["x"]
+    converter.cwa_settings = {"auto_backup_conversions": False, "auto_backup_imports": False}
+    converter.db = SimpleNamespace(conversion_add_entry=lambda *a: None)
+    bin_dir = tmp_path / "bin"
+    bin_dir.mkdir()
+    calls = tmp_path / "calls.log"
+    _write_tool(bin_dir, "ebook-convert", f'echo ebook-convert >> "{calls}"\n'
+                'case "$1" in *Locked*) echo "Locked.mobi is DRM locked"; exit 1;; esac\n'
+                'echo converted > "$2"\n')
+    _write_tool(bin_dir, "kepubify", f'echo kepubify >> "{calls}"\n')
+    converter.calibre_env = {"PATH": f"{bin_dir}:/usr/bin:/bin"}
+    monkeypatch.setenv("PATH", f"{bin_dir}{os.pathsep}{os.environ.get('PATH', '')}")
+    return converter, calls
+
+
+def test_epub_source_goes_straight_to_kepubify(convert_library, tmp_path, monkeypatch, log_lines):
+    converter, calls = _kepub_converter(convert_library, tmp_path, monkeypatch)
+    book = tmp_path / "Book.epub"
+    book.write_text("x", encoding="utf-8")
+    ok, target = converter.convert_to_kepub(str(book), book.suffix)
+    assert ok
+    assert target.endswith("Book.kepub")
+    assert calls.read_text().split() == ["kepubify"], "an epub must not be run through ebook-convert first"
+    assert any("already in epub format" in line for line in log_lines)
+
+
+def test_other_formats_still_convert_to_epub_first(convert_library, tmp_path, monkeypatch, log_lines):
+    converter, calls = _kepub_converter(convert_library, tmp_path, monkeypatch)
+    book = tmp_path / "Book.mobi"
+    book.write_text("x", encoding="utf-8")
+    ok, _ = converter.convert_to_kepub(str(book), book.suffix)
+    assert ok
+    assert calls.read_text().split() == ["ebook-convert", "kepubify"]
+
+
+def test_failed_intermediate_conversion_logs_the_tools_reason(convert_library, tmp_path, monkeypatch, log_lines):
+    converter, calls = _kepub_converter(convert_library, tmp_path, monkeypatch)
+    book = tmp_path / "Locked.mobi"
+    book.write_text("x", encoding="utf-8")
+    ok, _ = converter.convert_to_kepub(str(book), book.suffix)
+    assert not ok
+    text = "\n".join(log_lines)
+    assert "Intermediate conversion of Locked.mobi to epub was unsuccessful" in text
+    assert "DRM locked" in text, "the tool's own reason must reach the log file"
+    assert "kepubify" not in calls.read_text()

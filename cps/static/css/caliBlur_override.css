@@ -254,3 +254,48 @@ a#advanced_search > span.hidden-sm {
     background-color: #E59029;
     color: #fff;
 }
+/* ── Book grid covers ─────────────────────────────────────────────────────────
+   Every cover sits in the same 2:3 frame. Covers were stretched to fit it
+   (object-fit: fill), which distorted square/wide art and the placeholder; they
+   are now cropped to fill it instead. The old shadow (0 5px 8px -6px #777) was a
+   light grey offset downwards, which read as a glow on the bottom edge only. */
+.container-fluid .book .cover span img,
+#books .cover img,
+#books_rand .cover img,
+.book.isotope-item .cover img {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    object-position: center;
+    border-radius: 4px;
+    background-color: #2a2d31;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, .35), 0 6px 16px -4px rgba(0, 0, 0, .55);
+}
+
+/* The cover box follows the card width (150px on desktop: 180px card minus padding) */
+.container-fluid .book .cover {
+    width: 100%;
+    height: auto !important;
+}
+
+/* #books / #books_rand need their own selectors: caliBlur makes their links
+   inline-block with an id selector, which shrinks the first card's cover */
+.container-fluid .book .cover > a,
+#books > .cover > a,
+#books_rand > .cover > a,
+.container-fluid .book .cover span.img {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+/* Keep the hover overlay inside the rounded frame */
+#books > .cover > a:after,
+#books_rand > .cover > a:after,
+.book.isotope-item > .cover > a:after,
+#books .cover > a:after,
+#books_rand .cover > a:after {
+    border-radius: 4px;
+}

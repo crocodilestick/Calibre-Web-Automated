@@ -21,6 +21,7 @@ from . import db, calibre_db, logger, ub, csrf, config, helper
 from .services.worker import WorkerThread, STAT_FINISH_SUCCESS, STAT_FAIL, STAT_ENDED, STAT_CANCELLED
 from .admin import admin_required  
 from .usermanagement import login_required_if_no_ano
+from .internal_api import internal_only
 from .render_template import render_title_template
 from .cw_login import current_user
 
@@ -1279,6 +1280,7 @@ def undismiss_duplicate_group(group_hash):
 
 @duplicates.route("/duplicates/invalidate-cache", methods=['POST'])
 @csrf.exempt
+@internal_only
 def invalidate_cache():
     """Internal endpoint to invalidate duplicate cache (called after ingest)"""
     try:

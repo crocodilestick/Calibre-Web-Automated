@@ -256,6 +256,13 @@ p.write_text(src)
     "--set CWA_STABLE_VERSION    v${version}"
   ];
 
+  # cps starts these scripts with the bare interpreter, so each one adds the dependency paths itself.
+  postFixup = ''
+    for script in ingest_processor convert_library kindle_epub_fixer; do
+      patchPythonScript "$out/${python3.sitePackages}/$script.py"
+    done
+  '';
+
   # Tests require a running Calibre library; skip during the Nix build.
   doCheck = false;
 

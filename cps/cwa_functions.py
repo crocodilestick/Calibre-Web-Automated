@@ -1860,6 +1860,16 @@ def empty_tmp_con_dir(tmp_conversion_dir) -> None:
     except Exception as e:
         print(f"[cwa-functions]: An error occurred while emptying {tmp_conversion_dir}. See the following error: {e}")
 
+def remove_convert_library_tmp_dirs(tmp_conversion_dir) -> None:
+    """Remove Convert Library's own working dirs, which sit beside the shared one.
+
+    The shared tmp_conversion_dir itself is left alone, since an ingest may be
+    converting a book in it. Prefix matches PRIVATE_TMP_PREFIX in scripts/convert_library.py.
+    """
+    parent = Path(tmp_conversion_dir.rstrip('/')).parent
+    for path in parent.glob(".cwa_convert_library_*"):
+        shutil.rmtree(path, ignore_errors=True)
+
 def is_convert_library_finished() -> bool:
     log_path = "/config/convert-library.log"
     with open(log_path, 'r') as log:
@@ -1882,8 +1892,8 @@ def kill_convert_library(queue):
                 os.remove(tempfile.gettempdir() + '/convert_library.lock')
             except FileNotFoundError:
                 ...
-            # Empty tmp conversion dir of half finished files
-            empty_tmp_con_dir(get_tmp_conversion_dir())
+            # Remove the cancelled run's half finished files, without touching ingest's
+            remove_convert_library_tmp_dirs(get_tmp_conversion_dir())
             # Remove the trigger file that triggered this block
             try:
                 os.remove(trigger_file)

@@ -328,3 +328,40 @@ def test_run_streaming_clears_the_current_child(convert_library, tmp_path):
     converter = _converter(convert_library, tmp_path)
     converter._run_streaming([sys.executable, "-c", "print('ok')"])
     assert convert_library._current_child is None
+
+
+# --- own working directory ---------------------------------------------------
+# ingest_processor.py rmtree()s the shared tmp_conversion_dir after every run and
+# Convert Library emptied it after every book, with separate locks, so a run during
+# an ingest could delete the book the other was converting.
+
+
+def test_private_tmp_dir_sits_beside_the_shared_one(convert_library, tmp_path, monkeypatch):
+    registered = []
+    monkeypatch.setattr(convert_library.atexit, "register", lambda *a: registered.append(a))
+    shared = tmp_path / ".cwa_conversion_tmp"
+    shared.mkdir()
+    private = Path(convert_library.make_private_tmp_dir(str(shared) + "/"))
+    assert private.is_dir()
+    assert private.parent == tmp_path
+    assert private.name.startswith(convert_library.PRIVATE_TMP_PREFIX)
+    assert registered and registered[0][1] == str(private), "the dir is removed when the run exits"
+
+    # what the ingest processor does at the end of every run
+    (private / "Book.epub").write_text("converting", encoding="utf-8")
+    import shutil
+    shutil.rmtree(shared, ignore_errors=True)
+    assert (private / "Book.epub").exists()
+
+
+def test_leftovers_from_killed_runs_are_removed(convert_library, tmp_path, monkeypatch):
+    monkeypatch.setattr(convert_library.atexit, "register", lambda *a: None)
+    leftover = tmp_path / (convert_library.PRIVATE_TMP_PREFIX + "old")
+    leftover.mkdir()
+    (leftover / "half.epub").write_text("x", encoding="utf-8")
+    unrelated = tmp_path / ".cwa_conversion_tmp"
+    unrelated.mkdir()
+    (unrelated / "ingest.epub").write_text("x", encoding="utf-8")
+    convert_library.make_private_tmp_dir(str(unrelated) + "/")
+    assert not leftover.exists()
+    assert (unrelated / "ingest.epub").exists(), "the shared dir belongs to ingest"

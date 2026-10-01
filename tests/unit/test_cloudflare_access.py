@@ -160,3 +160,37 @@ def test_reverse_proxy_login_stops_before_the_user_lookup_when_refused():
             mock.patch.object(usermanagement.ub, "session") as session:
         assert usermanagement.load_user_from_reverse_proxy_header(req) is None
     session.query.assert_not_called()
+
+
+def test_small_clock_skew_is_accepted():
+    """A token issued a couple of seconds 'in the future' by Cloudflare's clock still works."""
+    now = int(time.time())
+    assert _permitted(_token(iat=now + 5, nbf=now + 5))
+
+
+def test_skew_beyond_the_leeway_is_refused():
+    now = int(time.time())
+    assert not _permitted(_token(iat=now + 600, nbf=now + 600))
+
+
+def test_team_domain_check_passes_when_keys_load():
+    with mock.patch.object(cloudflare_access.jwt, "PyJWKClient") as client_cls:
+        client_cls.return_value.get_signing_keys.return_value = [object()]
+        assert cloudflare_access.team_domain_problem("example.cloudflareaccess.com") is None
+    assert client_cls.call_args.args[0] == TEAM + "/cdn-cgi/access/certs"
+
+
+@pytest.mark.parametrize("error", [
+    jwt.PyJWKClientConnectionError("Fail to fetch data from the url, err: Name or service not known"),
+    jwt.PyJWKClientError("The JWKS endpoint did not contain any signing keys"),
+])
+def test_team_domain_check_reports_why_keys_did_not_load(error):
+    with mock.patch.object(cloudflare_access.jwt, "PyJWKClient") as client_cls:
+        client_cls.return_value.get_signing_keys.side_effect = error
+        assert cloudflare_access.team_domain_problem(TEAM) == str(error)
+
+
+def test_team_domain_check_skips_an_empty_domain():
+    with mock.patch.object(cloudflare_access.jwt, "PyJWKClient") as client_cls:
+        assert cloudflare_access.team_domain_problem("  ") is None
+    client_cls.assert_not_called()

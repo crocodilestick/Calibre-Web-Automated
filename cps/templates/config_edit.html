@@ -271,7 +271,7 @@
       <div class="form-group">
         <label for="config_reverse_proxy_access_aud">{{_('Cloudflare Access Application AUD Tag')}}</label>
         <input type="text" class="form-control" id="config_reverse_proxy_access_aud" name="config_reverse_proxy_access_aud" value="{% if config.config_reverse_proxy_access_aud != None %}{{ config.config_reverse_proxy_access_aud }}{% endif %}" autocomplete="off">
-        <div class="help-block">{{_('If you use Cloudflare Access, set both fields to check the signed Cf-Access-Jwt-Assertion token on every header login. The header must then match the email in that token. Without this, anyone who can reach this server without going through Cloudflare can log in as any user by sending the header. Leave both empty to trust the header as before.')}}</div>
+        <div class="help-block">{{_('If you use Cloudflare Access, set both fields to check the signed Cf-Access-Jwt-Assertion token on every header login. The header must then match the email in that token. Without this, anyone who can reach this server without going through Cloudflare can log in as any user by sending the header. Leave both empty to trust the header as before. The team domain is checked when you save; the AUD tag can only be checked by a real login, and a wrong one refuses every header login, so keep an admin account with a local password to fix it.')}}</div>
       </div>
     </div>
     {% if not config.config_is_initial %}

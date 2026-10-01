@@ -23,7 +23,11 @@ from . import logger
 log = logger.create()
 
 ACCESS_JWT_HEADER = "Cf-Access-Jwt-Assertion"
+CERTS_PATH = "/cdn-cgi/access/certs"
 KEY_CACHE_SECONDS = 3600
+# Cloudflare and this server keep their own clocks; allow normal NTP-level skew on
+# iat/nbf/exp so a fresh token isn't refused for being a second "in the future".
+LEEWAY_SECONDS = 60
 
 _clients = {}
 _clients_lock = threading.Lock()
@@ -42,13 +46,30 @@ def _jwk_client(team_domain):
         client = _clients.get(team_domain)
         if client is None:
             client = jwt.PyJWKClient(
-                team_domain + "/cdn-cgi/access/certs",
+                team_domain + CERTS_PATH,
                 cache_keys=True,
                 lifespan=KEY_CACHE_SECONDS,
                 timeout=10,
             )
             _clients[team_domain] = client
         return client
+
+
+def team_domain_problem(team_domain):
+    """Fetch the team's signing keys once. Return None if that works, else a reason.
+
+    Used when the settings are saved, so a mistyped team domain is caught there
+    instead of refusing every header login afterwards. A wrong AUD tag can't be
+    checked this way; that needs a real token.
+    """
+    team_domain = normalize_team_domain(team_domain)
+    if not team_domain:
+        return None
+    try:
+        jwt.PyJWKClient(team_domain + CERTS_PATH, cache_keys=False, timeout=10).get_signing_keys()
+    except jwt.PyJWTError as e:
+        return str(e)
+    return None
 
 
 def verified_email(req, team_domain, audience):
@@ -66,6 +87,7 @@ def verified_email(req, team_domain, audience):
             audience=audience,
             issuer=team_domain,
             options={"require": ["exp", "iat", "iss", "aud"]},
+            leeway=LEEWAY_SECONDS,
         )
     except jwt.PyJWTError as e:
         log.warning("Cloudflare Access check: token rejected: %s", e)

@@ -240,6 +240,13 @@ def handle_sync_error(error: KOSyncError) -> tuple:
     }, 400)
 
 
+def _as_utc(value: datetime) -> datetime:
+    """SQLite returns naive datetimes that hold UTC wall time; make them aware."""
+    if value is not None and value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc)
+    return value
+
+
 def get_book_by_checksum(document_checksum: str, version: str = None):
     """
     Lookup a book in the Calibre library by its partial MD5 checksum.
@@ -587,7 +594,7 @@ def get_progress(document: str):
             "percentage": percentage_decimal,
             "device": progress_record.device,
             "device_id": progress_record.device_id,
-            "timestamp": int(progress_record.timestamp.timestamp())
+            "timestamp": int(_as_utc(progress_record.timestamp).timestamp())
         }
 
         response_data = {**response_data, **response_updates}

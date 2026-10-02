@@ -105,7 +105,10 @@ class WorkerThread(threading.Thread):
                 ret = alive
             else:
                 # otherwise, loop off the oldest dead tasks until we hit the target trigger
-                ret = sorted(dead, key=lambda y: y.task.end_time)[-TASK_CLEANUP_TRIGGER:] + alive
+                # A cancelled task may lack end_time; discard it as the oldest.
+                ret = sorted(
+                    dead, key=lambda y: y.task.end_time or datetime.min
+                )[-TASK_CLEANUP_TRIGGER:] + alive
 
             self.dequeued = sorted(ret, key=lambda y: y.num)
 

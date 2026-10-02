@@ -264,6 +264,15 @@
         <label for="config_reverse_proxy_auto_create_users">{{_('Auto-create users from reverse proxy')}}</label>
         <div class="help-block">{{_('Automatically create user accounts when valid reverse proxy headers are received. Only enable if your reverse proxy authentication is properly secured.')}}</div>
       </div>
+      <div class="form-group">
+        <label for="config_reverse_proxy_access_team_domain">{{_('Cloudflare Access Team Domain')}}</label>
+        <input type="text" class="form-control" id="config_reverse_proxy_access_team_domain" name="config_reverse_proxy_access_team_domain" value="{% if config.config_reverse_proxy_access_team_domain != None %}{{ config.config_reverse_proxy_access_team_domain }}{% endif %}" placeholder="https://yourteam.cloudflareaccess.com" autocomplete="off">
+      </div>
+      <div class="form-group">
+        <label for="config_reverse_proxy_access_aud">{{_('Cloudflare Access Application AUD Tag')}}</label>
+        <input type="text" class="form-control" id="config_reverse_proxy_access_aud" name="config_reverse_proxy_access_aud" value="{% if config.config_reverse_proxy_access_aud != None %}{{ config.config_reverse_proxy_access_aud }}{% endif %}" autocomplete="off">
+        <div class="help-block">{{_('If you use Cloudflare Access, set both fields to check the signed Cf-Access-Jwt-Assertion token on every header login. The header must then match the email in that token. Without this, anyone who can reach this server without going through Cloudflare can log in as any user by sending the header. Leave both empty to trust the header as before. The team domain is checked when you save; the AUD tag can only be checked by a real login, and a wrong one refuses every header login, so keep an admin account with a local password to fix it.')}}</div>
+      </div>
     </div>
     {% if not config.config_is_initial %}
     {% if feature_support['ldap'] or feature_support['oauth'] %}

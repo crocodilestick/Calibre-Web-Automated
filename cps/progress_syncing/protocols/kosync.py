@@ -490,6 +490,7 @@ def kosync_plugin_page():
 
 @csrf.exempt
 @kosync.route("/kosync/users/auth", methods=["GET"])
+@kosync.route("/users/auth", methods=["GET"], strict_slashes=False)
 def auth_user():
     """
     Authenticate user endpoint (KOSync protocol).
@@ -520,6 +521,7 @@ def auth_user():
 
 @csrf.exempt
 @kosync.route("/kosync/syncs/progress/<document>", methods=["GET"])
+@kosync.route("/syncs/progress/<document>", methods=["GET"], strict_slashes=False)
 def get_progress(document: str):
     """
     Get reading progress for a document (KOSync protocol).
@@ -608,6 +610,7 @@ def get_progress(document: str):
 
 @csrf.exempt
 @kosync.route("/kosync/syncs/progress", methods=["PUT"])
+@kosync.route("/syncs/progress", methods=["PUT"], strict_slashes=False)
 def update_progress():
     """
     Update reading progress for a document (KOSync protocol).

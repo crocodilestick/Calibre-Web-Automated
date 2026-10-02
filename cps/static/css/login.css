@@ -1,0 +1,414 @@
+/* Calibre-Web Automated – fork of Calibre-Web
+ * Copyright (C) 2018-2026 Calibre-Web contributors
+ * Copyright (C) 2024-2026 Calibre-Web Automated contributors
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * See CONTRIBUTORS for full list of authors.
+ *
+ * Login page. Loaded from login.html's header block, which layout.html emits
+ * before the theme stylesheets, so selectors are scoped under `html body.login`
+ * to win over caliBlur's body.login rules. */
+
+html body.login {
+    --login-surface: rgba(24, 27, 32, .78);
+    --login-border: rgba(255, 255, 255, .08);
+    --login-field: rgba(255, 255, 255, .06);
+    --login-field-border: rgba(255, 255, 255, .14);
+    --login-text: #eef0f3;
+    --login-muted: rgba(238, 240, 243, .62);
+    --login-accent: var(--color-secondary, #CC7B19);
+    --login-accent-hover: var(--color-secondary-hover, #E59029);
+    --login-radius: 10px;
+}
+
+/* The brand now lives in the card; the page-wide navbar only showed the title and a home icon. */
+html body.login > div.navbar {
+    display: none !important;
+}
+
+html body.login > div.container-fluid,
+html body.login > div.container-fluid > div.row-fluid {
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+html body.login > div.container-fluid > div.row-fluid > div.col-sm-10 {
+    position: static !important;
+    top: auto !important;
+    left: auto !important;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    display: block !important;
+    float: none !important;
+}
+
+html body.login .cwa-login {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 32px 16px;
+    box-sizing: border-box;
+}
+
+html body.login .cwa-login-card {
+    width: 100%;
+    max-width: 400px;
+    padding: 36px 32px 28px;
+    box-sizing: border-box;
+    background: var(--login-surface);
+    border: 1px solid var(--login-border);
+    border-radius: 16px;
+    box-shadow: 0 24px 60px -18px rgba(0, 0, 0, .7), 0 2px 6px rgba(0, 0, 0, .25);
+    -webkit-backdrop-filter: blur(20px) saturate(120%);
+    backdrop-filter: blur(20px) saturate(120%);
+    color: var(--login-text);
+}
+
+/* Brand */
+html body.login .cwa-login-brand {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 28px;
+    text-align: center;
+}
+
+html body.login .cwa-login-logo {
+    width: 72px;
+    height: 72px;
+    margin: 0 0 12px;
+    border-radius: 50%;
+    box-shadow: 0 8px 24px -8px rgba(85, 186, 171, .55);
+}
+
+html body.login .cwa-login-brand h1 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -.01em;
+    color: var(--login-text);
+    text-wrap: balance;
+}
+
+html body.login .cwa-login-brand p {
+    margin: 0;
+    font-size: 14px;
+    color: var(--login-muted);
+}
+
+/* Form */
+html body.login .cwa-login-form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin: 0;
+    padding: 0;
+    background: none;
+}
+
+html body.login .cwa-field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+html body.login .cwa-field label {
+    margin: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--login-muted);
+    text-transform: none;
+    letter-spacing: normal;
+}
+
+html body.login .cwa-field input {
+    width: 100%;
+    height: 44px;
+    padding: 0 14px;
+    box-sizing: border-box;
+    font-size: 15px;
+    color: var(--login-text);
+    background: var(--login-field);
+    border: 1px solid var(--login-field-border);
+    border-radius: var(--login-radius);
+    box-shadow: none;
+    outline: none;
+    transition: border-color .15s ease, box-shadow .15s ease, background-color .15s ease;
+}
+
+html body.login .cwa-field input:hover {
+    border-color: rgba(255, 255, 255, .24);
+}
+
+html body.login .cwa-field input:focus {
+    background: rgba(255, 255, 255, .09);
+    border-color: var(--login-accent);
+    box-shadow: 0 0 0 3px rgba(204, 123, 25, .28);
+}
+
+/* Keep browser autofill from painting the fields yellow/white */
+html body.login .cwa-field input:-webkit-autofill,
+html body.login .cwa-field input:-webkit-autofill:hover,
+html body.login .cwa-field input:-webkit-autofill:focus {
+    -webkit-text-fill-color: var(--login-text);
+    -webkit-box-shadow: 0 0 0 1000px #2b2f35 inset;
+    caret-color: var(--login-text);
+    transition: background-color 9999s ease-out 0s;
+}
+
+html body.login .cwa-password {
+    position: relative;
+}
+
+html body.login .cwa-password input {
+    padding-right: 46px;
+}
+
+html body.login .cwa-password-toggle {
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    color: var(--login-muted);
+    background: none;
+    border: 0;
+    border-radius: var(--login-radius);
+    cursor: pointer;
+}
+
+html body.login .cwa-password-toggle:hover {
+    color: var(--login-text);
+}
+
+html body.login .cwa-password-toggle:focus-visible {
+    outline: 2px solid var(--login-accent);
+    outline-offset: -4px;
+}
+
+html body.login .cwa-password-toggle .glyphicon {
+    top: 0;
+    font-size: 15px;
+}
+
+html body.login .cwa-login-options {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    margin-top: -2px;
+}
+
+html body.login .cwa-check {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--login-muted);
+    cursor: pointer;
+}
+
+html body.login .cwa-check input[type="checkbox"] {
+    position: static;
+    width: 16px;
+    height: 16px;
+    margin: 0;
+    opacity: 1;
+    accent-color: var(--login-accent);
+    cursor: pointer;
+}
+
+html body.login .cwa-link-button {
+    padding: 0;
+    font-size: 14px;
+    color: var(--login-muted);
+    background: none;
+    border: 0;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(238, 240, 243, .3);
+    cursor: pointer;
+}
+
+html body.login .cwa-link-button:hover {
+    color: var(--login-text);
+}
+
+/* Buttons */
+html body.login .cwa-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    height: 44px;
+    margin: 0;
+    padding: 0 16px;
+    box-sizing: border-box;
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1;
+    text-transform: none;
+    letter-spacing: normal;
+    text-decoration: none;
+    border-radius: var(--login-radius);
+    cursor: pointer;
+    transition: background-color .15s ease, border-color .15s ease, transform .05s ease;
+}
+
+html body.login .cwa-btn:active {
+    transform: translateY(1px);
+}
+
+html body.login .cwa-btn:focus-visible {
+    outline: 2px solid var(--login-text);
+    outline-offset: 2px;
+}
+
+html body.login .cwa-btn-primary {
+    margin-top: 4px;
+    color: #fff;
+    background: var(--login-accent);
+    border: 1px solid transparent;
+    box-shadow: 0 6px 16px -8px rgba(204, 123, 25, .8);
+}
+
+html body.login .cwa-btn-primary:hover,
+html body.login .cwa-btn-primary:focus {
+    color: #fff;
+    background: var(--login-accent-hover);
+}
+
+html body.login .cwa-btn-secondary {
+    color: var(--login-text);
+    background: var(--login-field);
+    border: 1px solid var(--login-field-border);
+    font-weight: 500;
+}
+
+html body.login .cwa-btn-secondary:hover,
+html body.login .cwa-btn-secondary:focus {
+    color: var(--login-text);
+    background: rgba(255, 255, 255, .1);
+    border-color: rgba(255, 255, 255, .24);
+    text-decoration: none;
+}
+
+html body.login .cwa-btn .glyphicon {
+    top: 0;
+}
+
+/* caliBlur styles a#remote_login as a pill; keep it consistent with the other buttons */
+html body.login a#remote_login.cwa-btn {
+    width: 100%;
+    margin: 0;
+    padding: 0 16px;
+    border: 1px solid var(--login-field-border);
+    border-radius: var(--login-radius);
+    font-size: 15px;
+}
+
+html body.login .cwa-alt-logins {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+html body.login .cwa-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--login-muted);
+}
+
+html body.login .cwa-divider::before,
+html body.login .cwa-divider::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--login-border);
+}
+
+/* Messages */
+html body.login .cwa-login-alert {
+    margin: 0 0 16px;
+    padding: 10px 14px;
+    font-size: 14px;
+    line-height: 1.45;
+    border-radius: var(--login-radius);
+    border: 1px solid transparent;
+}
+
+html body.login .cwa-login-form .cwa-login-alert {
+    margin: 0;
+}
+
+html body.login .cwa-login-alert-error {
+    color: #ffd9d4;
+    background: rgba(180, 35, 24, .22);
+    border-color: rgba(249, 112, 102, .35);
+}
+
+html body.login .cwa-login-alert-info {
+    color: var(--login-text);
+    background: rgba(255, 255, 255, .06);
+    border-color: var(--login-field-border);
+}
+
+/* Footer links */
+html body.login .cwa-login-footer {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid var(--login-border);
+    font-size: 14px;
+}
+
+html body.login .cwa-login-footer a {
+    color: var(--login-muted);
+    text-decoration: none;
+}
+
+html body.login .cwa-login-footer a:hover,
+html body.login .cwa-login-footer a:focus {
+    color: var(--login-text);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+}
+
+@media (max-width: 480px) {
+    html body.login .cwa-login {
+        align-items: flex-start;
+        padding-top: 48px;
+    }
+
+    html body.login .cwa-login-card {
+        padding: 28px 20px 22px;
+        border-radius: 14px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html body.login .cwa-field input,
+    html body.login .cwa-btn {
+        transition: none;
+    }
+}

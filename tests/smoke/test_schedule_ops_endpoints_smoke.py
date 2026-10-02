@@ -47,15 +47,15 @@ class TestConvertLibraryScheduling:
         # Verify route exists
         assert "@convert_library.route('/cwa-convert-library/schedule/<int:delay>'" in content
     
-    def test_convert_library_schedule_calls_internal_api(self):
-        """Verify schedule handler calls internal /cwa-internal/schedule-convert-library"""
+    def test_convert_library_schedule_uses_shared_scheduler(self):
+        """Verify the admin schedule route schedules in-process (not via an HTTP call to itself)"""
         cwa_functions_file = project_root / 'cps' / 'cwa_functions.py'
         
         with open(cwa_functions_file, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Verify internal endpoint is called via helper function
-        assert 'helper.get_internal_api_url("/cwa-internal/schedule-convert-library")' in content
+        assert "_schedule_library_op('convert_library', 'Convert Library', TaskConvertLibraryRun, delay, username)" in content
+        assert 'get_internal_api_url("/cwa-internal/schedule-convert-library")' not in content
     
     def test_internal_convert_library_endpoint_exists(self):
         """Verify /cwa-internal/schedule-convert-library endpoint exists"""
@@ -76,7 +76,8 @@ class TestConvertLibraryScheduling:
             content = f.read()
         
         # Verify DB persistence call with correct job type
-        assert "db.scheduled_add_job('convert_library'" in content
+        assert "_schedule_library_op_response('convert_library', 'Convert Library', TaskConvertLibraryRun)" in content
+        assert "CWA_DB().scheduled_add_job(job_type, run_at_utc_iso" in content
     
     def test_convert_library_template_has_schedule_buttons(self):
         """Verify convert library template has scheduling buttons"""
@@ -85,9 +86,9 @@ class TestConvertLibraryScheduling:
         with open(template_file, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Verify buttons call JS function
-        assert 'scheduleConvertLibrary(5)' in content
-        assert 'scheduleConvertLibrary(15)' in content
+        # Buttons link to the admin-only schedule route
+        assert "url_for('convert_library.schedule_convert_library', delay=5)" in content
+        assert "url_for('convert_library.schedule_convert_library', delay=15)" in content
     
     def test_convert_library_task_wrapper_exists(self):
         """Verify TaskConvertLibraryRun task wrapper exists"""
@@ -114,15 +115,15 @@ class TestEpubFixerScheduling:
         # Verify route exists
         assert "@epub_fixer.route('/cwa-epub-fixer/schedule/<int:delay>'" in content
     
-    def test_epub_fixer_schedule_calls_internal_api(self):
-        """Verify schedule handler calls internal /cwa-internal/schedule-epub-fixer"""
+    def test_epub_fixer_schedule_uses_shared_scheduler(self):
+        """Verify the admin schedule route schedules in-process (not via an HTTP call to itself)"""
         cwa_functions_file = project_root / 'cps' / 'cwa_functions.py'
         
         with open(cwa_functions_file, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Verify internal endpoint is called via helper function
-        assert 'helper.get_internal_api_url("/cwa-internal/schedule-epub-fixer")' in content
+        assert "_schedule_library_op('epub_fixer', 'EPUB Fixer', TaskEpubFixerRun, delay, username)" in content
+        assert 'get_internal_api_url("/cwa-internal/schedule-epub-fixer")' not in content
     
     def test_internal_epub_fixer_endpoint_exists(self):
         """Verify /cwa-internal/schedule-epub-fixer endpoint exists"""
@@ -143,7 +144,8 @@ class TestEpubFixerScheduling:
             content = f.read()
         
         # Verify DB persistence call with correct job type
-        assert "db.scheduled_add_job('epub_fixer'" in content
+        assert "_schedule_library_op_response('epub_fixer', 'EPUB Fixer', TaskEpubFixerRun)" in content
+        assert "CWA_DB().scheduled_add_job(job_type, run_at_utc_iso" in content
     
     def test_epub_fixer_template_has_schedule_buttons(self):
         """Verify epub fixer template has scheduling buttons"""
@@ -152,9 +154,9 @@ class TestEpubFixerScheduling:
         with open(template_file, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Verify buttons call JS function
-        assert 'scheduleEpubFixer(5)' in content
-        assert 'scheduleEpubFixer(15)' in content
+        # Buttons link to the admin-only schedule route
+        assert "url_for('epub_fixer.schedule_epub_fixer', delay=5)" in content
+        assert "url_for('epub_fixer.schedule_epub_fixer', delay=15)" in content
     
     def test_epub_fixer_task_wrapper_exists(self):
         """Verify TaskEpubFixerRun task wrapper exists"""

@@ -377,6 +377,38 @@ def _validate_uploaded_file(uploaded_file):
         return False
     return True
 
+# Files created around an upload share the final name, so all of their suffixes
+# must fit within the filesystem's per-component name limit. The processor also
+# truncates basenames over 150 characters before looking up their manifest.
+_UPLOAD_SUFFIXES = (".uploading", ".cwa.json", ".cwa.failed.json")
+_INGEST_PROCESSOR_NAME_MAX = 150
+# 255 is the POSIX NAME_MAX used by supported Linux deployments. This fallback
+# is intentionally documented and tested for filesystems that reject pathconf.
+_FALLBACK_NAME_MAX = 255
+
+
+def _get_ingest_name_max(ingest_dir):
+    """Return the filesystem name limit for the ingest directory."""
+    try:
+        name_max = int(os.pathconf(ingest_dir, "PC_NAME_MAX"))
+    except (AttributeError, OSError, TypeError, ValueError):
+        return _FALLBACK_NAME_MAX
+    return name_max if name_max > 0 else _FALLBACK_NAME_MAX
+
+
+def _truncate_utf8(value, max_chars, max_bytes):
+    """Keep as much of value as fits both character and UTF-8 byte budgets."""
+    result = []
+    used_bytes = 0
+    for character in value:
+        encoded_size = len(character.encode("utf-8"))
+        if len(result) >= max_chars or used_bytes + encoded_size > max_bytes:
+            break
+        result.append(character)
+        used_bytes += encoded_size
+    return "".join(result)
+
+
 # Helper to get a unique, prefixed path in the ingest directory
 def _get_ingest_path(uploaded_file, prefix_parts=None):
     ingest_dir = get_ingest_dir()
@@ -402,10 +434,21 @@ def _get_ingest_path(uploaded_file, prefix_parts=None):
     _ensure_ingest_dir_writable(ingest_dir)
 
     base_name = secure_filename(uploaded_file.filename)
+    stem, extension = os.path.splitext(base_name)
     # CWA change: use timestamp for more predictable sorting vs uuid
     unique = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f")
     prefix = "_".join([str(p) for p in (prefix_parts or []) if p])
-    final_name = f"{prefix + '_' if prefix else ''}{unique}_{base_name}"
+    name_prefix = f"{prefix + '_' if prefix else ''}{unique}_"
+
+    name_max = _get_ingest_name_max(ingest_dir)
+    reserved_bytes = max(len(suffix.encode("utf-8")) for suffix in _UPLOAD_SUFFIXES)
+    fixed_bytes = len(name_prefix.encode("utf-8")) + len(extension.encode("utf-8"))
+    byte_budget = name_max - reserved_bytes - fixed_bytes
+    char_budget = _INGEST_PROCESSOR_NAME_MAX - len(name_prefix) - len(extension)
+    if byte_budget < 0 or char_budget < 0:
+        raise ValueError("Upload filename fixed components exceed the available name limit")
+    stem = _truncate_utf8(stem, char_budget, byte_budget)
+    final_name = f"{name_prefix}{stem}{extension}"
     final_path = os.path.join(ingest_dir, final_name)
     return final_path
 

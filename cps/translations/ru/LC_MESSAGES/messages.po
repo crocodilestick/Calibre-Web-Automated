@@ -4445,12 +4445,10 @@ msgstr ""
 "время поддерживает только файлы форматов EPUB или AZW3."
 
 #: cps/templates/cwa_settings.html:167
-#, fuzzy
 msgid "Enable CWA Kindle EPUB Fixer"
-msgstr "Сервис исправления EPUB для Send-to-Kindle CWA"
+msgstr "Включить исправление EPUB для Kindle"
 
 #: cps/templates/cwa_settings.html:169
-#, fuzzy
 msgid ""
 "When active, the encoding among other attributes of all EPUB files processed "
 "by CWA will be checked and fixed to ensure maximum \n"
@@ -4460,8 +4458,10 @@ msgid ""
 "        file rejections or formatting problems."
 msgstr ""
 "Когда функция активна, кодировка и другие атрибуты всех EPUB-файлов, "
-"обработанных CWA, будут проверяться и исправляться для обеспечения "
-"максимальной совместимости с сервисом Send-to-Kindle от Amazon."
+"обрабатываемых CWA, будут проверяться и исправляться для максимальной\n"
+"        совместимости с сервисом Amazon Send-to-Kindle. Это особенно полезно "
+"тем, кто часто отправляет EPUB-файлы на устройства Kindle и сталкивался с\n"
+"        отклонением файлов или проблемами форматирования."
 
 #: cps/templates/cwa_settings.html:174
 msgid ""
@@ -4499,9 +4499,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:202
-#, fuzzy
 msgid "Enable Archived Book Cleanup"
-msgstr "Архивированные книги"
+msgstr "Включить очистку архивных книг"
 
 #: cps/templates/cwa_settings.html:204
 msgid ""
@@ -4639,9 +4638,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:319
-#, fuzzy
 msgid "Metadata Fields to Update"
-msgstr "Метаданные успешно обновлены"
+msgstr "Поля метаданных для обновления"
 
 #: cps/templates/cwa_settings.html:321
 msgid ""
@@ -4666,7 +4664,6 @@ msgid "Identifiers (ISBN, etc.)"
 msgstr "Идентификаторы (ISBN, и т.д.)"
 
 #: cps/templates/cwa_settings.html:390 cps/templates/cwa_settings.html:392
-#, fuzzy
 msgid "Cover Image"
 msgstr "Обложка"
 
@@ -4731,23 +4728,20 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:454
-#, fuzzy
 msgid "Stale temp age (minutes):"
-msgstr "Тайм-аут (минуты):"
+msgstr "Возраст временных файлов (минуты):"
 
 #: cps/templates/cwa_settings.html:467
-#, fuzzy
 msgid "Range: 0-10080 minutes (default: 120)"
-msgstr "Диапазон: 5-120 минут (по умолчанию: 15)"
+msgstr "Диапазон: 0–10080 минут (по умолчанию: 120)"
 
 #: cps/templates/cwa_settings.html:471
 msgid "Stale temp cleanup interval (seconds):"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:484
-#, fuzzy
 msgid "Range: 0-86400 seconds (default: 600)"
-msgstr "Диапазон: 5-120 минут (по умолчанию: 15)"
+msgstr "Диапазон: 0–86400 секунд (по умолчанию: 600)"
 
 #: cps/templates/cwa_settings.html:490
 msgid "Auto-Send Delay for New Books"
@@ -4762,14 +4756,12 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:494
-#, fuzzy
 msgid "Delay (minutes):"
-msgstr "Тайм-аут (минуты):"
+msgstr "Задержка (минуты):"
 
 #: cps/templates/cwa_settings.html:506
-#, fuzzy
 msgid "Range: 1-60 minutes (default: 5)"
-msgstr "Диапазон: 5-120 минут (по умолчанию: 15)"
+msgstr "Диапазон: 1–60 минут (по умолчанию: 5)"
 
 #: cps/templates/cwa_settings.html:511
 msgid "Auto Metadata Fetch Provider Hierarchy"
@@ -4795,9 +4787,8 @@ msgid "Unchecked providers are disabled globally."
 msgstr ""
 
 #: cps/templates/cwa_settings.html:550
-#, fuzzy
 msgid "Hardcover Auto-Fetch Settings"
-msgstr "Токен API Hardcover"
+msgstr "Настройки автозагрузки Hardcover"
 
 #: cps/templates/cwa_settings.html:552
 msgid ""
@@ -4807,9 +4798,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:557
-#, fuzzy
 msgid "Hardcover Token Required"
-msgstr "Токен API Hardcover"
+msgstr "Требуется токен Hardcover"
 
 #: cps/templates/cwa_settings.html:558
 msgid ""
@@ -4819,9 +4809,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:569
-#, fuzzy
 msgid "Enable Hardcover Auto-Fetch"
-msgstr "Включить синхронизацию с Hardcover"
+msgstr "Включить автозагрузку Hardcover"
 
 #: cps/templates/cwa_settings.html:571
 msgid ""
@@ -4843,9 +4832,8 @@ msgid "Minimum Confidence Threshold:"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:687
-#, fuzzy
 msgid "Range: 0.50-1.00 (default: 0.85)"
-msgstr "Диапазон: 5-120 минут (по умолчанию: 15)"
+msgstr "Диапазон: 0,50–1,00 (по умолчанию: 0,85)"
 
 #: cps/templates/cwa_settings.html:689
 msgid ""
@@ -4859,9 +4847,8 @@ msgid "Batch Size:"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:705
-#, fuzzy
 msgid "Range: 10-200 books per run (default: 50)"
-msgstr "Диапазон: 5-120 минут (по умолчанию: 15)"
+msgstr "Диапазон: 10–200 книг за запуск (по умолчанию: 50)"
 
 #: cps/templates/cwa_settings.html:707
 msgid ""
@@ -4874,9 +4861,8 @@ msgid "Rate Limit Delay (seconds):"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:723
-#, fuzzy
 msgid "Range: 0-60 seconds (default: 5.0)"
-msgstr "Диапазон: 5-120 минут (по умолчанию: 15)"
+msgstr "Диапазон: 0–60 секунд (по умолчанию: 5,0)"
 
 #: cps/templates/cwa_settings.html:725
 msgid ""
@@ -4892,9 +4878,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:738
-#, fuzzy
 msgid "Web UI Settings"
-msgstr "Настройки CWA"
+msgstr "Настройки веб-интерфейса"
 
 #: cps/templates/cwa_settings.html:745
 msgid "Enable CWA Update Notifications"
@@ -4923,9 +4908,8 @@ msgstr ""
 "для выбранного языка неполные."
 
 #: cps/templates/cwa_settings.html:765
-#, fuzzy
 msgid "Sync Magic Shelves to Kobo"
-msgstr "Синхронизировать выбранные полки с Kobo"
+msgstr "Синхронизировать волшебные полки с Kobo"
 
 #: cps/templates/cwa_settings.html:767
 msgid ""
@@ -4946,9 +4930,8 @@ msgstr ""
 "маленьких экранах. Отключите, если заметите задержку прокрутки или анимации."
 
 #: cps/templates/cwa_settings.html:782
-#, fuzzy
 msgid "Automatic Backup Settings"
-msgstr "Настройки OAuth"
+msgstr "Настройки автоматического резервного копирования"
 
 #: cps/templates/cwa_settings.html:789
 msgid "Enable CWA Import Auto-Backup"
@@ -5023,9 +5006,8 @@ msgstr ""
 "форматов, указанных в списке игнорируемых ниже)."
 
 #: cps/templates/cwa_settings.html:833
-#, fuzzy
 msgid "Choose a target format:"
-msgstr "Конвертировать формат книги:"
+msgstr "Выберите целевой формат:"
 
 #: cps/templates/cwa_settings.html:845
 #, fuzzy
@@ -5055,12 +5037,8 @@ msgstr ""
 "изменений."
 
 #: cps/templates/cwa_settings.html:878
-#, fuzzy
 msgid "CWA Auto-Convert - Retained Formats"
-msgstr ""
-"Форматы, выбранные здесь, будут игнорироваться функцией автоматической "
-"конверсии CWA при её активации, то есть они будут импортированы без "
-"изменений."
+msgstr "CWA Auto-Convert — сохраняемые форматы"
 
 #: cps/templates/cwa_settings.html:880
 msgid ""
@@ -5119,9 +5097,8 @@ msgstr ""
 "CWA во время процесса импорта"
 
 #: cps/templates/cwa_settings.html:970
-#, fuzzy
 msgid "CWA Duplicate Detection System"
-msgstr "Менеджер дубликатов CWA"
+msgstr "Система поиска дубликатов CWA"
 
 #: cps/templates/cwa_settings.html:973
 msgid ""
@@ -5130,9 +5107,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:978
-#, fuzzy
 msgid "Enable Duplicate Detection"
-msgstr "Включить публичную регистрацию"
+msgstr "Включить поиск дубликатов"
 
 #: cps/templates/cwa_settings.html:982
 msgid "When enabled, CWA will scan for duplicate books after each import"
@@ -5161,9 +5137,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1014
-#, fuzzy
 msgid "Automatic Duplicate Scanning"
-msgstr "Настройки OAuth"
+msgstr "Автоматическое сканирование дубликатов"
 
 #: cps/templates/cwa_settings.html:1017
 msgid ""
@@ -5184,9 +5159,8 @@ msgid "Run after each import (debounced)"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1032
-#, fuzzy
 msgid "Manual only"
-msgstr "Вручную?"
+msgstr "Только вручную"
 
 #: cps/templates/cwa_settings.html:1038
 msgid "After import debounce (seconds)"
@@ -5217,9 +5191,8 @@ msgid "Next scheduled scan:"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1076
-#, fuzzy
 msgid "CWA Duplicate Detection Criteria"
-msgstr "Менеджер дубликатов CWA"
+msgstr "Критерии поиска дубликатов CWA"
 
 #: cps/templates/cwa_settings.html:1079
 msgid ""
@@ -5249,9 +5222,8 @@ msgid "Consider book publisher when detecting duplicates"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1115
-#, fuzzy
 msgid "Format"
-msgstr "Конечный формат"
+msgstr "Формат"
 
 #: cps/templates/cwa_settings.html:1116
 msgid "Consider file format when detecting duplicates"
@@ -5300,9 +5272,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1160
-#, fuzzy
 msgid "Enable Duplicate Notifications"
-msgstr "Включить уведомления о обновлениях CWA"
+msgstr "Включить уведомления о дубликатах"
 
 #: cps/templates/cwa_settings.html:1162
 msgid ""
@@ -5312,9 +5283,8 @@ msgid ""
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1166
-#, fuzzy
 msgid "Enable Automatic Duplicate Resolution"
-msgstr "Включить публичную регистрацию"
+msgstr "Включить автоматическое разрешение дубликатов"
 
 #: cps/templates/cwa_settings.html:1169 cps/templates/duplicates.html:593
 msgid "Warning:"
@@ -5347,9 +5317,8 @@ msgid "Delete newer copies, keep the earliest added"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1182
-#, fuzzy
 msgid "Merge Formats"
-msgstr "Исходный формат"
+msgstr "Объединить форматы"
 
 #: cps/templates/cwa_settings.html:1182
 msgid "Merge formats into the newest book, delete the rest"
@@ -5364,9 +5333,8 @@ msgid "Prefer formats based on your Duplicate Format Priority Ranking"
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1188
-#, fuzzy
 msgid "Keep Most Metadata"
-msgstr "Получить метаданные"
+msgstr "Оставить книгу с наиболее полными данными"
 
 #: cps/templates/cwa_settings.html:1188
 msgid "Keep book with most complete information"
@@ -5385,9 +5353,8 @@ msgid "Choose which book to keep when duplicates are automatically resolved."
 msgstr ""
 
 #: cps/templates/cwa_settings.html:1198
-#, fuzzy
 msgid "Rate Limiting"
-msgstr "Рейтинг"
+msgstr "Ограничение частоты запросов"
 
 #: cps/templates/cwa_settings.html:1199
 msgid "Cooldown Period (minutes)"

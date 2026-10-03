@@ -5067,7 +5067,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:929
 msgid "Discards duplicate import, keeps library copy"
-msgstr "Игнорирует новый файл, оставляет копию в библиотеке"
+msgstr "Оставляет копию в библиотеке, новый файл не добавляет"
 
 #: cps/templates/cwa_settings.html:933
 msgid "Overwrites library copy with newly imported file"

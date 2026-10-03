@@ -5022,10 +5022,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:851
 msgid "CWA Auto-Convert - Ignored Formats"
-msgstr ""
-"Форматы, выбранные здесь, будут игнорироваться функцией автоматической "
-"крнвертации CWA при её активации, то есть они будут импортированы без "
-"изменений."
+msgstr "CWA Auto-Convert — игнорируемые форматы"
 
 #: cps/templates/cwa_settings.html:853
 msgid ""

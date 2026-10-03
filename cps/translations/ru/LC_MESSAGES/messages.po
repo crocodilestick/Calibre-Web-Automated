@@ -1367,14 +1367,14 @@ msgid "This Email has been sent via Calibre-Web Automated."
 msgstr "Это письмо было отправлено через Calibre-Web Automated."
 
 #: cps/helper.py:129
-#, fuzzy, python-format
+#, python-format
 msgid "Conversion timed out for book id: %(book)d"
-msgstr "Формат %(format)s не найден для книги с id: %(book)d"
+msgstr "Превышено время конвертации книги с id %(book)d"
 
 #: cps/helper.py:131
-#, fuzzy, python-format
+#, python-format
 msgid "Conversion failed for book id: %(book)d"
-msgstr "Формат %(format)s не найден для книги с id: %(book)d"
+msgstr "Не удалось конвертировать книгу с id %(book)d"
 
 #: cps/helper.py:139
 msgid "Calibre-Web Automated Test Email"
@@ -2501,9 +2501,8 @@ msgid "Auto-fetching Hardcover IDs"
 msgstr ""
 
 #: cps/tasks/auto_send.py:34
-#, fuzzy
 msgid "Preparing to send to eReader..."
-msgstr "%(book)s отправлена на eReader"
+msgstr "Подготовка к отправке на eReader..."
 
 #: cps/tasks/auto_send.py:56
 msgid "Checking available formats..."
@@ -4001,14 +4000,12 @@ msgid ""
 msgstr ""
 
 #: cps/templates/config_edit.html:470
-#, fuzzy
 msgid "OAuth Client Id"
-msgstr "ID клиента OAuth %(provider)s"
+msgstr "Идентификатор клиента OAuth"
 
 #: cps/templates/config_edit.html:474
-#, fuzzy
 msgid "OAuth Client Secret"
-msgstr "Секрет клиента OAuth %(provider)s"
+msgstr "Секрет клиента OAuth"
 
 #: cps/templates/config_edit.html:479
 #, fuzzy

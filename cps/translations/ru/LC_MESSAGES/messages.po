@@ -5001,7 +5001,7 @@ msgid ""
 "automatically converted to the format chosen here (except those formats "
 "selected in the ignore list below)"
 msgstr ""
-"Когда функция автоматической конверсии активна, все импортированные книги "
+"Когда функция автоматической конвертации активна, все импортированные книги "
 "будут автоматически конвертированы в выбранный здесь формат (за исключением "
 "форматов, указанных в списке игнорируемых ниже)."
 
@@ -5029,8 +5029,7 @@ msgid ""
 "when it's active, meaning they will be imported as is."
 msgstr ""
 "Форматы, выбранные здесь, будут игнорироваться функцией автоматической "
-"конверсии CWA при её активации, то есть они будут импортированы без "
-"изменений."
+"конвертации CWA, то есть их исходные файлы останутся без изменений."
 
 #: cps/templates/cwa_settings.html:878
 msgid "CWA Auto-Convert - Retained Formats"
@@ -5046,7 +5045,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:907
 msgid "CWA Auto-Ingest Automerge"
-msgstr "Автообъединение дубликатов при импорте CWA"
+msgstr "Автоматическая обработка дубликатов при импорте CWA"
 
 #: cps/templates/cwa_settings.html:910
 msgid "Calibre can detect Duplicate Book Titles on Import and depending on the"
@@ -5068,7 +5067,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:929
 msgid "Discards duplicate import, keeps library copy"
-msgstr "Отбрасывает дублирующий импорт, сохраняет копию в библиотеке"
+msgstr "Игнорирует новый файл, оставляет копию в библиотеке"
 
 #: cps/templates/cwa_settings.html:933
 msgid "Overwrites library copy with newly imported file"
@@ -5076,7 +5075,7 @@ msgstr "Перезаписывает копию в библиотеке новы
 
 #: cps/templates/cwa_settings.html:937
 msgid "Creates a duplicate record, keeping both copies"
-msgstr "Создает дубликат записи, сохраняя обе копии"
+msgstr "Создаёт дубликат записи, сохраняя обе копии"
 
 #: cps/templates/cwa_settings.html:943
 msgid "CWA Auto-Ingest - Ignored Formats"

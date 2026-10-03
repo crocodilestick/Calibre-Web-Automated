@@ -4947,7 +4947,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:799
 msgid "Enable CWA Conversion Auto-Backup"
-msgstr "Включить автоматическое резервное копирование конверсий CWA"
+msgstr "Включить автоматическое резервное копирование конвертаций CWA"
 
 #: cps/templates/cwa_settings.html:801
 msgid ""
@@ -4993,7 +4993,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:828
 msgid "CWA Auto-Conversion Target Format - EPUB by Default"
-msgstr "Целевой формат автоматической конверсии CWA — по умолчанию EPUB"
+msgstr "Целевой формат автоматической конвертации CWA — по умолчанию EPUB"
 
 #: cps/templates/cwa_settings.html:831
 msgid ""
@@ -5010,7 +5010,6 @@ msgid "Choose a target format:"
 msgstr "Выберите целевой формат:"
 
 #: cps/templates/cwa_settings.html:845
-#, fuzzy
 msgid ""
 "Note: CWA's Metadata Enforcement service can currently only support file in "
 "either EPUB and AZW3 format. Files in other formats will simply be ignored "
@@ -5022,7 +5021,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:851
 msgid "CWA Auto-Convert - Ignored Formats"
-msgstr "CWA Auto-Convert — игнорируемые форматы"
+msgstr "Автоматическая конвертация CWA — игнорируемые форматы"
 
 #: cps/templates/cwa_settings.html:853
 msgid ""
@@ -5035,7 +5034,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:878
 msgid "CWA Auto-Convert - Retained Formats"
-msgstr "CWA Auto-Convert — сохраняемые форматы"
+msgstr "Автоматическая конвертация CWA — сохраняемые форматы"
 
 #: cps/templates/cwa_settings.html:880
 msgid ""
@@ -5047,7 +5046,7 @@ msgstr ""
 
 #: cps/templates/cwa_settings.html:907
 msgid "CWA Auto-Ingest Automerge"
-msgstr "Автослияние автоматического импорта CWA"
+msgstr "Автообъединение дубликатов при импорте CWA"
 
 #: cps/templates/cwa_settings.html:910
 msgid "Calibre can detect Duplicate Book Titles on Import and depending on the"

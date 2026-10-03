@@ -6288,9 +6288,8 @@ msgid "Read"
 msgstr "Прочитано"
 
 #: cps/templates/login.html:11
-#, fuzzy
 msgid "Sign in to your library"
-msgstr "Серий в библиотеке"
+msgstr "Вход в библиотеку"
 
 #: cps/templates/login.html:34
 msgid "Show Password"
@@ -6305,27 +6304,22 @@ msgid "Forgot Password?"
 msgstr "Забыли пароль?"
 
 #: cps/templates/login.html:56
-#, fuzzy
 msgid "or"
-msgstr "Порт"
+msgstr "или"
 
 #: cps/templates/login.html:63
-#, fuzzy
 msgid "Log in with SSO"
-msgstr "Войти по волшебной ссылке"
+msgstr "Войти через SSO"
 
 #: cps/templates/login.html:72
-#, fuzzy
 msgid "Login with GitHub"
-msgstr "Не удалось войти через GitHub."
+msgstr "Войти через GitHub"
 
 #: cps/templates/login.html:83
-#, fuzzy
 msgid "Login with Google"
-msgstr "Не удалось войти через Google."
+msgstr "Войти через Google"
 
 #: cps/templates/login.html:90
-#, fuzzy
 msgid "Log in with Magic Link"
 msgstr "Войти по волшебной ссылке"
 

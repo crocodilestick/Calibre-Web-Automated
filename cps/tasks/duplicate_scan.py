@@ -13,6 +13,7 @@ from flask_babel import lazy_gettext as N_
 from cps import calibre_db, db, logger
 from cps.duplicate_index import (
     MAX_INCREMENTAL_BOOK_IDS,
+    duplicate_index_is_empty,
     get_duplicate_groups_from_index,
     has_valid_duplicate_index_baseline,
     ingest_batch_follow_up_pending,
@@ -74,6 +75,17 @@ class TaskDuplicateScan(CalibreTask):
 
             if self.stat in (STAT_CANCELLED, STAT_ENDED):
                 return
+
+            # An after-import scan can't build the index, it only extends it. When the index
+            # has never been built (a library upgraded from a version without it), every
+            # after-import scan would mark itself pending and stop, so duplicates from new
+            # imports would never be found. Build it once with a full scan instead; the
+            # ingest-active check below still applies, so a busy import defers it to the
+            # next one.
+            if not self.full_scan and self.trigger_type == 'after_import' and duplicate_index_is_empty():
+                log.info("[cwa-duplicates] Duplicate index has never been built; running a full scan "
+                         "instead of an after-import scan")
+                self.full_scan = True
 
             if self.full_scan and self.trigger_type != 'manual' and ingest_batch_follow_up_pending():
                 self.result_count = 0

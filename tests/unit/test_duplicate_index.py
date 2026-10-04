@@ -672,3 +672,17 @@ def test_schema_contains_duplicate_book_key_table():
 
     assert table == ("cwa_duplicate_book_keys",)
     assert index == ("idx_cwa_duplicate_book_keys_key",)
+
+
+def test_duplicate_index_is_empty_only_for_a_library_with_books_and_no_keys(duplicate_index):
+    settings = {"duplicate_detection_title": 1, "duplicate_detection_author": 1, "duplicate_detection_language": 0}
+
+    duplicate_index.calibre_db.session = _Session([])
+    assert duplicate_index.duplicate_index_is_empty() is False   # no books: nothing to build
+
+    books = [_book(1, "Dune", "Frank Herbert"), _book(2, "Dune Messiah", "Frank Herbert")]
+    duplicate_index.calibre_db.session = _Session(books)
+    assert duplicate_index.duplicate_index_is_empty() is True    # books, never indexed (upgraded library)
+
+    duplicate_index.upsert_book_keys({1}, settings)
+    assert duplicate_index.duplicate_index_is_empty() is False   # built (even partly): incremental rules apply

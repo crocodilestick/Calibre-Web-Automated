@@ -495,6 +495,21 @@ def mark_duplicate_index_pending(reason=None):
     return True
 
 
+def duplicate_index_is_empty():
+    """True when the library has books but the duplicate index has never been built.
+
+    The index is only ever built by a full scan. A library that already had books
+    before the index existed (an upgrade from a version without it) starts with an
+    empty table, and the after-import scan can never pass the baseline check on its
+    own, because the books it isn't asked to scan are missing from the index.
+    """
+    if not library_has_books():
+        return False
+    cwa_db = CWA_DB()
+    cwa_db.cur.execute("SELECT 1 FROM cwa_duplicate_book_keys LIMIT 1")
+    return cwa_db.cur.fetchone() is None
+
+
 def has_valid_duplicate_index_baseline(settings, candidate_book_ids=None):
     cwa_db = CWA_DB()
     cache_data = cwa_db.get_duplicate_cache()

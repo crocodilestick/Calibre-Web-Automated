@@ -119,6 +119,7 @@ def _load_duplicate_scan_module(monkeypatch, calls):
             "MAX_INCREMENTAL_BOOK_IDS": 1000,
             "get_effective_duplicate_criteria": lambda settings: {"title": True, "author": True},
             "get_duplicate_groups_from_index": _groups,
+            "duplicate_index_is_empty": lambda: False,
             "has_valid_duplicate_index_baseline": lambda settings, candidate_book_ids=None: True,
             "ingest_batch_follow_up_pending": lambda: False,
             "mark_duplicate_index_pending": lambda reason=None: True,
@@ -237,6 +238,54 @@ def test_full_duplicate_scan_passes_unresolved_groups_to_auto_resolution(monkeyp
     assert auto_resolve_calls[0]["duplicate_groups"] == task.found_duplicate_groups
     assert auto_resolve_calls[0]["user_id"] is None
     assert auto_resolve_calls[0]["trigger_type"] == "automatic"
+
+
+def test_after_import_scan_builds_an_index_that_was_never_built(monkeypatch):
+    """An upgraded library starts with an empty index; the after-import scan must not just mark itself pending."""
+    calls = []
+    module, _auto_resolve_calls = _load_duplicate_scan_module(monkeypatch, calls)
+    _TaskCwaDB.instances = []
+    monkeypatch.setattr(module, "duplicate_index_is_empty", lambda: True)
+
+    def _never(*args, **kwargs):
+        raise AssertionError("an empty index must be built, not marked pending")
+
+    monkeypatch.setattr(module, "mark_duplicate_index_pending", _never)
+
+    task = module.TaskDuplicateScan(full_scan=False, trigger_type="after_import")
+    task.run(worker_thread=None)
+
+    assert task.success is True
+    assert task.full_scan is True
+    assert calls[0] == ("rebuild", _TaskCwaDB.instances[0].cwa_settings)
+    assert _TaskCwaDB.instances[0].cache_updates[-1][2] == 99
+
+
+def test_index_bootstrap_waits_while_an_import_is_active(monkeypatch):
+    calls = []
+    module, _auto_resolve_calls = _load_duplicate_scan_module(monkeypatch, calls)
+    monkeypatch.setattr(module, "duplicate_index_is_empty", lambda: True)
+    monkeypatch.setattr(module, "ingest_batch_follow_up_pending", lambda: True)
+
+    task = module.TaskDuplicateScan(full_scan=False, trigger_type="after_import")
+    task.run(worker_thread=None)
+
+    assert task.success is True
+    assert task.message == "Duplicate scan skipped: import in progress"
+    assert calls == []
+
+
+def test_only_after_import_scans_bootstrap_the_index(monkeypatch):
+    calls = []
+    module, _auto_resolve_calls = _load_duplicate_scan_module(monkeypatch, calls)
+    checked = []
+    monkeypatch.setattr(module, "duplicate_index_is_empty", lambda: checked.append(1) or True)
+
+    task = module.TaskDuplicateScan(full_scan=False, trigger_type="other")
+    task.run(worker_thread=None)
+
+    assert task.full_scan is False
+    assert ("rebuild", _TaskCwaDB.instances[-1].cwa_settings) not in calls
 
 
 def _make_legacy_raise(module, monkeypatch):

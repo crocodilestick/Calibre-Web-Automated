@@ -11,10 +11,12 @@ import os
 import re
 import sys
 import shutil
+import signal
 from pathlib import Path
 import subprocess
 import tempfile
 import atexit
+from collections import deque
 from datetime import datetime
 import sqlite3
 
@@ -23,6 +25,7 @@ import grp
 
 from cwa_db import CWA_DB
 from kindle_epub_fixer import EPUBFixer
+import script_lock
 
 ### Global Variables
 convert_library_log_file = "/config/convert-library.log"
@@ -63,26 +66,54 @@ def print_and_log(string) -> None:
     print(string)
 
 
-# Creates a lock file unless one already exists meaning an instance of the script is
-# already running, then the script is closed, the user is notified and the program
-# exits with code 2
-try:
-    lock = open(tempfile.gettempdir() + '/convert_library.lock', 'x')
-    lock.close()
-except FileExistsError:
+LOCK_PATH = os.path.join(tempfile.gettempdir(), 'convert_library.lock')
+
+
+def _lock_owner_alive(path):
+    """True if the lock names a running convert_library (see script_lock.owner_alive)."""
+    return script_lock.owner_alive(path, ("convert_library",))
+
+
+def acquire_lock(path=None):
+    """Take the lock, clearing one left by a run that was killed. False if another run holds it."""
+    return script_lock.acquire(path or LOCK_PATH, ("convert_library",),
+                               on_stale=lambda message: print_and_log(f"[convert-library]: {message}"))
+
+
+# Take the lock, or tell the user another run is in progress and exit with code 2
+if not acquire_lock():
     print_and_log("[convert-library]: CANCELLING... convert-library was initiated but is already running")
     logger.info(f"\nCWA Convert Library Service - Run Cancelled: {datetime.now()}")
     sys.exit(2)
 
 # Defining function to delete the lock on script exit
-def removeLock():
-    try:
-        os.remove(tempfile.gettempdir() + '/convert_library.lock')
-    except FileNotFoundError:
-        ...
+def removeLock(path=None):
+    """Remove the lock, but only while it is still ours (see script_lock.release)."""
+    script_lock.release(path or LOCK_PATH)
 
 # Will automatically run when the script exits
 atexit.register(removeLock)
+
+# The ebook-convert / kepubify / calibredb process currently running, if any.
+_current_child = None
+
+
+def _stop_on_sigterm(signum, frame):
+    """Stop the running tool, then exit normally so atexit removes the lock.
+
+    The web UI's Cancel sends SIGTERM to this script. Python's default for SIGTERM
+    exits without running atexit and leaves the child running, so a cancelled run
+    kept converting in the background and left its lock behind.
+    """
+    child = _current_child
+    if child is not None and child.poll() is None:
+        child.terminate()
+        try:
+            child.wait(timeout=10)
+        except subprocess.TimeoutExpired:
+            child.kill()
+    print_and_log("[convert-library]: Cancelled, stopping now...")
+    sys.exit(128 + signum)
 
 backup_destinations = {
         entry.name: entry.path
@@ -127,6 +158,10 @@ class LibraryConverter:
 
         self.current_book = 1
         self.ingest_folder, self.library_dir, self.tmp_conversion_dir = self.get_dirs('/app/calibre-web-automated/dirs.json')
+        # ingest_processor.py removes this directory outright (shutil.rmtree) when it finishes,
+        # and recreates it on its next run. convert_library.py never did, so any Convert Library
+        # run after the first ingest wrote conversions into a path that did not exist.
+        self.ensure_tmp_conversion_dir()
 
         self.calibre_env = os.environ.copy()
         # Enables Calibre plugins to be used from /config/plugins
@@ -198,12 +233,14 @@ class LibraryConverter:
                 return {}
             
             try:
-                books_data = json.loads(raw_output)
+                books_data, diagnostics = self._split_for_machine_output(raw_output)
             except json.JSONDecodeError as e:
                 print_and_log(f"[convert-library]: Failed to parse calibredb command output as JSON: {e}")
                 print_and_log(f"[convert-library]: Raw output: {raw_output}")
                 return {}
-            
+            for line in diagnostics:
+                print_and_log(f"[convert-library]: calibredb reported: {line}")
+
             if not isinstance(books_data, list):
                 print_and_log(f"[convert-library]: Unexpected JSON format from calibredb. Expected list, got {type(books_data)}")
                 return {}
@@ -252,6 +289,41 @@ class LibraryConverter:
             return {}
 
         return book_formats
+
+    @staticmethod
+    def _split_for_machine_output(raw_output: str):
+        """Separate the JSON document in `calibredb --for-machine` output from
+        the plain-text lines Calibre prints into the same stream.
+
+        Calibre writes some diagnostics to stdout with a bare print(), most
+        commonly "No write access to <dir> using a temporary dir instead" when
+        its config directory is not writable, and they can land before or after
+        the JSON. Returns (document, diagnostic_lines); raises
+        json.JSONDecodeError when no line starts a decodable list of book objects.
+        """
+        decoder = json.JSONDecoder()
+        first_error = None
+        offset = 0
+        for line in raw_output.splitlines(keepends=True):
+            stripped = line.lstrip()
+            if stripped[:1] == '[':
+                start = offset + len(line) - len(stripped)
+                try:
+                    document, end = decoder.raw_decode(raw_output, start)
+                except json.JSONDecodeError as error:
+                    first_error = first_error or error
+                else:
+                    # A diagnostic such as "[1] warning" decodes too; the listing
+                    # is a list of book objects (or empty for an empty library).
+                    if not all(isinstance(item, dict) for item in document):
+                        offset += len(line)
+                        continue
+                    surrounding = raw_output[:start] + "\n" + raw_output[end:]
+                    diagnostics = [text.strip() for text in surrounding.splitlines() if text.strip()]
+                    return document, diagnostics
+            offset += len(line)
+        raise first_error or json.JSONDecodeError("No book list in calibredb output", raw_output, 0)
+
 
     def get_books_to_convert(self):
         """Returns a list of book format paths to convert."""
@@ -358,12 +430,17 @@ class LibraryConverter:
             print_and_log(f"[convert-library]: ERROR - The following error occurred when trying to copy {input_file} to {output_path}:\n{e}")
 
 
-    def convert_library(self):
+    def convert_library(self) -> int:
+        """Convert every book in to_convert; returns how many were converted and imported."""
+        converted = 0
         for file in self.to_convert:
             filename = os.path.basename(file)
             file_extension = Path(file).suffix
 
             print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Converting {filename} from {file_extension} format to {self.target_format} format...")
+            # An ingest can remove the directory at any point, and a failed book
+            # skips empty_tmp_con_dir(), so check before every book.
+            self.ensure_tmp_conversion_dir()
 
             try: # Get Calibre Library Book ID from the immediate book folder (e.g., "Title (6120)")
                 book_folder = os.path.basename(os.path.dirname(file))
@@ -390,19 +467,7 @@ class LibraryConverter:
             else:
                 try: # Convert Book to target format (target is not kepub)
                     target_filepath = f"{self.tmp_conversion_dir}{Path(file).stem}.{self.target_format}"
-                    with subprocess.Popen(
-                        ["ebook-convert", file, target_filepath],
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.STDOUT,
-                        env=self.calibre_env,
-                        text=True,
-                        encoding='utf-8'
-                    ) as process:
-                        for line in process.stdout: # Read from the combined stdout (which includes stderr)
-                            if self.verbose:
-                                print_and_log(line)
-                            else:
-                                print(line)
+                    self._run_streaming(["ebook-convert", file, target_filepath], env=self.calibre_env)
 
                     if self.cwa_settings['auto_backup_conversions']:
                         self.backup(file, backup_type="converted")
@@ -414,7 +479,7 @@ class LibraryConverter:
 
                     print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Conversion of {os.path.basename(file)} to {self.target_format} format successful!") # Removed as of V3.0.0 - Removing old version from library...
                 except subprocess.CalledProcessError as e:
-                    print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Conversion of {os.path.basename(file)} was unsuccessful. See the following error:\n{e}")
+                    print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Conversion of {os.path.basename(file)} was unsuccessful. See the following error:\n{e}{self._output_tail(e)}")
                     self.current_book += 1
                     continue
 
@@ -426,19 +491,9 @@ class LibraryConverter:
                     print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) An error occurred while processing {os.path.basename(target_filepath)} with the kindle-epub-fixer. See the following error:\n{e}")
 
             try: # Import converted book to library. As of V3.0.0, "add_format" is used instead of "add"
-                with subprocess.Popen(
+                self._run_streaming(
                     ["calibredb", "add_format", book_id, target_filepath, f"--library-path={self.library_dir}"],
-                    env=self.calibre_env,
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT,
-                    text=True,
-                    encoding='utf-8'
-                ) as process:
-                    for line in process.stdout: # Read from the combined stdout (which includes stderr)
-                        if self.verbose:
-                            print_and_log(line)
-                        else:
-                            print(line)
+                    env=self.calibre_env)
 
                 if self.cwa_settings['auto_backup_imports']:
                     self.backup(target_filepath, backup_type="imported")
@@ -448,19 +503,22 @@ class LibraryConverter:
 
                 print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Import of {os.path.basename(target_filepath)} successfully completed!")
             except subprocess.CalledProcessError as e:
-                print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Import of {os.path.basename(target_filepath)} was not successfully completed. Converted file moved to /config/processed_books/failed/{os.path.basename(target_filepath)}. See the following error:\n{e}")
+                print_and_log(f"[convert-library]: ({self.current_book}/{len(self.to_convert)}) Import of {os.path.basename(target_filepath)} was not successfully completed. Converted file moved to /config/processed_books/failed/{os.path.basename(target_filepath)}. See the following error:\n{e}{self._output_tail(e)}")
                 try:
                     output_path = f"/config/processed_books/failed/{os.path.basename(target_filepath)}"
                     shutil.move(target_filepath, output_path)
                 except Exception as e:
-                    print_and_log(f"[convert-library]: ERROR - The following error occurred when trying to copy {file} to {output_path}:\n{e}")
+                    print_and_log(f"[convert-library]: ERROR - The following error occurred when trying to copy {target_filepath} to {output_path}:\n{e}")
                 self.current_book += 1
                 continue
 
             self.set_library_permissions()
             self.empty_tmp_con_dir()
+            converted += 1
             self.current_book += 1
             continue
+
+        return converted
 
 
     def convert_to_kepub(self, filepath:str ,import_format:str) -> tuple[bool, str]:
@@ -477,18 +535,7 @@ class LibraryConverter:
             print_and_log(f"\n[convert-library]: ({self.current_book}/{len(self.to_convert)}) *** NOTICE TO USER: Kepubify is limited in that it can only convert from epubs. To get around this, CWA will automatically convert other supported formats to epub using the Calibre's conversion tools & then use Kepubify to produce your desired kepubs. Obviously multi-step conversions aren't ideal so if you notice issues with your converted files, bare in mind starting with epubs will ensure the best possible results***\n")
             try: # Convert book to epub format so it can then be converted to kepub
                 epub_filepath = f"{self.tmp_conversion_dir}{Path(filepath).stem}.epub"
-                with subprocess.Popen(
-                    ["ebook-convert", filepath, epub_filepath],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT,
-                    env=self.calibre_env,
-                    text=True
-                ) as process:
-                    for line in process.stdout: # Read from the combined stdout (which includes stderr)
-                        if self.verbose:
-                            print_and_log(line)
-                        else:
-                            print(line)
+                self._run_streaming(["ebook-convert", filepath, epub_filepath], env=self.calibre_env)
 
                 if self.cwa_settings['auto_backup_conversions']:
                     self.backup(filepath, backup_type="converted")
@@ -503,18 +550,8 @@ class LibraryConverter:
             epub_filepath = Path(epub_filepath)
             target_filepath = f"{self.tmp_conversion_dir}{epub_filepath.stem}.kepub"
             try:
-                with subprocess.Popen(
-                    ['kepubify', '--inplace', '--calibre', '--output', self.tmp_conversion_dir, epub_filepath],
-                    stdout=subprocess.PIPE,
-                    stderr=subprocess.STDOUT,
-                    text=True,
-                    encoding='utf-8'
-                ) as process:
-                    for line in process.stdout: # Read from the combined stdout (which includes stderr)
-                        if self.verbose:
-                            print_and_log(line)
-                        else:
-                            print(line)
+                self._run_streaming(
+                    ['kepubify', '--inplace', '--calibre', '--output', self.tmp_conversion_dir, epub_filepath])
 
                 if self.cwa_settings['auto_backup_conversions']:
                     self.backup(filepath, backup_type="converted")
@@ -534,8 +571,78 @@ class LibraryConverter:
             return False, ""
 
 
+    def _run_streaming(self, args, env=None) -> None:
+        """Run a command, stream its combined output, and raise on a non-zero exit.
+
+        subprocess.Popen never raises CalledProcessError, so callers wrapping it in
+        `except subprocess.CalledProcessError` silently treated failed commands as
+        successful. This restores the behaviour those handlers were written for.
+        """
+        args = [str(a) for a in args]
+        # Only the tail is needed to explain a failure; a verbose conversion of
+        # a large PDF can print tens of thousands of lines.
+        output_tail = deque(maxlen=200)
+        try:
+            with subprocess.Popen(
+                args,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                env=env,
+                text=True,
+                encoding='utf-8',
+                errors='replace'
+            ) as process:
+                global _current_child
+                _current_child = process
+                try:
+                    for line in process.stdout:  # Read from the combined stdout (which includes stderr)
+                        output_tail.append(line)
+                        if self.verbose:
+                            print_and_log(line)
+                        else:
+                            print(line)
+                finally:
+                    _current_child = None
+        except OSError as error:
+            # A missing or unexecutable tool fails this book, not the whole run.
+            raise subprocess.CalledProcessError(127, args, output=str(error), stderr=str(error)) from error
+
+        if process.returncode != 0:
+            output = ''.join(output_tail)
+            raise subprocess.CalledProcessError(process.returncode, args, output=output, stderr=output)
+
+
+    @staticmethod
+    def _output_tail(error, lines=20) -> str:
+        """The last lines a failed command printed, for the log file. Without
+        --verbose the command's own output only reaches the container's stdout."""
+        output = (getattr(error, "output", None) or "").strip()
+        if not output:
+            return ""
+        return "\n" + "\n".join(output.splitlines()[-lines:])
+
+
+    def ensure_tmp_conversion_dir(self):
+        """Create the temp conversion directory if it is missing.
+
+        ingest_processor.py ends each run with shutil.rmtree() on this same path,
+        so it can disappear out from under a Convert Library run that is already
+        going as well as before one starts.
+        """
+        if os.path.isdir(self.tmp_conversion_dir):
+            return
+        try:
+            Path(self.tmp_conversion_dir).mkdir(parents=True, exist_ok=True)
+        except OSError as error:
+            print_and_log(
+                f"[convert-library]: WARN - Could not prepare the temp conversion "
+                f"directory {self.tmp_conversion_dir}: {error}")
+
+
     def empty_tmp_con_dir(self):
         try:
+            # Recreate rather than assume: an ingest finishing mid-run removes this directory.
+            self.ensure_tmp_conversion_dir()
             files = os.listdir(self.tmp_conversion_dir)
             for file in files:
                 file_path = os.path.join(self.tmp_conversion_dir, file)
@@ -566,16 +673,21 @@ def main():
     parser.add_argument('--verbose', '-v', action='store_true', required=False, dest='verbose', help='When passed, the output from the ebook-convert command will be included in what is shown to the user in the Web UI', default=False)
     args = parser.parse_args()
 
+    signal.signal(signal.SIGTERM, _stop_on_sigterm)
     logger.info(f"CWA Convert Library Service - Run Started: {datetime.now()}\n")
     converter = LibraryConverter(args)
     if len(converter.to_convert) > 0:
-        converter.convert_library()
+        converted = converter.convert_library()
     else:
         print_and_log(f'[convert-library]: No books found in library without a copy in the target format ({converter.target_format}). Exiting now...')
         logger.info(f"\nCWA Convert Library Service - Run Ended: {datetime.now()}")
         sys.exit(0)
 
-    print_and_log(f"\n[convert-library]: Library conversion complete! {len(converter.to_convert)} books converted! Exiting now...")
+    failed = len(converter.to_convert) - converted
+    if failed:
+        print_and_log(f"\n[convert-library]: Library conversion complete. {converted} of {len(converter.to_convert)} books converted; {failed} failed, see the errors above. Exiting now...")
+    else:
+        print_and_log(f"\n[convert-library]: Library conversion complete! {converted} books converted! Exiting now...")
     logger.info(f"\nCWA Convert Library Service - Run Ended: {datetime.now()}")
     sys.exit(0)
 

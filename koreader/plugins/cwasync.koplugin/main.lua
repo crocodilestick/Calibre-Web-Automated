@@ -553,13 +553,12 @@ function CWASync:getLastProgress()
 end
 
 function CWASync:getDocumentDigest()
-    local digest = nil
+    local cached = nil
     if self.ui and self.ui.doc_settings and self.ui.doc_settings.readSetting then
-        digest = self.ui.doc_settings:readSetting("partial_md5_checksum")
+        cached = self.ui.doc_settings:readSetting("partial_md5_checksum")
     end
-
-    if digest and digest ~= "" then
-        return digest
+    if cached == "" then
+        cached = nil
     end
 
     local file_path = nil
@@ -567,6 +566,15 @@ function CWASync:getDocumentDigest()
         file_path = self.view.document.file
     elseif self.ui and self.ui.document and self.ui.document.file then
         file_path = self.ui.document.file
+    end
+
+    -- KOReader caches the digest from the first time a book is opened. Once
+    -- the file is replaced (e.g. re-downloaded from CWA after a metadata
+    -- edit), that digest matches no checksum CWA has stored, so hash the file
+    -- as it is now. PDFs keep the cached digest: KOReader can write
+    -- annotations into them, which changes the file under the same book.
+    if cached and (not file_path or file_path:lower():match("%.pdf$")) then
+        return cached
     end
 
     if util.partialMD5 and file_path then
@@ -613,7 +621,7 @@ function CWASync:getDocumentDigest()
         end
     end
 
-    return nil
+    return cached
 end
 
 function CWASync:syncToProgress(progress)

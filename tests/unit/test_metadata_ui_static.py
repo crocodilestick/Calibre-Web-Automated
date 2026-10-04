@@ -16,3 +16,21 @@ def test_metadata_result_button_is_apply_not_save():
     template = (REPO_ROOT / "cps/templates/book_edit.html").read_text(encoding="utf-8")
 
     assert '<button class="btn btn-default">{{_("Apply")}}</button>' in template
+
+
+def test_caliblur_quick_read_formats_match_read_book():
+    import re
+    js = (REPO_ROOT / "cps/static/js/caliBlur.js").read_text(encoding="utf-8")
+    constants = (REPO_ROOT / "cps/constants.py").read_text(encoding="utf-8")
+
+    match = re.search(r"var readableFormats = \[(.*?)\];", js, re.S)
+    assert match, "readableFormats list not found in caliBlur.js"
+    offered = set(re.findall(r"'([a-z0-9]+)'", match.group(1)))
+
+    audio = re.search(r"EXTENSIONS_AUDIO = \{(.*?)\}", constants).group(1)
+    audio_formats = set(re.findall(r"'([a-z0-9]+)'", audio))
+
+    # read_book() opens every audio format in the audio player.
+    assert audio_formats <= offered
+    # Formats read_book() cannot open must not be offered.
+    assert not offered & {"mobi", "azw3", "fb2", "html"}

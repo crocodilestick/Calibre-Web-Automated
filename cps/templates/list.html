@@ -6,7 +6,15 @@ See CONTRIBUTORS for full list of authors. -->
 
 {% extends "layout.html" %}
 {% block body %}
+{% set tag_actions = data == 'category' and current_user.is_authenticated and (current_user.role_edit() or current_user.role_admin()) %}
 <h1 class="{{page}}">{{_(title)}}</h1>
+{% if tag_actions %}
+<div id="tag-actions-strings" class="hidden"
+     data-rename-prompt="{{_('New name for tag %(name)s:', name='{name}')}}"
+     data-merge-confirm="{{_('A tag named %(name)s already exists on %(count)s books. Merge into it?', name='{name}', count='{count}')}}"
+     data-delete-confirm="{{_('Remove tag %(name)s from %(count)s books?', name='{name}', count='{count}')}}"
+     data-error="{{_('The tag could not be changed.')}}"></div>
+{% endif %}
 
     <div class="filterheader hidden-xs">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -56,6 +64,22 @@ See CONTRIBUTORS for full list of authors. -->
       <div class="row" id="{{_(title)}}_row" {% if entry[0].sort %}data-name="{{entry[0].name}}"{% endif %} data-id="{% if entry[0].sort %}{{entry[0].sort}}{% else %}{% if entry[0].format %}{{entry[0].format}}{% else %}{% if entry[0].rating %}{{entry[0].rating}}{% else %}{{entry[0].name}}{% endif %}{% endif %}{% endif %}">
         <div class="col-xs-2 col-sm-2 col-md-1" align="left"><span class="badge">{{entry[1]}}</span></div>
         <div class="col-xs-10 col-sm-10 col-md-11">
+          {% if tag_actions and entry[0].id|string != '-1' %}
+          <span class="tag-actions pull-right">
+            <button type="button" class="btn btn-default btn-xs tag-rename"
+                    data-url="{{ url_for('edit-book.rename_tag', tag_id=entry[0].id) }}"
+                    data-name="{{ entry[0].name }}" data-count="{{ entry[1] }}"
+                    title="{{ _('Rename tag') }}" aria-label="{{ _('Rename tag') }}">
+              <span class="glyphicon glyphicon-pencil"></span>
+            </button>
+            <button type="button" class="btn btn-danger btn-xs tag-delete"
+                    data-url="{{ url_for('edit-book.delete_tag', tag_id=entry[0].id) }}"
+                    data-name="{{ entry[0].name }}" data-count="{{ entry[1] }}"
+                    title="{{ _('Delete tag') }}" aria-label="{{ _('Delete tag') }}">
+              <span class="glyphicon glyphicon-trash"></span>
+            </button>
+          </span>
+          {% endif %}
           <a style="width: -webkit-fill-available; display: block;" id="list_{{loop.index0}}" href="{% if entry.format %}{{url_for('web.books_list', data=data, sort_param='stored', book_id=entry.format )}}{% else %}{{url_for('web.books_list', data=data, sort_param='stored', book_id=entry[0].id )}}{% endif %}">
           {% if entry.name %}
           <div class="rating">
@@ -81,4 +105,7 @@ See CONTRIBUTORS for full list of authors. -->
 {% endblock %}
 {% block js %}
 <script src="{{ url_for('static', filename='js/filter_list.js') }}"></script>
+{% if data == 'category' and current_user.is_authenticated and (current_user.role_edit() or current_user.role_admin()) %}
+<script src="{{ url_for('static', filename='js/tag_actions.js') }}"></script>
+{% endif %}
 {% endblock %}

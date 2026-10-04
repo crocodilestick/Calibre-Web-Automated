@@ -552,8 +552,11 @@ def db_configuration():
 @user_login_required
 @admin_required
 def configuration():
+    wordspages_columns = calibre_db.session.query(db.CustomColumns) \
+        .filter(and_(db.CustomColumns.datatype == 'int', db.CustomColumns.mark_for_delete == 0)).all()
     return render_title_template("config_edit.html",
                                  config=config,
+                                 wordsPagesColumns=wordspages_columns,
                                  provider=oauth_bb.oauthblueprints,
                                  feature_support=feature_support,
                                  is_proxied=current_app.wsgi_app.is_proxied,
@@ -2311,6 +2314,8 @@ def _configuration_update_helper():
         else:
             _config_int(to_save, "config_external_port")
         _config_checkbox_int(to_save, "config_kobo_proxy")
+        _config_int(to_save, "config_kobo_pages_cc")
+        _config_int(to_save, "config_kobo_words_cc")
         _config_checkbox_int(to_save, "config_hardcover_sync")
 
         if "config_upload_formats" in to_save:

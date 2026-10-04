@@ -22,7 +22,56 @@ log = logger.create()
 auth = HTTPBasicAuth()
 
 
-def create_authenticated_user(username, email=None, auth_source="unknown"):
+def _email_taken(email):
+    return ub.session.query(ub.User).filter(func.lower(ub.User.email) == email.lower()).first() is not None
+
+
+def _user_with_email(address):
+    """The account whose email is this address, or None. Only a single valid address is
+    looked up, so a header value that isn't an email never touches the email column."""
+    address = (address or "").strip()
+    if "@" not in address or "," in address:
+        return None
+    from .helper import valid_email
+    try:
+        address = valid_email(address)
+    except Exception:
+        return None
+    return ub.session.query(ub.User).filter(func.lower(ub.User.email) == address.lower()).first()
+
+
+def _auto_create_email(username):
+    """Pick the email for a user auto-created from proxy headers.
+
+    Uses the username when it is an email address. Header-auth proxies such as
+    Cloudflare Access, Authelia and authentik put the address in the username
+    header. A separate Remote-Email style header is deliberately not used: the proxy
+    does not always set it, so a client can send any value, and an address stored
+    from it would later match that address's real owner into this account (see
+    load_user_from_reverse_proxy_header).
+    The username is skipped if it isn't a single valid address or another account
+    already has it: User.email is unique, so a clash would fail the insert on every
+    login attempt and the person could never get in. Falls back to a placeholder,
+    <username>@localhost, with any @ in the username turned into a dot: a double-@
+    fails valid_email() on the next profile save, and the user could never set a
+    password.
+    """
+    from .helper import valid_email
+    candidate = (username or "").strip()
+    if "@" in candidate and "," not in candidate:
+        try:
+            candidate = valid_email(candidate)
+        except Exception:
+            candidate = None
+        if candidate and _email_taken(candidate):
+            log.warning("Email %s already belongs to another account, not using it for new user '%s'",
+                        candidate, username)
+        elif candidate:
+            return candidate
+    return f"{username.replace('@', '.')}@localhost"
+
+
+def create_authenticated_user(username, auth_source="unknown"):
     """Create new user with default configuration settings for external authentication"""
     try:
         # Sanitize and validate username
@@ -45,10 +94,8 @@ def create_authenticated_user(username, email=None, auth_source="unknown"):
             log.warning("User '%s' already exists, returning existing user", username)
             return existing_user
             
-        # Generate email if not provided
-        if not email:
-            email = f"{username}@localhost"
-        
+        email = _auto_create_email(username)
+
         # Create user with same defaults as OAuth users
         user = ub.User()
         user.name = username
@@ -215,15 +262,28 @@ def load_user_from_reverse_proxy_header(req):
         [limiter.limiter.storage.clear(k.key) for k in limiter.current_limits]
         log.debug("Reverse proxy authentication: found existing user '%s'", user.name)
         return user
-    
+
     # If user not found and auto-creation is enabled, create new user
     if getattr(config, 'config_reverse_proxy_auto_create_users', False):
+        # The header is the identity the proxy verified. If it is an email address that
+        # an existing account already has (an admin created "rob" with rob@example.com,
+        # then Rob arrives through the proxy as rob@example.com), that is the same
+        # person: log them in instead of creating a second account. This only runs when
+        # auto-create is on, because that is the only case where the alternative is a
+        # duplicate account; with it off nothing is matched and behaviour is unchanged.
+        # Only the identity header is matched. Remote-Email / X-Remote-Email are never
+        # read: proxies such as Cloudflare Access don't set them, so a client can send
+        # any value.
+        user = _user_with_email(rp_header_username)
+        if user:
+            [limiter.limiter.storage.clear(k.key) for k in limiter.current_limits]
+            log.debug("Reverse proxy authentication: '%s' matched existing user '%s' by email",
+                      rp_header_username, user.name)
+            return user
+
         log.info("Reverse proxy authentication: attempting to create user '%s'", rp_header_username)
-        
-        # Get additional headers for user info (common reverse proxy headers)
-        email = req.headers.get('Remote-Email') or req.headers.get('X-Remote-Email')
-        
-        user = create_authenticated_user(rp_header_username, email, "reverse proxy")
+
+        user = create_authenticated_user(rp_header_username, "reverse proxy")
         if user:
             [limiter.limiter.storage.clear(k.key) for k in limiter.current_limits]
             log.info("Reverse proxy authentication: successfully created user '%s'", user.name)

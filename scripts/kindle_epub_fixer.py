@@ -27,6 +27,7 @@ import pwd
 import grp
 
 from cwa_db import CWA_DB
+import script_lock
 
 try:
     from charset_normalizer import from_bytes as _charset_from_bytes
@@ -119,26 +120,28 @@ def exit_if_cancelled() -> None:
         sys.exit(0)
 
 ### LOCK FILES
-# Creates a lock file unless one already exists meaning an instance of the script is
-# already running, then the script is closed, the user is notified and the program
-# exits with code 2
-try:
-    lock = open(tempfile.gettempdir() + '/kindle_epub_fixer.lock', 'x')
-    lock.close()
-except FileExistsError:
-    print_and_log("[cwa-kindle-epub-fixer] CANCELLING... kindle-epub-fixer was initiated but is already running")
-    logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}")
-    sys.exit(2)
+LOCK_PATH = os.path.join(tempfile.gettempdir(), 'kindle_epub_fixer.lock')
 
-# Defining function to delete the lock on script exit
+
 def removeLock():
-    try:
-        os.remove(tempfile.gettempdir() + '/kindle_epub_fixer.lock')
-    except FileNotFoundError:
-        ...
+    """Remove the lock, but only while it is still ours (see script_lock.release)."""
+    script_lock.release(LOCK_PATH)
 
-# Will automatically run when the script exits
-atexit.register(removeLock)
+
+def _acquire_lock_or_exit():
+    """Single-instance guard, taken only when this file runs as a script.
+
+    It used to be taken at import, so convert_library.py and ingest_processor.py,
+    which import EPUBFixer, held it too: a Convert Library run killed outright left
+    it behind and blocked the next run, and an ingest that needed the fixer while a
+    run held it exited at the import. A lock left by a killed run is now cleared.
+    """
+    if not script_lock.acquire(LOCK_PATH, ("kindle_epub_fixer",),
+                               on_stale=lambda message: print_and_log(f"[cwa-kindle-epub-fixer] {message}")):
+        print_and_log("[cwa-kindle-epub-fixer] CANCELLING... kindle-epub-fixer was initiated but is already running")
+        logger.info(f"\nCWA Kindle EPUB Fixer Service - Run Ended: {datetime.now()}")
+        sys.exit(2)
+    atexit.register(removeLock)
 
 
 class EPUBFixer:
@@ -1170,6 +1173,7 @@ def main():
     parser.add_argument('--all', '-a', required=False, default=False, action='store_true', help='Will attempt to fix any issues in every EPUB in th user\'s library')
 
     args = parser.parse_args()
+    _acquire_lock_or_exit()
     # logger.info(f"CWA Kindle EPUB Fixer Service - Run Started: {datetime.now()}\n")
 
     ### CATCH INCOMPATIBLE COMBINATIONS OF ARGUMENTS

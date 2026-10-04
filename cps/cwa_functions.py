@@ -1860,6 +1860,20 @@ def empty_tmp_con_dir(tmp_conversion_dir) -> None:
     except Exception as e:
         print(f"[cwa-functions]: An error occurred while emptying {tmp_conversion_dir}. See the following error: {e}")
 
+def remove_convert_library_tmp_dirs(tmp_conversion_dir, pid) -> None:
+    """Remove the working dirs of one Convert Library run, which sit beside the shared one.
+
+    Only the run with this PID is touched, so a run that started since can't lose its
+    own dir. The shared tmp_conversion_dir itself is left alone, since an ingest may
+    be converting a book in it. Convert Library falls back to the system temp dir when
+    it can't write beside the shared one, so both places are checked. The name matches
+    make_private_tmp_dir() in scripts/convert_library.py.
+    """
+    beside = Path(tmp_conversion_dir.rstrip('/')).parent
+    for parent in {beside, Path(tempfile.gettempdir())}:
+        for path in parent.glob(f".cwa_convert_library_{pid}_*"):
+            shutil.rmtree(path, ignore_errors=True)
+
 def is_convert_library_finished() -> bool:
     log_path = "/config/convert-library.log"
     with open(log_path, 'r') as log:
@@ -1868,6 +1882,31 @@ def is_convert_library_finished() -> bool:
         else:
             return False
 
+def stop_convert_library(cl_process, wait_seconds=20) -> None:
+    """Stop a Convert Library run and wait until it has gone.
+
+    SIGTERM makes the script stop its tool, remove its own lock and working dir and
+    exit, which takes up to 10s. The lock stays held until then, so a new run can't
+    start and have its startup cleanup delete the folder of the run that is still
+    stopping. What a run that couldn't clean up after itself left behind is removed
+    once it is gone: the lock only if it still names that run, since a new run may
+    already hold it, and only that run's working dirs.
+    """
+    cl_process.terminate()
+    try:
+        cl_process.wait(timeout=wait_seconds)
+    except subprocess.TimeoutExpired:
+        cl_process.kill()
+        cl_process.wait()
+    lock_path = tempfile.gettempdir() + '/convert_library.lock'
+    try:
+        with open(lock_path) as lock_file:
+            if lock_file.read().strip() == str(cl_process.pid):
+                os.remove(lock_path)
+    except OSError:
+        ...
+    remove_convert_library_tmp_dirs(get_tmp_conversion_dir(), cl_process.pid)
+
 def kill_convert_library(queue):
     trigger_file = Path(tempfile.gettempdir() + "/.kill_convert_library_trigger")
     log_path = "/config/convert-library.log"
@@ -1875,15 +1914,7 @@ def kill_convert_library(queue):
         sleep(0.05) # Required to prevent high cpu usage
         if trigger_file.exists():
             # Kill the convert_library process
-            cl_process = queue.get()
-            cl_process.terminate()
-            # Remove any potentially left over lock files
-            try:
-                os.remove(tempfile.gettempdir() + '/convert_library.lock')
-            except FileNotFoundError:
-                ...
-            # Empty tmp conversion dir of half finished files
-            empty_tmp_con_dir(get_tmp_conversion_dir())
+            stop_convert_library(queue.get())
             # Remove the trigger file that triggered this block
             try:
                 os.remove(trigger_file)

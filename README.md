@@ -314,6 +314,10 @@ Please suggest any ideas or wishes you might have! we're open to anything!
 
 # How To Install 📖
 
+## ☁️ One-Click Deploy
+
+[![Deploy on RepoCloud](https://d16t0pc4846x52.cloudfront.net/deploylobe.svg)](https://repocloud.io/details/Calibre-Web%20Automated/)
+
 ## Quick Install 🚀
 
 1. Download the Docker Compose template file using the command below:

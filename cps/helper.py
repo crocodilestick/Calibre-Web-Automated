@@ -31,7 +31,7 @@ from sqlalchemy.exc import InvalidRequestError, OperationalError
 from werkzeug.datastructures import Headers
 from werkzeug.security import generate_password_hash
 from markupsafe import escape
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 
 try:
     from . import cw_advocate
@@ -1062,10 +1062,16 @@ def save_cover_from_url(url, book_path):
     img = None
     download_start = time.monotonic()
     try:
+        # Douban's image CDN (doubanio.com) enforces hotlink protection and answers
+        # with HTTP 418 unless a douban Referer is sent, which makes cover downloads
+        # from the Douban metadata provider fail. Send the Referer for those hosts.
+        req_headers = None
+        if (urlparse(url).hostname or "").endswith("doubanio.com"):
+            req_headers = {"Referer": "https://book.douban.com/"}
         if cli_param.allow_localhost:
-            img = requests.get(url, timeout=(10, 30), allow_redirects=False, stream=True)  # ToDo: Error Handling
+            img = requests.get(url, timeout=(10, 30), allow_redirects=False, stream=True, headers=req_headers)  # ToDo: Error Handling
         elif use_advocate:
-            img = cw_advocate.get(url, timeout=(10, 30), allow_redirects=False, stream=True)      # ToDo: Error Handling
+            img = cw_advocate.get(url, timeout=(10, 30), allow_redirects=False, stream=True, headers=req_headers)      # ToDo: Error Handling
         else:
             log.error("python module advocate is not installed but is needed")
             return False, _("Python module 'advocate' is not installed but is needed for cover uploads")

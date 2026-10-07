@@ -32,7 +32,7 @@ except ImportError as e:
         oauth_support = False
 from sqlalchemy import create_engine, exc, exists, event, text
 from sqlalchemy import Column, ForeignKey, Index, UniqueConstraint
-from sqlalchemy import String, Integer, SmallInteger, Boolean, DateTime, Float, JSON
+from sqlalchemy import String, Integer, SmallInteger, Boolean, DateTime, Float, JSON, Text
 from sqlalchemy.orm.attributes import flag_modified
 from sqlalchemy.sql.expression import func
 try:
@@ -583,6 +583,42 @@ class Bookmark(Base):
     book_id = Column(Integer)
     format = Column(String(collation='NOCASE'))
     bookmark_key = Column(String)
+
+
+class PdfReaderState(Base):
+    """Small, per-user state record for the built-in PDF reader."""
+    __tablename__ = 'pdf_reader_state'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    book_id = Column(Integer, nullable=False)
+    state = Column(JSON, default=dict, nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc),
+                        onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        UniqueConstraint('user_id', 'book_id', name='unique_pdf_reader_state'),
+        Index('ix_pdf_reader_state_user_book', 'user_id', 'book_id'),
+    )
+
+
+class PdfReaderNote(Base):
+    """A page-linked note. Multiple notes may point at the same PDF page."""
+    __tablename__ = 'pdf_reader_note'
+
+    id = Column(Integer, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    book_id = Column(Integer, nullable=False)
+    page_number = Column(Integer, nullable=False)
+    body = Column(Text, nullable=False)
+    color = Column(String(24), default='yellow', nullable=False)
+    created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc),
+                        onupdate=lambda: datetime.now(timezone.utc), nullable=False)
+
+    __table_args__ = (
+        Index('ix_pdf_reader_note_user_book_page', 'user_id', 'book_id', 'page_number'),
+    )
 
 
 # Baseclass representing books that are archived on the user's Kobo device.

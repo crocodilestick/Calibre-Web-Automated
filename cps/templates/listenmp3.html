@@ -34,7 +34,7 @@
       
     </div>
     <div class="col-sm-6 col-lg-6 book-meta" style="margin-bottom: 2%;">
-      <img id="detailcover" title="{{entry.title}}" src="{{url_for('web.get_cover', book_id=entry.id, resolution='og', c=entry|last_modified)}}" style="float: right; margin-top: 20px"/>
+      <img id="detailcover" title="{{entry.title}}" src="{{url_for('web.get_cover', book_id=entry.id, resolution='lg', c=entry|last_modified)}}" style="float: right; margin-top: 20px"/>
       <h2 id="title">{{entry.title}}</h2>
       <p class="author">
           {% for author in entry.ordered_authors %}

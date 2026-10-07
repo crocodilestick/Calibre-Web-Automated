@@ -4,7 +4,7 @@
     <meta property="og:title" content="{{ entry.title|truncate(35) }}" />
     {% if entry.comments|length > 0 and entry.comments[0].text|length > 0 %}
       <meta property="og:description" content="{{ entry.comments[0].text|striptags|truncate(65) }}" />
-      <meta property="og:image" content="{{url_for('web.get_cover', book_id=entry.id, resolution='og', c=entry|last_modified)}}" />
+      <meta property="og:image" content="{{url_for('web.get_cover', book_id=entry.id, resolution='lg', c=entry|last_modified)}}" />
     {% endif %}
     <style>
         .modal-card {
@@ -480,7 +480,7 @@
             <div class="book-detail-main">
                 <div class="book-detail-cover cover">
                 <img id="detailcover" title="{{ entry.title }}"
-                     src="{{ url_for('web.get_cover', book_id=entry.id, resolution='og', c=entry|last_modified) }}"/>
+                     src="{{ url_for('web.get_cover', book_id=entry.id, resolution='lg', c=entry|last_modified) }}"/>
             </div>
                     <div class="book-detail-meta">
                         <div class="book-detail-actions">

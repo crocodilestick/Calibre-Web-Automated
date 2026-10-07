@@ -72,6 +72,7 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     cover_download_max_mb INTEGER DEFAULT 15 NOT NULL,
     metadata_provider_hierarchy TEXT DEFAULT '["ibdb","google","dnb"]' NOT NULL,
     metadata_providers_enabled TEXT DEFAULT '{}' NOT NULL,
+    auto_metadata_ignore_sentinel TEXT DEFAULT '' NOT NULL,
     auto_send_delay_minutes INTEGER DEFAULT 5 NOT NULL,
     duplicate_detection_title SMALLINT DEFAULT 1 NOT NULL,
     duplicate_detection_author SMALLINT DEFAULT 1 NOT NULL,

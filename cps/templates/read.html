@@ -105,6 +105,7 @@
               <div class="font" id="font">
                 <label class="item">{{_('Font')}}:</label>
                 <button type="button" id="default" onclick="selectFont(this.id)"><span>✓</span>{{_('Default')}}</button> 
+                <button type="button" id="Literata" onclick="selectFont(this.id)"><span></span>{{_('Literata')}}</button>
                 <button type="button" id="Yahei" onclick="selectFont(this.id)"><span></span>{{_('Yahei')}}</button>
                 <button type="button" id="SimSun" onclick="selectFont(this.id)"><span></span>{{_('SimSun')}}</button>
                 <button type="button" id="KaiTi" onclick="selectFont(this.id)"><span></span>{{_('KaiTi')}}</button>
@@ -131,7 +132,14 @@
             bookUrl: "{{ url_for('web.serve_book', book_id=bookid, book_format=book_format, anyname='file.epub') }}",
             bookmark: "{{ bookmark.bookmark_key if bookmark != None }}",
             useBookmarks: "{{ current_user.is_authenticated | tojson }}",
-            kosyncPercent: {{ kosync_progress | tojson if kosync_progress is not none else 'null' }}
+            kosyncPercent: {{ kosync_progress | tojson if kosync_progress is not none else 'null' }},
+            // Injected into every rendered chapter's iframe (see epub.js hooks.content.register)
+            // so bundled custom reading fonts are actually available inside the book content,
+            // not just on the outer page.
+            customFontFaces: "@font-face{font-family:'Literata';font-weight:normal;font-style:normal;font-display:swap;src:url('{{ url_for('static', filename='fonts/literata/Literata-Regular.woff2') }}') format('woff2');}" +
+                "@font-face{font-family:'Literata';font-weight:normal;font-style:italic;font-display:swap;src:url('{{ url_for('static', filename='fonts/literata/Literata-Italic.woff2') }}') format('woff2');}" +
+                "@font-face{font-family:'Literata';font-weight:bold;font-style:normal;font-display:swap;src:url('{{ url_for('static', filename='fonts/literata/Literata-Bold.woff2') }}') format('woff2');}" +
+                "@font-face{font-family:'Literata';font-weight:bold;font-style:italic;font-display:swap;src:url('{{ url_for('static', filename='fonts/literata/Literata-BoldItalic.woff2') }}') format('woff2');}"
         };
 
         window.themes = {

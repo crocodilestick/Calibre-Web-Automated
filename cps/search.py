@@ -12,10 +12,11 @@ from flask import session as flask_session
 from .cw_login import current_user
 from flask_babel import format_date
 from flask_babel import gettext as _
+from flask_limiter.util import get_remote_address
 from sqlalchemy.sql.expression import func, not_, and_, or_, text, true
 from sqlalchemy.sql.functions import coalesce
 
-from . import logger, db, calibre_db, config, ub
+from . import logger, db, calibre_db, config, ub, limiter
 from .string_helper import strip_whitespaces
 from .usermanagement import login_required_if_no_ano
 from .render_template import render_title_template
@@ -29,6 +30,7 @@ log = logger.create()
 
 @search.route("/search", methods=["GET"])
 @login_required_if_no_ano
+@limiter.limit("30/minute", key_func=get_remote_address)
 def simple_search():
     term = request.args.get("query")
     if term:
@@ -56,6 +58,7 @@ def simple_search():
 
 @search.route("/advsearch", methods=['POST'])
 @login_required_if_no_ano
+@limiter.limit("30/minute", key_func=get_remote_address)
 def advanced_search():
     values = dict(request.form)
     params = ['include_tag', 'exclude_tag', 'include_serie', 'exclude_serie', 'include_shelf', 'exclude_shelf',

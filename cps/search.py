@@ -181,10 +181,22 @@ def adv_search_serie(q, include_series_inputs, exclude_series_inputs):
     return q
 
 def adv_search_shelf(q, include_shelf_inputs, exclude_shelf_inputs):
-    q = q.outerjoin(ub.BookShelf, db.Books.id == ub.BookShelf.book_id)\
-        .filter(or_(ub.BookShelf.shelf == None, ub.BookShelf.shelf.notin_(exclude_shelf_inputs)))
-    if len(include_shelf_inputs) > 0:
-        q = q.filter(ub.BookShelf.shelf.in_(include_shelf_inputs))
+    if len(include_shelf_inputs):
+        in_shelf = (
+            calibre_db.session.query(ub.BookShelf.id)
+            .filter(ub.BookShelf.book_id == db.Books.id)
+            .filter(ub.BookShelf.shelf.in_(include_shelf_inputs))
+            .exists()
+        )
+        q = q.filter(in_shelf)
+    if len(exclude_shelf_inputs):
+        ex_shelf = (
+            calibre_db.session.query(ub.BookShelf.id)
+            .filter(ub.BookShelf.book_id == db.Books.id)
+            .filter(ub.BookShelf.shelf.in_(exclude_shelf_inputs))
+            .exists()
+        )
+        q = q.filter(~ex_shelf)
     return q
 
 def extend_search_term(searchterm,

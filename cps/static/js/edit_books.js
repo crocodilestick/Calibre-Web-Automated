@@ -32,8 +32,19 @@ $(".datepicker").datepicker({
     var results = /(\d{4})[-\/\\](\d{1,2})[-\/\\](\d{1,2})/.exec(this.value); // YYYY-MM-DD
     if (results) {
         pubDate = new Date(results[1], parseInt(results[2], 10) - 1, results[3]) || new Date(this.value);
+        var displayValue;
+        if (typeof pubdateDayFirst !== "undefined" && pubdateDayFirst !== null) {
+            // Respect the admin's configured day/month order (Settings > Edit UI
+            // Configuration > Date Format) instead of the browser's locale guess.
+            var dd = String(pubDate.getDate()).padStart(2, "0");
+            var mm = String(pubDate.getMonth() + 1).padStart(2, "0");
+            var yyyy = pubDate.getFullYear();
+            displayValue = pubdateDayFirst ? (dd + "/" + mm + "/" + yyyy) : (mm + "/" + dd + "/" + yyyy);
+        } else {
+            displayValue = pubDate.toLocaleDateString(language.replaceAll("_", "-"));
+        }
         $(this).next('input')
-            .val(pubDate.toLocaleDateString(language.replaceAll("_","-")))
+            .val(displayValue)
             .removeClass("hidden");
     }
 }).trigger("change");

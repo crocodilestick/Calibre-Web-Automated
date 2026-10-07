@@ -16,7 +16,7 @@ from flask import Blueprint, request, url_for, g
 from flask_babel import format_date
 from .cw_login import current_user
 
-from . import constants, logger
+from . import constants, logger, config
 
 jinjia = Blueprint('jinjia', __name__)
 log = logger.create()
@@ -64,6 +64,9 @@ def formatdate_filter(val):
         if isinstance(val, datetime.datetime):
             # Avoid timezone-based day shifts by formatting date-only values.
             val = val.date()
+        custom_format = getattr(config, 'config_date_format', '') or ''
+        if custom_format.strip():
+            return val.strftime(custom_format.strip())
         return format_date(val, format='medium')
     except AttributeError as e:
         log.error('Babel error: %s, Current user locale: %s, Current User: %s', e,
@@ -71,6 +74,27 @@ def formatdate_filter(val):
                   current_user.name
                   )
         return val
+    except ValueError as e:
+        # Invalid strftime pattern supplied by the admin; fall back to the safe default
+        # rather than breaking every date on the page.
+        log.error('Invalid config_date_format %r: %s', config.config_date_format, e)
+        return format_date(val, format='medium')
+
+
+@jinjia.app_template_global()
+def pubdate_format_is_day_first():
+    # Used by the book-edit date picker overlay (edit_books.js) to decide whether
+    # to render dd/mm/yyyy or mm/dd/yyyy, based on the admin's config_date_format.
+    # Recognizes numeric (%m) and named (%b, %B) month tokens, so formats like
+    # '%d %b, %Y' are still correctly detected as day-first.
+    # Returns None when config_date_format is blank or has no day+month tokens,
+    # in which case the JS falls back to its original browser-locale-based behavior.
+    fmt = getattr(config, 'config_date_format', '') or ''
+    d_idx = fmt.find('%d')
+    month_indices = [idx for idx in (fmt.find('%m'), fmt.find('%b'), fmt.find('%B')) if idx != -1]
+    if d_idx == -1 or not month_indices:
+        return None
+    return d_idx < min(month_indices)
 
 
 @jinjia.app_template_filter('formatdateinput')

@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Test Amazon Search Results</title>
+  </head>
+  <body>
+    <div class="search-results-container">
+      <span class="search-result-item">
+        <span data-component-type="s-search-results">
+          <ul>
+            <li>
+              <a href="/ssdp/ABCDEF?digital-text=1">SSDP Product</a>
+            </li>
+            <li>
+              <a href="/dp/ABCDEF">ABCDEF but not digital</a>
+            </li>
+          </ul>
+        </span>
+        <span data-component-type="s-search-results">
+          <a href="/dp/ABCDEF?fake=no&digital-text=yes">ABCDEF but digital</a>
+          <a href="/dp/GHIJKL?digital-text=1">GHIJKL digital</a>
+        </span>
+        <span data-component-type="s-search-results">
+          <span>
+            <a href="/dp/ABCDEF?digital-text=0&duplicate=yes"
+              >Duplicate ABCDEF</a
+            >
+          </span>
+        </span>
+      </span>
+    </div>
+  </body>
+</html>

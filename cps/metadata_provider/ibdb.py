@@ -42,6 +42,15 @@ class IBDb(Metadata):
                 results.raise_for_status()
             except requests.HTTPError as e:
                 status_code = getattr(e.response, "status_code", None)
+                if status_code == 429:
+                    retry_after = getattr(e.response, "headers", {}).get(
+                        "Retry-After", "unknown"
+                    )
+                    log.debug(
+                        "IBDb rate limit exceeded (429), retry after %ss; skipping provider.",
+                        retry_after,
+                    )
+                    return []
                 if status_code == 501:
                     log.debug("IBDb search not implemented (501); skipping provider.")
                     return []

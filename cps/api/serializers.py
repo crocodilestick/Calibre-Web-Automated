@@ -133,6 +133,21 @@ def serialize_book_list_item(book, read_status=None, archived=False):
     }
 
 
+def serialize_rows(entries):
+    """List items from fill_indexpage(..., join_archive_read=True) rows.
+
+    Those rows are (Books, is_archived, read_status); plain Books objects are accepted too.
+    """
+    items = []
+    for entry in entries:
+        book = getattr(entry, "Books", None)
+        if book is None:
+            items.append(serialize_book_list_item(entry))
+        else:
+            items.append(serialize_book_list_item(book, read_status=entry[2], archived=entry[1]))
+    return items
+
+
 def serialize_custom_columns(book, definitions):
     result = []
     for column in definitions or []:

@@ -747,6 +747,7 @@ def merge_list_book():
             for book_id in vals:
                 from_book = calibre_db.get_book(book_id)
                 if from_book:
+                    copied_formats = []
                     for element in from_book.data:
                         if element.format not in to_file:
                             # create new data entry with: book_id, book_format, uncompressed_size, name
@@ -762,6 +763,8 @@ def merge_list_book():
                                                         element.uncompressed_size,
                                                         to_name))
                             to_file.append(element.format)
+                            copied_formats.append(element.format)
+                    copy_format_origins(from_book.id, to_book.id, copied_formats)
                     delete_book_from_table(from_book.id, "", True, refresh_duplicates=False)
             calibre_db.session.commit()
             _refresh_duplicates_after_bulk_deletion(vals)
@@ -1305,7 +1308,33 @@ def move_coverfile(meta, db_book):
               category="error")
 
 
+def _clear_format_origins(book_id, book_format=None):
+    """Forget which of a book's formats CWA converted, for one format or the whole book."""
+    try:
+        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+        from cwa_db import CWA_DB
+        CWA_DB().format_origin_clear(book_id, book_format)
+    except Exception as e:
+        log.warning("Failed to clear format origins for book %s: %s", book_id, str(e))
+
+
+def copy_format_origins(from_book_id, to_book_id, book_formats):
+    """Carry the converted-from record of formats merged from one book into another."""
+    try:
+        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+        from cwa_db import CWA_DB
+        cwa_db = CWA_DB()
+        origins = cwa_db.format_origins_for_books([from_book_id]).get(int(from_book_id), {})
+        for book_format in book_formats:
+            if book_format.upper() in origins:
+                cwa_db.format_origin_set(to_book_id, book_format, origins[book_format.upper()])
+    except Exception as e:
+        log.warning("Failed to copy format origins from book %s to %s: %s", from_book_id, to_book_id, str(e))
+
+
 def delete_whole_book(book_id, book):
+    _clear_format_origins(book_id)
+
     # delete book from shelves, Downloads, Read list
     ub.session.query(ub.BookShelf).filter(ub.BookShelf.book_id == book_id).delete()
     ub.session.query(ub.ReadBook).filter(ub.ReadBook.book_id == book_id).delete()
@@ -1438,6 +1467,7 @@ def delete_book_from_table(book_id, book_format, json_response, location="", ref
                 else:
                     calibre_db.session.query(db.Data).filter(db.Data.book == book.id).\
                         filter(db.Data.format == book_format).delete()
+                    _clear_format_origins(book.id, book_format)
                     if book_format.upper() in ['KEPUB', 'EPUB', 'EPUB3']:
                         kobo_sync_status.remove_synced_book(book.id, True)
                 calibre_db.session.commit()

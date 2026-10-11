@@ -340,6 +340,15 @@ def show_duplicates():
         except Exception as index_ex:
             log.warning("[cwa-duplicates] Could not load duplicate index state: %s", str(index_ex))
 
+        # Show which formats CWA converted, so converted copies are easy to spot
+        try:
+            group_books = [book for group in duplicate_groups for book in group['books']]
+            origins = cwa_db.format_origins_for_books([book.id for book in group_books])
+            for book in group_books:
+                book.format_origins = origins.get(book.id, {})
+        except Exception as origin_ex:
+            log.warning("[cwa-duplicates] Could not load format origins: %s", str(origin_ex))
+
         # Compute next scheduled scan run
         next_scan_run = get_next_duplicate_scan_run(settings)
         
@@ -1868,6 +1877,7 @@ def merge_duplicate_group(book_to_keep, books_to_merge):
         from_book = calibre_db.get_book(source.id)
         if not from_book:
             continue
+        copied_formats = []
         for element in from_book.data:
             if element.format not in existing_formats:
                 filepath_new = os.path.normpath(os.path.join(config.get_book_path(),
@@ -1882,4 +1892,7 @@ def merge_duplicate_group(book_to_keep, books_to_merge):
                                             element.uncompressed_size,
                                             to_name))
                 existing_formats.append(element.format)
+                copied_formats.append(element.format)
+        from cps.editbooks import copy_format_origins
+        copy_format_origins(from_book.id, to_book.id, copied_formats)
     calibre_db.session.commit()

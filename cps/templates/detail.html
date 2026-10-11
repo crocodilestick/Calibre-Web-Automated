@@ -689,6 +689,7 @@
                                     <span>{{ _('File sizes') }}</span>
                                     <span class="meta-value">
                                         {% for format in entry.data %}
+                                            {% set original_format = (entry.format_origins or {}).get(format.format) %}
                                             {% if current_user.role_download() %}
                                                 <a href="{{ url_for('web.download_link', book_id=entry.id, book_format=format.format|lower, anyname=entry.id|string+'.'+format.format|lower|replace('kepub', 'kepub.epub')) }}"
                                                    class="meta-pill meta-link" role="button">
@@ -696,6 +697,12 @@
                                                 </a>
                                             {% else %}
                                                 <span class="meta-pill">{{ format.format }} ({{ format.uncompressed_size|filesizeformat_binary }})</span>
+                                            {% endif %}
+                                            {% if original_format %}
+                                                <span class="meta-pill format-origin"
+                                                      title="{{ _('CWA converted this %(format)s file from a %(original)s file when importing it', format=format.format, original=original_format) }}">
+                                                    {{ _('%(format)s converted from %(original)s', format=format.format, original=original_format) }}
+                                                </span>
                                             {% endif %}
                                         {% endfor %}
                                     </span>

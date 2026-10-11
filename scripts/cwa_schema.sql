@@ -21,6 +21,18 @@ CREATE TABLE IF NOT EXISTS cwa_conversions(
     original_backed_up TEXT NOT NULL,
     end_format TEXT DEFAULT "" NOT NULL
 );
+-- Library formats CWA produced by converting an ingested file, and the format they came from.
+-- A book format with no row here was imported as-is (or predates this table).
+CREATE TABLE IF NOT EXISTS cwa_format_origins(
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    timestamp TEXT NOT NULL,
+    book_id INTEGER NOT NULL,
+    format TEXT NOT NULL,
+    original_format TEXT NOT NULL,
+    source_filename TEXT DEFAULT "" NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_cwa_format_origins_book_format
+    ON cwa_format_origins(book_id, format);
 CREATE TABLE IF NOT EXISTS epub_fixes(
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     timestamp TEXT NOT NULL,

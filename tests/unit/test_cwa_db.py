@@ -358,6 +358,38 @@ class TestCWADBErrorHandling:
         # Should not raise exception
 
 
+@pytest.mark.unit
+class TestFormatOrigins:
+    """Test recording which library formats CWA converted, and from what."""
+
+    def test_set_and_read_origin(self, temp_cwa_db):
+        temp_cwa_db.format_origin_set(5, "epub", "mobi", "Some Book.mobi")
+        assert temp_cwa_db.format_origins_for_books([5]) == {5: {"EPUB": "MOBI"}}
+
+    def test_set_replaces_existing_origin_for_same_format(self, temp_cwa_db):
+        temp_cwa_db.format_origin_set(5, "EPUB", "MOBI")
+        temp_cwa_db.format_origin_set(5, "EPUB", "AZW3")
+        assert temp_cwa_db.format_origins_for_books([5]) == {5: {"EPUB": "AZW3"}}
+
+    def test_books_without_origins_are_omitted(self, temp_cwa_db):
+        temp_cwa_db.format_origin_set(5, "EPUB", "MOBI")
+        assert temp_cwa_db.format_origins_for_books([5, 6]) == {5: {"EPUB": "MOBI"}}
+        assert temp_cwa_db.format_origins_for_books([]) == {}
+
+    def test_clear_single_format(self, temp_cwa_db):
+        temp_cwa_db.format_origin_set(5, "EPUB", "MOBI")
+        temp_cwa_db.format_origin_set(5, "KEPUB", "MOBI")
+        temp_cwa_db.format_origin_clear(5, "epub")
+        assert temp_cwa_db.format_origins_for_books([5]) == {5: {"KEPUB": "MOBI"}}
+
+    def test_clear_whole_book(self, temp_cwa_db):
+        temp_cwa_db.format_origin_set(5, "EPUB", "MOBI")
+        temp_cwa_db.format_origin_set(5, "KEPUB", "MOBI")
+        temp_cwa_db.format_origin_set(6, "EPUB", "PDF")
+        temp_cwa_db.format_origin_clear(5)
+        assert temp_cwa_db.format_origins_for_books([5, 6]) == {6: {"EPUB": "PDF"}}
+
+
 if __name__ == '__main__':
     # Allow running directly
     pytest.main([__file__, '-v'])

@@ -30,6 +30,7 @@ class CWA_DB:
             "cwa_enforcement",
             "cwa_import",
             "cwa_conversions",
+            "cwa_format_origins",
             "epub_fixes",
             "cwa_user_activity",
             "cwa_duplicate_cache",
@@ -678,6 +679,42 @@ class CWA_DB:
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         self.cur.execute("INSERT INTO cwa_conversions(timestamp, filename, original_format, end_format, original_backed_up) VALUES (?, ?, ?, ?, ?);", (timestamp, filename, original_format, end_format, original_backed_up))
         self.con.commit()
+
+    def format_origin_set(self, book_id: int, book_format: str, original_format: str, source_filename: str = "") -> None:
+        """Record that a book's format was produced by converting an ingested file of original_format."""
+        timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        self.cur.execute("""
+            INSERT INTO cwa_format_origins(timestamp, book_id, format, original_format, source_filename)
+            VALUES (?, ?, ?, ?, ?)
+            ON CONFLICT(book_id, format) DO UPDATE SET
+                timestamp = excluded.timestamp,
+                original_format = excluded.original_format,
+                source_filename = excluded.source_filename
+        """, (timestamp, int(book_id), book_format.upper(), original_format.upper(), source_filename))
+        self.con.commit()
+
+    def format_origin_clear(self, book_id: int, book_format: str | None = None) -> None:
+        """Forget origin records for one format of a book, or for the whole book when book_format is None."""
+        if book_format is None:
+            self.cur.execute("DELETE FROM cwa_format_origins WHERE book_id = ?", (int(book_id),))
+        else:
+            self.cur.execute("DELETE FROM cwa_format_origins WHERE book_id = ? AND format = ?",
+                             (int(book_id), book_format.upper()))
+        self.con.commit()
+
+    def format_origins_for_books(self, book_ids) -> dict[int, dict[str, str]]:
+        """Return {book_id: {FORMAT: ORIGINAL_FORMAT}} for the converted formats of the given books."""
+        book_ids = [int(book_id) for book_id in book_ids]
+        origins: dict[int, dict[str, str]] = {}
+        # Stay well under SQLite's bound-parameter limit
+        for start in range(0, len(book_ids), 500):
+            chunk = book_ids[start:start + 500]
+            placeholders = ",".join("?" for _ in chunk)
+            self.cur.execute(f"SELECT book_id, format, original_format FROM cwa_format_origins "
+                             f"WHERE book_id IN ({placeholders})", chunk)
+            for book_id, book_format, original_format in self.cur.fetchall():
+                origins.setdefault(book_id, {})[book_format] = original_format
+        return origins
 
     def epub_fixer_add_entry(self, filename, manually_triggered, num_of_fixes_applied, original_backed_up, file_path, fixes_applied=""):
         timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')

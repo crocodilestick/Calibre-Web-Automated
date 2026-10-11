@@ -856,7 +856,37 @@ class NewBookProcessor:
 
 
 
-    def add_book_to_library(self, book_path:str, text: bool=True, format: str="text" ) -> None:
+    def _book_ids_with_format(self, book_format: str) -> set[int] | None:
+        """Ids of the books that already have book_format, or None if the library can't be read."""
+        try:
+            with sqlite3.connect(self.metadata_db, timeout=30) as con:
+                rows = con.execute("SELECT book FROM data WHERE format = ?", (book_format.upper(),)).fetchall()
+            return {int(row[0]) for row in rows}
+        except Exception as e:
+            print(f"[ingest-processor] WARN: Could not read existing {book_format} formats: {e}", flush=True)
+            return None
+
+    def _record_format_origin(self, book_format: str, original_format: str, books_with_format_before: set[int] | None) -> None:
+        """Remember that the format just imported was converted from original_format.
+
+        With automerge 'ignore', calibredb can report an existing book whose format it kept,
+        discarding ours, so only books that gained the format (or had it overwritten) are recorded.
+        """
+        if books_with_format_before is None:
+            return
+        overwrite = self.cwa_settings.get('auto_ingest_automerge') == 'overwrite'
+        for book_id in self.last_added_book_ids:
+            if book_id in books_with_format_before and not overwrite:
+                continue
+            try:
+                self.db.format_origin_set(book_id, book_format, original_format, self.filename)
+                print(f"[ingest-processor] Recorded {book_format.upper()} of book id {book_id} as converted from {original_format.upper()}", flush=True)
+            except Exception as e:
+                print(f"[ingest-processor] WARN: Failed to record format origin for book id {book_id}: {e}", flush=True)
+
+    def add_book_to_library(self, book_path:str, text: bool=True, format: str="text", original_format: str | None = None) -> None:
+        """Import book_path with calibredb. original_format is the ingested file's format when
+        book_path is the result of converting it."""
         # If kindle-epub-fixer is on, run it first and import the *fixed* file.
         if self.target_format == "epub" and self.is_kindle_epub_fixer:
             fixed_epub_path = Path(self.tmp_conversion_dir) / os.path.basename(book_path)
@@ -900,6 +930,9 @@ class NewBookProcessor:
             print(f"[ingest-processor] ERROR: Failed to stage file for import: {e}", flush=True)
             self.backup(self.filepath, backup_type="failed")
             return
+
+        imported_format = staged_path.suffix[1:]
+        books_with_format_before = self._book_ids_with_format(imported_format) if original_format else None
 
         try:
             if text:
@@ -966,6 +999,9 @@ class NewBookProcessor:
 
             self.db.import_add_entry(staged_path.stem,
                                     str(self.cwa_settings["auto_backup_imports"]))
+
+            if original_format:
+                self._record_format_origin(imported_format, original_format, books_with_format_before)
 
             mark_ingest_batch_dirty()
 
@@ -1077,6 +1113,11 @@ class NewBookProcessor:
                 "calibredb", "add_format", str(book_id), str(staged_path), f"--library-path={self.library_dir}"
             ], env=self.calibre_env, check=True, capture_output=True, text=True)
             print(f"[ingest-processor] Added new format for book id {book_id}: {os.path.basename(str(staged_path))}", flush=True)
+            # The file was added as-is, replacing any copy CWA converted into this format
+            try:
+                self.db.format_origin_clear(book_id, staged_path.suffix[1:])
+            except Exception as e:
+                print(f"[ingest-processor] WARN: Failed to clear format origin for book id {book_id}: {e}", flush=True)
             mark_ingest_batch_dirty()
             if self.cwa_settings['auto_backup_imports']:
                 self.backup(str(staged_path), backup_type="imported")
@@ -1494,7 +1535,7 @@ def main(filepath=None):
                     convert_successful, converted_filepath = nbp.convert_book()
 
                 if convert_successful: # If previous conversion process was successful, remove tmp files and import into library
-                    nbp.add_book_to_library(converted_filepath) # type: ignore
+                    nbp.add_book_to_library(converted_filepath, original_format=nbp.input_format) # type: ignore
 
                     # If the original format should be retained, also add it as an additional format
                     if nbp.input_format in nbp.convert_retained_formats and nbp.input_format not in nbp.ingest_ignored_formats:

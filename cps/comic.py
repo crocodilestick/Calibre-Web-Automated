@@ -72,7 +72,7 @@ def _extract_cover_from_archive(original_file_extension, tmp_file_name, rar_exec
                     break
     elif original_file_extension.upper() == '.CBR' and use_rarfile:
         try:
-            rarfile.UNRAR_TOOL = rar_executable
+            rarfile.UNAR_TOOL = rar_executable
             cf = rarfile.RarFile(tmp_file_name)
             for name in cf.namelist():
                 ext = os.path.splitext(name)

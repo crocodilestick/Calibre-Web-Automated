@@ -163,9 +163,6 @@ RUN \
 # ============================================================================
 # STAGE 2: Final - Build the final runtime image
 # ============================================================================
-FROM ghcr.io/linuxserver/baseimage-ubuntu:noble AS unrar-stage
-FROM ghcr.io/linuxserver/unrar:latest AS unrar
-
 FROM ghcr.io/linuxserver/baseimage-ubuntu:noble
 
 ARG BUILD_DATE
@@ -226,6 +223,7 @@ RUN \
   libxdamage1 \
   libgl1 \
   libglx-mesa0 \
+  unar \
   xz-utils \
   curl && \
   # Create python3 symlink to point to python3.13
@@ -281,9 +279,6 @@ RUN \
   echo "$VERSION" >| /app/CWA_RELEASE && \
   echo "$KEPUBIFY_RELEASE" >| /app/KEPUBIFY_RELEASE && \
   echo "$CALIBRE_RELEASE" > /CALIBRE_RELEASE
-
-# Add unrar from unrar stage
-COPY --from=unrar /usr/bin/unrar-ubuntu /usr/bin/unrar
 
 # Set calibre environment variable
 ENV CALIBRE_CONFIG_DIR=/config/.config/calibre

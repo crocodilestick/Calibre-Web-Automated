@@ -242,17 +242,17 @@ def get_comic_book(book_id, book_format, page):
                 cbr_file = os.path.join(config.config_calibre_dir, book.path, bookformat.name) + "." + book_format
                 if book_format in ("cbr", "rar"):
                     if feature_support['rar'] == True:
-                        rarfile.UNRAR_TOOL = config.config_rarfile_location
+                        rarfile.UNAR_TOOL = config.config_rarfile_location
                         try:
                             rf = rarfile.RarFile(cbr_file)
                             names = sort(rf.namelist())
                             extract = lambda page: rf.read(names[page])
                         except:
                             # rarfile not valid
-                            log.error('Unrar binary not found, or unable to decompress file %s', cbr_file)
+                            log.error('Unar binary not found, or unable to decompress file %s', cbr_file)
                             return "", 204
                     else:
-                        log.info('Unrar is not supported please install python rarfile extension')
+                        log.info('Unar is not supported please install python rarfile extension')
                         # no support means return nothing
                         return "", 204
                 elif book_format in ("cbz", "zip"):

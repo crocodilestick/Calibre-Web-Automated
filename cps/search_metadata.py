@@ -11,6 +11,14 @@ import inspect
 import json
 import os
 import sys
+import threading
+import time
+
+try:
+    from gevent import sleep as _metadata_sleep
+except ImportError:
+    # The threaded server does not require gevent.
+    _metadata_sleep = time.sleep
 
 from flask import Blueprint, request, url_for, make_response, jsonify, copy_current_request_context
 from .cw_login import current_user
@@ -137,17 +145,68 @@ def metadata_change_active_provider(prov_name):
         global_enabled = _get_global_provider_enabled_map()
         if provider is not None:
             if bool(global_enabled.get(provider.__id__, True)):
-                try:
-                    data = provider.search(new_state.get("query", ""))
-                except Exception as exc:
-                    log.warning("Metadata provider %s failed: %s", provider.__class__.__name__, exc)
-                    data = []
+                data = _metadata_search_providers([provider], new_state.get("query", ""))
             else:
                 data = []
         if not data:
             return make_response(jsonify([]))
-        return make_response(jsonify([asdict(x) for x in data if x]))
+        return make_response(jsonify(data))
     return ""
+
+
+# Reuse native workers; never wait for executor shutdown in a WSGI greenlet.
+_METADATA_MAX_WORKERS = 5
+_METADATA_EXECUTOR = concurrent.futures.ThreadPoolExecutor(max_workers=_METADATA_MAX_WORKERS)
+_METADATA_SLOTS = threading.BoundedSemaphore(_METADATA_MAX_WORKERS)
+_METADATA_TIMEOUT = 15.0
+
+
+def _metadata_search_providers(providers, *args):
+    # One deadline includes waiting for capacity across concurrent requests.
+    deadline = time.monotonic() + _METADATA_TIMEOUT
+    pending = iter(providers)
+    provider = next(pending, None)
+    futures = {}
+    data = []
+    try:
+        while provider is not None or futures:
+            for future in list(futures):
+                if not future.done():
+                    continue
+                completed_provider = futures.pop(future)
+                try:
+                    result = future.result()
+                    if result:
+                        data.extend(asdict(x) for x in result if x)
+                except Exception as exc:
+                    log.warning("Metadata provider %s failed: %s",
+                                completed_provider.__class__.__name__, exc)
+            remaining = deadline - time.monotonic()
+            if remaining <= 0:
+                break
+            while provider is not None and _METADATA_SLOTS.acquire(blocking=False):
+                try:
+                    # Each task owns a separate Flask request context.
+                    search = copy_current_request_context(provider.search)
+                    future = _METADATA_EXECUTOR.submit(search, *args)
+                except BaseException:
+                    _METADATA_SLOTS.release()
+                    raise
+                # Timed-out tasks keep their slot until they actually terminate.
+                future.add_done_callback(lambda done: _METADATA_SLOTS.release())
+                futures[future] = provider
+                provider = next(pending, None)
+                if time.monotonic() >= deadline:
+                    break
+            if provider is not None or futures:
+                # Future.wait/as_completed use native locks without monkey patching.
+                _metadata_sleep(min(0.01, max(0, deadline - time.monotonic())))
+    finally:
+        # Cancellation only stops tasks which have not started. Running threads
+        # cannot be killed safely; bound them globally and never join them here.
+        for future in futures:
+            future.cancel()
+    return data
 
 
 @meta.route("/metadata/search", methods=["POST"])
@@ -160,22 +219,7 @@ def metadata_search():
     global_enabled = _get_global_provider_enabled_map()
     if query:
         static_cover = url_for("static", filename="generic_cover.svg")
-        # ret = cl[0].search(query, static_cover, locale)
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-            meta = {
-                executor.submit(copy_current_request_context(c.search), query, static_cover, locale): c
-                for c in cl
-                if active.get(c.__id__, True) and bool(global_enabled.get(c.__id__, True))
-            }
-            for future in concurrent.futures.as_completed(meta):
-                try:
-                    result = future.result()
-                except Exception as exc:
-                    provider = meta.get(future)
-                    provider_name = provider.__class__.__name__ if provider else "Unknown"
-                    log.warning("Metadata provider %s failed: %s", provider_name, exc)
-                    continue
-                if not result:
-                    continue
-                data.extend([asdict(x) for x in result if x])
+        providers = [c for c in cl
+                     if active.get(c.__id__, True) and bool(global_enabled.get(c.__id__, True))]
+        data = _metadata_search_providers(providers, query, static_cover, locale)
     return  make_response(jsonify(data))

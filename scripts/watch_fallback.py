@@ -45,6 +45,7 @@ class FileStat:
     size: int
     mtime_ns: int
     stable_count: int = 0  # how many consecutive scans with identical stat
+    emitted: bool = False  # already reported in its current state
 
 
 def iter_files(root: str, recursive: bool = True, extensions: Optional[Set[str]] = None) -> Iterable[str]:
@@ -110,7 +111,8 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
     index: Dict[FileKey, FileStat] = {}
     last_scan_at = 0.0
 
-    # Prime the index once so we don't fire for everything immediately
+    # Prime the index. Files already present are reported on the next scan (they are
+    # old and stable), so books left in the ingest folder while CWA was down get imported.
     for fp in iter_files(root, args.recursive, exts):
         st = get_stat(fp)
         if st:
@@ -145,13 +147,17 @@ def main(argv: Optional[Iterable[str]] = None) -> int:
                     prev.size = size
                     prev.mtime_ns = mtime_ns
                     prev.stable_count = 0
+                    prev.emitted = False  # changed: report it again once it settles
 
-                # If stable long enough (two scans) OR sufficiently old mtime, emit event
-                if prev.stable_count >= 2 or (time.time() - (prev.mtime_ns / 1e9)) >= args.stabilize:
+                # Emit once per file state, when stable for two scans or old enough.
+                # (A stable_count sentinel used to stop refires, but the "old enough"
+                # branch ignored it, so unchanged files re-fired on every scan.)
+                if not prev.emitted and (
+                    prev.stable_count >= 2 or (time.time() - (prev.mtime_ns / 1e9)) >= args.stabilize
+                ):
                     # Emit a close_write-style event
                     print_event("CLOSE_WRITE", fp)
-                    # Reset stable_count so we don't fire repeatedly for unchanged files
-                    prev.stable_count = -999999  # sentinel to avoid refire unless it changes again
+                    prev.emitted = True
 
             # Clean up removed files from index to keep memory small
             if len(index) > 0 and len(seen) < len(index):

@@ -1272,7 +1272,7 @@ def HandleProductsRequest(dummy=None):
 def make_calibre_web_auth_response():
     # As described in kobo_auth.py, CalibreWeb doesn't make use practical use of this auth/device API call for
     # authentation (nor for authorization). We return a dummy response just to keep the device happy.
-    content = request.get_json()
+    content = request.get_json(silent=True) or {}
     AccessToken = base64.b64encode(os.urandom(24)).decode('utf-8')
     RefreshToken = base64.b64encode(os.urandom(24)).decode('utf-8')
     return make_response(
@@ -1311,9 +1311,13 @@ def make_calibre_web_oauth_response():
 
 @csrf.exempt
 @kobo.route("/v1/auth/device", methods=["POST"])
+@kobo.route("/v1/auth/refresh", methods=["POST"])
+# Freshly paired devices on current firmware call add-device before their first sync
+# and abort with "Sync failed" on a 404 (#1476); the same dummy response satisfies them.
+@kobo.route("/v1/user/add-device", methods=["POST"])
 @requires_kobo_auth
 def HandleAuthRequest():
-    log.debug('Kobo Auth request')
+    log.debug('Kobo Auth request: %s', request.path)
     if config.config_kobo_proxy:
         try:
             return redirect_or_proxy_request()

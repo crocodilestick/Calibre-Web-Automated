@@ -291,6 +291,11 @@ class Enforcer:
 
             from cps.progress_syncing.checksums import calculate_koreader_partial_md5, store_checksum, CHECKSUM_VERSION
 
+            # Checksums are only kept (and the table only exists) with KOReader sync enabled
+            from cps.progress_syncing.settings import is_koreader_sync_enabled
+            if not is_koreader_sync_enabled():
+                return
+
             # Calculate new checksum
             checksum = calculate_koreader_partial_md5(file_path)
             if not checksum:

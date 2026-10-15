@@ -1,7 +1,7 @@
 #!/usr/bin/with-contenv bash
 
-# Drop privileges to abc (LinuxServer PUID/PGID user)
-if [ "$(id -u)" = "0" ]; then
+# Drop privileges to abc (LinuxServer PUID/PGID user); not when sourced by tests
+if [ "$(id -u)" = "0" ] && [ "${CWA_INGEST_SERVICE_TEST_MODE:-0}" != "1" ]; then
     exec s6-setuidgid abc "$0" "$@"
 fi
 
@@ -262,6 +262,20 @@ is_supported_ingest_file() {
         [[ "$filepath" =~ $SUPPORTED_EXT_REGEX ]]
 }
 
+# Supported files already in the ingest folder, oldest first, as watcher-style lines.
+# inotify only reports new writes/moves, so books that were already there when the
+# service started (copied in while CWA was down, or left by a crash) never got imported.
+list_existing_ingest_files() {
+        local mtime path
+        [ -d "$WATCH_FOLDER" ] || return 0
+        find "$WATCH_FOLDER" -type f -printf '%T@ %p\n' 2>/dev/null | sort -n |
+        while read -r mtime path; do
+                if is_supported_ingest_file "$path"; then
+                        printf 'EXISTING %s\n' "$path"
+                fi
+        done
+}
+
 has_pending_ingest_files() {
         local candidate
         [ -d "$WATCH_FOLDER" ] || return 1
@@ -346,11 +360,22 @@ cleanup_background_jobs() {
                 wait "$POST_BATCH_FOLLOW_UP_PID" 2>/dev/null || true
                 POST_BATCH_FOLLOW_UP_PID=""
         fi
+        stop_service_process_group
+}
+
+# Stop the watcher and everything it started (inotifywait, the event loop, a running
+# ingest processor). They are not direct children we track, and on a stop/restart they
+# used to be orphaned and keep running next to the new watcher. s6 gives each service
+# its own process group; only signal it when this script leads that group.
+stop_service_process_group() {
+        [ "${CWA_INGEST_SERVICE_TEST_MODE:-0}" = "1" ] && return 0
+        [ "$(ps -o pgid= -p "$$" 2>/dev/null | tr -d ' ')" = "$$" ] || return 0
+        trap '' TERM HUP INT
+        kill -TERM 0 2>/dev/null || true
 }
 
 terminate_service() {
-        cleanup_background_jobs
-        exit 0
+        exit 0  # the EXIT trap cleans up
 }
 
 process_retry_queue() {
@@ -513,38 +538,58 @@ POST_BATCH_FOLLOW_UP_PID=$!
 trap cleanup_background_jobs EXIT
 trap terminate_service TERM HUP INT
 
-if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
-        echo "[cwa-ingest-service] NETWORK_SHARE_MODE=true -> using fallback watcher"
-        run_fallback; exit 0
-fi
+run_watcher() {
+        if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
+                echo "[cwa-ingest-service] NETWORK_SHARE_MODE=true -> using fallback watcher"
+                run_fallback; return
+        fi
 
-if [ "${CWA_WATCH_MODE:-inotify}" = "poll" ]; then
-        run_fallback; exit 0
-fi
+        if [ "${CWA_WATCH_MODE:-inotify}" = "poll" ]; then
+                run_fallback; return
+        fi
 
-if is_docker_desktop; then
-        echo "[cwa-ingest-service] Docker Desktop detected -> using fallback watcher"
-        run_fallback; exit 0
-fi
+        if is_docker_desktop; then
+                echo "[cwa-ingest-service] Docker Desktop detected -> using fallback watcher"
+                run_fallback; return
+        fi
 
-# Background cleanup loop for stale temp files
-if [ -n "$(get_stale_temp_interval_from_db)" ]; then
-        (
-                while true; do
-                        cleanup_stale_temps
-                        interval=$(get_stale_temp_interval_from_db)
-                        if [ -z "$interval" ] || [ "$interval" -le 0 ]; then
-                                sleep 60
-                        else
-                                sleep "$interval"
+        # Background cleanup loop for stale temp files
+        if [ -n "$(get_stale_temp_interval_from_db)" ]; then
+                (
+                        while true; do
+                                cleanup_stale_temps
+                                interval=$(get_stale_temp_interval_from_db)
+                                if [ -z "$interval" ] || [ "$interval" -le 0 ]; then
+                                        sleep 60
+                                else
+                                        sleep "$interval"
+                                fi
+                        done
+                ) &
+        fi
+
+        # Start the watcher first, then list what is already there, so nothing that arrives
+        # in between is missed. Both feed the same loop, so files are still handled one at a
+        # time and a file seen twice is skipped by the recent/in-flight checks. If inotify
+        # fails, the polling fallback also reports files that are already present.
+        ( set -o pipefail
+                {
+                        inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" &
+                        inotify_pid=$!
+                        sleep "${CWA_INGEST_STARTUP_SWEEP_DELAY:-2}"
+                        if kill -0 "$inotify_pid" 2>/dev/null; then
+                                list_existing_ingest_files
                         fi
+                        wait "$inotify_pid"
+                } | \
+                while read -r events filepath; do
+                        handle_event "$filepath"
                 done
-        ) &
-fi
+        ) || run_fallback
+}
 
-( set -o pipefail
-        inotifywait -m -r --format="%e %w%f" -e close_write -e moved_to "$WATCH_FOLDER" | \
-        while read -r events filepath; do
-                handle_event "$filepath"
-        done
-) || run_fallback
+# Run the watcher in the background and wait for it: bash only runs the TERM trap
+# once the current foreground command finishes, and the watcher never finishes, so
+# run in the foreground it made the service ignore s6's stop/restart requests.
+run_watcher &
+wait "$!"

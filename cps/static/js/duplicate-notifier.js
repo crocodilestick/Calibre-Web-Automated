@@ -8,12 +8,19 @@
     
     const STORAGE_KEY = 'cwa_duplicates_notification_shown';
     const LAST_COUNT_KEY = 'cwa_duplicates_last_count';
-    const POLL_INTERVAL_MS = 2500;
-    const POLL_MAX_ATTEMPTS = 60; // ~2.5 minutes
+    // Status is only polled while a duplicate refresh is pending (its results are
+    // about to change). Otherwise: once per page load, on returning to the tab,
+    // and a slow refresh for tabs left open. Each request opens cwa.db, so the
+    // old unconditional 2.5s poll from every open tab added real load (#1288).
+    const POLL_INTERVAL_MS = 5000;
+    const POLL_MAX_ATTEMPTS = 60; // ~5 minutes
+    const FOCUS_MIN_INTERVAL_MS = 30000;
+    const BACKGROUND_REFRESH_MS = 5 * 60 * 1000;
     
     let currentDuplicateCount = 0;
     let pollAttempts = 0;
     let pollTimer = null;
+    let lastFetchAt = 0;
     let lastPreviewSignature = '';
     
     /**
@@ -61,6 +68,7 @@
      * Fetch duplicate status from API
      */
     function fetchDuplicateStatus() {
+        lastFetchAt = Date.now();
         const basePath = (typeof getPath === 'function') ? getPath() : '';
         const statusUrl = basePath + '/duplicates/status';
         return fetch(statusUrl, {
@@ -187,13 +195,13 @@
             }
         }
 
-        if ((data.needs_scan || data.stale) && !isModalActive()) {
+        // A pending refresh (e.g. after an import) will change the results soon.
+        // A full scan only starts when someone triggers it, so there is nothing to wait for.
+        const refreshPending = data.stale && !data.needs_full_scan;
+        if ((refreshPending || window.CWADuplicateScanActive) && !isModalActive()) {
             startStatusPolling();
-            return;
-        }
-
-        if (data.enabled) {
-            startStatusPolling();
+        } else {
+            stopStatusPolling();
         }
     }
     
@@ -262,10 +270,9 @@
         // Initialize event listeners
         initializeEventListeners();
         
-        // Fetch initial status once on page load
-        // No periodic updates - badge refreshes after ingest operations only
+        // The page ships the current status; only fetch if it didn't
         const bootstrapData = window.cwaDuplicateBootstrap;
-        if (bootstrapData && typeof bootstrapData === 'object') {
+        if (bootstrapData && typeof bootstrapData === 'object' && Object.keys(bootstrapData).length) {
             handleStatusResponse({
                 success: true,
                 enabled: !!bootstrapData.enabled,
@@ -275,16 +282,21 @@
                 stale: !!bootstrapData.stale,
                 needs_scan: !!bootstrapData.stale
             });
+        } else {
+            fetchDuplicateStatus().then(handleStatusResponse);
         }
 
-        fetchDuplicateStatus().then(handleStatusResponse);
-        startStatusPolling();
-
         document.addEventListener('visibilitychange', function() {
-            if (!document.hidden) {
+            if (!document.hidden && Date.now() - lastFetchAt >= FOCUS_MIN_INTERVAL_MS) {
                 fetchDuplicateStatus().then(handleStatusResponse);
             }
         });
+
+        setInterval(function() {
+            if (!document.hidden && !pollTimer && Date.now() - lastFetchAt >= BACKGROUND_REFRESH_MS) {
+                fetchDuplicateStatus().then(handleStatusResponse);
+            }
+        }, BACKGROUND_REFRESH_MS);
     }
     
     // Expose functions globally for use by other scripts

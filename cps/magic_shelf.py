@@ -5,9 +5,11 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
+import re
+
 from . import db, ub, logger
 from .cw_login import current_user
-from sqlalchemy import and_, or_, not_
+from sqlalchemy import and_, or_, not_, false
 from sqlalchemy.sql.expression import func
 from sqlalchemy.exc import SQLAlchemyError
 from datetime import datetime, timedelta, timezone
@@ -165,8 +167,8 @@ SYSTEM_SHELF_TEMPLATES = {
                     'field': 'timestamp',
                     'type': 'date',
                     'input': 'text',
-                    'operator': 'greater',
-                    'value': (datetime.now(timezone.utc) - timedelta(days=30)).strftime('%Y-%m-%d')
+                    'operator': 'newer_than',
+                    'value': '30'
                 }
             ]
         }
@@ -251,8 +253,8 @@ SYSTEM_SHELF_TEMPLATES = {
                     'field': 'pubdate',
                     'type': 'date',
                     'input': 'text',
-                    'operator': 'greater',
-                    'value': (datetime.now(timezone.utc) - timedelta(days=730)).strftime('%Y-%m-%d')
+                    'operator': 'newer_than',
+                    'value': '730'
                 }
             ]
         }
@@ -289,6 +291,7 @@ FIELD_MAP = {
     'language': (db.Languages, 'lang_code'),
     'pubdate': (db.Books, 'pubdate'),
     'timestamp': (db.Books, 'timestamp'),
+    'last_modified': (db.Books, 'last_modified'),
     'has_cover': (db.Books, 'has_cover'),
     'series_index': (db.Books, 'series_index'),
     'comments': (db.Comments, 'text'),  # Fixed: Points to actual text column, not relationship
@@ -336,6 +339,22 @@ RELATIONSHIP_MAP = {
     'language': 'languages',
     'comments': 'comments',  # For description field - requires join to Comments table
 }
+
+DATE_FIELDS = {'pubdate', 'timestamp', 'last_modified'}
+DATE_RULE_OPERATORS = {'older_than': 'less', 'newer_than': 'greater', 'equal': 'equal'}
+
+
+def resolve_date_rule_value(value):
+    """Resolve a YYYY-MM-DD date or nonnegative day count against today in UTC."""
+    if isinstance(value, bool) or not isinstance(value, (str, int)):
+        raise ValueError('Expected a date or a whole number of days')
+    value = str(value).strip()
+    if re.fullmatch(r'[0-9]+', value):
+        return (datetime.now(timezone.utc).date() - timedelta(days=int(value))).isoformat()
+    if re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}', value):
+        return datetime.strptime(value, '%Y-%m-%d').date().isoformat()
+    raise ValueError('Expected YYYY-MM-DD or a nonnegative whole number of days')
+
 
 def build_filter_from_rule(rule, user_id=None):
     """Builds a SQLAlchemy filter condition from a single rule."""
@@ -462,7 +481,18 @@ def build_filter_from_rule(rule, user_id=None):
         if not model:
             return None
         column = getattr(model, column_name)
-    
+
+    if field_name in DATE_FIELDS and operator_name in DATE_RULE_OPERATORS:
+        try:
+            value = resolve_date_rule_value(value)
+        except (ValueError, OverflowError) as error:
+            log.warning("Invalid magic shelf date value %r: %s", value, error)
+            # Do not silently drop an invalid rule and broaden the shelf.
+            return false()
+        # Compare calendar dates, then use the normal operator handling below.
+        column = func.date(column)
+        operator_name = DATE_RULE_OPERATORS[operator_name]
+
     operator = OPERATOR_MAP.get(operator_name)
 
     if not operator:
@@ -577,7 +607,9 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None,
                 if created_at.tzinfo is None:
                     created_at = created_at.replace(tzinfo=timezone.utc)
                 
-                is_expired = (datetime.now(timezone.utc) - created_at) > timedelta(minutes=30)
+                now = datetime.now(timezone.utc)
+                # Day-count rules change at UTC midnight, even within the cache TTL.
+                is_expired = (now - created_at) > timedelta(minutes=30) or now.date() != created_at.date()
                 
                 if not is_expired:
                     all_ids = cache.book_ids

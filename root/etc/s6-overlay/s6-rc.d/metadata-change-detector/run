@@ -9,6 +9,10 @@ echo "[metadata-change-detector] Watching folder: $WATCH_FOLDER"
 # Create the folder if it doesn't exist
 install -d -o abc -g abc "$WATCH_FOLDER"
 
+# cover_enforcer runs as abc, like the web app and the ingest service, so files it
+# writes into the library (and Calibre's settings under /config) are never root-owned
+# (#1472). The folder above is created as root first.
+
 # Monitor the folder for new files; on inotify errors, fall back to polling
 run_fallback() {
         echo "[metadata-change-detector] Falling back to polling watcher (inotify unavailable or out of watches)" >&2
@@ -19,7 +23,7 @@ run_fallback() {
         while read -r events filepath; do
                 filename=$(basename -- "$filepath")
                 echo "[metadata-change-detector] New file detected: $filename"
-                python3 /app/calibre-web-automated/scripts/cover_enforcer.py "--log" "$filename"
+                s6-setuidgid abc python3 /app/calibre-web-automated/scripts/cover_enforcer.py "--log" "$filename"
         done
 }
 
@@ -40,31 +44,49 @@ is_docker_desktop() {
         return 1
 }
 
-# Prefer polling when running over network shares to better handle NFS/SMB semantics
-if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
-        echo "[metadata-change-detector] NETWORK_SHARE_MODE=true detected; using polling watcher instead of inotify"
-        run_fallback
-        exit 0
-fi
+# On stop/restart, also stop the watcher pipeline and a running cover_enforcer. They
+# used to be orphaned, leaving a second watcher that handled every change twice.
+# s6 gives each service its own process group; only signal it when we lead that group.
+stop_service_process_group() {
+        [ "$(ps -o pgid= -p "$$" 2>/dev/null | tr -d ' ')" = "$$" ] || return 0
+        trap '' TERM HUP INT
+        kill -TERM 0 2>/dev/null || true
+}
+trap stop_service_process_group EXIT
+trap 'exit 0' TERM HUP INT
 
-# Allow admins to force polling mode explicitly (defaults to inotify)
-if [ "${CWA_WATCH_MODE:-inotify}" = "poll" ]; then
-        run_fallback
-        exit 0
-fi
+run_watcher() {
+        # Prefer polling when running over network shares to better handle NFS/SMB semantics
+        if [ "${NETWORK_SHARE_MODE,,}" = "true" ] || [ "${NETWORK_SHARE_MODE}" = "1" ] || [ "${NETWORK_SHARE_MODE,,}" = "yes" ] || [ "${NETWORK_SHARE_MODE,,}" = "on" ]; then
+                echo "[metadata-change-detector] NETWORK_SHARE_MODE=true detected; using polling watcher instead of inotify"
+                run_fallback
+                return
+        fi
 
-# Prefer polling on Docker Desktop (Windows/macOS) for reliable detection on host-mounted paths
-if is_docker_desktop; then
-        echo "[metadata-change-detector] Docker Desktop environment detected; using polling watcher instead of inotify"
-        run_fallback
-        exit 0
-fi
+        # Allow admins to force polling mode explicitly (defaults to inotify)
+        if [ "${CWA_WATCH_MODE:-inotify}" = "poll" ]; then
+                run_fallback
+                return
+        fi
 
-(
-        set -o pipefail
-        s6-setuidgid abc inotifywait -m -e close_write -e moved_to --exclude '^.*\.(swp)$' "$WATCH_FOLDER" |
-        while read -r directory events filename; do
-                echo "[metadata-change-detector] New file detected: $filename"
-                python3 /app/calibre-web-automated/scripts/cover_enforcer.py "--log" "$filename"
-        done
-) || run_fallback
+        # Prefer polling on Docker Desktop (Windows/macOS) for reliable detection on host-mounted paths
+        if is_docker_desktop; then
+                echo "[metadata-change-detector] Docker Desktop environment detected; using polling watcher instead of inotify"
+                run_fallback
+                return
+        fi
+
+        (
+                set -o pipefail
+                s6-setuidgid abc inotifywait -m -e close_write -e moved_to --exclude '^.*\.(swp)$' "$WATCH_FOLDER" |
+                while read -r directory events filename; do
+                        echo "[metadata-change-detector] New file detected: $filename"
+                        s6-setuidgid abc python3 /app/calibre-web-automated/scripts/cover_enforcer.py "--log" "$filename"
+                done
+        ) || run_fallback
+}
+
+# Wait on the watcher in the background so the TERM trap runs straight away: bash
+# defers traps until the foreground command finishes, and the watcher never does.
+run_watcher &
+wait "$!"

@@ -29,3 +29,18 @@ RELATIONSHIPS = ("authors", "tags", "comments", "data", "series",
 def test_books_relationship_uses_selectin(name):
     rel = inspect(db.Books).relationships[name]
     assert rel.lazy == "selectin"
+
+
+def test_filtered_book_load_options_include_custom_columns(monkeypatch):
+    """get_filtered_book() must eager-load custom columns too: if a db reconnect
+    detaches the book mid-edit, reading book.custom_column_N otherwise raises
+    DetachedInstanceError (#1536)."""
+    monkeypatch.setattr(db, "cc_classes", {7: object()})
+    monkeypatch.setattr(db.Books, "custom_column_7", "cc-7-relationship", raising=False)
+    monkeypatch.setattr(db, "selectinload", lambda rel: rel)
+
+    options = db.CalibreDB._book_load_options()
+
+    # identity checks: SQLAlchemy overloads == on mapped attributes
+    assert any(opt is db.Books.custom_column_7 for opt in options)
+    assert any(opt is db.Books.authors for opt in options)

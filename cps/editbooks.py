@@ -700,7 +700,8 @@ def delete_selected_books():
     vals = request.get_json().get('selections')
     if vals:
         for book_id in vals:
-            delete_book_from_table(book_id, "", True)
+            delete_book_from_table(book_id, "", True, refresh_duplicates=False)
+        _refresh_duplicates_after_bulk_deletion(vals)
         _queue_duplicate_scan_after_change(vals)
         return json.dumps({'success': True})
     return ""
@@ -761,11 +762,26 @@ def merge_list_book():
                                                         element.uncompressed_size,
                                                         to_name))
                             to_file.append(element.format)
-                    delete_book_from_table(from_book.id, "", True)
+                    delete_book_from_table(from_book.id, "", True, refresh_duplicates=False)
             calibre_db.session.commit()
+            _refresh_duplicates_after_bulk_deletion(vals)
             _queue_duplicate_scan_after_change([to_book.id] + vals)
             return json.dumps({'success': True})
     return ""
+
+
+def _refresh_duplicates_after_bulk_deletion(book_ids):
+    """One duplicate refresh for every book a bulk delete/merge actually removed."""
+    deleted = []
+    for book_id in book_ids:
+        try:
+            book_id = int(book_id)
+        except (TypeError, ValueError):
+            continue
+        if not calibre_db.get_book(book_id):
+            deleted.append(book_id)
+    if deleted:
+        _refresh_duplicates_after_deletion(deleted)
 
 
 def _queue_duplicate_scan_after_change(book_ids=None):
@@ -1357,7 +1373,43 @@ def render_delete_book_result(book_format, json_response, warning, book_id, loca
             return redirect(get_redirect_location(location, "web.index"))
 
 
-def delete_book_from_table(book_id, book_format, json_response, location=""):
+def _refresh_duplicates_after_deletion(book_ids):
+    """Drop deleted books from the duplicate index and rebuild the cached groups once.
+
+    Falls back to marking the cache stale (a later scan rebuilds it) if that fails.
+    """
+    sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+    try:
+        from cps.duplicate_index import (
+            _current_max_book_id,
+            delete_book_keys,
+            get_duplicate_groups_from_index,
+        )
+        from cwa_db import CWA_DB
+
+        delete_book_keys(list(book_ids))
+        cwa_db = CWA_DB()
+        duplicate_groups = get_duplicate_groups_from_index(cwa_db.cwa_settings, include_dismissed=True)
+        cwa_db.update_duplicate_cache(duplicate_groups, len(duplicate_groups), _current_max_book_id())
+        return
+    except Exception as e:
+        log.warning("Failed to refresh duplicate index/cache after deleting books %s: %s", list(book_ids), str(e))
+    _invalidate_duplicate_cache()
+
+
+def _invalidate_duplicate_cache():
+    try:
+        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
+        from cwa_db import CWA_DB
+        CWA_DB().invalidate_duplicate_cache()
+    except Exception as e:
+        log.error("Failed to invalidate duplicate cache after deletion: %s", str(e))
+
+
+def delete_book_from_table(book_id, book_format, json_response, location="", refresh_duplicates=True):
+    # Bulk callers pass refresh_duplicates=False and refresh once for all books afterwards:
+    # rebuilding the duplicate groups for every book blocked the web server for the whole
+    # bulk delete/merge in the Duplicate Manager (#1095).
     warning = {}
     if current_user.role_delete_books():
         book = calibre_db.get_book(book_id)
@@ -1390,35 +1442,13 @@ def delete_book_from_table(book_id, book_format, json_response, location=""):
                         kobo_sync_status.remove_synced_book(book.id, True)
                 calibre_db.session.commit()
 
-                refreshed_duplicate_cache = False
                 if not book_format:
-                    try:
-                        from cps.duplicate_index import (
-                            _current_max_book_id,
-                            delete_book_keys,
-                            get_duplicate_groups_from_index,
-                        )
-                        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-                        from cwa_db import CWA_DB
+                    if refresh_duplicates:
+                        _refresh_duplicates_after_deletion([book_id])
+                else:
+                    # Format-only deletions need a later cache refresh.
+                    _invalidate_duplicate_cache()
 
-                        delete_book_keys([book_id])
-                        cwa_db = CWA_DB()
-                        duplicate_groups = get_duplicate_groups_from_index(cwa_db.cwa_settings, include_dismissed=True)
-                        cwa_db.update_duplicate_cache(duplicate_groups, len(duplicate_groups), _current_max_book_id())
-                        refreshed_duplicate_cache = True
-                    except Exception as e:
-                        log.warning("Failed to refresh duplicate index/cache after deleting book %s: %s", book_id, str(e))
-                
-                # Format-only deletions and refresh failures need a later cache refresh.
-                if not refreshed_duplicate_cache:
-                    try:
-                        sys.path.insert(1, '/app/calibre-web-automated/scripts/')
-                        from cwa_db import CWA_DB
-                        cwa_db = CWA_DB()
-                        cwa_db.invalidate_duplicate_cache()
-                    except Exception as e:
-                        log.error("Failed to invalidate duplicate cache after deletion: %s", str(e))
-                
             except Exception as ex:
                 log.error_or_exception(ex)
                 calibre_db.session.rollback()

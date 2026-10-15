@@ -416,7 +416,9 @@ div.help-panel > .panel-body {
                     <!-- Date Format Hint (shown when date fields are used) -->
                     <div id="date-format-hint" class="date-format-hint">
                         <span class="glyphicon glyphicon-info-sign hint-icon"></span>
-                        <strong>Date Format:</strong> Use <span class="hint-format">YYYY-MM-DD</span> format for date fields (e.g., 2024-01-15)
+                        <strong>Date Format:</strong> Use <span class="hint-format">YYYY-MM-DD</span> (e.g., 2024-01-15).
+                        For Older than, Newer than, or Equal, you can also enter a whole number of days ago (e.g., <span class="hint-format">30</span>).
+                        Day counts update daily. <span class="hint-format">0</span> means today. These rules compare calendar dates in UTC.
                     </div>
                     
                     <!-- Preview Results -->
@@ -569,15 +571,22 @@ $(function() {
             id: 'pubdate', 
             label: 'Published Date', 
             type: 'date', 
-            validation: {format: 'YYYY-MM-DD'},
+            validation: {format: 'YYYY-MM-DD', callback: validateDateRule},
             description: 'Original publication date'
         },
         {
             id: 'timestamp', 
             label: 'Date Added', 
             type: 'date', 
-            validation: {format: 'YYYY-MM-DD'},
+            validation: {format: 'YYYY-MM-DD', callback: validateDateRule},
             description: 'When book was added to library'
+        },
+        {
+            id: 'last_modified',
+            label: 'Last Modified',
+            type: 'date',
+            validation: {format: 'YYYY-MM-DD', callback: validateDateRule},
+            description: 'When book was last modified'
         },
         {
             id: 'has_cover', 
@@ -628,6 +637,8 @@ $(function() {
         {type: 'greater_or_equal', optgroup: 'number'},
         {type: 'between', optgroup: 'number'},
         {type: 'not_between', optgroup: 'number'},
+        {type: 'older_than', nb_inputs: 1, multiple: false, apply_to: ['datetime'], optgroup: 'date'},
+        {type: 'newer_than', nb_inputs: 1, multiple: false, apply_to: ['datetime'], optgroup: 'date'},
         {type: 'begins_with', optgroup: 'string'},
         {type: 'not_begins_with', optgroup: 'string'},
         {type: 'contains', optgroup: 'string'},
@@ -642,15 +653,30 @@ $(function() {
 
     var rules = {{ rules_json|safe }};
 
-    // Date validation helper
-    function isValidDate(dateString) {
-        if (!dateString) return true; // Empty is valid (will be handled by is_empty operator)
-        var regex = /^\d{4}-\d{2}-\d{2}$/;
-        if (!regex.test(dateString)) return false;
-        var date = new Date(dateString);
-        var timestamp = date.getTime();
-        if (typeof timestamp !== 'number' || Number.isNaN(timestamp)) return false;
-        return date.toISOString().startsWith(dateString);
+    // Date validation helpers. Legacy operators keep their existing validation.
+    var dateRuleError = 'Use YYYY-MM-DD or a nonnegative whole number of days ago (e.g., 30).';
+
+    function supportsDayCount(operator) {
+        return operator === 'older_than' || operator === 'newer_than' || operator === 'equal';
+    }
+
+    function validateDateRule(value, rule) {
+        if (!supportsDayCount(rule.operator.type)) {
+            return this._validateValue(rule, value);
+        }
+        return isValidDate(value, true) || dateRuleError;
+    }
+
+    function isValidDate(value, allowDays) {
+        if (typeof value !== 'string' && typeof value !== 'number') return false;
+        value = String(value).trim();
+        if (allowDays && /^[0-9]+$/.test(value)) {
+            var cutoff = new Date(Date.now() - Number(value) * 86400000);
+            return cutoff.getUTCFullYear() >= 1;
+        }
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || value.startsWith('0000-')) return false;
+        var date = new Date(value);
+        return !Number.isNaN(date.getTime()) && date.toISOString().startsWith(value);
     }
 
     // Show/hide date format hint based on rules
@@ -660,7 +686,7 @@ $(function() {
         // Check all filter dropdowns for date fields
         $('#builder .rule-filter-container select').each(function() {
             var filterId = $(this).val();
-            if (filterId === 'pubdate' || filterId === 'timestamp') {
+            if (filterId === 'pubdate' || filterId === 'timestamp' || filterId === 'last_modified') {
                 hasDateField = true;
                 return false; // break out of each loop
             }
@@ -677,6 +703,9 @@ $(function() {
         plugins: ['bt-tooltip-errors'],
         filters: fields,
         operators: operators,
+        lang: {
+            operators: {older_than: 'older than', newer_than: 'newer than'}
+        },
         rules: rules
     });
     
@@ -692,13 +721,15 @@ $(function() {
             var $rule = $input.closest('.rule-container');
             var filterId = $rule.find('.rule-filter-container select').val();
             
-            if (filterId === 'pubdate' || filterId === 'timestamp') {
+            if (filterId === 'pubdate' || filterId === 'timestamp' || filterId === 'last_modified') {
                 $input.off('blur.dateValidation').on('blur.dateValidation', function() {
                     var value = $(this).val();
-                    if (value && !isValidDate(value)) {
+                    var allowDays = supportsDayCount($rule.find('.rule-operator-container select').val());
+                    if (value && !isValidDate(value, allowDays)) {
                         $(this).css('border-color', '#d9534f');
                         if (!$(this).next('.date-error').length) {
-                            $(this).after('<div class="date-error" style="color: #d9534f; font-size: 12px; margin-top: 4px;">Invalid format. Use YYYY-MM-DD (e.g., 2024-01-15)</div>');
+                            var message = allowDays ? dateRuleError : 'Use YYYY-MM-DD (e.g., 2024-01-15).';
+                            $(this).after('<div class="date-error" style="color: #d9534f; font-size: 12px; margin-top: 4px;">' + message + '</div>');
                         }
                     } else {
                         $(this).css('border-color', '');

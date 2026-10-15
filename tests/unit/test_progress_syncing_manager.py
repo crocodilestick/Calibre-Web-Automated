@@ -18,6 +18,12 @@ from cps.progress_syncing.checksums import (
 from cps.progress_syncing.models import ensure_checksum_table
 
 
+@pytest.fixture(autouse=True)
+def koreader_sync_enabled(monkeypatch):
+    """Checksums are only written with KOReader sync on; most tests assume it is."""
+    monkeypatch.setattr("cps.progress_syncing.settings.is_koreader_sync_enabled", lambda: True)
+
+
 @pytest.fixture
 def test_db(tmp_path):
     """Create a test database with checksum table."""
@@ -134,3 +140,47 @@ class TestCalculateAndStoreChecksum:
         calculate_and_store_checksum(1, 'EPUB', '/nonexistent/file.epub', db_connection=test_db)
         cursor = test_db.execute("SELECT COUNT(*) FROM book_format_checksums")
         assert cursor.fetchone()[0] == 0
+
+
+@pytest.mark.unit
+class TestKoreaderSyncDisabled:
+    """With KOReader sync off nothing is written (the table may not even exist)."""
+
+    @pytest.fixture(autouse=True)
+    def koreader_sync_disabled(self, monkeypatch):
+        monkeypatch.setattr("cps.progress_syncing.settings.is_koreader_sync_enabled", lambda: False)
+
+    def test_store_checksum_skips_write(self, test_db):
+        assert store_checksum(1, 'EPUB', 'abc123', db_connection=test_db) is False
+        assert test_db.execute("SELECT COUNT(*) FROM book_format_checksums").fetchone()[0] == 0
+
+    def test_store_checksum_skips_when_table_missing(self, tmp_path):
+        conn = sqlite3.connect(str(tmp_path / "no_table.db"))
+        try:
+            assert store_checksum(1, 'EPUB', 'abc123', db_connection=conn) is False
+        finally:
+            conn.close()
+
+    def test_calculate_and_store_skips(self, test_file, test_db):
+        assert calculate_and_store_checksum(1, 'EPUB', test_file, db_connection=test_db) is None
+        assert test_db.execute("SELECT COUNT(*) FROM book_format_checksums").fetchone()[0] == 0
+
+
+@pytest.mark.unit
+class TestIsKoreaderSyncEnabled:
+    """The flag is read straight from cwa.db without building a full CWA_DB."""
+
+    def _make_db(self, tmp_path, value):
+        conn = sqlite3.connect(str(tmp_path / "cwa.db"))
+        conn.execute("CREATE TABLE cwa_settings (koreader_sync_enabled SMALLINT DEFAULT 0 NOT NULL)")
+        conn.execute("INSERT INTO cwa_settings VALUES (?)", (value,))
+        conn.commit()
+        conn.close()
+
+    @pytest.mark.parametrize("value,expected", [(1, True), (0, False)])
+    def test_reads_flag(self, tmp_path, monkeypatch, value, expected):
+        from cps.progress_syncing import settings
+        monkeypatch.undo()  # drop the module-wide "enabled" patch
+        monkeypatch.setenv("CWA_DB_PATH", str(tmp_path))
+        self._make_db(tmp_path, value)
+        assert settings.is_koreader_sync_enabled() is expected

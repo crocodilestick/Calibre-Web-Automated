@@ -368,33 +368,35 @@ class TaskAutoHardcoverID(CalibreTask):
     def _save_stats(self):
         """Save statistics to CWA database"""
         try:
+            from contextlib import closing
             from scripts.cwa_db import CWA_DB
-            cwa_db = CWA_DB()
-            
-            avg_confidence = (self.total_confidence / self.auto_matched) if self.auto_matched > 0 else 0.0
-            
-            query = """
-                INSERT INTO hardcover_auto_fetch_stats 
-                (timestamp, books_processed, auto_matched, queued_for_review, 
-                 skipped_no_results, errors, avg_confidence)
-                VALUES (?, ?, ?, ?, ?, ?, ?)
-            """
-            
-            cwa_db.execute_write(
-                query,
-                (
-                    datetime.utcnow().isoformat(),
-                    self.books_processed,
-                    self.auto_matched,
-                    self.queued_for_review,
-                    self.skipped_no_results,
-                    self.errors,
-                    avg_confidence
+            with closing(CWA_DB().con) as con:
+
+                avg_confidence = (self.total_confidence / self.auto_matched) if self.auto_matched > 0 else 0.0
+
+                query = """
+                    INSERT INTO hardcover_auto_fetch_stats
+                    (timestamp, books_processed, auto_matched, queued_for_review,
+                     skipped_no_results, errors, avg_confidence)
+                    VALUES (?, ?, ?, ?, ?, ?, ?)
+                """
+
+                con.execute(
+                    query,
+                    (
+                        datetime.utcnow().isoformat(),
+                        self.books_processed,
+                        self.auto_matched,
+                        self.queued_for_review,
+                        self.skipped_no_results,
+                        self.errors,
+                        avg_confidence
+                    )
                 )
-            )
-            
+                con.commit()
+
             self.log.debug("Saved Hardcover auto-fetch stats to database")
-            
+
         except Exception as e:
             self.log.warning(f"Error saving stats to database: {e}")
 

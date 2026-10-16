@@ -63,6 +63,15 @@ pytest -m "not slow" -v         # Skip slow tests
 pytest tests/unit/test_cwa_db.py -v
 ```
 
+### Hardcover Auto-Fetch Statistics
+
+The persistence tests use temporary SQLite databases and do not need a Hardcover API key.
+They check committed counters and confidence averages, missing-table initialization, and failed writes.
+
+```bash
+pytest tests/unit/test_auto_hardcover_stats.py -v
+```
+
 ### Run Specific Test Function
 ```bash
 pytest tests/unit/test_cwa_db.py::TestCWADBInitialization::test_database_creates_successfully -v

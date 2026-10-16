@@ -1,7 +1,9 @@
 #!/usr/bin/with-contenv bash
 
-# Drop privileges to abc (LinuxServer PUID/PGID user); not when sourced by tests
-if [ "$(id -u)" = "0" ] && [ "${CWA_INGEST_SERVICE_TEST_MODE:-0}" != "1" ]; then
+# Drop privileges to abc (LinuxServer PUID/PGID user); not when sourced by tests.
+# Skip it when abc is itself uid 0 (PUID=0): s6-setuidgid would leave us as root, and this
+# block would re-exec the script forever without ever starting the watcher (#1572).
+if [ "$(id -u)" = "0" ] && [ "$(id -u abc 2>/dev/null)" != "0" ] && [ "${CWA_INGEST_SERVICE_TEST_MODE:-0}" != "1" ]; then
     exec s6-setuidgid abc "$0" "$@"
 fi
 

@@ -55,6 +55,7 @@ def _load_duplicates_module():
 
     _install_stub("cps.admin", {"admin_required": lambda f: f})
     _install_stub("cps.usermanagement", {"login_required_if_no_ano": lambda f: f})
+    _install_stub("cps.internal_api", {"internal_only": lambda f: f})
     _install_stub("cps.render_template", {"render_title_template": lambda *args, **kwargs: ""})
 
     class _User:
@@ -104,6 +105,10 @@ def _load_duplicates_module():
     module.__package__ = "cps"
     sys.modules["cps.duplicates"] = module
     spec.loader.exec_module(module)
+    # Only needed while importing; left in place they break tests of the real modules
+    sys.modules.pop("cps.internal_api", None)
+    if getattr(sys.modules.get("cwa_db"), "CWA_DB", None) is _CWA_DB:
+        sys.modules.pop("cwa_db", None)
     return module
 
 

@@ -28,6 +28,7 @@ from .cw_login import current_user
 import sys
 sys.path.insert(1, '/app/calibre-web-automated/scripts/')
 from cwa_db import CWA_DB
+from format_tiers import DEFAULT_FORMAT_PRIORITY, best_format_rank, format_priority_from_settings
 
 duplicates = Blueprint('duplicates', __name__)
 log = logger.create()
@@ -159,40 +160,24 @@ def select_book_to_keep(books, strategy):
         return max(books, key=lambda b: _timestamp_or_default(b.timestamp, _AWARE_MIN))
     
     elif strategy == 'highest_quality_format':
-        # Get format priority from settings
+        # Optionally rank converted formats as their source format, so a native EPUB beats one made from a MOBI
         try:
-            import json
             cwa_db = CWA_DB()
-            format_priority_json = cwa_db.cwa_settings.get('duplicate_format_priority', '{}')
-            format_priority = json.loads(format_priority_json)
+            format_priority = format_priority_from_settings(cwa_db.cwa_settings)
+            origins = {}
+            if cwa_db.cwa_settings.get('duplicate_rank_converted_as_source'):
+                origins = cwa_db.format_origins_for_books([b.id for b in books])
         except Exception as e:
             log.warning("[cwa-duplicates] Error loading format priority from settings, using defaults: %s", str(e))
-            # Fallback to default priority
-            format_priority = {
-                'EPUB': 100,
-                'KEPUB': 95,
-                'AZW3': 90,
-                'MOBI': 80,
-                'AZW': 75,
-                'PDF': 60,
-                'TXT': 40,
-                'CBZ': 35,
-                'CBR': 35,
-                'FB2': 30,
-                'DJVU': 25,
-                'HTML': 20,
-                'RTF': 15,
-                'DOC': 10,
-                'DOCX': 10,
-            }
-        
+            format_priority = dict(DEFAULT_FORMAT_PRIORITY)
+            origins = {}
+
         def get_best_format_score(book):
             """Calculate best format score for a book"""
             if not book.data:
                 return 0
-            scores = [format_priority.get(data.format.upper(), 0) for data in book.data if data.format]
-            return max(scores) if scores else 0
-        
+            return best_format_rank([data.format for data in book.data], format_priority, origins.get(book.id))
+
         # Keep book with highest quality format, fallback to newest if tie
         return max(books, key=lambda b: (get_best_format_score(b), _timestamp_or_default(b.timestamp, _AWARE_MIN)))
     

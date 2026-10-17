@@ -21,6 +21,18 @@ CREATE TABLE IF NOT EXISTS cwa_conversions(
     original_backed_up TEXT NOT NULL,
     end_format TEXT DEFAULT "" NOT NULL
 );
+-- Library formats CWA produced by converting an ingested file, and the format they came from.
+-- A book format with no row here was imported as-is (or predates this table).
+CREATE TABLE IF NOT EXISTS cwa_format_origins(
+    id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+    timestamp TEXT NOT NULL,
+    book_id INTEGER NOT NULL,
+    format TEXT NOT NULL,
+    original_format TEXT NOT NULL,
+    source_filename TEXT DEFAULT "" NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS idx_cwa_format_origins_book_format
+    ON cwa_format_origins(book_id, format);
 CREATE TABLE IF NOT EXISTS epub_fixes(
     id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
     timestamp TEXT NOT NULL,
@@ -93,6 +105,7 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     duplicate_auto_resolve_strategy TEXT DEFAULT 'newest' NOT NULL,
     duplicate_auto_resolve_cooldown_minutes INTEGER DEFAULT 0 NOT NULL,  -- 0 = disabled, >0 = minutes between auto-resolutions
     duplicate_format_priority TEXT DEFAULT '{"EPUB":100,"KEPUB":95,"AZW3":90,"MOBI":80,"AZW":75,"PDF":60,"TXT":40,"CBZ":35,"CBR":35,"FB2":30,"DJVU":25,"HTML":20,"RTF":15,"DOC":10,"DOCX":10}' NOT NULL,
+    duplicate_rank_converted_as_source SMALLINT DEFAULT 0 NOT NULL,  -- 1 = a format CWA converted ranks as the format it came from
     -- Duplicate scanning performance settings
     duplicate_detection_use_sql SMALLINT DEFAULT 1 NOT NULL, -- Enable SQL prefilter for hybrid by default
     duplicate_scan_method TEXT DEFAULT 'hybrid' NOT NULL, -- Use hybrid prefilter by default

@@ -648,7 +648,7 @@
                     {% endif %}
                     {% if book.data %}
                       <div><strong>Formats:</strong> 
-                        {% for data in book.data %}{{ data.format }}{% if not loop.last %}, {% endif %}{% endfor %}
+                        {% for data in book.data %}{{ data.format }}{% if book.format_origins and book.format_origins.get(data.format) %} {{ _('(converted from %(original)s)', original=book.format_origins.get(data.format)) }}{% endif %}{% if not loop.last %}, {% endif %}{% endfor %}
                       </div>
                     {% endif %}
                   </div>

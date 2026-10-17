@@ -2951,6 +2951,11 @@ def show_book(book_id):
 
         cwa_db = CWA_DB()
         cwa_settings = cwa_db.cwa_settings
+        try:
+            entry.format_origins = cwa_db.format_origins_for_books([book_id]).get(book_id, {})
+        except Exception as e:
+            log.debug(f"Failed to load format origins for book {book_id}: {e}")
+            entry.format_origins = {}
 
         return render_title_template('detail.html',
                                      entry=entry,

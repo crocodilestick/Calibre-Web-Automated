@@ -1139,6 +1139,14 @@
         </ul>
       </div>
 
+      <div class="checkbox-wrapper" style="margin-top: 2rem;">
+        <input type="checkbox" id="duplicate_rank_converted_as_source" name="duplicate_rank_converted_as_source" value="1" {% if cwa_settings['duplicate_rank_converted_as_source'] %} checked {% endif %}>
+        <label for="duplicate_rank_converted_as_source" style="margin-left: 1rem;">{{_('Treat converted formats as lower quality than native ones')}}</label>
+      </div>
+      <p class="cwa-settings-tip" style="font-size: small;">
+        {{_('A format CWA converted on import ranks as the format it was converted from, so an EPUB made from a MOBI ranks as a MOBI and a native EPUB is kept over it. Only applies to books imported since CWA started recording conversions.')}}
+      </p>
+
       <div class="cwa-settings-tip" style="margin-top: 3rem">
         <small class="settings-explanation">
           💡 <strong>{{_('Tip:')}}</strong> {{_('When resolving duplicates with "Highest Quality Format" strategy, books with higher-ranked formats will be kept. Lower priority formats will be deleted.')}}

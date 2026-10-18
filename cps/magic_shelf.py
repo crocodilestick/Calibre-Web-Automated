@@ -571,7 +571,21 @@ def build_query_from_rules(rules_json, user_id=None):
     
     return None
 
-def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None, sort_param='stored', bypass_cache=False):
+
+def _load_magic_shelf_books(cdb, page_ids, include_read_status):
+    """Load a page in shelf order, optionally linking the viewer's read status."""
+    if include_read_status:
+        from . import config
+        query = cdb.generate_linked_query(config.config_read_column, db.Books)
+    else:
+        query = cdb.session.query(db.Books)
+    books = query.filter(db.Books.id.in_(page_ids)).all()
+    book_map = {(book.Books.id if include_read_status else book.id): book for book in books}
+    return [book_map[book_id] for book_id in page_ids if book_id in book_map]
+
+
+def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None, sort_param='stored', bypass_cache=False,
+                            include_read_status=False):
     """
     Takes a MagicShelf ID and returns a paginated list of book objects that match its rules.
     
@@ -582,9 +596,10 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None,
         sort_order: SQLAlchemy order_by expression
         sort_param: String identifier for the sort order (used for cache key)
         bypass_cache: If True, forces a database query and cache update
+        include_read_status: Return (Books, archive status, read status) rows for web templates
     
     Returns:
-        tuple: (books, total_count)
+        tuple: (books, total_count), with plain book objects unless include_read_status is True
     """
     try:
         magic_shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
@@ -627,9 +642,7 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None,
 
                     # Fetch objects (must preserve order!)
                     cdb = db.CalibreDB(init=True)
-                    books = cdb.session.query(db.Books).filter(db.Books.id.in_(page_ids)).all()
-                    book_map = {b.id: b for b in books}
-                    ordered_books = [book_map[bid] for bid in page_ids if bid in book_map]
+                    ordered_books = _load_magic_shelf_books(cdb, page_ids, include_read_status)
                     
                     log.debug(f"Magic shelf {shelf_id} served from cache ({len(ordered_books)} books)")
                     return ordered_books, total_count
@@ -719,9 +732,7 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None,
             return [], total_count
 
         # Fetch objects for the current page
-        books = cdb.session.query(db.Books).filter(db.Books.id.in_(page_ids)).all()
-        book_map = {b.id: b for b in books}
-        ordered_books = [book_map[bid] for bid in page_ids if bid in book_map]
+        ordered_books = _load_magic_shelf_books(cdb, page_ids, include_read_status)
         
         return ordered_books, total_count
         

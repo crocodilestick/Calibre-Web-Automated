@@ -910,15 +910,16 @@ def render_magic_shelf(shelf_id, sort_param, page):
 
     # Get books with pagination
     try:
-        books, total_count = magic_shelf.get_books_for_magic_shelf(
+        entries, total_count = magic_shelf.get_books_for_magic_shelf(
             shelf_id, 
             page=page, 
             page_size=per_page,
             sort_order=sort_order,
             sort_param=sort_param,
-            bypass_cache=bypass_cache
+            bypass_cache=bypass_cache,
+            include_read_status=True
         )
-        log.debug(f"Magic shelf {shelf_id} returned {len(books)} books out of {total_count} total")
+        log.debug(f"Magic shelf {shelf_id} returned {len(entries)} books out of {total_count} total")
 
         # Log activity
         try:
@@ -943,13 +944,6 @@ def render_magic_shelf(shelf_id, sort_param, page):
     # Create proper pagination object
     from .pagination import Pagination
     pagination = Pagination(page, per_page, total_count)
-    
-    # Wrap books in entry objects with .Books attribute for template compatibility
-    class Entry:
-        def __init__(self, book):
-            self.Books = book
-    
-    entries = [Entry(book) for book in books]
     
     # Check if this shelf is hidden by current user (for public shelves)
     is_hidden = False

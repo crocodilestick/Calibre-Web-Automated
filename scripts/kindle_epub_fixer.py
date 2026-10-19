@@ -311,6 +311,10 @@ class EPUBFixer:
         if charset.startswith('utf-16'):
             charset = 'utf-16'
 
+        # EPUB content remains XHTML even when its ZIP filename ends in .html.
+        # Use an XML empty element and EPUB 2-compatible Content-Type metadata.
+        meta_tag = f'<meta http-equiv="Content-Type" content="text/html; charset={charset}" />'
+
         http_equiv_pattern = re.compile(
             r'(<meta[^>]+http-equiv=["\']content-type["\'][^>]*content=["\'][^"\']*charset=)([^"\'>\s;]+)([^"\']*["\'][^>]*>)',
             re.IGNORECASE
@@ -320,15 +324,15 @@ class EPUBFixer:
 
         meta_charset_pattern = re.compile(r'<meta[^>]+charset=["\']?[^"\'>\s]+[^>]*>', re.IGNORECASE)
         if meta_charset_pattern.search(content):
-            return meta_charset_pattern.sub(f'<meta charset="{charset}">', content, count=1)
+            return meta_charset_pattern.sub(meta_tag, content, count=1)
 
         head_pattern = re.compile(r'<head[^>]*>', re.IGNORECASE)
         match = head_pattern.search(content)
         if match:
             insert_at = match.end()
-            return content[:insert_at] + f"\n    <meta charset=\"{charset}\">" + content[insert_at:]
+            return content[:insert_at] + '\n    ' + meta_tag + content[insert_at:]
 
-        return f"<meta charset=\"{charset}\">\n" + content
+        return meta_tag + '\n' + content
 
     def _extract_book_info_from_path(self, file_path: str) -> tuple[int | None, str]:
         """Extract book ID and format from file path.

@@ -280,10 +280,12 @@ def get_comic_book(book_id, book_format, page):
 # ################################### Shelfmark #########################################################
 
 def display_shelfmark():
-    return config.config_use_shelfmark and config.config_shelfmark_url != ""
+    if getattr(config, "config_use_shelfmark", False) and getattr(config, "config_shelfmark_url", "") != "":
+        return True
 
 def shelfmark_url():
-    return config.config_shelfmark_url
+    url = getattr(config, "config_shelfmark_url", "")
+    return url
 
 
 # ################################### Typeahead ##################################################################

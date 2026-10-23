@@ -916,7 +916,24 @@ body > div.navbar.navbar-default.navbar-static-top > div > form.search-focus > d
     vertical-align: top
 }
 
+.glyphicon.glyphicon-open {
+    font-size: large;
+    padding-right: 5px;
+    padding-left:5px;
+    vertical-align: top
+}
+
 span.hidden-sm.cwa_switch_theme {
+    margin-bottom: 20px;
+    display: inline-block;
+    line-height: 20px;
+    vertical-align: super;
+    box-sizing: border-box;
+    float: left;
+    font-size: 13px
+}
+
+span.hidden-sm.shelfmark-link-btn {
     margin-bottom: 20px;
     display: inline-block;
     line-height: 20px;
@@ -8126,6 +8143,20 @@ div.comments[data-readmore] {
 }
 
 #cwa-switch-theme > span.hidden-sm, #cwa-switch-theme > span.hidden-sm {
+    display: none
+}
+
+.shelfmark-link-btn {
+    float: left !important
+}
+
+#shelfmark-link-btn {
+    height: 60px;
+    width: 50px;
+    padding: 20px 15px
+}
+
+#shelfmark-link-btn > span.hidden-sm, #shelfmark-link-btn > span.hidden-sm {
     display: none
 }
 

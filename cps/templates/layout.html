@@ -142,6 +142,14 @@
                 </ul>
               </li>
               {% endif %}
+              {% if current_user.role_upload() and display_shelfmark() %}
+                <li class="shelfmark-link-btn">
+                  <a id="shelfmark-link-btn" data-text="{{_('Shelfmark')}}" target="_blank" rel="noopener noreferrer" title="Shelfmark" href="{{ shelfmark_url() }}" data-toggle="tooltip" data-placement="bottom">
+                    <span class="glyphicon glyphicon-open"></span>
+                    <span class="hidden-sm">{{_('Shelfmark')}}</span>
+                  </a>
+                </li>
+              {% endif %}
               <li class="cwa-switch-theme">
                 <a id="cwa-switch-theme" href="#" class="disabled" style="opacity: 0.5; cursor: not-allowed;" title="Temporarily disabled until v5.0.0" data-toggle="tooltip" data-placement="bottom" onclick="return false;">
                   <span class="glyphicon glyphicon-sunglasses"></span>

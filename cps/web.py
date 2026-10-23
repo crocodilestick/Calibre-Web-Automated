@@ -277,6 +277,14 @@ def get_comic_book(book_id, book_format, page):
         return "", 204
 '''
 
+# ################################### Shelfmark #########################################################
+
+def display_shelfmark():
+    return config.config_use_shelfmark and config.config_shelfmark_url != ""
+
+def shelfmark_url():
+    return config.config_shelfmark_url
+
 
 # ################################### Typeahead ##################################################################
 

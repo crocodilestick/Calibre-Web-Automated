@@ -244,6 +244,17 @@
         <input type="text" class="form-control" id="config_hardcover_token" name="config_hardcover_token" value="{% if config.config_hardcover_token != None %}{{ config.config_hardcover_token }}{% endif %}" autocomplete="off">
       </div>
     </div>
+        <div class="form-group">
+      <input type="checkbox" id="config_use_shelfmark" name="config_use_shelfmark" data-control="shelfmark-settings" {% if config.config_use_shelfmark %}checked{% endif %}>
+      <label for="config_use_shelfmark">{{_('Display Shelfmark Link')}}</label>
+    </div>
+    <div data-related="shelfmark-settings">
+      <div class="form-group">
+        <label for="config_shelfmark_url">{{_('Shelfmark URL')}}</label>
+        <input type="text" class="form-control" id="config_shelfmark_url" name="config_shelfmark_url" value="{% if config.config_shelfmark_url != '' %}{{ config.config_shelfmark_url }}{% endif %}" autocomplete="off">
+        <div class="help-block">{{_('User must have Upload permissions to see the Shelfmark button')}}</div>
+      </div>
+    </div>
     <div class="form-group">
       <input type="checkbox" id="config_allow_reverse_proxy_header_login" name="config_allow_reverse_proxy_header_login" data-control="reverse-proxy-login-settings" {% if config.config_allow_reverse_proxy_header_login %}checked{% endif %}>
       <label for="config_allow_reverse_proxy_header_login">{{_('Allow Reverse Proxy Authentication')}}</label>

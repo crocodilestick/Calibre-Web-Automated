@@ -292,6 +292,7 @@ $("#top_admin").parent().addClass("top_admin");
 $("#form-upload").parent().addClass("form-upload");
 $("cwa-switch-theme").parent().addClass("cwa-switch-theme");
 $("refresh-library").parent().addClass("refresh-library");
+$("shelfmark-link-btn").parent().addClass("shelfmark-link-bnt");
 
 // Search button work
 $("input#query").focus(function () {
@@ -513,6 +514,14 @@ $(".plexBack > a").attr({
     "data-placement": "bottom"
 })
     .addClass("back-btn-tooltip");
+
+$("#shelfmark-link-btn").attr({
+    "data-toggle": "tooltip",
+    "title": $("#shelfmark-link-btn").attr("title"),  // Use existing title attribute or fallback to text
+    "data-placement": "bottom",
+    "data-viewport": "#main-nav"
+})
+    .addClass("shelfmark-btn-tooltip");
 
 $("#cwa-switch-theme").attr({
     "data-toggle": "tooltip",

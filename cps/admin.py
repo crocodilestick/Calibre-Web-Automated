@@ -2360,6 +2360,10 @@ def _configuration_update_helper():
 
         _config_int(to_save, "config_updatechannel")
 
+        # Shelfmark configuration
+        _config_checkbox(to_save, "config_use_shelfmark")
+        _config_string(to_save, "config_shelfmark_url")
+
         # Reverse proxy login configuration
         _config_checkbox(to_save, "config_allow_reverse_proxy_header_login")
         _config_string(to_save, "config_reverse_proxy_login_header_name")

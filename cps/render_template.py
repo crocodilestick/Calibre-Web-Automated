@@ -354,11 +354,15 @@ def render_title_template(*args, **kwargs):
                     }
     except Exception as e:
         log.debug("[cwa-duplicates] Failed to build duplicate notification context: %s", str(e))
+    shelfmark_url = ""
+    if config.config_use_shelfmark and config.config_shelfmark_url != "":
+        shelfmark_url=config.config_shelfmark_url
     try:
         return render_template(instance=config.config_calibre_web_title, sidebar=sidebar, simple=simple,
                        accept=config.config_upload_formats.split(','),
                        magic_shelf_routes=magic_shelf_routes,
                        duplicate_notification=duplicate_notification,
+                       shelfmark_url=shelfmark_url,
                        *args, **kwargs)
     except PermissionError:
         log.error("No permission to access {} file.".format(args[0]))

@@ -251,7 +251,8 @@
     <div data-related="shelfmark-settings">
       <div class="form-group">
         <label for="config_shelfmark_url">{{_('Shelfmark URL')}}</label>
-        <input type="text" class="form-control" id="config_shelfmark_url" name="config_shelfmark_url" value="{% if config.config_shelfmark_url != None %}{{ config.config_shelfmark_url }}{% endif %}" autocomplete="off">
+        <input type="text" class="form-control" id="config_shelfmark_url" name="config_shelfmark_url" value="{% if config.config_shelfmark_url != '' %}{{ config.config_shelfmark_url }}{% endif %}" autocomplete="off">
+        <div class="help-block">{{_('User must have Upload permissions to see the Shelfmark button')}}</div>
       </div>
     </div>
     <div class="form-group">

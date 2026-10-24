@@ -142,9 +142,9 @@
                 </ul>
               </li>
               {% endif %}
-              {% if current_user.role_upload() and display_shelfmark() %}
+              {% if current_user.role_upload() and shelfm_url != "" %}
                 <li class="shelfmark-link-btn">
-                  <a id="shelfmark-link-btn" data-text="{{_('Shelfmark')}}" target="_blank" rel="noopener noreferrer" title="Shelfmark" href="{{ shelfmark_url() }}" data-toggle="tooltip" data-placement="bottom">
+                  <a id="shelfmark-link-btn" data-text="{{_('Shelfmark')}}" target="_blank" rel="noopener noreferrer" title="Shelfmark" href="{{ shelfmark_url }}" data-toggle="tooltip" data-placement="bottom">
                     <span class="glyphicon glyphicon-open"></span>
                     <span class="hidden-sm">{{_('Shelfmark')}}</span>
                   </a>

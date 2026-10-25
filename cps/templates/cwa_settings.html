@@ -905,6 +905,14 @@
 
     <div class="settings-container">
       <h4 class="settings-section-header">{{_('CWA Auto-Ingest Automerge')}}</h4>
+      <label>
+        <input type="checkbox" name="prevent_exact_duplicate_imports" id="prevent_exact_duplicate_imports" value="True" {% if cwa_settings.get('prevent_exact_duplicate_imports') %}checked{% endif %}>
+        {{_('Prevent exact duplicate imports')}}
+      </label>
+      <p class="cwa-settings-explanation settings-explanation">
+        {{_('Remember original file hashes before conversion or metadata changes. Repeated originals are kept in processed_books/duplicates instead of creating another book. Explicit format replacements are still allowed.')}}
+      </p>
+
 
       <p class="cwa-settings-explanation settings-explanation">
         {{_('Calibre can detect Duplicate Book Titles on Import and depending on the')}} <code style="color: var(--color-secondary); background-color: #4e5254;">{{_('automerge')}}</code>

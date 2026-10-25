@@ -1724,6 +1724,7 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
                 
                 # Backup and delete each duplicate
                 for book in books_to_delete:
+                    book_uuid = getattr(book, "uuid", None)
                     try:
                         print(f"[cwa-duplicates-auto] Starting deletion of book {book.id}...", flush=True)
                         
@@ -1749,6 +1750,15 @@ def auto_resolve_duplicates(strategy='newest', dry_run=False, user_id=None, trig
                         delete_whole_book(book.id, book)
                         
                         calibre_db.session.commit()
+                        if book_uuid:
+                            try:
+                                from original_uploads import forget_uploads
+                                forget_uploads(
+                                    os.path.join(config.config_calibre_dir, "metadata.db"),
+                                    book_uuid,
+                                )
+                            except Exception as provenance_ex:
+                                log.warning("Could not clear original upload provenance for book %s: %s", book.id, provenance_ex)
                         deleted_ids.append(book.id)
                         log.info("[cwa-duplicates] Deleted duplicate book %s: %s", book.id, book.title)
                         
@@ -1864,10 +1874,13 @@ def merge_duplicate_group(book_to_keep, books_to_merge):
         author_name = to_book.authors[0].name
     to_name = helper.get_valid_filename(to_book.title, chars=96) + ' - ' + helper.get_valid_filename(author_name, chars=96)
 
+    transfers = []
+    target_uuid = getattr(to_book, "uuid", None)
     for source in books_to_merge:
         from_book = calibre_db.get_book(source.id)
         if not from_book:
             continue
+        copied_formats = []
         for element in from_book.data:
             if element.format not in existing_formats:
                 filepath_new = os.path.normpath(os.path.join(config.get_book_path(),
@@ -1882,4 +1895,16 @@ def merge_duplicate_group(book_to_keep, books_to_merge):
                                             element.uncompressed_size,
                                             to_name))
                 existing_formats.append(element.format)
+                copied_formats.append(element.format)
+        if copied_formats:
+            transfers.append((getattr(from_book, "uuid", None), copied_formats))
     calibre_db.session.commit()
+    for source_uuid, copied_formats in transfers:
+        try:
+            from original_uploads import transfer_uploads
+            transfer_uploads(
+                os.path.join(config.config_calibre_dir, "metadata.db"),
+                source_uuid, target_uuid, copied_formats,
+            )
+        except Exception as ex:
+            log.warning("Could not transfer original upload provenance for book %s: %s", source_uuid, ex)

@@ -747,6 +747,9 @@ def merge_list_book():
             for book_id in vals:
                 from_book = calibre_db.get_book(book_id)
                 if from_book:
+                    copied_formats = []
+                    source_uuid = getattr(from_book, "uuid", None)
+                    target_uuid = getattr(to_book, "uuid", None)
                     for element in from_book.data:
                         if element.format not in to_file:
                             # create new data entry with: book_id, book_format, uncompressed_size, name
@@ -762,6 +765,18 @@ def merge_list_book():
                                                         element.uncompressed_size,
                                                         to_name))
                             to_file.append(element.format)
+                            copied_formats.append(element.format)
+                    if copied_formats:
+                        # Persist copied formats before transferring their upload provenance.
+                        calibre_db.session.commit()
+                        try:
+                            from original_uploads import transfer_uploads
+                            transfer_uploads(
+                                os.path.join(config.config_calibre_dir, "metadata.db"),
+                                source_uuid, target_uuid, copied_formats,
+                            )
+                        except Exception as ex:
+                            log.warning("Could not transfer original upload provenance for book %s: %s", from_book.id, ex)
                     delete_book_from_table(from_book.id, "", True, refresh_duplicates=False)
             calibre_db.session.commit()
             _refresh_duplicates_after_bulk_deletion(vals)
@@ -1414,6 +1429,7 @@ def delete_book_from_table(book_id, book_format, json_response, location="", ref
     if current_user.role_delete_books():
         book = calibre_db.get_book(book_id)
         if book:
+            book_uuid = getattr(book, "uuid", None)
             try:
                 result, error = helper.delete_book(book, config.get_book_path(), book_format=book_format.upper())
                 if not result:
@@ -1441,6 +1457,15 @@ def delete_book_from_table(book_id, book_format, json_response, location="", ref
                     if book_format.upper() in ['KEPUB', 'EPUB', 'EPUB3']:
                         kobo_sync_status.remove_synced_book(book.id, True)
                 calibre_db.session.commit()
+                if book_uuid:
+                    try:
+                        from original_uploads import forget_uploads
+                        forget_uploads(
+                            os.path.join(config.config_calibre_dir, "metadata.db"),
+                            book_uuid, book_format or None,
+                        )
+                    except Exception as ex:
+                        log.warning("Could not clear original upload provenance for book %s: %s", book_id, ex)
 
                 if not book_format:
                     if refresh_duplicates:

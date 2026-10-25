@@ -38,6 +38,7 @@ CREATE TABLE IF NOT EXISTS cwa_settings(
     auto_zip_backups SMALLINT DEFAULT 1 NOT NULL,
     cwa_update_notifications SMALLINT DEFAULT 1 NOT NULL,
     contribute_translations_notifications SMALLINT DEFAULT 1 NOT NULL,
+    prevent_exact_duplicate_imports SMALLINT DEFAULT 0 NOT NULL,
     auto_convert SMALLINT DEFAULT 1 NOT NULL,
     auto_convert_target_format TEXT DEFAULT "epub" NOT NULL,
     auto_convert_ignored_formats TEXT DEFAULT "" NOT NULL,
@@ -214,3 +215,17 @@ CREATE TABLE IF NOT EXISTS cwa_duplicate_resolutions (
 
 CREATE INDEX IF NOT EXISTS idx_duplicate_resolutions_timestamp ON cwa_duplicate_resolutions(timestamp);
 CREATE INDEX IF NOT EXISTS idx_duplicate_resolutions_group_hash ON cwa_duplicate_resolutions(group_hash);
+
+CREATE TABLE IF NOT EXISTS cwa_original_uploads(
+    library_uuid TEXT NOT NULL,
+    book_id INTEGER NOT NULL,
+    book_uuid TEXT NOT NULL,
+    format TEXT NOT NULL,
+    original_sha256 TEXT NOT NULL,
+    original_size INTEGER NOT NULL,
+    original_ext TEXT NOT NULL,
+    output_sha256 TEXT NOT NULL,
+    role TEXT NOT NULL,
+    created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(library_uuid, original_sha256, book_uuid, format)
+);

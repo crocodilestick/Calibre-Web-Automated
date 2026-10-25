@@ -4,12 +4,12 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 # See CONTRIBUTORS for full list of authors.
 
+import os
+import re
 import sqlite3
 import sys
-import os
-from sqlite3 import Error as sqlError
-import re
 from datetime import datetime
+from sqlite3 import Error as sqlError
 
 from tabulate import tabulate
 
@@ -44,6 +44,28 @@ class CWA_DB:
         self.ensure_scheduled_jobs_schema()
         self.set_default_settings()
         self.cwa_settings = self.get_cwa_settings()
+        if self.cwa_settings.get("prevent_exact_duplicate_imports", 0):
+            self.ensure_original_upload_schema()
+
+
+    def ensure_original_upload_schema(self) -> None:
+        """Validate named provenance columns without positional rename heuristics."""
+        exists = self.cur.execute(
+            "SELECT 1 FROM sqlite_master WHERE type='table' AND name='cwa_original_uploads'"
+        ).fetchone()
+        if not exists:
+            return
+        from original_uploads import ensure_schema
+
+        ensure_schema(self.con)
+
+        # This table is intentionally excluded from stats_tables: provenance
+        # columns are not historical counters and must never be renamed by
+        # match_stat_table_columns_with_schema() based on their positions.
+        if "cwa_original_uploads" in self.stats_tables:
+            raise sqlite3.OperationalError(
+                "cwa_original_uploads must not use positional stats-table migration"
+            )
 
 
     def connect_to_db(self) -> tuple[sqlite3.Connection, sqlite3.Cursor] | None:

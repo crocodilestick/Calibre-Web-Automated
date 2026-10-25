@@ -5,16 +5,16 @@
 # See CONTRIBUTORS for full list of authors.
 
 import atexit
+import fcntl
 import json
 import os
+import shutil
+import sqlite3
 import subprocess
 import sys
 import tempfile
-import time
-import shutil
-import sqlite3
-import fcntl
 import threading
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -249,10 +249,10 @@ def _load_runtime_dependencies() -> None:
     if CWA_DB and EPUBFixer and audiobook and requests:
         return
 
-    from cwa_db import CWA_DB as _CWA_DB
-    from kindle_epub_fixer import EPUBFixer as _EPUBFixer
     import audiobook as _audiobook
     import requests as _requests
+    from cwa_db import CWA_DB as _CWA_DB
+    from kindle_epub_fixer import EPUBFixer as _EPUBFixer
 
     CWA_DB = _CWA_DB
     EPUBFixer = _EPUBFixer
@@ -272,7 +272,8 @@ def _load_optional_cps_modules() -> None:
 
         # Import GDrive functionality
         try:
-            from cps import gdriveutils as loaded_gdriveutils, config as loaded_cps_config
+            from cps import config as loaded_cps_config
+            from cps import gdriveutils as loaded_gdriveutils
             _gdriveutils = loaded_gdriveutils
             _cps_config = loaded_cps_config
             _GDRIVE_AVAILABLE = True
@@ -286,11 +287,13 @@ def _load_optional_cps_modules() -> None:
 
         # Import auto-send and metadata functionality
         try:
-            from cps.metadata_helper import fetch_and_apply_metadata as loaded_fetch_and_apply_metadata
-            from cps.tasks.auto_send import TaskAutoSend as LoadedTaskAutoSend
-            from cps.services.worker import WorkerThread as LoadedWorkerThread
             from cps import ub as loaded_ub
             from cps.calibre_init import init_calibre_db_from_app_db
+            from cps.metadata_helper import (
+                fetch_and_apply_metadata as loaded_fetch_and_apply_metadata,
+            )
+            from cps.services.worker import WorkerThread as LoadedWorkerThread
+            from cps.tasks.auto_send import TaskAutoSend as LoadedTaskAutoSend
             init_calibre_db_from_app_db(get_app_db_path())
             fetch_and_apply_metadata = loaded_fetch_and_apply_metadata
             TaskAutoSend = LoadedTaskAutoSend
@@ -585,6 +588,12 @@ class NewBookProcessor:
         self.last_added_book_id: int | None = None
         self.last_added_book_ids: list[int] = []
         self._title_sort_regex = self._get_title_sort_regex()
+        self.original_index = None
+        self.original_upload = None
+        self.confirmed_import = False
+        self.confirmed_primary_id = None
+        self.primary_import_succeeded = False
+        self.original_processing_failed = False
 
     @staticmethod
     def _get_title_sort_regex() -> str:
@@ -856,7 +865,27 @@ class NewBookProcessor:
 
 
 
-    def add_book_to_library(self, book_path:str, text: bool=True, format: str="text" ) -> None:
+    def prepare_original_upload(self):
+        from original_uploads import UploadIndex, fingerprint
+        self.original_upload = fingerprint(self.filepath)
+        self.original_index = UploadIndex(self.db.con, self.metadata_db, self.library_dir)
+
+    def record_original_upload(self, added_ids, file_format, accepted_sha256, role="primary",
+                               replace_existing=False):
+        if getattr(self, "original_index", None) is None:
+            return False
+        if len(added_ids) != 1:
+            return False
+        confirmed = self.original_index.record(
+            self.original_upload, added_ids[0], file_format, accepted_sha256, role,
+            replace_existing=replace_existing)
+        if confirmed:
+            if role == "primary":
+                self.confirmed_import = True
+                self.confirmed_primary_id = added_ids[0]
+        return confirmed
+
+    def add_book_to_library(self, book_path:str, text: bool=True, format: str="text" ) -> bool:
         # If kindle-epub-fixer is on, run it first and import the *fixed* file.
         if self.target_format == "epub" and self.is_kindle_epub_fixer:
             fixed_epub_path = Path(self.tmp_conversion_dir) / os.path.basename(book_path)
@@ -870,7 +899,7 @@ class NewBookProcessor:
             except OSError as e:
                 if e.errno == 36: # Filename too long
                     print(f"[ingest-processor] Skipping file due to OS path length error: {book_path}", flush=True)
-                    return
+                    return False
                 else:
                     print(f"[ingest-processor] An error occurred while checking the fixed EPUB path on {book_path}:\n{e}", flush=True)
                     raise
@@ -889,23 +918,38 @@ class NewBookProcessor:
         source_path = Path(book_path)
         if not source_path.exists() or source_path.stat().st_size == 0:
             print(f"[ingest-processor] ERROR: Import file is missing or empty, skipping: {book_path}", flush=True)
+            if (getattr(self, "original_index", None) is not None
+                    and source_path != Path(self.filepath)):
+                self.original_processing_failed = True
             self.backup(self.filepath, backup_type="failed") # Backup original file
-            return
+            return False
 
         # Stage file for import
-        staged_path = Path(self.staging_dir) / source_path.name
+        if getattr(self, "original_index", None) is not None:
+            from original_uploads import clean_upload_filename
+            staged_name = clean_upload_filename(source_path.name)
+        else:
+            staged_name = source_path.name
+        staged_path = Path(self.staging_dir) / staged_name
         try:
             shutil.copy2(source_path, staged_path)
         except Exception as e:
             print(f"[ingest-processor] ERROR: Failed to stage file for import: {e}", flush=True)
+            if getattr(self, "original_index", None) is not None:
+                self.original_processing_failed = True
             self.backup(self.filepath, backup_type="failed")
-            return
+            return False
 
         try:
+            accepted_sha256 = None
+            if getattr(self, "original_index", None) is not None:
+                from original_uploads import fingerprint
+                accepted_sha256 = fingerprint(staged_path).sha256
             if text:
                 result = subprocess.run([
                     "calibredb", "add", str(staged_path), "--automerge", self.cwa_settings['auto_ingest_automerge'], f"--library-path={self.library_dir}"
                 ], env=self.calibre_env, check=True, capture_output=True, text=True)
+                self.primary_import_succeeded = True
                 added_ids = self._parse_added_book_ids((result.stdout or '') + '\n' + (result.stderr or ''))
                 if added_ids:
                     self.last_added_book_ids = added_ids
@@ -953,12 +997,16 @@ class NewBookProcessor:
                         add_command.extend(["--identifier", ident.strip()])
 
                 result = subprocess.run(add_command, env=self.calibre_env, check=True, capture_output=True, text=True)
+                self.primary_import_succeeded = True
                 added_ids = self._parse_added_book_ids((result.stdout or '') + '\n' + (result.stderr or ''))
                 if added_ids:
                     self.last_added_book_ids = added_ids
                     self.last_added_book_id = added_ids[-1]
                 else:
                     self._fallback_last_added_book_id()
+            self.record_original_upload(
+                added_ids, staged_path.suffix[1:].upper(), accepted_sha256,
+                replace_existing=(self.cwa_settings.get('auto_ingest_automerge') == 'overwrite'))
             print(f"[ingest-processor] Added {staged_path.stem} to Calibre database", flush=True)
 
             if self.cwa_settings['auto_backup_imports']:
@@ -1017,7 +1065,7 @@ class NewBookProcessor:
                         cur = con.cursor()
                         if not self._register_title_sort_function(con):
                             print("[ingest-processor] INFO: Skipping timestamp adjust (title_sort SQL function unavailable).", flush=True)
-                            return
+                            return True
                         # pre_import_max_timestamp may be None (empty library) -> update all rows where timestamp < last_modified
                         if pre_import_max_timestamp is None:
                             cur.execute('UPDATE books SET timestamp = last_modified WHERE timestamp < last_modified')
@@ -1029,14 +1077,18 @@ class NewBookProcessor:
                 except Exception as e:
                     print(f"[ingest-processor] WARN: Failed to adjust timestamps after overwrite import: {e}", flush=True)
 
+            return True
         except subprocess.CalledProcessError as e:
             print(f"[ingest-processor] {staged_path.stem} was not able to be added to the Calibre Library due to the following error:\nCALIBREDB EXIT/ERROR CODE: {e.returncode}\n{e.stderr}", flush=True)
             self.backup(str(staged_path), backup_type="failed")
         except Exception as e:
             print(f"[ingest-processor] ingest-processor ran into the following error:\n{e}", flush=True)
+            if getattr(self, "original_index", None) is not None:
+                self.original_processing_failed = True
         finally:
             if staged_path.exists():
                 os.remove(staged_path)
+        return False
 
     def _validate_book_exists(self, book_id: int) -> bool:
         """Check if a book with the given ID exists in the Calibre library"""
@@ -1049,39 +1101,58 @@ class NewBookProcessor:
             print(f"[ingest-processor] ERROR: Failed to validate book_id {book_id}: {e}", flush=True)
             return False
 
-    def add_format_to_book(self, book_id:int, book_path:str) -> None:
+    def add_format_to_book(self, book_id:int, book_path:str, role="add_format") -> bool:
         """Attach a new format file to an existing Calibre book using calibredb add_format"""
         source_path = Path(book_path)
         if not source_path.exists() or source_path.stat().st_size == 0:
             print(f"[ingest-processor] ERROR: Source file for add_format is missing or empty, skipping: {book_path}", flush=True)
             self.backup(self.filepath, backup_type="failed") # Backup original file
-            return
+            return False
 
         # Validate that the book exists before attempting to add format
         if not self._validate_book_exists(book_id):
             print(f"[ingest-processor] ERROR: Book ID {book_id} not found in library, cannot add format: {os.path.basename(book_path)}", flush=True)
             self.backup(self.filepath, backup_type="failed")
-            return
+            return False
+
+        if self.cwa_settings.get('prevent_exact_duplicate_imports', 0):
+            if getattr(self, "original_index", None) is None:
+                self.prepare_original_upload()
+            self.original_index.forget_format(book_id, source_path.suffix[1:])
 
         # Stage file for import
-        staged_path = Path(self.staging_dir) / source_path.name
+        if getattr(self, "original_index", None) is not None:
+            from original_uploads import clean_upload_filename
+            staged_name = clean_upload_filename(source_path.name)
+        else:
+            staged_name = source_path.name
+        staged_path = Path(self.staging_dir) / staged_name
         try:
             shutil.copy2(source_path, staged_path)
         except Exception as e:
             print(f"[ingest-processor] ERROR: Failed to stage file for add_format: {e}", flush=True)
             self.backup(self.filepath, backup_type="failed")
-            return
+            return False
 
         try:
+            accepted_sha256 = None
+            if getattr(self, "original_index", None) is not None:
+                from original_uploads import fingerprint
+                accepted_sha256 = fingerprint(staged_path).sha256
             result = subprocess.run([
                 "calibredb", "add_format", str(book_id), str(staged_path), f"--library-path={self.library_dir}"
             ], env=self.calibre_env, check=True, capture_output=True, text=True)
+            provenance_recorded = self.record_original_upload(
+                [book_id], staged_path.suffix[1:].upper(), accepted_sha256, role=role)
             print(f"[ingest-processor] Added new format for book id {book_id}: {os.path.basename(str(staged_path))}", flush=True)
             mark_ingest_batch_dirty()
             if self.cwa_settings['auto_backup_imports']:
                 self.backup(str(staged_path), backup_type="imported")
             # Optional post-add-format GDrive sync
             gdrive_sync_if_enabled()
+            return (provenance_recorded
+                    or getattr(self, "original_index", None) is None
+                    or role == "retained")
         except subprocess.CalledProcessError as e:
             stderr_output = e.stderr if e.stderr else "No error details available"
             print(f"[ingest-processor] Failed to add format for book id {book_id}: {os.path.basename(str(staged_path))}\nCALIBREDB EXIT/ERROR CODE: {e.returncode}\nError details: {stderr_output}", flush=True)
@@ -1091,6 +1162,7 @@ class NewBookProcessor:
         finally:
             if staged_path.exists():
                 os.remove(staged_path)
+        return False
 
 
     def run_kindle_epub_fixer(self, filepath:str, dest=None) -> None:
@@ -1265,7 +1337,11 @@ class NewBookProcessor:
             import sqlite3
             # Import the centralized partial MD5 calculation function
             sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
-            from cps.progress_syncing.checksums import calculate_koreader_partial_md5, store_checksum, CHECKSUM_VERSION
+            from cps.progress_syncing.checksums import (
+                CHECKSUM_VERSION,
+                calculate_koreader_partial_md5,
+                store_checksum,
+            )
 
             # Checksums are only kept (and the table only exists) with KOReader sync enabled
             from cps.progress_syncing.settings import is_koreader_sync_enabled
@@ -1439,8 +1515,11 @@ def main(filepath=None):
                     if book_id > -1:
                         # Validate book exists before attempting add_format
                         if nbp._validate_book_exists(book_id):
-                            nbp.add_format_to_book(book_id, filepath)
-                            success = True
+                            skip_delete = True
+                            success = bool(nbp.add_format_to_book(book_id, filepath))
+                            if not success:
+                                return 1
+                            skip_delete = False
                         else:
                             print(f"[ingest-processor] ERROR: Book ID {book_id} not found in library for {os.path.basename(filepath)}", flush=True)
                             nbp.backup(filepath, backup_type="failed")
@@ -1464,6 +1543,9 @@ def main(filepath=None):
                     return 0
         except Exception as e:
             print(f"[ingest-processor] Error processing manifest file: {e}", flush=True)
+            if nbp.cwa_settings.get('prevent_exact_duplicate_imports', 0):
+                skip_delete = True
+                return 1
             # Continue with normal processing if manifest handling fails
 
         # Check if the user has chosen to exclude files of this type from the ingest process
@@ -1475,18 +1557,33 @@ def main(filepath=None):
             skip_delete = True
             return 0
 
+        if nbp.cwa_settings.get('prevent_exact_duplicate_imports', 0):
+            # Keep the original on lookup/hash/write failure, including interruption.
+            skip_delete = True
+            nbp.prepare_original_upload()
+            existing_id = nbp.original_index.find(nbp.original_upload)
+            if existing_id is None:
+                existing_id = nbp.original_index.find_current(nbp.original_upload)
+            if existing_id is not None:
+                from original_uploads import quarantine
+                saved = quarantine(filepath)
+                print(f"[ingest-processor] Exact duplicate of book {existing_id}; retained upload: {saved}", flush=True)
+                return 0
+
+        source_filepath = filepath
+
         if nbp.is_target_format: # File can just be imported
             print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, importing now...", flush=True)
-            nbp.add_book_to_library(filepath)
+            nbp.add_book_to_library(source_filepath)
         elif nbp.is_supported_audiobook():
             print(f"\n[ingest-processor]: No conversion needed for {nbp.filename}, is audiobook, importing now...", flush=True)
-            nbp.add_book_to_library(filepath, False, Path(nbp.filename).suffix)
+            nbp.add_book_to_library(source_filepath, False, Path(nbp.filename).suffix)
         else:
             if nbp.auto_convert_on and nbp.can_convert: # File can be converted to target format and Auto-Converter is on
 
                 if nbp.input_format in nbp.convert_ignored_formats: # File could be converted & the converter is activated but the user has specified files of this format should not be converted
                     print(f"\n[ingest-processor]: {nbp.filename} not in target format but user has told CWA not to convert this format so importing the file anyway...", flush=True)
-                    nbp.add_book_to_library(filepath)
+                    nbp.add_book_to_library(source_filepath)
                     convert_successful = False
                 elif nbp.target_format == "kepub": # File is not in the convert ignore list and target is kepub, so we start the kepub conversion process
                     convert_successful, converted_filepath = nbp.convert_to_kepub()
@@ -1502,7 +1599,9 @@ def main(filepath=None):
                         # Find the book that was just added to get its ID
                         try:
                             # Prefer the exact id we just added if available
-                            if nbp.last_added_book_id is not None:
+                            if nbp.cwa_settings.get('prevent_exact_duplicate_imports', 0):
+                                target_book_id = getattr(nbp, "confirmed_primary_id", None)
+                            elif nbp.last_added_book_id is not None:
                                 target_book_id = nbp.last_added_book_id
                             else:
                                 with sqlite3.connect(nbp.metadata_db, timeout=30) as con:
@@ -1512,8 +1611,9 @@ def main(filepath=None):
                                     target_book_id = res[0] if res else None
 
                             if target_book_id is not None:
-                                if os.path.exists(filepath) and os.path.getsize(filepath) > 0:
-                                    nbp.add_format_to_book(int(target_book_id), filepath)
+                                if os.path.exists(source_filepath) and os.path.getsize(source_filepath) > 0:
+                                    nbp.add_format_to_book(
+                                        int(target_book_id), source_filepath, role="retained")
                                 else:
                                     print(f"[ingest-processor] Original file no longer exists or is empty, cannot retain format: {filepath}", flush=True)
                             else:
@@ -1523,10 +1623,28 @@ def main(filepath=None):
 
             elif nbp.can_convert and not nbp.auto_convert_on: # Books not in target format but Auto-Converter is off so files are imported anyway
                 print(f"\n[ingest-processor]: {nbp.filename} not in target format but CWA Auto-Convert is deactivated so importing the file anyway...", flush=True)
-                nbp.add_book_to_library(filepath)
+                nbp.add_book_to_library(source_filepath)
             else:
                 print(f"[ingest-processor]: Cannot convert {nbp.filepath}. {nbp.input_format} is currently unsupported / is not a known ebook format.", flush=True)
 
+        if getattr(nbp, "original_index", None) is not None:
+            if getattr(nbp, "original_processing_failed", False):
+                print("[ingest-processor] Original-upload processing failed; preserving input for retry", flush=True)
+                return 1
+            # Calibre's ignore mode can report success while deliberately
+            # discarding the input. That is a completed ingest outcome, not a
+            # provenance failure, so retain its established cleanup behavior.
+            primary_succeeded = getattr(nbp, "primary_import_succeeded", False)
+            if primary_succeeded and nbp.cwa_settings.get('auto_ingest_automerge') == 'ignore':
+                skip_delete = False
+            elif primary_succeeded and not nbp.confirmed_import:
+                print("[ingest-processor] Import provenance unconfirmed; preserving input for retry", flush=True)
+                return 1
+            else:
+                # Unsupported inputs, conversion failures, and failed Calibre
+                # commands follow the legacy backup/cleanup path. Lookup and
+                # provenance/hash failures are marked before reaching this branch.
+                skip_delete = False
         return 0
 
     except Exception as e:

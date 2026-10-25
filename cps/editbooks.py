@@ -36,7 +36,7 @@ from .file_helper import validate_mime_type
 from .cwa_functions import get_ingest_dir
 from .usermanagement import user_login_required, login_required_if_no_ano
 from .string_helper import strip_whitespaces
-from werkzeug.utils import secure_filename
+from .utils.filename_sanitizer import get_ingest_filename
 import uuid
 
 editbook = Blueprint('edit-book', __name__)
@@ -401,7 +401,7 @@ def _get_ingest_path(uploaded_file, prefix_parts=None):
 
     _ensure_ingest_dir_writable(ingest_dir)
 
-    base_name = secure_filename(uploaded_file.filename)
+    base_name = get_ingest_filename(uploaded_file.filename)
     # CWA change: use timestamp for more predictable sorting vs uuid
     unique = datetime.now(timezone.utc).strftime("%Y%m%d_%H%M%S_%f")
     prefix = "_".join([str(p) for p in (prefix_parts or []) if p])

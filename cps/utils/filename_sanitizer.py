@@ -8,6 +8,7 @@
 # Shared filename sanitizer to mirror Calibre‑Web's behavior
 # SPDX-License-Identifier: GPL-3.0-or-later
 
+import os
 import re
 from typing import Optional
 
@@ -18,6 +19,8 @@ except Exception:  # pragma: no cover
 
 # Same regex as cps/string_helper.strip_whitespaces
 _ZW_TRIM_RE = re.compile(r"(^[\s\u200B-\u200D\ufeff]+)|([\s\u200B-\u200D\ufeff]+$)")
+# Control characters are never valid in a path component.
+_CONTROL_CHARS_RE = re.compile(r"[\x00-\x1f\x7f]")
 
 
 def strip_whitespaces(text: str) -> str:
@@ -55,3 +58,31 @@ def get_valid_filename_shared(value: str,
     if not value:
         raise ValueError("Filename cannot be empty")
     return value
+
+
+def get_ingest_filename(filename: str) -> str:
+    """Return a filesystem-safe basename for files queued into the ingest dir.
+
+    ``werkzeug.utils.secure_filename`` keeps ASCII characters only, so a purely
+    CJK (or Cyrillic, Greek, ...) title such as "认知觉醒.epub" collapses to
+    "epub" -- the extension is dropped as well. Ingest then cannot detect the
+    format, logs "is currently unsupported / is not a known ebook format" and
+    discards the upload without keeping a copy.
+
+    Ingest and its directory watcher are UTF-8 safe, so keep the original name
+    instead and only neutralise path components, control characters and an
+    over-long name. The extension is always preserved as ingest relies on it to
+    detect the format.
+    """
+    name = (filename or "").replace("\\", "/").rsplit("/", 1)[-1]
+    stem, ext = os.path.splitext(name)
+    stem = _CONTROL_CHARS_RE.sub("", stem).strip().strip(".")
+    ext = _CONTROL_CHARS_RE.sub("", ext).strip()
+    if not stem:
+        stem = "book"
+    # Keep the result within the 255-byte limit of common filesystems while
+    # leaving room for the "<prefix>_<timestamp>_" the caller prepends.
+    budget = max(1, 180 - len(ext.encode("utf-8")))
+    if len(stem.encode("utf-8")) > budget:
+        stem = stem.encode("utf-8")[:budget].decode("utf-8", "ignore")
+    return stem + ext

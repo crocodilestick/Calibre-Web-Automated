@@ -1964,6 +1964,10 @@ def reset_user_password(user_id):
         elif ret == 0:
             log.error("An unknown error occurred. Please try again later.")
             flash(_("Oops! An unknown error occurred. Please try again later."), category="error")
+        elif ret == 3:
+            log.error("Password for user %s not reset: no email address set", message)
+            flash(_("Password for user %(user)s was not reset because the user has no email address", user=message),
+                  category="error")
         else:
             log.error("Please configure the SMTP mail settings.")
             flash(_("Oops! Please configure the SMTP mail settings."), category="error")

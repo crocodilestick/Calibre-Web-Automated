@@ -27,7 +27,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
 "POT-Creation-Date: 2026-10-01 13:53+0000\n"
-"PO-Revision-Date: 2026-02-11 09:17+0000\n"
+"PO-Revision-Date: 2026-10-25 19:14+0100\n"
 "Last-Translator: Tex <tex@grosist.fr>\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -37,7 +37,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Loco-Source-Locale: fr_FR\n"
 "Generated-By: Babel 2.13.1\n"
-"X-Generator: Loco https://localise.biz/\n"
+"X-Generator: Poedit 3.10\n"
 "X-Loco-Parser: loco_parse_po\n"
 
 #: cps/about.py:65
@@ -1453,14 +1453,14 @@ msgid "This Email has been sent via Calibre-Web Automated."
 msgstr "Ce courriel a été envoyé depuis Calibre-Web Automated."
 
 #: cps/helper.py:129
-#, fuzzy, python-format
+#, python-format
 msgid "Conversion timed out for book id: %(book)d"
-msgstr "Format %(format)s introuvable pour le livre : %(book)d"
+msgstr "Time out pour la conversion pour le livre id : %(book)d"
 
 #: cps/helper.py:131
-#, fuzzy, python-format
+#, python-format
 msgid "Conversion failed for book id: %(book)d"
-msgstr "Format %(format)s introuvable pour le livre : %(book)d"
+msgstr "La conversion a échoué pour le livre : %(book)d"
 
 #: cps/helper.py:139
 msgid "Calibre-Web Automated Test Email"
@@ -3408,7 +3408,7 @@ msgstr "Désarchiver"
 
 #: cps/templates/book_table.html:56 cps/templates/book_table.html:250
 msgid "Mark as read"
-msgstr "Marquer comme non lu"
+msgstr "Marquer comme lu"
 
 #: cps/templates/book_table.html:59 cps/templates/book_table.html:270
 msgid "Mark as unread"
@@ -4661,9 +4661,9 @@ msgid ""
 "\">kindle-epub-fix.netlify.app</a> tool made by <a href=\"https://github.com/"
 "innocenat\">innocenat</a>."
 msgstr ""
-"Cet outil a été adapté à partir de l'outil <a href=\"https://kindle-epub-fix."
-"netlify.app/\">kindle-epub-fix.netlify.app</a> créé par <a href=\"https://"
-"github.com/innocenat\">innocenat</a>."
+"Cet outil a été adapté à partir de l'outil <a href=\"https://kindle-epub-"
+"fix.netlify.app/\">kindle-epub-fix.netlify.app</a> créé par <a "
+"href=\"https://github.com/innocenat\">innocenat</a>."
 
 #: cps/templates/cwa_settings.html:181
 msgid "Enable KOReader Sync (CWA Plugin)"

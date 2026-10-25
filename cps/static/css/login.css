@@ -111,6 +111,17 @@ html body.login .cwa-login-form {
     background: none;
 }
 
+html body.login .cwa-default-submit {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
 html body.login .cwa-field {
     display: flex;
     flex-direction: column;

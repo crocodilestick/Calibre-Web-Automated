@@ -20,6 +20,7 @@
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
       {% if not config.config_disable_standard_login %}
+      <button type="submit" name="submit" class="cwa-default-submit" tabindex="-1" aria-hidden="true">{{ _('Login') }}</button>
       <div class="cwa-field">
         <label for="username">{{ _('Username') }}</label>
         <input type="text" id="username" name="username" value="{{ username }}"

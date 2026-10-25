@@ -740,6 +740,8 @@ def reset_password(user_id):
         return 0, None
     if not config.get_mail_server_configured():
         return 2, None
+    if not (existing_user.email or "").strip():
+        return 3, existing_user.name
     try:
         password = generate_random_password(config.config_password_min_length)
         existing_user.password = generate_password_hash(password)

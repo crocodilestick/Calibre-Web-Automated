@@ -43,6 +43,22 @@ editbook = Blueprint('edit-book', __name__)
 log = logger.create()
 
 
+def _upload_response(target):
+    """Answer an upload request in the form the caller can actually handle.
+
+    ``uploadprogress.js`` submits the upload forms over XHR and reads
+    ``{"location": ...}`` from the JSON body to decide where to navigate. Any
+    other client (the widget not initialised yet, JavaScript blocked, a proxy
+    or extension resubmitting the form) gets the same body as a page, so the
+    browser renders the raw JSON instead of leaving the form. Those callers get
+    a plain redirect; the endpoints already flash an error message when the
+    upload did not go through, so both branches land on a usable page.
+    """
+    if request.headers.get('X-Requested-With', '').strip().lower() == 'xmlhttprequest':
+        return Response(json.dumps({'location': target}), mimetype='application/json')
+    return redirect(target)
+
+
 def upload_required(f):
     @wraps(f)
     def inner(*args, **kwargs):
@@ -111,7 +127,7 @@ def upload():
             log.error_or_exception("Ingest directory not writable: %s", e)
             flash(_("Ingest folder is not writable. Check your /cwa-book-ingest volume permissions."),
                   category="error")
-            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+            return _upload_response(url_for("web.index"))
         raw_book_id = request.form.get('book_id', -1)
         try:
             book_id = int(raw_book_id)
@@ -119,17 +135,17 @@ def upload():
             book_id = -1
         if book_id == -1:
             flash(_("Missing or invalid book id for format upload"), category="error")
-            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+            return _upload_response(url_for("web.index"))
 
         # Validate that the book exists before creating manifest
         book = calibre_db.get_book(book_id)
         if not book:
             flash(_("Cannot upload format: Book no longer exists in library"), category="error")
-            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+            return _upload_response(url_for("web.index"))
 
         for requested_file in request.files.getlist("btn-upload-format"):
             if not _validate_uploaded_file(requested_file):
-                return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
+                return _upload_response(url_for('edit-book.show_edit_book', book_id=book_id))
 
             try:
                 final_path = _get_ingest_path(requested_file, prefix_parts=["format", book_id])
@@ -155,10 +171,10 @@ def upload():
             except Exception as e:
                 log.error_or_exception("Failed to queue format upload for ingest: {}".format(e))
                 flash(_("Failed to queue upload for processing"), category="error")
-                return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
+                return _upload_response(url_for('edit-book.show_edit_book', book_id=book_id))
 
         # Redirect back to the book edit page
-        return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
+        return _upload_response(url_for('edit-book.show_edit_book', book_id=book_id))
 
     # New book uploads: queue files to ingest atomically
     elif len(request.files.getlist("btn-upload")):
@@ -168,10 +184,10 @@ def upload():
             log.error_or_exception("Ingest directory not writable: %s", e)
             flash(_("Ingest folder is not writable. Check your /cwa-book-ingest volume permissions."),
                   category="error")
-            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+            return _upload_response(url_for("web.index"))
         for requested_file in request.files.getlist("btn-upload"):
             if not _validate_uploaded_file(requested_file):
-                return Response(json.dumps({"location": url_for('web.index')}), mimetype='application/json')
+                return _upload_response(url_for('web.index'))
             try:
                 final_path = _get_ingest_path(requested_file, prefix_parts=["new", current_user.id])
                 tmp_path, final_path = _save_to_ingest_atomic_rename(requested_file, final_path)
@@ -181,9 +197,9 @@ def upload():
             except Exception as e:
                 log.error_or_exception("Failed to queue upload for ingest: {}".format(e))
                 flash(_("Failed to queue upload for processing"), category="error")
-                return Response(json.dumps({"location": url_for('tasks.get_tasks_status')}), mimetype='application/json')
+                return _upload_response(url_for('tasks.get_tasks_status'))
 
-        return Response(json.dumps({"location": url_for('tasks.get_tasks_status')}), mimetype='application/json')
+        return _upload_response(url_for('tasks.get_tasks_status'))
     abort(400)
 
 
@@ -1049,7 +1065,7 @@ def do_edit_book(book_id, upload_formats=None):
                 _queue_duplicate_scan_after_change([book.id])
 
         if upload_formats:
-            return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
+            return _upload_response(url_for('edit-book.show_edit_book', book_id=book_id))
 
         if "detail_view" in to_save:
             return redirect(url_for('web.show_book', book_id=book.id))
@@ -1263,17 +1279,17 @@ def file_handling_on_upload(requested_file):
         if config.config_check_extensions and allowed_extensions != ['']:
             if not validate_mime_type(requested_file, allowed_extensions):
                 flash(_("File type isn't allowed to be uploaded to this server"), category="error")
-                return None, Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+                return None, _upload_response(url_for("web.index"))
     if '.' in requested_file.filename:
         file_ext = requested_file.filename.rsplit('.', 1)[-1].lower()
         if file_ext not in allowed_extensions and '' not in allowed_extensions:
             flash(
                 _("File extension '%(ext)s' is not allowed to be uploaded to this server",
                   ext=file_ext), category="error")
-            return None, Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+            return None, _upload_response(url_for("web.index"))
     else:
         flash(_('File to be uploaded must have an extension'), category="error")
-        return None, Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+        return None, _upload_response(url_for("web.index"))
 
     # extract metadata from file
     try:
@@ -1282,7 +1298,7 @@ def file_handling_on_upload(requested_file):
         log.error("File %s could not saved to temp dir", requested_file.filename)
         flash(_("File %(filename)s could not saved to temp dir",
                 filename=requested_file.filename), category="error")
-        return None, Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+        return None, _upload_response(url_for("web.index"))
     return meta, None
 
 

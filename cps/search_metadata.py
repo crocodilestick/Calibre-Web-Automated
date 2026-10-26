@@ -20,7 +20,11 @@ from sqlalchemy.orm.attributes import flag_modified
 
 from cps.services.Metadata import Metadata
 from . import constants, logger, ub, web_server
+from .server import _GEVENT
 from .usermanagement import user_login_required
+
+if _GEVENT:
+    from gevent import get_hub
 
 
 meta = Blueprint("metadata", __name__)
@@ -138,7 +142,8 @@ def metadata_change_active_provider(prov_name):
         if provider is not None:
             if bool(global_enabled.get(provider.__id__, True)):
                 try:
-                    data = provider.search(new_state.get("query", ""))
+                    data = _run_without_blocking_server(
+                        copy_current_request_context(provider.search), new_state.get("query", ""))
                 except Exception as exc:
                     log.warning("Metadata provider %s failed: %s", provider.__class__.__name__, exc)
                     data = []
@@ -160,22 +165,37 @@ def metadata_search():
     global_enabled = _get_global_provider_enabled_map()
     if query:
         static_cover = url_for("static", filename="generic_cover.svg")
-        # ret = cl[0].search(query, static_cover, locale)
-        with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
-            meta = {
-                executor.submit(copy_current_request_context(c.search), query, static_cover, locale): c
-                for c in cl
-                if active.get(c.__id__, True) and bool(global_enabled.get(c.__id__, True))
-            }
-            for future in concurrent.futures.as_completed(meta):
-                try:
-                    result = future.result()
-                except Exception as exc:
-                    provider = meta.get(future)
-                    provider_name = provider.__class__.__name__ if provider else "Unknown"
-                    log.warning("Metadata provider %s failed: %s", provider_name, exc)
-                    continue
-                if not result:
-                    continue
-                data.extend([asdict(x) for x in result if x])
+        searches = [
+            (c, copy_current_request_context(c.search))
+            for c in cl
+            if active.get(c.__id__, True) and bool(global_enabled.get(c.__id__, True))
+        ]
+        data = _run_without_blocking_server(_collect_search_results, searches, query, static_cover, locale)
     return  make_response(jsonify(data))
+
+
+def _collect_search_results(searches, query, static_cover, locale):
+    data = list()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
+        meta = {
+            executor.submit(search, query, static_cover, locale): provider
+            for provider, search in searches
+        }
+        for future in concurrent.futures.as_completed(meta):
+            try:
+                result = future.result()
+            except Exception as exc:
+                provider = meta.get(future)
+                provider_name = provider.__class__.__name__ if provider else "Unknown"
+                log.warning("Metadata provider %s failed: %s", provider_name, exc)
+                continue
+            if not result:
+                continue
+            data.extend([asdict(x) for x in result if x])
+    return data
+
+
+def _run_without_blocking_server(func, *args):
+    if _GEVENT:
+        return get_hub().threadpool.apply(func, args)
+    return func(*args)

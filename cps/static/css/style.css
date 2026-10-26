@@ -565,6 +565,85 @@ input.pill:not(:checked) + label .glyphicon {
   color: #666;
 }
 
+#meta-info #book-list .media .media-image button:active,
+#do-search:active {
+  opacity: 0.6;
+}
+
+#meta-info #book-list .media .media-image button.is-applied {
+  background-color: #5cb85c;
+  border-color: #4cae4c;
+  color: #fff;
+}
+
+#meta-info #book-list .media .media-image button.is-applied::after {
+  content: " \2713";
+}
+
+#do-search.is-searching {
+  opacity: 0.7;
+}
+
+#do-search.is-searching::after {
+  content: "";
+  display: inline-block;
+  width: 0.9em;
+  height: 0.9em;
+  margin-left: 0.5em;
+  vertical-align: -0.1em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: meta-search-spin 0.7s linear infinite;
+}
+
+@keyframes meta-search-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 767px) {
+  #meta-info #book-list li.media {
+    flex-direction: column;
+    position: relative;
+    padding-bottom: 60px;
+  }
+
+  #meta-info #book-list .media .media-image {
+    position: static;
+    width: 100%;
+    padding: 10px 15px 0;
+  }
+
+  #meta-info #book-list .media .media-image-wrapper {
+    max-width: 160px;
+    margin: 0 auto;
+  }
+
+  #meta-info #book-list .media .media-image button {
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+    margin: 0;
+  }
+
+  #meta-info #book-list .media .media-body {
+    display: block;
+    padding: 5px 5px 0;
+  }
+
+  #meta-info #book-list .media .media-body dt {
+    margin-top: 8px;
+  }
+
+  #meta-info #book-list .media .media-body dd {
+    margin-left: 24px;
+    overflow-wrap: anywhere;
+  }
+}
+
 #meta-import-alert.meta-import-alert {
   position: fixed;
   left: 50%;

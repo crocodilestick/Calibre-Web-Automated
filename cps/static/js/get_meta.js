@@ -234,10 +234,16 @@ $(function () {
     $("#identifier-table").append(line);
   }
 
+  var searchRequest = null;
+
   function doSearch(keyword) {
     if (keyword) {
+      if (searchRequest) {
+        searchRequest.abort();
+      }
+      $("#do-search").addClass("is-searching").attr("aria-busy", "true");
       $("#meta-info").text(msg.loading);
-      $.ajax({
+      searchRequest = $.ajax({
         url: getPath() + "/metadata/search",
         type: "POST",
         data: {
@@ -252,26 +258,25 @@ $(function () {
               var $book = $(templates.bookResult({ book: book, index: idx }));
               $book.find("button").on("click", function () {
                 populateForm(book, idx);
+                markApplied($(this));
               });
               applyMetaSelections($book);
               $("#book-list").append($book);
             });
           } else {
-            $("#meta-info").html(
-              '<p class="text-danger">' +
-                msg.no_result +
-                "!</p>" +
-                $("#meta-info")[0].innerHTML
-            );
+            $("#meta-info").html('<p class="text-danger">' + msg.no_result + "!</p>");
           }
         },
-        error: function error() {
-          $("#meta-info").html(
-            '<p class="text-danger">' +
-              msg.search_error +
-              "!</p>" +
-              $("#meta-info")[0].innerHTML
-          );
+        error: function error(xhr, status) {
+          if (status !== "abort") {
+            $("#meta-info").html('<p class="text-danger">' + msg.search_error + "!</p>");
+          }
+        },
+        complete: function complete(xhr) {
+          if (searchRequest === xhr) {
+            searchRequest = null;
+            $("#do-search").removeClass("is-searching").removeAttr("aria-busy");
+          }
         },
       });
     }
@@ -337,12 +342,24 @@ $(function () {
           var $book = $(templates.bookResult({ book: book, index: idx }));
           $book.find("button").on("click", function () {
             populateForm(book, idx);
+            markApplied($(this));
           });
           applyMetaSelections($book);
           $("#book-list").append($book);
         });
       },
     });
+  });
+
+  function markApplied($button) {
+    $("#book-list .is-applied").removeClass("is-applied");
+    $button.addClass("is-applied");
+  }
+
+  $("#metaModal").on("hidden.bs.modal", function () {
+    if (searchRequest) {
+      searchRequest.abort();
+    }
   });
 
   $(document).on("change", 'input[type="checkbox"][data-meta-value]', function () {

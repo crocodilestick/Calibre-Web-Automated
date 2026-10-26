@@ -2804,6 +2804,10 @@ input.pill + label:hover {
     color: #eee
 }
 
+#meta-info #book-list .media .media-body dd, #meta-info #book-list .media .media-body dd a {
+    color: #ccc
+}
+
 #meta-info #book-list .media > .media-body > h4 > a:hover {
     color: #fff
 }
@@ -7343,15 +7347,38 @@ body.edituser.admin > div.container-fluid > div.row-fluid > div.col-sm-10 > div.
     }
 
     #metaModal > .modal-dialog {
-        margin: 5px
+        margin: 5px;
+        padding: 0;
+        transform: none !important
     }
 
     #metaModal > .modal-dialog > .modal-content {
-        max-height: 100%
+        display: flex;
+        flex-direction: column;
+        position: fixed;
+        top: 8px;
+        bottom: 8px;
+        left: 6px;
+        right: 6px;
+        max-height: none
+    }
+
+    #metaModal > .modal-dialog > .modal-content > .modal-header, #metaModal > .modal-dialog > .modal-content > .modal-footer, #metadata_provider {
+        flex: 0 0 auto
+    }
+
+    #metaModal > .modal-dialog > .modal-content > .modal-body {
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 auto;
+        min-height: 0
     }
 
     #meta-info {
-        max-height: calc(100vh - 224px)
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none;
+        overflow-y: auto
     }
 
     #metaModal > .modal-dialog > .modal-content > .modal-header > div {

@@ -1031,22 +1031,22 @@ $(function() {
                 return f.trim(); 
             });
             
-            var formatPriority = ['epub', 'pdf', 'txt', 'html', 'mobi', 'azw3', 'fb2'];
-            var selectedFormat = null;
-            
-            for (var i = 0; i < formatPriority.length; i++) {
-                if (formats.indexOf(formatPriority[i]) !== -1) {
-                    selectedFormat = formatPriority[i];
-                    break;
+            // The reader formats of cps.helper.check_read_formats(), ordered by
+            // preference. A book can hold formats the web reader cannot open,
+            // so only offer those.
+            var readable = [];
+            $.each(['epub', 'kepub', 'pdf', 'cbz', 'cbr', 'cbt', 'djvu', 'djv', 'txt'], function (i, fmt) {
+                if (formats.indexOf(fmt) !== -1) {
+                    readable.push(fmt);
                 }
-            }
+            });
             
-            if (!selectedFormat && formats.length > 0) {
-                selectedFormat = formats[0];
-            }
-            
-            if (selectedFormat) {
-                window.open(window.scriptRoot + '/read/' + bookId + '/' + selectedFormat, '_blank');
+            if (readable.length > 1) {
+                // Let the reader decide which format they want instead of
+                // guessing: the cover opens a small menu underneath.
+                showReadFormatMenu($link, bookId, readable);
+            } else if (readable.length === 1) {
+                window.open(window.scriptRoot + '/read/' + bookId + '/' + readable[0], '_blank');
             } else {
                 window.location.href = $link.attr('href');
             }
@@ -1269,3 +1269,111 @@ $(window).on("resize", function () {
         mobileSupport();
     }, 250);
 });
+
+
+/* ==========================================================================
+ * Covers of books with more than one readable format.
+ *
+ * The round button in the middle of a cover used to open the first hit of a
+ * hardcoded preference list, so a book published as EPUB and PDF always
+ * landed in the EPUB reader and the PDF was unreachable from the shelf.
+ *
+ * Instead of guessing, centre a small menu on the cover and let the reader
+ * pick. The label reuses the wording of the detail page button.
+ * ========================================================================== */
+(function () {
+    var MENU_ID = 'cover-read-format-menu';
+    var STYLE_ID = 'cover-read-format-menu-style';
+    var LABEL = 'Read in Browser';
+
+    function injectStyle() {
+        if (document.getElementById(STYLE_ID)) {
+            return;
+        }
+        var css = ''
+            + '#' + MENU_ID + '{position:absolute;z-index:10050;min-width:132px;'
+            + 'padding:5px 0;background:#2b2f33;border:1px solid rgba(255,255,255,.15);'
+            + 'border-radius:7px;box-shadow:0 10px 30px rgba(0,0,0,.6);'
+            + 'font-size:14px;line-height:1.25}'
+            + '#' + MENU_ID + ' .cover-read-format-label{padding:3px 14px 6px;margin-bottom:4px;'
+            + 'font-size:10px;letter-spacing:.6px;text-transform:uppercase;'
+            + 'color:rgba(255,255,255,.42);border-bottom:1px solid rgba(255,255,255,.09)}'
+            + '#' + MENU_ID + ' a{display:block;padding:8px 14px;color:#e6e6e6;'
+            + 'text-decoration:none;white-space:nowrap;'
+            + 'transition:background-color .12s,color .12s}'
+            + '#' + MENU_ID + ' a:hover,#' + MENU_ID + ' a:focus{background:rgba(255,255,255,.12);'
+            + 'color:#fff;text-decoration:none;outline:none}'
+            + '@media (max-width:767px){#' + MENU_ID + '{font-size:15px}'
+            + '#' + MENU_ID + ' a{padding:10px 16px}}';
+        $('<style id="' + STYLE_ID + '"></style>').text(css).appendTo('head');
+    }
+
+    function closeMenu() {
+        $('#' + MENU_ID).remove();
+    }
+
+    window.showReadFormatMenu = function ($link, bookId, formats) {
+        injectStyle();
+        closeMenu();
+
+        // Some cover layouts wrap the image in a zero-sized span, so fall back
+        // to the image and finally to the link itself.
+        var $anchor = $link;
+        var width = $anchor.outerWidth();
+        var height = $anchor.outerHeight();
+        if (!width || !height) {
+            $anchor = $link.find('.img');
+            width = $anchor.outerWidth();
+            height = $anchor.outerHeight();
+        }
+        if (!width || !height) {
+            return;
+        }
+        var offset = $anchor.offset();
+
+        var $menu = $('<div id="' + MENU_ID + '" role="menu"></div>')
+            .attr('aria-label', LABEL);
+        $('<div class="cover-read-format-label"></div>').text(LABEL).appendTo($menu);
+
+        $.each(formats, function (i, fmt) {
+            $('<a role="menuitem"></a>')
+                .attr({
+                    href: window.scriptRoot + '/read/' + bookId + '/' + fmt,
+                    target: '_blank',
+                    rel: 'noopener'
+                })
+                .text(String(fmt || '').toUpperCase())
+                .appendTo($menu)
+                .on('click', function () { setTimeout(closeMenu, 0); });
+        });
+
+        $menu.appendTo('body');
+
+        var menuWidth = $menu.outerWidth();
+        var menuHeight = $menu.outerHeight();
+        var scrollLeft = $(window).scrollLeft();
+        var scrollTop = $(window).scrollTop();
+        var left = offset.left + (width - menuWidth) / 2;
+        var top = offset.top + (height - menuHeight) / 2;
+
+        left = Math.max(scrollLeft + 8, Math.min(left, scrollLeft + $(window).width() - menuWidth - 8));
+        top = Math.max(scrollTop + 8, Math.min(top, scrollTop + $(window).height() - menuHeight - 8));
+
+        $menu.css({ left: left, top: top });
+    };
+
+    $(document).on('mousedown.coverReadFormat', function (e) {
+        if ($(e.target).closest('#' + MENU_ID).length) {
+            return;
+        }
+        closeMenu();
+    });
+
+    $(document).on('keydown.coverReadFormat', function (e) {
+        if (e.key === 'Escape' || e.keyCode === 27) {
+            closeMenu();
+        }
+    });
+
+    $(window).on('scroll.coverReadFormat resize.coverReadFormat', closeMenu);
+})();

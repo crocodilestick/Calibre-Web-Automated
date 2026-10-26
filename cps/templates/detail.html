@@ -469,6 +469,13 @@
             }
         }
         {% endif %}
+        .read-format-menu {
+            min-width: 150px;
+        }
+        .meta-pill .glyphicon-book {
+            font-size: 11px;
+            margin-right: 2px;
+        }
     </style>
 {% endblock %}
 {% block body %}
@@ -524,12 +531,31 @@
                                     {% endif %}
                                     {% endif %}
                                     {% if entry.reader_list and current_user.role_viewer() %}
+                                        {% if entry.reader_list|length > 1 %}
+                                        <div class="btn-group" role="group">
+                                            <button id="readFormatMenu" type="button"
+                                                    class="btn btn-primary dropdown-toggle action-icon-btn"
+                                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"
+                                                    title="{{ _('Read in Browser') }}" aria-label="{{ _('Read in Browser') }}">
+                                                <span class="glyphicon glyphicon-book"></span>
+                                            </button>
+                                            <ul class="dropdown-menu read-format-menu" aria-labelledby="readFormatMenu">
+                                                {% for reader_format in entry.reader_list %}
+                                                    <li>
+                                                        <a target="_blank" rel="noopener"
+                                                           href="{{ url_for('web.read_book', book_id=entry.id, book_format=reader_format) }}">{{ reader_format|upper }}{% for book_data in entry.data %}{% if book_data.format|lower == reader_format|lower %} ({{ book_data.uncompressed_size|filesizeformat_binary }}){% endif %}{% endfor %}</a>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        </div>
+                                        {% else %}
                                         <a target="_blank"
                                            href="{{ url_for('web.read_book', book_id=entry.id, book_format=entry.reader_list[0]) }}"
                                            class="btn btn-primary action-icon-btn" role="button"
                                            title="{{ _('Read in Browser') }}" aria-label="{{ _('Read in Browser') }}">
                                             <span class="glyphicon glyphicon-book"></span>
                                         </a>
+                                        {% endif %}
                                     {% endif %}
 
                                     {% if not current_user.is_anonymous %}
@@ -686,7 +712,7 @@
                             </div>
                             {% if entry.data|length > 0 %}
                                 <div class="formats meta-chip">
-                                    <span>{{ _('File sizes') }}</span>
+                                    <span>{{ _('Formats') if entry.data|length > 1 else _('File sizes') }}</span>
                                     <span class="meta-value">
                                         {% for format in entry.data %}
                                             {% if current_user.role_download() %}
@@ -696,6 +722,14 @@
                                                 </a>
                                             {% else %}
                                                 <span class="meta-pill">{{ format.format }} ({{ format.uncompressed_size|filesizeformat_binary }})</span>
+                                            {% endif %}
+                                            {% if current_user.role_viewer() and format.format|lower in entry.reader_list %}
+                                                <a href="{{ url_for('web.read_book', book_id=entry.id, book_format=format.format|lower) }}"
+                                                   target="_blank" rel="noopener"
+                                                   class="meta-pill meta-link" role="button"
+                                                   title="{{ _('Read in Browser') }} {{ format.format }}">
+                                                    <span class="glyphicon glyphicon-book"></span> {{ _('Read') }}
+                                                </a>
                                             {% endif %}
                                         {% endfor %}
                                     </span>

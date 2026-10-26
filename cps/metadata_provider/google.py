@@ -6,11 +6,14 @@
 # See CONTRIBUTORS for full list of authors.
 
 # Google Books api document: https://developers.google.com/books/docs/v1/using
+from os import getenv
 from typing import Dict, List, Optional
 from urllib.parse import quote
 from datetime import datetime
 
 import requests
+from requests.adapters import HTTPAdapter
+from urllib3.util.retry import Retry
 
 from cps import logger
 from cps.isoLanguages import get_lang3, get_language_name
@@ -27,6 +30,9 @@ class Google(Metadata):
     BOOK_URL = "https://books.google.com/books?id="
     SEARCH_URL = "https://www.googleapis.com/books/v1/volumes?q="
     ISBN_TYPE = "ISBN_13"
+    API_KEY_ENV = "GOOGLE_BOOKS_API_KEY"
+    session = requests.Session()
+    session.mount("https://", HTTPAdapter(max_retries=Retry(total=2, status_forcelist=[503], backoff_factor=0.5)))
 
     def search(
         self, query: str, generic_cover: str = "", locale: str = "en"
@@ -38,11 +44,19 @@ class Google(Metadata):
             if title_tokens:
                 tokens = [quote(t.encode("utf-8")) for t in title_tokens]
                 query = "+".join(tokens)
+            api_key = getenv(Google.API_KEY_ENV)
             try:
-                results = requests.get(Google.SEARCH_URL + query, timeout=15)
+                results = self.session.get(
+                    Google.SEARCH_URL + query,
+                    params={"key": api_key} if api_key else None,
+                    timeout=15,
+                )
                 results.raise_for_status()
+            except requests.exceptions.HTTPError as e:
+                log.warning("Google Books search failed: HTTP %s", e.response.status_code)
+                return []
             except Exception as e:
-                log.warning(e)
+                log.warning("Google Books search failed: %s", type(e).__name__ if api_key else e)
                 return []
             for result in results.json().get("items", []):
                 mr =self._parse_search_result(

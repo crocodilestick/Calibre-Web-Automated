@@ -353,6 +353,8 @@ services:
       - TZ=Europe/London
       # Hardcover API Key required for Hardcover as a Metadata Provider, get one here: https://docs.hardcover.app/api/getting-started/
       - HARDCOVER_TOKEN=your_hardcover_api_key_here
+      # Optional Google Books API key for the Google Metadata Provider (own daily quota instead of the shared keyless one), get one here: https://developers.google.com/books/docs/v1/using#APIKey
+      # - GOOGLE_BOOKS_API_KEY=your_google_books_api_key_here
       # If your library is on a network share (e.g., NFS/SMB), disable WAL to reduce locking issues
       # Accepts: true/false (default: false)
       - NETWORK_SHARE_MODE=false

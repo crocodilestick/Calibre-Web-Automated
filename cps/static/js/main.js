@@ -150,12 +150,82 @@ $("#btn-upload-format").change(function() {
 });
 
 
+// Confirm a queued upload in the corner of the page instead of navigating to
+// the task list. The book is only queued at this point, so leaving the page is
+// premature; the toast keeps the progress one click away.
+function showUploadToast(message, targetUrl) {
+    var TOAST_ID = 'upload-toast';
+    var STYLE_ID = 'upload-toast-style';
+
+    if (!document.getElementById(STYLE_ID)) {
+        var css = ''
+            + '#' + TOAST_ID + '{position:fixed;top:70px;right:20px;z-index:10060;'
+            + 'display:flex;align-items:flex-start;gap:10px;max-width:340px;'
+            + 'padding:14px 16px;border-radius:8px;background:#26313a;'
+            + 'border:1px solid rgba(255,255,255,.14);color:#eaeaea;font-size:14px;'
+            + 'line-height:1.45;box-shadow:0 12px 32px rgba(0,0,0,.5);'
+            + 'animation:upload-toast-in .22s ease-out}'
+            + '#' + TOAST_ID + ' .upload-toast-check{flex:0 0 auto;color:#5cb85c;'
+            + 'font-size:15px;font-weight:700;line-height:1.3;margin-top:1px}'
+            + '#' + TOAST_ID + ' .upload-toast-body{flex:1 1 auto;min-width:0}'
+            + '#' + TOAST_ID + ' .upload-toast-link{display:inline-block;margin-top:6px;'
+            + 'color:#f0a34a;text-decoration:none;font-size:13px}'
+            + '#' + TOAST_ID + ' .upload-toast-link:hover{color:#ffbe73;text-decoration:underline}'
+            + '#' + TOAST_ID + ' .upload-toast-close{flex:0 0 auto;cursor:pointer;opacity:.5;'
+            + 'font-size:16px;line-height:1;padding:0 2px;background:none;border:0;color:inherit}'
+            + '#' + TOAST_ID + ' .upload-toast-close:hover{opacity:1}'
+            + '@keyframes upload-toast-in{from{opacity:0;transform:translateY(-8px)}'
+            + 'to{opacity:1;transform:translateY(0)}}'
+            + '@media (max-width:767px){#' + TOAST_ID + '{left:12px;right:12px;top:56px;'
+            + 'max-width:none}}';
+        $('<style id="' + STYLE_ID + '"></style>').text(css).appendTo('head');
+    }
+
+    function dismiss() {
+        $('#' + TOAST_ID).stop(true, true).fadeOut(120, function () { $(this).remove(); });
+    }
+
+    $('#' + TOAST_ID).remove();
+
+    var $toast = $('<div id="' + TOAST_ID + '" role="status"></div>');
+    $('<span class="upload-toast-check">&#10003;</span>').appendTo($toast);
+
+    var $body = $('<div class="upload-toast-body"></div>').appendTo($toast);
+    $('<span></span>').text(message).appendTo($body);
+
+    // Reuse the localised "Tasks" label from the nav bar.
+    var tasksLabel = $.trim($('#top_tasks').text() || '');
+    if (tasksLabel) {
+        $('<a class="upload-toast-link"></a>')
+            .attr('href', targetUrl || getPath() + '/tasks')
+            .text(tasksLabel + ' \u2192')
+            .appendTo($body);
+    }
+
+    $('<button type="button" class="upload-toast-close" aria-label="Close">&times;</button>')
+        .appendTo($toast)
+        .on('click', dismiss);
+
+    $toast.appendTo('body');
+
+    var timer = setTimeout(dismiss, 8000);
+    $toast.on('mouseenter', function () { clearTimeout(timer); });
+    $toast.on('mouseleave', function () { timer = setTimeout(dismiss, 3000); });
+}
+
 $("#form-upload").uploadprogress({
     redirect_url: getPath() + "/",
     uploadedMsg: $("#form-upload").data("message"),
     modalTitle: $("#form-upload").data("title"),
     modalFooter: $("#form-upload").data("footer"),
-    modalTitleFailed: $("#form-upload").data("failed")
+    modalTitleFailed: $("#form-upload").data("failed"),
+    onSuccess: function (targetUrl, widget) {
+        widget.$modal.modal("hide");
+        // The page stays, so the file input keeps its selection and picking the
+        // same file again would not fire "change". Clear it before the toast.
+        $("#btn-upload").val("");
+        showUploadToast($("#form-upload").data("message"), targetUrl);
+    }
 });
 
 $("#form-upload-format").uploadprogress({

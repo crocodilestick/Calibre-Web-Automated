@@ -121,6 +121,10 @@
             } else {
                 url = this.options.redirect_url;
             }
+            if (typeof this.options.onSuccess === "function") {
+                this.options.onSuccess(url, this);
+                return;
+            }
             window.location.href = url;
         },
 
@@ -202,7 +206,10 @@
         uploadedMsg: "Upload done, processing, please wait...",
         modalTitle: "Uploading",
         modalFooter: "Close",
-        modalTitleFailed: "Upload failed"
+        modalTitleFailed: "Upload failed",
+        // Called with (url, widget) instead of navigating away when set.
+        // The callback owns the modal, so hide it itself.
+        onSuccess: null
         //redirect_url: ...
         // need to customize stuff? Add here, and change code accordingly.
     };

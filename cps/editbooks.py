@@ -43,6 +43,13 @@ editbook = Blueprint('edit-book', __name__)
 log = logger.create()
 
 
+def _upload_response(location):
+    """Return an XHR payload or a browser redirect after an upload."""
+    if request.headers.get("X-Requested-With") == "XMLHttpRequest":
+        return Response(json.dumps({"location": location}), mimetype='application/json')
+    return redirect(location)
+
+
 def upload_required(f):
     @wraps(f)
     def inner(*args, **kwargs):
@@ -111,7 +118,7 @@ def upload():
             log.error_or_exception("Ingest directory not writable: %s", e)
             flash(_("Ingest folder is not writable. Check your /cwa-book-ingest volume permissions."),
                   category="error")
-            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+            return _upload_response(url_for("web.index"))
         raw_book_id = request.form.get('book_id', -1)
         try:
             book_id = int(raw_book_id)
@@ -119,17 +126,17 @@ def upload():
             book_id = -1
         if book_id == -1:
             flash(_("Missing or invalid book id for format upload"), category="error")
-            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+            return _upload_response(url_for("web.index"))
 
         # Validate that the book exists before creating manifest
         book = calibre_db.get_book(book_id)
         if not book:
             flash(_("Cannot upload format: Book no longer exists in library"), category="error")
-            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+            return _upload_response(url_for("web.index"))
 
         for requested_file in request.files.getlist("btn-upload-format"):
             if not _validate_uploaded_file(requested_file):
-                return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
+                return _upload_response(url_for('edit-book.show_edit_book', book_id=book_id))
 
             try:
                 final_path = _get_ingest_path(requested_file, prefix_parts=["format", book_id])
@@ -155,10 +162,10 @@ def upload():
             except Exception as e:
                 log.error_or_exception("Failed to queue format upload for ingest: {}".format(e))
                 flash(_("Failed to queue upload for processing"), category="error")
-                return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
+                return _upload_response(url_for('edit-book.show_edit_book', book_id=book_id))
 
         # Redirect back to the book edit page
-        return Response(json.dumps({"location": url_for('edit-book.show_edit_book', book_id=book_id)}), mimetype='application/json')
+        return _upload_response(url_for('edit-book.show_edit_book', book_id=book_id))
 
     # New book uploads: queue files to ingest atomically
     elif len(request.files.getlist("btn-upload")):
@@ -168,10 +175,10 @@ def upload():
             log.error_or_exception("Ingest directory not writable: %s", e)
             flash(_("Ingest folder is not writable. Check your /cwa-book-ingest volume permissions."),
                   category="error")
-            return Response(json.dumps({"location": url_for("web.index")}), mimetype='application/json')
+            return _upload_response(url_for("web.index"))
         for requested_file in request.files.getlist("btn-upload"):
             if not _validate_uploaded_file(requested_file):
-                return Response(json.dumps({"location": url_for('web.index')}), mimetype='application/json')
+                return _upload_response(url_for('web.index'))
             try:
                 final_path = _get_ingest_path(requested_file, prefix_parts=["new", current_user.id])
                 tmp_path, final_path = _save_to_ingest_atomic_rename(requested_file, final_path)
@@ -181,9 +188,9 @@ def upload():
             except Exception as e:
                 log.error_or_exception("Failed to queue upload for ingest: {}".format(e))
                 flash(_("Failed to queue upload for processing"), category="error")
-                return Response(json.dumps({"location": url_for('tasks.get_tasks_status')}), mimetype='application/json')
+                return _upload_response(url_for('tasks.get_tasks_status'))
 
-        return Response(json.dumps({"location": url_for('tasks.get_tasks_status')}), mimetype='application/json')
+        return _upload_response(url_for('tasks.get_tasks_status'))
     abort(400)
 
 

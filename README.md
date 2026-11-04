@@ -132,6 +132,43 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 | In-browser eBook reading support for multiple formats | Content hiding based on categories and Custom Column content per user | "Magic Link" login for easy access on eReaders |
 | Enhanced OAuth 2.0/OIDC authentication with auto-discovery | Advanced search and filtering options | Multilingual user interface supporting 20+ [languages](https://github.com/janeczku/calibre-web/wiki/Translation-Status) |
 
+##### Optional Automatic Generic OAuth Login
+
+CWA can optionally initiate Generic OAuth authentication automatically when an unauthenticated visitor accesses the home page through a configured hostname.
+
+This feature is disabled by default and does not change existing authentication behavior unless explicitly enabled.
+
+**Configuration**
+
+Set the following environment variable in your Docker Compose configuration:
+
+```yaml
+environment:
+  - CWA_OAUTH_AUTO_LOGIN_HOSTS=books.example.com
+```
+
+Multiple hostnames can be specified using commas:
+
+```env
+CWA_OAUTH_AUTO_LOGIN_HOSTS=books.example.com,library.example.com
+```
+
+**Behavior**
+
+- Only explicitly configured hostnames trigger automatic OAuth login.
+- The feature applies only to the home page (`/`).
+- Existing authenticated CWA sessions are not redirected.
+- Other hostnames, including local network addresses, retain their normal behavior.
+- Generic OAuth must already be configured and its login endpoint available.
+- Automatic retries are limited to prevent redirect loops.
+- Users can still initiate OAuth login manually after a failed automatic attempt.
+
+**Security considerations**
+
+This feature only initiates the existing authentication flow. It does not bypass authentication or authorization checks.
+
+When deployed behind a reverse proxy, ensure that the proxy correctly validates and forwards the original hostname and that untrusted clients cannot manipulate trusted forwarding headers.
+
 ## Plus these _**CWA Specific Features**_ on top:
 
 #### Click a feature below to read about it in more detail:

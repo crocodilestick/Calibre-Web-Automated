@@ -1007,32 +1007,7 @@ def health_check():
 @web.route("/", defaults={'page': 1})
 @web.route('/page/<int:page>')
 @login_required_if_no_ano
-def _should_auto_start_generic_oauth():
-    """Check whether Generic OAuth should start automatically."""
-
-    configured_hosts = {
-        host.strip().lower()
-        for host in os.environ.get(
-            "CWA_OAUTH_AUTO_LOGIN_HOSTS", ""
-        ).split(",")
-        if host.strip()
-    }
-
-    return (
-        request.method == "GET"
-        and request.path == "/"
-        and request.host.lower() in configured_hosts
-        and not current_user.is_authenticated
-        and not flask_session.get(
-            "_cwa_auto_oauth_attempted", False
-        )
-    )
 def index(page):
-    # Optional automatic Generic OAuth on selected hosts.
-    if _should_auto_start_generic_oauth():
-        flask_session["_cwa_auto_oauth_attempted"] = True
-        return redirect(url_for("generic.login"))
-
     if current_user.is_authenticated and current_user.role_admin():
         arch_warning = helper.check_architecture()
         if arch_warning:

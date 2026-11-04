@@ -1004,9 +1004,6 @@ def health_check():
 
 # ################################### View Books list ##################################################################
 
-@web.route("/", defaults={'page': 1})
-@web.route('/page/<int:page>')
-@login_required_if_no_ano
 def _should_auto_start_generic_oauth():
     """Check whether Generic OAuth should start automatically."""
 
@@ -1027,6 +1024,10 @@ def _should_auto_start_generic_oauth():
             "_cwa_auto_oauth_attempted", False
         )
     )
+    
+@web.route("/", defaults={'page': 1})
+@web.route('/page/<int:page>')
+@login_required_if_no_ano
 def index(page):
     # Optional automatic Generic OAuth on selected hosts.
     if _should_auto_start_generic_oauth():

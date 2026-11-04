@@ -332,6 +332,22 @@ def register_user_from_generic_oauth(token=None):
                 log.info("OAuth login matched existing user by email '%s' (user '%s'), provider username '%s'",
                          provider_email, user.name, provider_username)
 
+    
+    # Reuse an existing OAuth identity binding before account creation.
+    # Do not override the explicit account-linking flow.
+    if not is_linking:
+        linked_oauth = ub.session.query(ub.OAuth).filter_by(
+            provider=str(generic['id']),
+            provider_user_id=provider_user_id
+        ).first()
+    
+        if linked_oauth is not None and linked_oauth.user is not None:
+            user = linked_oauth.user
+            log.info(
+                "OAuth login reused linked CWA user '%s'",
+                user.name
+            )
+            
     # Check if user should have admin role based on group membership
     # Handle various group formats: list, string, or None
     groups_present = 'groups' in userinfo

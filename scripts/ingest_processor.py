@@ -53,7 +53,15 @@ _duplicate_scan_timer = None
 _duplicate_scan_lock = threading.Lock()
 
 class ProcessLock:
-    """Robust process lock using both file locking and PID tracking"""
+    """Process lock based on flock(); the PID in the file is informational only.
+
+    The kernel releases a flock() when its holder's descriptors close, including
+    when the process dies, so a lock left behind by a crashed process is never
+    held and needs no cleanup. The lock file is therefore never truncated before
+    the lock is held and never unlinked: removing or replacing the path while
+    another process holds (or waits on) the lock would let a third caller lock a
+    different inode and run concurrently.
+    """
 
     def __init__(self, lock_name="ingest_processor"):
         self.lock_name = lock_name
@@ -64,31 +72,31 @@ class ProcessLock:
     def acquire(self, timeout=5):
         """Acquire the lock with timeout. Returns True if successful, False if another process has it."""
         try:
-            # Try to open/create the lock file
-            self.lock_file = open(self.lock_path, 'w+')
+            # Open (or create) the lock file without truncating it, so a
+            # contender never erases the PID written by the current owner.
+            fd = os.open(self.lock_path, os.O_RDWR | os.O_CREAT, 0o666)
+            self.lock_file = os.fdopen(fd, 'r+')
 
             # Try to acquire an exclusive lock with timeout
             start_time = time.time()
             while time.time() - start_time < timeout:
                 try:
                     fcntl.flock(self.lock_file.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
-
-                    # Successfully acquired lock, write our PID
-                    self.lock_file.seek(0)
-                    self.lock_file.write(str(os.getpid()))
-                    self.lock_file.flush()
-                    self.lock_file.truncate()  # Truncate at current position to remove any leftover data
-
-                    self.acquired = True
-                    print(f"[ingest-processor] Lock acquired successfully (PID: {os.getpid()})")
-                    return True
-
                 except (IOError, OSError):
-                    # Lock is held by another process
-                    # Check if the holding process is still alive
-                    if self._check_stale_lock():
-                        continue  # Try again as we cleaned up a stale lock
-                    time.sleep(0.1)  # Brief wait before retry
+                    # Lock is held by another live process (a dead holder's
+                    # flock is released by the kernel), so wait and retry.
+                    time.sleep(0.1)
+                    continue
+
+                # Successfully acquired lock, replace any old content with our PID
+                self.lock_file.seek(0)
+                self.lock_file.truncate()
+                self.lock_file.write(str(os.getpid()))
+                self.lock_file.flush()
+
+                self.acquired = True
+                print(f"[ingest-processor] Lock acquired successfully (PID: {os.getpid()})")
+                return True
 
             # Timeout reached
             holding_pid = self._get_holding_pid()
@@ -112,70 +120,18 @@ class ProcessLock:
             pass
         return "unknown"
 
-    def _check_stale_lock(self):
-        """Check if the lock is stale (holding process no longer exists) and clean it up"""
-        try:
-            if not self.lock_file:
-                return False
-
-            self.lock_file.seek(0)
-            pid_str = self.lock_file.read().strip()
-
-            if not pid_str.isdigit():
-                print("[ingest-processor] Lock file contains invalid PID, treating as stale")
-                return self._cleanup_stale_lock()
-
-            holding_pid = int(pid_str)
-
-            # Check if process is still running
-            try:
-                os.kill(holding_pid, 0)  # Signal 0 just checks if process exists
-                return False  # Process is still running
-            except ProcessLookupError:
-                # Process doesn't exist, lock is stale
-                print(f"[ingest-processor] Detected stale lock from non-existent process {holding_pid}, cleaning up")
-                return self._cleanup_stale_lock()
-            except PermissionError:
-                # Process exists but we can't signal it (different user), assume it's running
-                return False
-
-        except Exception as e:
-            print(f"[ingest-processor] Error checking stale lock: {e}")
-            return False
-
-    def _cleanup_stale_lock(self):
-        """Clean up a stale lock file"""
-        try:
-            if self.lock_file:
-                try:
-                    fcntl.flock(self.lock_file.fileno(), fcntl.LOCK_UN)
-                except (OSError, IOError):
-                    # We might not have had the lock in the first place
-                    pass
-                self.lock_file.close()
-                self.lock_file = None
-
-            # Remove the lock file
-            if os.path.exists(self.lock_path):
-                os.remove(self.lock_path)
-                print(f"[ingest-processor] Cleaned up stale lock file: {self.lock_path}")
-
-            return True
-        except Exception as e:
-            print(f"[ingest-processor] Error cleaning up stale lock: {e}")
-            return False
-
     def release(self):
         """Release the lock"""
         if self.acquired and self.lock_file:
             try:
+                # Clear our PID while we still hold the lock. The file itself
+                # stays in place (see the class docstring).
+                self.lock_file.seek(0)
+                self.lock_file.truncate()
+                self.lock_file.flush()
                 fcntl.flock(self.lock_file.fileno(), fcntl.LOCK_UN)
                 self.lock_file.close()
                 self.lock_file = None
-
-                # Remove lock file
-                if os.path.exists(self.lock_path):
-                    os.remove(self.lock_path)
 
                 self.acquired = False
                 print(f"[ingest-processor] Lock released (PID: {os.getpid()})")

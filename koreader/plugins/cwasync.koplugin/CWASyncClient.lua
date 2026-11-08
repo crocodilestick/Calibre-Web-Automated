@@ -75,6 +75,46 @@ function CWASyncClient:init()
         local base64_credentials = base64_encode(credentials)
         req.headers["Authorization"] = "Basic " .. base64_credentials
     end
+    -- HTTPS through KOReader's HTTP proxy.
+    --
+    -- KOReader's proxy setting is luasocket's global http.PROXY. Spore sends
+    -- https:// URLs through luasec's ssl.https.request, which refuses outright
+    -- whenever a proxy is set ("proxy not supported"), so login and sync fail
+    -- with "Unknown server error" before any socket is opened. socket.http
+    -- itself does handle that case: it sends the absolute https:// URL to the
+    -- proxy, and the proxy makes the TLS connection. That is how the OPDS
+    -- browser works through the same proxy (e.g. Tailscale in userspace mode,
+    -- where tailscaled's proxy on 127.0.0.1 is the only way onto the tailnet).
+    --
+    -- Only taken for https:// with a proxy set; otherwise Spore's normal path
+    -- runs untouched. Returning a response table short-circuits Spore's own
+    -- request, and the Format.JSON callback still decodes the body.
+    package.loaded["Spore.Middleware.ProxiedHTTPS"] = {}
+    require("Spore.Middleware.ProxiedHTTPS").call = function(_, req)
+        local http = require("socket.http")
+        if not http.PROXY then return end
+        req:finalize()
+        if not req.url:match("^https://") then return end
+        local ltn12 = require("ltn12")
+        local chunks = {}
+        local body = req.env.spore.body
+        local ok, code, headers, status = http.request{
+            url = req.url,
+            method = req.method,
+            headers = req.headers,
+            source = body and ltn12.source.string(body) or nil,
+            sink = ltn12.sink.table(chunks),
+        }
+        if not ok then
+            error("ProxiedHTTPS: " .. tostring(code))
+        end
+        return {
+            request = req,
+            status = code,
+            headers = headers,
+            body = table.concat(chunks),
+        }
+    end
     package.loaded["Spore.Middleware.AsyncHTTP"] = {}
     require("Spore.Middleware.AsyncHTTP").call = function(args, req)
         -- disable async http if Turbo looper is missing
@@ -111,6 +151,7 @@ function CWASyncClient:authorize(username, password)
         username = username,
         password = password,
     })
+    self.client:enable("ProxiedHTTPS")
     socketutil:set_timeout(AUTH_TIMEOUTS[1], AUTH_TIMEOUTS[2])
     local ok, res = pcall(function()
         return self.client:authorize()
@@ -140,6 +181,7 @@ function CWASyncClient:update_progress(
         username = username,
         password = password,
     })
+    self.client:enable("ProxiedHTTPS")
     -- Set *very* tight timeouts to avoid blocking for too long...
     socketutil:set_timeout(PROGRESS_TIMEOUTS[1], PROGRESS_TIMEOUTS[2])
     local co = coroutine.create(function()
@@ -177,6 +219,7 @@ function CWASyncClient:get_progress(
         username = username,
         password = password,
     })
+    self.client:enable("ProxiedHTTPS")
     socketutil:set_timeout(PROGRESS_TIMEOUTS[1], PROGRESS_TIMEOUTS[2])
     local co = coroutine.create(function()
         local ok, res = pcall(function()

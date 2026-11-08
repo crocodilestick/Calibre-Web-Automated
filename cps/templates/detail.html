@@ -1121,7 +1121,7 @@
         var $tagsContainer = $("#detail-tags");
         function getCurrentTags() {
             return $tagsContainer.find(".tag-pill").map(function () {
-                return $(this).data("tag");
+                return $(this).attr("data-tag");
             }).get().filter(function (tag) {
                 return tag && tag.trim().length > 0;
             });
@@ -1149,7 +1149,7 @@
             e.preventDefault();
             e.stopPropagation();
             var $pill = $(this).closest(".tag-pill");
-            var tagToRemove = $pill.data("tag");
+            var tagToRemove = $pill.attr("data-tag");
             var tags = getCurrentTags().filter(function (tag) {
                 return tag !== tagToRemove;
             });

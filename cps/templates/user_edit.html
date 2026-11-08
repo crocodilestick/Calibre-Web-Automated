@@ -271,7 +271,8 @@
       <div class="form-group">
         <label for="theme">{{ _('Theme') }}</label>
         <select name="theme" id="theme" class="form-control">
-          <option value="1" selected>caliBlur (Dark)</option>
+          <option value="1" {% if content.theme != 2 %}selected{% endif %}>caliBlur (Dark)</option>
+          <option value="2" {% if content.theme == 2 %}selected{% endif %}>Golden Times</option>
         </select>
       </div>
     </div>

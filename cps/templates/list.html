@@ -6,9 +6,45 @@ See CONTRIBUTORS for full list of authors. -->
 
 {% extends "layout.html" %}
 {% block body %}
-<h1 class="{{page}}">{{_(title)}}</h1>
+{% if g.current_theme == 2 %}<header class="aio-page-header{% if page == 'magicshelf' %} aio-tools-only{% endif %}"{% if page == 'magicshelf' %} aria-label="{{ title|striptags }}"{% endif %}>
+{% if page != 'magicshelf' %}<h1 class="{{page}}">{{_(title)}}</h1>{% endif %}
+<div class="aio-page-tools"><div class="filterheader hidden-xs">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      {% if entries.__len__() and data == 'author' %}
+        <div id="sort_name" class="aio-sort btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0"></path><path d="M4 21v-2a8 8 0 0 1 16 0v2"></path></svg><svg xmlns="http://www.w3.org/2000/svg" class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 8h16l-4-4M20 16H4l4 4"></path></svg></div>
+      {% endif %}
+      <div id="asc" data-order="{{ order }}" data-id="{{ data }}" class="aio-sort btn btn-primary {% if order == 1 %} active{% endif%}"><span aria-hidden="true">A–Z</span><svg xmlns="http://www.w3.org/2000/svg" class="aio-sort-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v16M6 14l6 6 6-6"></path></svg></div>
+      <div id="desc" data-id="{{ data }}" class="aio-sort btn btn-primary{% if order == 0 %} active{% endif%}"><span aria-hidden="true">A–Z</span><svg xmlns="http://www.w3.org/2000/svg" class="aio-sort-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 20V4M6 10l6-6 6 6"></path></svg></div>
+      {% if charlist|length %}
+      <div id="all" class="active btn btn-primary">{{_('All')}}</div>
+      {% endif %}
+      {% if charlist|length %}
+        {% if charlist|length > 9 %}
+          <!-- Use a dropdown when there are many characters -->
+          <div class="character-dropdown" style="display:inline-block; margin-left: .5rem;">
+            <label for="char-dropdown" class="sr-only">{{ _('Filter by initial') }}</label>
+            <select id="char-dropdown" class="form-control" style="display:inline-block; width:auto;">
+              <option value="" selected disabled>{{ _('Filter by initial') }}</option>
+              {% for char in charlist %}
+                <option value="{{char[0]}}">{{char[0]}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        {% else %}
+          <div class="btn-group character" role="group">
+            {% for char in charlist%}
+            <div class="btn btn-primary char">{{char[0]}}</div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endif %}
 
-    <div class="filterheader hidden-xs">
+      {% if data == "series" %}
+      <button class="update-view btn btn-primary" data-target="series_view" id="grid-button" data-view="grid">{{_('Grid')}}</button>
+      {% endif %}
+    </div></div></header>{% else %}<h1 class="{{page}}">{{_(title)}}</h1>{% endif %}
+
+    {% if g.current_theme != 2 %}<div class="filterheader hidden-xs">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
       {% if entries.__len__() and data == 'author' %}
         <div id="sort_name" class="btn btn-primary"><b>B,A <-> A B</b></div>
@@ -42,11 +78,13 @@ See CONTRIBUTORS for full list of authors. -->
       {% if data == "series" %}
       <button class="update-view btn btn-primary" data-target="series_view" id="grid-button" data-view="grid">{{_('Grid')}}</button>
       {% endif %}
-    </div>
+    </div>{% endif %}
   <div class="container" id="{{_(title)}}">
-    {% if title == "Downloads" %}
+    {% if g.current_theme == 2 %}{% if data == "download" %}
+      {% if not entries %}<p class="aio-empty">{{ _('No user downloads recorded yet.') }}</p>{% endif %}
+    {% endif %}{% else %}{% if title == "Downloads" %}
       <h1 style="padding-top: 1rem; padding-bottom: 2rem;">Users Downloaded Books:</h1>
-    {% endif %}
+    {% endif %}{% endif %}
     <div id="{{_(title)}}_list" class="col-xs-12 col-sm-6 list-container">
     {% for entry in entries %}
       {% if loop.index0 == (loop.length/2+loop.length%2)|int and loop.length > 20 %}

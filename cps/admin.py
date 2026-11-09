@@ -145,7 +145,8 @@ def before_request():
             g.current_theme = config.config_theme
     except Exception:
         g.current_theme = getattr(config, 'config_theme', 1)
-    g.current_theme = 1
+    # The light theme (0) stays disabled; Golden Times (2) is opt-in per user or as the default.
+    g.current_theme = 2 if g.current_theme == 2 else 1
     g.config_authors_max = config.config_authors_max
     if '/static/' not in request.path and not config.db_configured and \
         request.endpoint not in ('admin.ajax_db_config',

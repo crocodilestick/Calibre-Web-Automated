@@ -2491,10 +2491,10 @@ def change_profile(kobo_support, hardcover_support, local_oauth_check, oauth_sta
                     ub.session.delete(hidden)
                     log.info(f"User {current_user.id} unhid custom shelf {hidden.shelf_id}")
         
-        # Theme change (force dark)
+        # Theme change: caliBlur (1) or Golden Times (2)
         if 'theme' in to_save:
             try:
-                current_user.theme = 1
+                current_user.theme = 2 if str(to_save['theme']) == '2' else 1
             except Exception:
                 pass
 

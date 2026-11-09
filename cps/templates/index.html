@@ -41,7 +41,76 @@
 }
 </style>
 {% endblock %}
-{% block body %}
+{% block body %}{% if g.current_theme == 2 %}<header class="aio-page-header{% if page == 'magicshelf' %} aio-tools-only{% endif %}"{% if page == 'magicshelf' %} aria-label="{{ title|striptags }}"{% endif %}>
+{% if page != 'magicshelf' %}<h2 class="{{title}}">
+    {{title | safe}}
+  </h2>{% endif %}
+<div class="aio-page-tools">{% set show_shelf_actions = page != 'discover' %}
+  {% if show_shelf_actions %}<div class="shelf-actions">{% endif %}
+    {% if page == 'magicshelf' %}
+    <div class="magic-shelf-buttons">
+        <a href="{{url_for('web.render_magic_shelf', shelf_id=id, sort_param=order, page=1, refresh=1)}}" 
+           class="btn btn-default"
+           style="display: flex;
+                  align-items: center;
+                  flex-direction: row;
+                  gap: 0.5rem;" 
+           data-toggle="tooltip" 
+           title="{{_('Refresh shelf to update with latest changes')}}">
+          <span style="padding: 5px;" class="glyphicon glyphicon-refresh"></span> {{_('Refresh')}}
+        </a>
+        {% if shelf.user_id == current_user.id or current_user.role_admin() %}
+        <a href="{{url_for('web.edit_magic_shelf', shelf_id=id)}}" 
+           class="btn btn-default"
+           style="display: flex;
+                  align-items: center;
+                  flex-direction: row;
+                  gap: 0.5rem;" 
+           data-toggle="tooltip" 
+           title="{{_('Edit shelf rules')}}">
+          <span style="padding: 5px;" class="glyphicon glyphicon-edit"></span> {{_('Edit')}}
+        </a>
+        {% endif %}
+        {% if shelf.user_id != current_user.id %}
+        <button id="toggle-hide-shelf" 
+                class="btn btn-{% if is_hidden_shelf %}success{% else %}warning{% endif %}"
+                data-shelf-id="{{ id }}"
+                data-is-hidden="{{ 'true' if is_hidden_shelf else 'false' }}"
+                style="display: flex;
+                       align-items: center;
+                       flex-direction: row;
+                       gap: 0.5rem;" 
+                data-toggle="tooltip" 
+                title="{{_('Hide this shelf from your sidebar') if not is_hidden_shelf else _('Show this shelf in your sidebar')}}">
+          <span style="padding: 5px;" class="glyphicon glyphicon-{% if is_hidden_shelf %}eye-open{% else %}eye-close{% endif %}"></span> 
+          <span class="hide-text">{% if is_hidden_shelf %}{{_('Show Shelf')}}{% else %}{{_('Hide Shelf')}}{% endif %}</span>
+        </button>
+        {% endif %}
+    </div>
+    {% endif %}
+
+   {% if page != 'discover' %}
+    <div class="filterheader hidden-xs">
+    {% if page == 'hot' %}
+      <a data-toggle="tooltip" title="{{_('Sort ascending according to download count')}}" id="hot_asc" class="aio-sort btn btn-primary{% if order == "hotasc" %} active{% endif%}" href="{{url_for('web.books_list', data=page, book_id=id, sort_param='hotasc')}}"><svg xmlns="http://www.w3.org/2000/svg" class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3v12M7 10l5 5 5-5"></path><path d="M4 17v4h16v-4"></path></svg><svg xmlns="http://www.w3.org/2000/svg" class="aio-sort-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v16M6 14l6 6 6-6"></path></svg></a>
+      <a data-toggle="tooltip" title="{{_('Sort descending according to download count')}}" id="hot_desc" class="aio-sort btn btn-primary{% if order == "hotdesc" %} active{% endif%}" href="{{url_for('web.books_list', data=page, book_id=id, sort_param='hotdesc')}}"><svg xmlns="http://www.w3.org/2000/svg" class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3v12M7 10l5 5 5-5"></path><path d="M4 17v4h16v-4"></path></svg><svg xmlns="http://www.w3.org/2000/svg" class="aio-sort-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 20V4M6 10l6-6 6 6"></path></svg></a>
+    {% else %}
+      <a data-toggle="tooltip" title="{{_('Sort according to book date, oldest first')}}" id="old" class="aio-sort btn btn-primary{% if order == "old" %} active{% endif%}" href="{{url_for('web.books_list', data=page, book_id=id, sort_param='old')}}"><svg xmlns="http://www.w3.org/2000/svg" class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 4h6a3 3 0 0 1 3 3v14a4 4 0 0 0-4-2H4z"></path><path d="M13 8h7v11h-3"></path><path d="M17 2v6M14 5h6"></path></svg><svg xmlns="http://www.w3.org/2000/svg" class="aio-sort-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v16M6 14l6 6 6-6"></path></svg></a>
+      <a data-toggle="tooltip" title="{{_('Sort according to book date, newest first')}}" id="new" class="aio-sort btn btn-primary{% if order == "new" %} active{% endif%}" href="{{url_for('web.books_list', data=page, book_id=id, sort_param='new')}}"><svg xmlns="http://www.w3.org/2000/svg" class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 4h6a3 3 0 0 1 3 3v14a4 4 0 0 0-4-2H4z"></path><path d="M13 8h7v11h-3"></path><path d="M17 2v6M14 5h6"></path></svg><svg xmlns="http://www.w3.org/2000/svg" class="aio-sort-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 20V4M6 10l6-6 6 6"></path></svg></a>
+      <a data-toggle="tooltip" title="{{_('Sort title in alphabetical order')}}" id="asc" class="aio-sort btn btn-primary{% if order == "abc" %} active{% endif%}" href="{{url_for('web.books_list', data=page, book_id=id, sort_param='abc')}}"><span aria-hidden="true">A–Z</span><svg xmlns="http://www.w3.org/2000/svg" class="aio-sort-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v16M6 14l6 6 6-6"></path></svg></a>
+      <a data-toggle="tooltip" title="{{_('Sort title in reverse alphabetical order')}}" id="desc" class="aio-sort btn btn-primary{% if order == "zyx" %} active{% endif%}" href="{{url_for('web.books_list', data=page, book_id=id, sort_param='zyx')}}"><span aria-hidden="true">A–Z</span><svg xmlns="http://www.w3.org/2000/svg" class="aio-sort-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 20V4M6 10l6-6 6 6"></path></svg></a>
+      <a data-toggle="tooltip" title="{{_('Sort authors in alphabetical order')}}" id="auth_az" class="aio-sort btn btn-primary{% if order == "authaz" %} active{% endif%}" href="{{url_for('web.books_list', data=page, book_id=id, sort_param='authaz')}}"><svg xmlns="http://www.w3.org/2000/svg" class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0"></path><path d="M4 21v-2a8 8 0 0 1 16 0v2"></path></svg><svg xmlns="http://www.w3.org/2000/svg" class="aio-sort-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v16M6 14l6 6 6-6"></path></svg></a>
+      <a data-toggle="tooltip" title="{{_('Sort authors in reverse alphabetical order')}}" id="auth_za" class="aio-sort btn btn-primary{% if order == "authza" %} active{% endif%}" href="{{url_for('web.books_list', data=page, book_id=id, sort_param='authza')}}"><svg xmlns="http://www.w3.org/2000/svg" class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M16 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0"></path><path d="M4 21v-2a8 8 0 0 1 16 0v2"></path></svg><svg xmlns="http://www.w3.org/2000/svg" class="aio-sort-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 20V4M6 10l6-6 6 6"></path></svg></a>
+      <a data-toggle="tooltip" title="{{_('Sort according to publishing date, oldest first')}}" id="pub_old" class="aio-sort btn btn-primary{% if order == "pubold" %} active{% endif%}" href="{{url_for('web.books_list', data=page, book_id=id, sort_param='pubold')}}"><svg xmlns="http://www.w3.org/2000/svg" class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 5h14v16H5z"></path><path d="M8 2v6M16 2v6M5 10h14"></path><path d="M9 14h2v3H9z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" class="aio-sort-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v16M6 14l6 6 6-6"></path></svg></a>
+      <a data-toggle="tooltip" title="{{_('Sort according to publishing date, newest first')}}" id="pub_new" class="aio-sort btn btn-primary{% if order == "pubnew" %} active{% endif%}" href="{{url_for('web.books_list', data=page, book_id=id, sort_param='pubnew')}}"><svg xmlns="http://www.w3.org/2000/svg" class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 5h14v16H5z"></path><path d="M8 2v6M16 2v6M5 10h14"></path><path d="M9 14h2v3H9z"></path></svg><svg xmlns="http://www.w3.org/2000/svg" class="aio-sort-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 20V4M6 10l6-6 6 6"></path></svg></a>
+      {% if page == 'series' %}
+      <a data-toggle="tooltip" title="{{_('Sort ascending according to series index')}}" id="series_asc" class="aio-sort btn btn-primary{% if order == "seriesasc" %} active{% endif%}" href="{{url_for('web.books_list', data=page, book_id=id, sort_param='seriesasc')}}"><svg xmlns="http://www.w3.org/2000/svg" class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 5h12M4 12h12M4 19h12"></path><path d="M20 4v2M20 11v2M20 18v2"></path></svg><svg xmlns="http://www.w3.org/2000/svg" class="aio-sort-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v16M6 14l6 6 6-6"></path></svg></a>
+      <a data-toggle="tooltip" title="{{_('Sort descending according to series index')}}" id="series_desc" class="aio-sort btn btn-primary{% if order == "seriesdesc" %} active{% endif%}" href="{{url_for('web.books_list', data=page, book_id=id, sort_param='seriesdesc')}}"><svg xmlns="http://www.w3.org/2000/svg" class="" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 5h12M4 12h12M4 19h12"></path><path d="M20 4v2M20 11v2M20 18v2"></path></svg><svg xmlns="http://www.w3.org/2000/svg" class="aio-sort-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.65" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 20V4M6 10l6-6 6 6"></path></svg></a>
+      {% endif %}
+    {% endif %}
+    </div>
+   {% endif %}
+  {% if show_shelf_actions %}</div>{% endif %}</div></header>{% endif %}
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 {% if current_user.show_detail_random() and page != "discover" %}
 <div class="discover random-books">
@@ -51,7 +120,7 @@
     <div class="col-sm-3 col-lg-2 col-xs-6 book session" id="books_rand">
       <div class="cover">
           <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" 
-             {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
+             {% if simple==false and g.current_theme != 2 %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
              data-book-id="{{ entry.Books.id }}"
              data-book-formats="{% for format in entry.Books.data %}{{ format.format.lower() }}{% if not loop.last %},{% endif %}{% endfor %}"
              class="book-cover-link">
@@ -62,7 +131,7 @@
           </a>
       </div>
       <div class="meta">
-        <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}>
+        <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false and g.current_theme != 2 %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}>
           <p title="{{entry.Books.title}}" class="title">{{entry.Books.title|shortentitle}}</p>
         </a>
         <p class="author">
@@ -110,9 +179,9 @@
 </div>
 {% endif %}
 <div class="discover load-more">
-  <h2 class="{{title}}">
+  {% if g.current_theme != 2 %}<h2 class="{{title}}">
     {{title | safe}}
-  </h2>
+  </h2>{% endif %}
   {% if page == 'magicshelf' %}
   <div class="alert alert-warning visible-xs" style="margin-top: 10px;">
     <span class="glyphicon glyphicon-warning-sign"></span> 
@@ -120,7 +189,7 @@
   </div>
   {% endif %}
 
-  {% set show_shelf_actions = page != 'discover' %}
+  {% if g.current_theme != 2 %}{% set show_shelf_actions = page != 'discover' %}
   {% if show_shelf_actions %}<div class="shelf-actions">{% endif %}
     {% if page == 'magicshelf' %}
     <div class="magic-shelf-buttons">
@@ -185,14 +254,14 @@
     {% endif %}
     </div>
    {% endif %}
-  {% if show_shelf_actions %}</div>{% endif %}
+  {% if show_shelf_actions %}</div>{% endif %}{% endif %}
   <div class="row display-flex">
     {% if entries[0] %}
     {% for entry in entries %}
     <div class="col-sm-3 col-lg-2 col-xs-6 book session" id="books">
       <div class="cover">
           <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" 
-             {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
+             {% if simple==false and g.current_theme != 2 %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
              data-book-id="{{ entry.Books.id }}"
              data-book-formats="{% for format in entry.Books.data %}{{ format.format.lower() }}{% if not loop.last %},{% endif %}{% endfor %}"
              class="book-cover-link">
@@ -203,7 +272,7 @@
           </a>
       </div>
       <div class="meta">
-        <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}>
+        <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false and g.current_theme != 2 %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}>
           <p title="{{ entry.Books.title }}" class="title">{{entry.Books.title|shortentitle}}</p>
         </a>
         <p class="author">

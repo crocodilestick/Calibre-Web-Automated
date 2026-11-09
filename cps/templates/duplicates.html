@@ -491,8 +491,10 @@
 {% endblock %}
 
 {% block body %}
-<div class="discover">
-  <h2>{{title}}</h2>
+{% if g.current_theme == 2 %}<header class="aio-page-header{% if page == 'magicshelf' %} aio-tools-only{% endif %}"{% if page == 'magicshelf' %} aria-label="{{ title|striptags }}"{% endif %}>
+{% if page != 'magicshelf' %}<h2>{{title}}</h2>{% endif %}
+</header>{% endif %}<div class="discover">
+  {% if g.current_theme != 2 %}<h2>{{title}}</h2>{% endif %}
   <div class="settings-container" style="margin-top: 3rem; max-width: none; justify-self: auto;">
     <h2>{{_('CWA Duplicates Manager')}}</h2>
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
@@ -513,7 +515,7 @@
             <button type="button" class="btn btn-sm btn-default" id="select_all">{{_('Select Duplicates')}}</button>
             <button type="button" class="btn btn-sm btn-default" id="select_none">{{_('Select None')}}</button>
             <button type="button" class="btn btn-sm btn-danger disabled" id="delete_selected" aria-disabled="true">{{_('Delete Selected')}}</button>
-            <span id="selection_count" class="selection-info"></span>
+            <span id="selection_count" class="selection-info">{% if g.current_theme == 2 %}0 BOOKS SELECTED{% endif %}</span>
           {% endif %}
         </div>
 
@@ -559,7 +561,38 @@
 
         <div id="duplicate_results_content">
         <!-- Auto-Resolution Section -->
-        <div class="settings-container" style="margin-bottom: 30px; padding: 25px; background: #1c28328a; border-radius: 10px; margin-inline: 0rem; max-width: none;">
+        {% if g.current_theme == 2 %}<details class="settings-container aio-duplicate-options">
+          <summary>{{_('Auto-Resolve Duplicates')}}</summary>
+          
+          <p style="color: #bbb; margin-bottom: 20px;">
+            {{_('Automatically resolve all duplicate groups by keeping one book and deleting others based on a strategy.')}}
+          </p>
+          
+          <div style="display: flex; align-items: center; gap: 15px; flex-wrap: wrap;">
+            <label for="resolution_strategy" style="color: white; font-weight: 600;">{{_('Strategy:')}}</label>
+            <select id="resolution_strategy" class="form-control" style="background: #1c2832; color: white; border: 1px solid #444;">
+              <option value="newest">{{_('Keep Newest - Delete older copies, keep the most recently added')}}</option>
+              <option value="oldest">{{_('Keep Oldest - Delete newer copies, keep the earliest added')}}</option>
+              <option value="merge">{{_('Merge Formats - Merge formats into the newest book, delete the rest')}}</option>
+              <option value="highest_quality_format">{{_('Keep Highest Quality Format - Prefer formats based on your Duplicate Format Priority Ranking')}}</option>
+              <option value="most_metadata">{{_('Keep Most Metadata - Keep book with most complete information')}}</option>
+              <option value="largest_file_size">{{_('Keep Largest File Size - Keep book with largest total file size')}}</option>
+            </select>
+            
+            <button type="button" class="btn btn-default" id="preview_resolution">
+              <span class="glyphicon glyphicon-eye-open"></span> {{_('Preview')}}
+            </button>
+            
+            <button type="button" class="btn btn-danger disabled" id="execute_resolution" aria-disabled="true">
+              <span class="glyphicon glyphicon-flash"></span> {{_('Execute Resolution')}}
+            </button>
+          </div>
+          
+          <div class="cwa-settings-tip" style="margin-top: 15px; background: rgba(231, 76, 60, 0.15); border-left: 3px solid #e74c3c; padding: 12px; border-radius: 4px;">
+            <strong style="color: #e74c3c;">⚠️ {{_('Warning:')}}</strong>
+            <span style="color: #ddd;">{{_('This will permanently delete books. Original files will be backed up to')}} <code style="background: #2a3441; padding: 2px 6px; border-radius: 3px; color: #f39c12; line-break: anywhere;">/config/processed_books/duplicate_resolutions/</code></span>
+          </div>
+        </details>{% else %}<div class="settings-container" style="margin-bottom: 30px; padding: 25px; background: #1c28328a; border-radius: 10px; margin-inline: 0rem; max-width: none;">
           <h4 style="color: white; margin-bottom: 15px; display: flex; align-items: center;">
             <span class="glyphicon glyphicon-cog" style="margin-right: 10px;"></span>
             {{_('Auto-Resolve Duplicates')}}
@@ -593,7 +626,7 @@
             <strong style="color: #e74c3c;">⚠️ {{_('Warning:')}}</strong>
             <span style="color: #ddd;">{{_('This will permanently delete books. Original files will be backed up to')}} <code style="background: #2a3441; padding: 2px 6px; border-radius: 3px; color: #f39c12; line-break: anywhere;">/config/processed_books/duplicate_resolutions/</code></span>
           </div>
-        </div>
+        </div>{% endif %}
 
         <div class="duplicates-container">
           {% for group in duplicate_groups %}

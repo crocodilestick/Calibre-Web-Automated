@@ -1,0 +1,977 @@
+/* Modern: a standalone dark look on CWA's standard (Bootstrap 3) templates.
+   Tokens derive from the Designs/Wormhole Modern palette. The viewport is the
+   only scroll container, so sticky bands and Isotope measure the same width. */
+html.aio-modern {
+  color-scheme: dark;
+  --aio-bg: #0f1217;
+  --aio-sidebar: #14171c;
+  --aio-surface: #191e25;
+  --aio-line: #303842;
+  --aio-text: #f2f5f9;
+  --aio-muted: #b2bfce;
+  --aio-accent: #b49a64;
+  --aio-accent-bg: #2b2419;
+  --aio-accent-line: #78643e;
+  --aio-bar: 60px;
+  --aio-sidebar-width: 240px;
+  --color-secondary: var(--aio-accent);
+  /* A classic scrollbar must not change the layout width once the page overflows. */
+  scrollbar-gutter: stable;
+  scrollbar-color: #3a4350 var(--aio-bg);
+}
+.aio-modern body {
+  margin: 0;
+  padding-top: var(--aio-bar);
+  background: var(--aio-bg);
+  color: var(--aio-text);
+  font: 13px/1.5 "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+.aio-modern a { color: var(--aio-accent); }
+.aio-modern body h1, .aio-modern body h2, .aio-modern body h3, .aio-modern body h4 { color: var(--aio-text); }
+.aio-modern .row-fluid.text-center { margin-top: 0; }
+/* CWA notices (flash messages) are body-level rows above the content: show
+   them as one strip under the bar beside the sidebar, so the band follows
+   without a gap. */
+.aio-modern body > .row-fluid.text-center { margin: 0; }
+.aio-modern body:has(.row-fluid > .col-sm-2) > .row-fluid.text-center { margin-left: var(--aio-sidebar-width); }
+.aio-modern body > .row-fluid.text-center > .alert {
+  position: relative;
+  margin: 0;
+  padding: 10px 48px 10px 16px;
+  border-width: 0 0 1px;
+  border-radius: 0;
+  font-size: 13px;
+  line-height: 20px;
+}
+.aio-modern body > .row-fluid.text-center > .alert > .close { position: absolute; top: 50%; right: 16px; transform: translateY(-50%); }
+/* Bootstrap's input[type=file] rule would otherwise beat the hidden attribute. */
+.aio-modern [hidden] { display: none !important; }
+.aio-modern a:focus-visible, .aio-modern button:focus-visible, .aio-modern summary:focus-visible,
+.aio-modern input:focus-visible, .aio-modern select:focus-visible, .aio-modern [role="button"]:focus-visible {
+  outline: 2px solid var(--aio-accent);
+  outline-offset: 2px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .aio-modern *, .aio-modern *::before, .aio-modern *::after { transition: none !important; animation: none !important; }
+}
+
+/* ---- Token layer for Bootstrap controls used across pages ---- */
+.aio-modern .form-control, .aio-modern .form-control:focus {
+  color: var(--aio-text);
+  background: var(--aio-bg);
+  border: 1px solid var(--aio-line);
+  border-radius: 5px;
+  box-shadow: none;
+  min-height: 32px;
+}
+.aio-modern .form-control::placeholder { color: var(--aio-muted); opacity: 1; }
+.aio-modern .btn { border-radius: 5px; }
+.aio-modern .btn-default, .aio-modern .dropdown-menu,
+.aio-modern .modal-content, .aio-modern .panel, .aio-modern .well, .aio-modern .alert,
+.aio-modern .list-group-item, .aio-modern .table-striped > tbody > tr:nth-of-type(odd) {
+  color: var(--aio-text);
+  background: var(--aio-surface);
+  border-color: var(--aio-line);
+}
+.aio-modern .btn-default:hover, .aio-modern .btn-default:focus { color: var(--aio-accent); background: var(--aio-bg); border-color: var(--aio-line); }
+.aio-modern .dropdown-menu > li > a { color: var(--aio-text); padding: 7px 14px; }
+.aio-modern .dropdown-menu > li > a:hover, .aio-modern .dropdown-menu > .active > a { background: #282f39; color: var(--aio-accent); }
+.aio-modern .modal-header, .aio-modern .modal-footer, .aio-modern .table > tbody > tr > td,
+.aio-modern .table > thead > tr > th { border-color: var(--aio-line); }
+.aio-modern .table > tbody > tr > td, .aio-modern .table > thead > tr > th { padding: 7px 10px; }
+.aio-modern .text-muted, .aio-modern .help-block { color: var(--aio-muted); }
+.aio-modern .btn-primary { background: var(--aio-accent-bg); border-color: var(--aio-accent-line); color: var(--aio-accent); }
+.aio-modern .btn-primary:hover, .aio-modern .btn-primary:focus { background: #3a3021; border-color: var(--aio-accent); color: var(--aio-accent); }
+.aio-modern .btn-success { background: #1b3630; border-color: #436e63; color: #91d7c8; }
+.aio-modern .btn-danger { background: #3c242b; border-color: #895563; color: #f1afba; }
+.aio-modern .badge { background: var(--aio-surface); color: var(--aio-muted); border: 1px solid var(--aio-line); }
+.aio-modern .settings-container { background: var(--aio-surface); }
+.aio-modern .close { color: var(--aio-text); opacity: .6; text-shadow: none; }
+
+/* ---- Navbar: fixed bar; the brand is the sidebar's title band ---- */
+.aio-modern .navbar.navbar-default {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 1030;
+  height: var(--aio-bar);
+  min-height: 0;
+  margin: 0;
+  border: 0;
+  border-bottom: 1px solid var(--aio-line);
+  border-radius: 0;
+  background: var(--aio-sidebar);
+  box-shadow: none;
+}
+.aio-modern .navbar > .container-fluid {
+  display: flex;
+  align-items: center;
+  height: 100%;
+  padding: 0 8px 0 0;
+}
+.aio-modern .navbar > .container-fluid::before, .aio-modern .navbar > .container-fluid::after,
+.aio-modern .navbar-header::before, .aio-modern .navbar-header::after,
+.aio-modern .navbar-collapse::before, .aio-modern .navbar-collapse::after { content: none; }
+.aio-modern .navbar-header { display: flex; align-items: center; float: none; height: 100%; margin: 0; }
+.aio-modern .navbar > .container-fluid .navbar-brand {
+  float: none;
+  display: block;
+  box-sizing: border-box;
+  height: var(--aio-bar);
+  margin: 0;
+  padding: 0 16px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font: 600 16px/var(--aio-bar) "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: var(--aio-text) !important;
+}
+/* With a sidebar, the brand sits beside the content band as the sidebar's
+   title band. Pages without one (login, errors) keep it in the bar. */
+.aio-modern body:has(.row-fluid > .col-sm-2) .navbar > .container-fluid .navbar-brand {
+  position: absolute;
+  top: var(--aio-bar);
+  left: 0;
+  width: var(--aio-sidebar-width);
+  height: 60px;
+  line-height: 60px;
+  background: var(--aio-bg);
+  border-bottom: 1px solid var(--aio-line);
+}
+.aio-modern .aio-back {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  margin-left: 10px;
+  border-radius: 5px;
+  color: var(--aio-muted);
+}
+.aio-modern .aio-back:hover { color: var(--aio-text); background: var(--aio-surface); }
+.aio-modern .aio-back.aio-no-back { opacity: .35; pointer-events: none; }
+.aio-modern .aio-back svg { width: 18px; height: 18px; }
+.aio-modern .navbar-toggle { display: none; float: none; margin: 0 0 0 6px; padding: 9px 10px; border-color: transparent; }
+.aio-modern .navbar-toggle .icon-bar { background: var(--aio-text); }
+.aio-modern .navbar-default .navbar-toggle:hover, .aio-modern .navbar-default .navbar-toggle:focus { background: var(--aio-surface); }
+
+/* Search: one flex input group. */
+.aio-modern .navbar-form[role="search"] {
+  float: none;
+  width: 320px;
+  margin: 0 0 0 16px;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+.aio-modern .navbar-form[role="search"] > .input-group {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 36px;
+  margin: 0;
+  border: 1px solid var(--aio-line);
+  border-radius: 5px;
+  background: var(--aio-bg);
+}
+.aio-modern .navbar-form[role="search"]:focus-within > .input-group { outline: 2px solid var(--aio-accent); outline-offset: 1px; }
+.aio-modern .aio-search-icon { width: 16px; height: 16px; margin: 0 10px; color: var(--aio-muted); flex: none; pointer-events: none; }
+.aio-modern .navbar-form[role="search"] #query {
+  flex: 1;
+  float: none;
+  display: block;
+  min-width: 0;
+  width: 100%;
+  height: 34px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  color: var(--aio-text);
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+.aio-modern .navbar-form[role="search"] .input-group-btn { display: flex; width: 36px; flex: none; }
+.aio-modern .navbar-form[role="search"] #query_submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 32px;
+  margin: 1px;
+  padding: 0;
+  border: 0;
+  border-radius: 4px;
+  background: var(--aio-surface);
+  color: var(--aio-muted);
+}
+.aio-modern #query_submit svg { width: 16px; height: 16px; }
+
+/* Navbar functions. */
+/* Bootstrap forces display:block on the open collapse at desktop widths. */
+.aio-modern .navbar-collapse.collapse {
+  flex: 1;
+  display: flex !important;
+  align-items: center;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  box-shadow: none;
+}
+.aio-modern .navbar-nav { display: flex; align-items: center; float: none; margin: 0; }
+.aio-modern .navbar-nav > li { float: none; }
+.aio-modern #main-nav { margin: 0 0 0 auto; }
+.aio-modern .navbar-default .navbar-nav > li > a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--aio-bar);
+  padding: 0 10px;
+  color: var(--aio-muted);
+  font-size: 12px;
+}
+.aio-modern .navbar-default .navbar-nav > li > a:hover, .aio-modern .navbar-default .navbar-nav > li > a:focus { color: var(--aio-text); background: transparent; }
+.aio-modern #main-nav > .cwa-switch-theme { display: none; }
+.aio-modern #main-nav > li:has(> #logout) { display: none; }
+.aio-modern #main-nav > .aio-functions-head { display: none; }
+
+/* Upload: native file upload and directory selection share one plus menu. */
+.aio-modern #form-upload { margin: 0; padding: 0; border: 0; box-shadow: none; background: none; }
+.aio-modern #form-upload .form-group { margin: 0; }
+.aio-modern .aio-upload-menu { position: relative; }
+.aio-modern .aio-upload-menu summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  cursor: pointer;
+  list-style: none;
+  color: var(--aio-text);
+  font: 300 28px/1 system-ui;
+}
+.aio-modern .aio-upload-menu summary::-webkit-details-marker { display: none; }
+.aio-modern .aio-upload-options {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  z-index: 100;
+  min-width: 210px;
+  padding: 6px;
+  border: 1px solid var(--aio-line);
+  border-radius: 5px;
+  background: var(--aio-surface);
+}
+.aio-modern .aio-upload-options > :is(label, button) {
+  display: block;
+  position: relative;
+  width: 100%;
+  height: auto;
+  margin: 0;
+  padding: 10px;
+  background: none;
+  border: 0;
+  border-radius: 4px;
+  box-shadow: none;
+  text-align: left;
+  color: var(--aio-text);
+  font: 13px/1.4 system-ui;
+  cursor: pointer;
+}
+.aio-modern .aio-upload-options > :hover { background: var(--aio-bg); }
+.aio-modern .btn-file { position: relative; overflow: hidden; }
+.aio-modern .btn-file input[type="file"] { position: absolute; top: 0; right: 0; min-width: 100%; min-height: 100%; opacity: 0; cursor: pointer; }
+
+/* ---- Sidebar ---- */
+.aio-modern .row-fluid > .col-sm-2 {
+  position: fixed;
+  top: var(--aio-bar);
+  bottom: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: var(--aio-sidebar-width);
+  float: none;
+  padding: 68px 0 24px;
+  overflow-y: auto;
+  background: var(--aio-sidebar);
+  border-right: 1px solid var(--aio-line);
+}
+.aio-modern .navigation li a {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 34px;
+  padding: 7px 20px;
+  color: var(--aio-text);
+  border-radius: 0;
+  text-decoration: none;
+  line-height: 20px;
+}
+.aio-modern .navigation li a span { margin: 0; }
+.aio-modern .navigation li a .glyphicon { width: 14px; text-align: center; color: var(--aio-muted); }
+/* Glyphicons and magic shelf emoji share one icon column. */
+.aio-modern :is(.navigation, #scnd-nav) li a > span:first-child { flex: none; width: 14px; text-align: center; }
+.aio-modern .navigation li.active > a, .aio-modern .navigation li > a:hover {
+  color: var(--aio-accent);
+  background: var(--aio-accent-bg);
+}
+.aio-modern .navigation li.active > a .glyphicon { color: var(--aio-accent); }
+/* Collapsible sections with the creation action beside each title. */
+.aio-modern .aio-nav-hidden { display: none !important; }
+.aio-modern .navigation .nav-head, .aio-modern .aio-nav-section {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  text-transform: none;
+  color: var(--aio-muted);
+}
+.aio-modern .aio-nav-section > button {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 34px;
+  padding: 7px 20px;
+  background: none;
+  border: 0;
+  color: var(--aio-muted);
+  font: 600 15px/20px "Segoe UI", system-ui, -apple-system, sans-serif;
+  text-align: left;
+  white-space: nowrap;
+}
+.aio-modern .aio-nav-section > button::before {
+  content: '';
+  flex: none;
+  width: 0;
+  height: 0;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 6px solid currentColor;
+  transform: rotate(90deg);
+}
+.aio-modern .aio-nav-section > button[aria-expanded=false]::before { transform: rotate(0deg); }
+.aio-modern .aio-nav-section > a.aio-section-create {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 32px;
+  height: 34px;
+  margin: 0 12px 0 0;
+  padding: 0;
+  border-radius: 4px;
+  color: var(--aio-muted);
+  font: 400 22px/1 system-ui;
+  text-decoration: none;
+}
+.aio-modern .aio-section-create:hover, .aio-modern .aio-section-create:focus-visible { color: var(--aio-accent); background: var(--aio-surface); }
+
+/* ---- Content column and the shared page band ---- */
+.aio-modern body > .container-fluid { padding: 0; }
+.aio-modern .row-fluid > .col-sm-10.aio-main {
+  float: none;
+  width: auto;
+  margin-left: 0;
+  padding: 0 16px 24px;
+}
+.aio-modern .row-fluid > .col-sm-2 + .col-sm-10.aio-main { margin-left: var(--aio-sidebar-width); }
+.aio-modern .aio-main > .discover { margin: 0; padding: 0; }
+/* The random picks above the library are a labeled section of their own. */
+.aio-modern .aio-main > .discover.random-books { margin-bottom: 12px; border-bottom: 1px solid var(--aio-line); }
+.aio-modern .aio-main > .discover > h2 {
+  margin: 10px 8px 8px;
+  font: 600 13px/18px "Segoe UI", system-ui, -apple-system, sans-serif;
+  color: var(--aio-muted);
+}
+.aio-modern .aio-page-header {
+  position: sticky;
+  top: var(--aio-bar);
+  z-index: 20;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  min-height: 60px;
+  gap: 12px;
+  margin: 0 -16px 16px;
+  padding: 0 16px;
+  background: var(--aio-bg);
+  border-bottom: 1px solid var(--aio-line);
+}
+/* The brand shows the page title; the band keeps only the tools. */
+.aio-modern .aio-page-header > :is(h1, h2) { display: none; }
+.aio-modern .aio-page-tools { grid-column: 2; min-width: 0; max-width: 100%; }
+.aio-modern .aio-page-header.aio-tools-only { grid-template-columns: minmax(0, 1fr); }
+.aio-modern .aio-tools-only .aio-page-tools { grid-column: 1; justify-self: center; }
+/* The upstream wrapper carries inline colors and spacing. */
+.aio-modern .aio-page-tools .shelf-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  flex-direction: row;
+  gap: 8px;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: 0;
+  background: none !important;
+  box-shadow: none;
+}
+.aio-modern .filterheader {
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+}
+.aio-modern .filterheader > .aio-sort, .aio-modern .filterheader .btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-width: 44px;
+  height: 32px;
+  margin: 0;
+  padding: 0 8px;
+  border: 1px solid var(--aio-line);
+  border-radius: 5px;
+  background: var(--aio-surface);
+  color: var(--aio-muted);
+  font: 600 11px/1 "Segoe UI", system-ui, sans-serif;
+  box-shadow: none;
+  text-decoration: none;
+}
+/* Reserve sort slots before the SVG symbols land so the centered rail cannot shift. */
+.aio-modern .aio-page-tools .filterheader > :is(a[id], #asc, #desc, #sort_name) {
+  flex: none;
+  width: 48px;
+  min-width: 48px;
+  overflow: hidden;
+}
+.aio-modern .aio-sort svg { display: block; width: 16px; height: 16px; flex: none; }
+.aio-modern .aio-sort svg.aio-sort-arrow { width: 13px; height: 16px; }
+.aio-modern .filterheader > .aio-sort.active, .aio-modern .filterheader .btn.active {
+  color: var(--aio-accent);
+  background: var(--aio-accent-bg);
+  border-color: var(--aio-accent-line);
+}
+.aio-modern .filterheader > .aio-sort:hover, .aio-modern .filterheader .btn:hover { color: var(--aio-text); border-color: #697789; }
+.aio-modern .filterheader .character { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin: 0; }
+.aio-modern .filterheader .character > .btn { float: none; margin: 0; border-radius: 5px; }
+.aio-modern .aio-page-tools .magic-shelf-buttons { order: 2; display: flex; gap: 4px; flex: none; }
+.aio-modern .aio-page-tools .magic-shelf-buttons .btn { height: 32px; padding: 0 8px; font-size: 12px; }
+
+/* Pagination overlays the right side of the band; the band stays clickable. */
+.aio-modern .aio-main > .pagination {
+  position: sticky;
+  top: var(--aio-bar);
+  z-index: 21;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 4px;
+  height: 60px;
+  margin: 0 -16px;
+  padding: 0 16px;
+  border-radius: 0;
+  pointer-events: none;
+}
+.aio-modern .aio-main:has(> .aio-page-header) > .pagination { margin-bottom: -60px; }
+.aio-modern .aio-main > .pagination > li { display: block; pointer-events: auto; }
+.aio-modern .pagination > li > a {
+  position: static;
+  float: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0 8px;
+  border: 1px solid var(--aio-line);
+  border-radius: 5px;
+  background: var(--aio-surface);
+  color: var(--aio-muted);
+  font: 600 12px/1 "Segoe UI", system-ui, sans-serif;
+  text-decoration: none;
+}
+.aio-modern .pagination > li > a:hover { color: var(--aio-text); background: var(--aio-bg); border-color: #697789; }
+.aio-modern .pagination > .active > a, .aio-modern .pagination > .active > a:hover {
+  color: var(--aio-accent);
+  background: var(--aio-accent-bg);
+  border-color: var(--aio-accent-line);
+}
+.aio-modern .pagination > :is(.page-previous, .page-next) > a { width: 32px; padding: 0; font-size: 0; }
+.aio-modern .pagination > .page-previous > a::before, .aio-modern .pagination > .page-next > a::before {
+  font: 400 20px/1 system-ui;
+  content: '\2039';
+}
+.aio-modern .pagination > .page-next > a::before { content: '\203A'; }
+.aio-modern .pagination .dropdown-menu { right: 0; left: auto; min-width: 64px; max-height: 60vh; overflow-y: auto; }
+.aio-modern .pagination .dropdown-menu > li > a { padding: 6px 14px; }
+
+/* book_edit.html places its form with inline styles written for caliBlur
+   (40rem left margin, fill-available width); the theme lays the columns out. */
+/* Pages without a band (edit, admin, settings) keep the band's height and
+   divider as an empty strip, so content does not jump when switching pages. */
+.aio-modern .aio-main:not(:has(> .aio-page-header))::before {
+  content: '';
+  display: block;
+  height: 60px;
+  margin: 0 -16px 16px;
+  border-bottom: 1px solid var(--aio-line);
+}
+/* Buttons that lead with a glyph keep a readable gap to their label. */
+.aio-modern .btn > .glyphicon:first-child:not(:only-child) { margin-right: 6px; }
+.aio-modern .editbook-cover-section .cover img { display: block; max-width: 260px; margin: 0 auto; }
+.aio-modern #form-upload-format { margin-top: 12px; }
+/* Detail page: one gold for every action icon except delete, one neutral pill
+   style for every chip, links included. */
+.aio-modern .action-icon-btn:not(.btn-danger), .aio-modern .action-icon-btn:not(.btn-danger) .glyphicon { color: var(--aio-accent) !important; }
+.aio-modern .action-icon-btn.btn-danger, .aio-modern .action-icon-btn.btn-danger .glyphicon { color: #f1afba !important; }
+.aio-modern .meta-pill, .aio-modern a.meta-pill, .aio-modern .meta-pill.meta-link { color: var(--aio-text); background: var(--aio-surface); border-color: var(--aio-line); }
+.aio-modern a.meta-pill:hover, .aio-modern .meta-pill.meta-link:hover { color: var(--aio-accent); border-color: var(--aio-accent-line); text-decoration: none; }
+/* Books List: the bulk action row is a Bootstrap .row with its -15px gutter. */
+.aio-modern body.book_table .discover > .row.form-group { display: flex !important; flex-wrap: wrap; gap: 6px; margin: 0 0 12px; }
+.aio-modern body.book_table .discover > .row.form-group::before, .aio-modern body.book_table .discover > .row.form-group::after { content: none; }
+/* TinyMCE (description editor) ships only the light oxide skin. */
+.aio-modern .tox-tinymce { border: 1px solid var(--aio-line) !important; border-radius: 5px !important; }
+.aio-modern .tox:not(.tox-tinymce-inline) .tox-editor-header { background: var(--aio-surface) !important; box-shadow: none !important; border-bottom: 1px solid var(--aio-line) !important; }
+.aio-modern .tox .tox-menubar, .aio-modern .tox .tox-toolbar, .aio-modern .tox .tox-toolbar__primary, .aio-modern .tox .tox-toolbar-overlord,
+.aio-modern .tox .tox-statusbar, .aio-modern .tox .tox-edit-area__iframe { background: var(--aio-surface) !important; }
+.aio-modern .tox .tox-statusbar { border-top: 1px solid var(--aio-line) !important; color: var(--aio-muted) !important; }
+.aio-modern .tox .tox-mbtn, .aio-modern .tox .tox-tbtn, .aio-modern .tox .tox-tbtn__select-label, .aio-modern .tox .tox-statusbar a, .aio-modern .tox .tox-statusbar__path-item { color: var(--aio-text) !important; }
+.aio-modern .tox .tox-tbtn svg { fill: var(--aio-text) !important; }
+.aio-modern .tox .tox-tbtn--disabled svg, .aio-modern .tox .tox-tbtn:disabled svg { fill: var(--aio-muted) !important; }
+.aio-modern .tox .tox-mbtn:hover, .aio-modern .tox .tox-mbtn--active, .aio-modern .tox .tox-tbtn:hover, .aio-modern .tox .tox-tbtn--enabled { background: var(--aio-bg) !important; }
+.aio-modern .tox .tox-toolbar__group:not(:last-of-type) { border-right: 1px solid var(--aio-line) !important; }
+.aio-modern .tox .tox-menu, .aio-modern .tox .tox-collection__item { background: var(--aio-surface) !important; color: var(--aio-text) !important; }
+.aio-modern .tox .tox-collection--list .tox-collection__item--active { background: var(--aio-bg) !important; }
+.aio-modern #book_edit_frm > .col-sm-9 {
+  width: 75% !important;
+  margin: 0 !important;
+  padding: 20px 24px !important;
+  background: var(--aio-surface) !important;
+  border-radius: 6px;
+}
+@media (max-width: 767px) {
+  .aio-modern #book_edit_frm > .col-sm-9 { width: 100% !important; margin-top: 16px !important; padding: 16px 12px !important; }
+}
+
+/* ---- Book grid cards (browse pages and the series overview) ---- */
+.aio-modern .aio-main .row.display-flex { margin: 0; }
+.aio-modern .aio-main .book {
+  float: none;
+  position: relative;
+  display: block;
+  width: 14.2857%;
+  min-width: 0;
+  max-width: none;
+  margin: 0 0 14px;
+  padding: 0 8px;
+}
+.aio-modern .aio-main .book .cover { position: relative; height: auto; margin: 0; }
+.aio-modern .aio-main .book .cover > a { display: block; }
+.aio-modern .aio-main .book .cover span.img { position: relative; display: block; height: auto; bottom: auto; }
+.aio-modern .aio-main .book .cover img {
+  position: static;
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border: 1px solid var(--aio-line);
+  border-radius: 4px;
+  background: var(--aio-surface);
+  box-shadow: 0 2px 6px #0004;
+}
+.aio-modern .aio-main .book .cover > a:hover img { border-color: var(--aio-accent); box-shadow: 0 6px 16px #0008; }
+.aio-modern .aio-main .book .cover .badge {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  left: auto;
+  padding: 2px 7px;
+  background: #000a;
+  border-color: #fff3;
+  color: var(--aio-text);
+  font-size: 11px;
+}
+.aio-modern .aio-main .book .cover .badge.read {
+  top: auto;
+  right: auto;
+  left: 6px;
+  bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: var(--aio-accent);
+  color: #111;
+  font-size: 10px;
+}
+.aio-modern .aio-main .book .meta { margin-top: 7px; padding: 0; }
+.aio-modern .aio-main .book .meta p { margin: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+.aio-modern .aio-main .book .meta .title { color: var(--aio-text); font-size: 13px; line-height: 1.35; font-weight: 600; }
+.aio-modern .aio-main .book .meta .author, .aio-modern .aio-main .book .meta .author > a,
+.aio-modern .aio-main .book .meta .series { color: var(--aio-muted); font-size: 12px; line-height: 1.4; }
+.aio-modern .aio-main .book .meta .rating { display: none; }
+/* The random picks fill exactly one row: CWA hands out as many as the admin
+   view setting "No. of Random Books to Display" allows, the theme shows one
+   row of them per column count. */
+.aio-modern .aio-main > .random-books .book:nth-child(n+8) { display: none; }
+@media (min-width: 1500px) { .aio-modern .aio-main .book { width: 12.5%; } .aio-modern .aio-main > .random-books .book:nth-child(n+8) { display: block; } .aio-modern .aio-main > .random-books .book:nth-child(n+9) { display: none; } }
+@media (min-width: 1800px) { .aio-modern .aio-main .book { width: 10%; } .aio-modern .aio-main > .random-books .book:nth-child(n+9) { display: block; } .aio-modern .aio-main > .random-books .book:nth-child(n+11) { display: none; } }
+@media (min-width: 2100px) { .aio-modern .aio-main .book { width: 8.3333%; } .aio-modern .aio-main > .random-books .book:nth-child(n+11) { display: block; } .aio-modern .aio-main > .random-books .book:nth-child(n+13) { display: none; } }
+@media (min-width: 1100px) and (max-width: 1279px) { .aio-modern .aio-main .book { width: 16.6667%; } .aio-modern .aio-main > .random-books .book:nth-child(n+7) { display: none; } }
+@media (min-width: 768px) and (max-width: 1099px) { .aio-modern .aio-main .book { width: 25%; } .aio-modern .aio-main > .random-books .book:nth-child(n+5) { display: none; } }
+
+/* ---- List pages (authors, series, categories, languages, downloads) ---- */
+.aio-modern .aio-list-page > div.container {
+  position: relative;
+  width: auto;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+.aio-modern .aio-list-page > div.container::before, .aio-modern .aio-list-page > div.container::after { content: none; }
+.aio-modern .aio-list-page .list-container, .aio-modern .aio-list-page #second { padding: 0 8px; }
+.aio-modern .aio-list-page div.container .row {
+  display: flex;
+  align-items: center;
+  margin: 0;
+  min-height: 36px;
+  border-bottom: 1px solid var(--aio-line);
+}
+.aio-modern .aio-list-page div.container .row > div { float: none; padding: 7px 10px; }
+.aio-modern .aio-list-page div.container .row > div:first-child { flex: none; width: 44px; text-align: center; }
+.aio-modern .aio-list-page div.container .row > div:nth-child(2) { flex: 1; min-width: 0; width: auto; }
+.aio-modern .aio-list-page div.container .row a { display: block; padding: 0; color: var(--aio-muted); text-decoration: none; }
+.aio-modern .aio-list-page div.container .row a:hover { color: var(--aio-text); }
+.aio-modern .aio-download-help { max-width: 72ch; margin: 0 0 16px; color: var(--aio-muted); }
+.aio-modern .aio-empty { padding: 16px; border: 1px solid var(--aio-line); border-radius: 5px; background: var(--aio-surface); }
+
+/* ---- Duplicates: compact panels around the native selection controls ---- */
+.aio-modern .settings-container:has(.duplicates-container) { margin: 0; padding: 0; background: none; }
+.aio-modern .settings-container:has(.duplicates-container) > h2 { display: none; }
+.aio-modern .duplicate-group {
+  padding: 12px;
+  margin-bottom: 16px;
+  border: 1px solid var(--aio-line);
+  border-radius: 5px;
+  background: var(--aio-surface);
+  box-shadow: none;
+}
+.aio-modern .duplicate-header {
+  padding: 10px !important;
+  margin: -12px -12px 12px !important;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--aio-line);
+  border-radius: 0;
+  background: none;
+}
+.aio-modern .duplicate-title { font-size: 15px; margin-bottom: 3px; }
+.aio-modern .duplicate-author { font-size: 12px; margin-bottom: 3px; }
+.aio-modern .duplicate-count { font-size: 11px; padding: 2px 6px; background: #3c242b; }
+.aio-modern .no-duplicates { background: var(--aio-surface) !important; border: 1px solid var(--aio-line) !important; border-radius: 6px !important; box-shadow: none !important; }
+.aio-modern .duplicates-container .books-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 10px; }
+.aio-modern .duplicate-group .book-item { width: 100%; max-width: none; padding: 10px; border-radius: 4px; background: var(--aio-bg); box-shadow: none; }
+.aio-modern .duplicate-group .book-cover { margin: 0 10px 0 0; }
+.aio-modern .duplicate-group .book-item .book-cover img { width: 48px !important; height: 72px !important; max-width: 48px !important; }
+.aio-modern .duplicate-group .book-checkbox { width: 16px; height: 16px; margin: 0 8px 0 0; transform: none; }
+.aio-modern .duplicate-group .book-title { font-size: 13px; margin-bottom: 4px; }
+.aio-modern .duplicate-group .book-info, .aio-modern .duplicate-group .book-item .book-meta { font-size: 12px !important; line-height: 1.4 !important; }
+.aio-modern .duplicate-group .book-item .book-meta div { margin-bottom: 3px; }
+.aio-modern .duplicate-group:hover, .aio-modern .duplicate-group .book-item:hover { transform: none; }
+.aio-modern .duplicate-group .book-actions { margin-top: 6px !important; padding-top: 0 !important; border: 0; }
+.aio-modern .duplicate-group .book-action-btn { font-size: 12px; padding: 5px 8px; }
+.aio-modern .aio-duplicate-options {
+  width: 100% !important;
+  max-width: none !important;
+  padding: 10px !important;
+  margin: 0 0 12px !important;
+  background: var(--aio-surface);
+  border: 1px solid var(--aio-line);
+  border-radius: 5px;
+}
+.aio-modern .aio-duplicate-options summary { cursor: pointer; font-weight: 600; }
+.aio-modern .aio-duplicate-options[open] summary { margin-bottom: 10px; }
+.aio-modern .duplicates .bulk-actions { padding: 8px !important; margin-bottom: 12px !important; border-radius: 5px; background: var(--aio-surface) !important; }
+.aio-modern .bulk-actions .form-inline { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+.aio-modern .bulk-actions .btn { min-height: 32px; margin: 0 !important; padding: 6px 10px !important; font-size: 12px; }
+
+/* ---- Narrow desktop: tools get their own centered row ---- */
+@media (max-width: 1100px) and (min-width: 768px) {
+  .aio-modern .aio-page-header { grid-template-columns: minmax(0, 1fr); padding: 8px 16px; }
+  .aio-modern .aio-page-tools { grid-column: 1; justify-self: center; }
+}
+
+/* ---- Mobile: 48px bar, navbar drawer, horizontal tool rail ---- */
+@media (max-width: 767px) {
+  html.aio-modern { --aio-bar: 48px; }
+  .aio-modern .navbar > .container-fluid { padding: 0 6px 0 0; }
+  .aio-modern .navbar-header { flex: 1; min-width: 0; }
+  .aio-modern .navbar-toggle { display: block; flex: none; width: 36px; height: 40px; padding: 9px 8px; }
+   .aio-modern .navbar > .container-fluid .navbar-brand,
+  .aio-modern body:has(.row-fluid > .col-sm-2) .navbar > .container-fluid .navbar-brand {
+    position: static;
+    flex: 1;
+    min-width: 0;
+    width: auto;
+    height: var(--aio-bar);
+    padding: 0 8px;
+    background: none;
+    border: 0;
+    font-size: 15px;
+    line-height: var(--aio-bar);
+  }
+  .aio-modern .aio-back { display: none; }
+  /* The plus menu moves beside the search button; the drawer slot stays empty. */
+  .aio-modern .navbar > .container-fluid > #form-upload { order: 1; flex: none; }
+  .aio-modern .aio-upload-slot { display: none; }
+  .aio-modern .navbar-form[role="search"] { order: 2; flex: none; position: static; width: 36px; margin: 0 0 0 4px; }
+  .aio-modern .navbar-form[role="search"] > .input-group { width: 36px; height: 36px; }
+  .aio-modern .navbar-form[role="search"]:not(:focus-within) #query { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+  .aio-modern .navbar-form[role="search"]:not(:focus-within) .input-group-btn { display: none; }
+  .aio-modern .navbar-form[role="search"]:focus-within {
+    position: absolute;
+    left: 50px;
+    right: 8px;
+    top: 6px;
+    width: auto;
+    z-index: 1000;
+  }
+  .aio-modern .navbar-form[role="search"]:focus-within > .input-group { width: 100%; }
+  /* Drawer: the navbar collapse becomes a full-height panel under the bar. */
+  .aio-modern .navbar-collapse.collapse { flex: none; display: none !important; }
+  .aio-modern .navbar-collapse.collapsing, .aio-modern .navbar-collapse.collapse.in {
+    position: fixed;
+    top: var(--aio-bar);
+    left: 0;
+    right: 0;
+    z-index: 1029;
+    display: block !important;
+    max-height: none;
+    overflow-y: auto;
+    margin: 0;
+    padding: 0 0 24px;
+    background: var(--aio-sidebar);
+    border-top: 1px solid var(--aio-line);
+  }
+  .aio-modern .navbar-collapse.in { bottom: 0; }
+  .aio-modern .navbar-collapse .navbar-nav { display: block; margin: 0; }
+  .aio-modern .navbar-collapse #main-nav { margin: 0; }
+  .aio-modern .navbar-collapse .navbar-nav > li { display: block; }
+  .aio-modern .navbar-collapse .navbar-nav > li.aio-nav-section { display: flex; }
+  .aio-modern .navbar-default .navbar-nav > li > a, .aio-modern .navbar-collapse .navigation li a,
+  .aio-modern .navbar-collapse #scnd-nav > li > a {
+    display: flex;
+    gap: 10px;
+    min-height: 44px;
+    height: auto;
+    padding: 11px 16px;
+    color: var(--aio-text);
+    font-size: 15px;
+    line-height: 22px;
+  }
+  .aio-modern .navbar-collapse #scnd-nav > li.active > a { color: var(--aio-accent); background: var(--aio-accent-bg); }
+  .aio-modern #main-nav > .aio-functions-head { display: flex; }
+  .aio-modern .aio-functions-hidden { display: none !important; }
+  .aio-modern .navbar-collapse .aio-nav-section > button { flex: none; height: 44px; padding: 11px 16px; font-size: 17px; line-height: 22px; }
+  .aio-modern .navbar-collapse .aio-nav-section > a.aio-section-create { width: 44px; height: 44px; margin: 0; }
+  .aio-modern .row-fluid > .col-sm-2 { display: none; }
+  .aio-modern .row-fluid > .col-sm-10.aio-main, .aio-modern .row-fluid > .col-sm-2 + .col-sm-10.aio-main { margin-left: 0; padding: 0 12px 20px; }
+  .aio-modern .aio-main:not(:has(> .aio-page-header))::before { display: none; }
+  .aio-modern .row-fluid > .col-sm-10.aio-main:not(:has(> .aio-page-header)) { padding-top: 22px; }
+  .aio-modern body:has(.row-fluid > .col-sm-2) > .row-fluid.text-center { margin-left: 0; }
+  .aio-modern body > .row-fluid.text-center > .alert { padding: 8px 44px 8px 12px; }
+  .aio-modern body > .row-fluid.text-center > .alert > .close { right: 12px; }
+  .aio-modern .aio-page-header {
+    display: block;
+    min-height: 0;
+    margin: 0 -12px 16px;
+    padding: 0;
+    border-top: 1px solid var(--aio-line);
+  }
+  .aio-modern .aio-main:has(> .pagination) > .aio-page-header { top: calc(var(--aio-bar) + 44px); }
+  .aio-modern .aio-page-tools { overflow-x: auto; scrollbar-width: none; width: 100%; }
+  .aio-modern .aio-page-tools::-webkit-scrollbar { display: none; }
+  .aio-modern .aio-page-tools .filterheader { flex-wrap: nowrap; gap: 0; width: max-content; }
+  .aio-modern .aio-page-tools .shelf-actions { width: max-content; gap: 0; }
+  .aio-modern .aio-page-tools :is(.aio-sort, .btn) {
+    position: relative;
+    height: 44px;
+    min-width: 44px;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    flex: none;
+  }
+  .aio-modern .aio-page-tools :is(.aio-sort, .btn)::after {
+    content: '';
+    position: absolute;
+    right: 0;
+    top: 12px;
+    bottom: 12px;
+    width: 1px;
+    background: var(--aio-line);
+  }
+  .aio-modern .aio-page-tools .character { flex-wrap: nowrap; gap: 0; }
+  .aio-modern .aio-page-tools .magic-shelf-buttons { gap: 0; }
+  /* Pagination gets its own row above the tool rail. */
+  .aio-modern .aio-main > .pagination {
+    justify-content: flex-start;
+    height: 44px;
+    margin: 0 -12px;
+    padding: 0 12px;
+    background: var(--aio-bg);
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
+    pointer-events: auto;
+  }
+  .aio-modern .aio-main > .pagination::-webkit-scrollbar { display: none; }
+  .aio-modern .aio-main > .pagination > li { flex: none; }
+  .aio-modern .aio-main:has(> .aio-page-header) > .pagination { margin-bottom: 0; }
+  .aio-modern .aio-main > .pagination > li:first-child { margin-left: auto; }
+  .aio-modern .aio-main > .pagination:has(.dropdown.open) { overflow: visible; }
+  /* bootstrap-table pages become one swipeable line under the table. */
+  .aio-modern .fixed-table-pagination > .pagination, .aio-modern .fixed-table-pagination > .pagination-detail { float: none; width: 100%; }
+  .aio-modern .fixed-table-pagination > .pagination { overflow-x: auto; scrollbar-width: none; }
+  .aio-modern .fixed-table-pagination > .pagination::-webkit-scrollbar { display: none; }
+  .aio-modern .fixed-table-pagination > .pagination > ul.pagination { display: flex; flex-wrap: nowrap; width: max-content; }
+  .aio-modern .aio-main .book { width: 33.3333%; padding: 0 5px; }
+  .aio-modern .aio-main > .discover > h2 { margin: 8px 5px 6px; }
+  .aio-modern .aio-main > .random-books .book:nth-child(n+4) { display: none; }
+  .aio-modern .aio-main .book .meta .title { font-size: 12px; }
+  .aio-modern .aio-list-page .list-container, .aio-modern .aio-list-page #second { padding: 0; }
+  .aio-modern .duplicates-container .books-grid { grid-template-columns: minmax(0, 1fr); }
+  .aio-modern .duplicate-header > div { min-width: 0; }
+  .aio-modern .duplicate-header > div:last-child { flex-wrap: wrap; }
+  .aio-modern .duplicate-header button { font-size: 12px !important; padding: 6px 8px !important; }
+}
+@media (max-width: 359px) {
+  .aio-modern .aio-main .discover .book { width: 50%; }
+  .aio-modern .aio-main > .random-books .book:nth-child(n+3) { display: none; }
+}
+
+/* ---- Secondary pages: tokens for the Bootstrap and CWA pieces the library pages do not use ---- */
+.aio-modern body {
+  /* caliBlur-only variables that CWA templates reference inline. */
+  --color-primary: var(--aio-accent);
+  --color-text: var(--aio-text);
+  --color-bg: var(--aio-bg);
+  --color-bg-light: var(--aio-surface);
+  --color-border: var(--aio-line);
+  --color-info-text: var(--aio-muted);
+}
+html.aio-modern.http-error body, .aio-modern body.shelf-down, .aio-modern body.login { padding-top: 0; }
+.aio-modern select, .aio-modern select.cwa-settings-select {
+  color: var(--aio-text);
+  background-color: var(--aio-bg) !important;
+  border: 1px solid var(--aio-line);
+  border-radius: 5px;
+}
+.aio-modern .settings-container .form-control { border-color: var(--aio-line); }
+.aio-modern .checkbox label, .aio-modern .radio label, .aio-modern label { color: var(--aio-text); }
+.aio-modern .input-group-addon { color: var(--aio-muted); background: var(--aio-surface); border-color: var(--aio-line); }
+.aio-modern hr { border-color: var(--aio-line); }
+.aio-modern code { color: var(--aio-accent); background: #282f39; }
+.aio-modern pre { color: var(--aio-text); background: var(--aio-surface); border-color: var(--aio-line); }
+.aio-modern .label { font-weight: 600; }
+.aio-modern .label-default { background: #3a4350; }
+.aio-modern .progress { height: 18px; background: var(--aio-surface); border: 1px solid var(--aio-line); border-radius: 5px; box-shadow: none; }
+.aio-modern .progress-bar { background: var(--aio-accent); color: #111; box-shadow: none; }
+.aio-modern .progress-bar-success { background: #436e63; color: var(--aio-text); }
+.aio-modern .progress-bar-info { background: #3d6a85; color: var(--aio-text); }
+.aio-modern .progress-bar-warning { background: #8a6d3b; color: var(--aio-text); }
+.aio-modern .progress-bar-danger { background: #895563; color: var(--aio-text); }
+.aio-modern .btn-info { background: #1b3240; border-color: #3d6a85; color: #9ecbe8; }
+.aio-modern .btn-warning { background: #3a2d17; border-color: #8a6d3b; color: #e8c37b; }
+.aio-modern .btn-primary.disabled, .aio-modern .btn-primary[disabled], .aio-modern .open > .dropdown-toggle.btn-primary,
+.aio-modern .btn-primary:active, .aio-modern .btn-primary.active {
+  background: var(--aio-accent-bg);
+  border-color: var(--aio-accent-line);
+  color: var(--aio-accent);
+}
+.aio-modern .text-danger { color: #f1afba; }
+.aio-modern .text-success { color: #91d7c8; }
+.aio-modern .text-warning { color: #e8c37b; }
+.aio-modern .text-info { color: var(--aio-muted); }
+.aio-modern .table-hover > tbody > tr:hover, .aio-modern .table > tbody > tr.active > td { background: #282f39; }
+.aio-modern .table > thead > tr > th { color: var(--aio-muted); }
+.aio-modern .panel-default > .panel-heading { color: var(--aio-text); background: #1f2530; border-color: var(--aio-line); }
+.aio-modern .nav-tabs { border-bottom-color: var(--aio-line); }
+.aio-modern .nav-tabs > li > a { color: var(--aio-muted); border-radius: 5px 5px 0 0; }
+.aio-modern .nav-tabs > li > a:hover, .aio-modern .nav-tabs > li > a:focus { background: var(--aio-surface); border-color: var(--aio-line) var(--aio-line) var(--aio-line); color: var(--aio-text); }
+.aio-modern .nav-tabs > li.active > a, .aio-modern .nav-tabs > li.active > a:hover, .aio-modern .nav-tabs > li.active > a:focus {
+  color: var(--aio-accent); background: var(--aio-bg); border-color: var(--aio-line) var(--aio-line) transparent;
+}
+.aio-modern .dropdown-menu .divider { background: var(--aio-line); }
+.aio-modern .modal-header:is(.bg-info, .bg-danger, .bg-primary, .bg-success, .bg-warning) {
+  color: var(--aio-text);
+  background: var(--aio-surface);
+  border-left: 4px solid var(--aio-accent-line);
+}
+.aio-modern .modal-header.bg-danger { border-left-color: #895563; }
+.aio-modern .modal-header.bg-success { border-left-color: #436e63; }
+.aio-modern .tooltip-inner, .aio-modern .tooltip.bottom .tooltip-inner { color: var(--aio-text); background: var(--aio-surface); border: 1px solid var(--aio-line); }
+.aio-modern .tooltip.top .tooltip-arrow { border-top-color: var(--aio-line); }
+.aio-modern .tooltip.bottom .tooltip-arrow { border-bottom-color: var(--aio-line); }
+.aio-modern .tooltip.left .tooltip-arrow { border-left-color: var(--aio-line); }
+.aio-modern .tooltip.right .tooltip-arrow { border-right-color: var(--aio-line); }
+.aio-modern .cover .badge { color: var(--aio-text); background: #000a; }
+.aio-modern .cwa_stats_section { background: var(--aio-surface); border: 1px solid var(--aio-line); }
+.aio-modern .cwa_stats_header { color: var(--aio-text); }
+.aio-modern .cwa_stats_value { color: var(--aio-accent); }
+.aio-modern #meta-import-alert { color: #91d7c8; background: #1b3630; border-color: #436e63; }
+.aio-modern #meta-info #book-list .media { background: var(--aio-surface); }
+/* Library skins: bootstrap-table, x-editable, bootstrap-select, typeahead, datepicker, query builder. */
+.aio-modern .bootstrap-table .fixed-table-container .fixed-table-body .fixed-table-loading,
+.aio-modern .bootstrap-table.fullscreen { color: var(--aio-text); background: var(--aio-bg); }
+.aio-modern .bootstrap-table .fixed-table-container,
+.aio-modern .bootstrap-table .fixed-table-container.fixed-height:not(.has-footer) { border-color: var(--aio-line); }
+.aio-modern .popover { color: var(--aio-text); background: var(--aio-surface); border-color: var(--aio-line); }
+.aio-modern .popover-title { color: var(--aio-text); background: #1f2530; border-color: var(--aio-line); }
+.aio-modern .popover > .arrow { border-color: transparent; }
+.aio-modern .popover.top > .arrow::after { border-top-color: var(--aio-surface); }
+.aio-modern .popover.bottom > .arrow::after { border-bottom-color: var(--aio-surface); }
+.aio-modern .popover.left > .arrow::after { border-left-color: var(--aio-surface); }
+.aio-modern .popover.right > .arrow::after { border-right-color: var(--aio-surface); }
+.aio-modern .editable-click, .aio-modern a.editable-click { color: var(--aio-text); border-bottom-color: var(--aio-line); }
+.aio-modern .editable-container .editable-input input, .aio-modern .editable-container .editable-input select,
+.aio-modern .editable-container .editable-input textarea { color: var(--aio-text); background: var(--aio-bg); border-color: var(--aio-line); }
+.aio-modern .editable-bg-transition { background: var(--aio-surface) !important; }
+.aio-modern .bootstrap-select .dropdown-menu > li.selected > a, .aio-modern .dropdown-menu > li.selected > a { color: var(--aio-accent); background: var(--aio-accent-bg); }
+.aio-modern .bootstrap-select .no-results, .aio-modern .bootstrap-select .notify { color: var(--aio-text); background: var(--aio-bg); border-color: var(--aio-line); }
+.aio-modern .tt-menu { color: var(--aio-text); background: var(--aio-surface); border: 1px solid var(--aio-line); border-radius: 5px; }
+.aio-modern .tt-suggestion { color: var(--aio-text); }
+.aio-modern .tt-suggestion:hover, .aio-modern .tt-cursor { color: var(--aio-accent); background: #282f39; }
+.aio-modern .tt-hint { color: var(--aio-muted); }
+.aio-modern .datepicker, .aio-modern .datepicker-dropdown { color: var(--aio-text); background: var(--aio-surface); border-color: var(--aio-line); }
+.aio-modern .datepicker-dropdown::before { border-bottom-color: var(--aio-line); }
+.aio-modern .datepicker-dropdown::after { border-bottom-color: var(--aio-surface); }
+.aio-modern .datepicker table tr td, .aio-modern .datepicker table tr th { color: var(--aio-text); border-radius: 4px; }
+.aio-modern .datepicker table tr td.day:hover, .aio-modern .datepicker table tr td.focused,
+.aio-modern .datepicker .datepicker-switch:hover, .aio-modern .datepicker .prev:hover, .aio-modern .datepicker .next:hover { background: #282f39; }
+.aio-modern .datepicker table tr td.old, .aio-modern .datepicker table tr td.new, .aio-modern .datepicker table tr td.disabled { color: var(--aio-muted); }
+.aio-modern .datepicker table tr td span:hover { background: #282f39; }
+.aio-modern .datepicker table tr td.active, .aio-modern .datepicker table tr td.active:hover,
+.aio-modern .datepicker table tr td.today, .aio-modern .datepicker table tr td.today:hover,
+.aio-modern .datepicker table tr td span.active, .aio-modern .datepicker table tr td span.active:hover {
+  color: var(--aio-accent); background: var(--aio-accent-bg); border-color: var(--aio-accent-line); text-shadow: none;
+}
+.aio-modern .datepicker-dropdown.datepicker-orient-top::before { border-top-color: var(--aio-line); }
+.aio-modern .datepicker-dropdown.datepicker-orient-top::after { border-top-color: var(--aio-surface); }
+.aio-modern .wysihtml5-toolbar { background: var(--aio-surface); border-color: var(--aio-line); }
+.aio-modern .query-builder .rules-group-container { background: var(--aio-surface); border-color: var(--aio-line); }
+.aio-modern .query-builder .rule-container, .aio-modern .query-builder .rule-placeholder { color: var(--aio-text); background: var(--aio-bg); border-color: var(--aio-line); }

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html class="http-error">
+<html class="http-error{% if g.current_theme == 2 %} aio-modern{% endif %}">
   <head>
     <title>{{ instance }} | HTTP Error ({{ error_code }})</title>
     <meta charset="utf-8">
@@ -17,6 +17,9 @@
     <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" media="screen">
     {% if g.current_theme == 1 %}
        <link href="{{ url_for('static', filename='css/caliBlur.css') }}" rel="stylesheet" media="screen">
+    {% endif %}
+  {% if g.current_theme == 2 %}
+    <link href="{{ url_for('static', filename='css/golden-times.css') }}" rel="stylesheet" media="screen">
     {% endif %}
   </head>
   <body>

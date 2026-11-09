@@ -1976,7 +1976,16 @@ def remove_objects(db_book_object, db_session, del_elements):
         for del_element in del_elements:
             db_book_object.remove(del_element)
             changed = True
-            if len(del_element.books) == 0:
+            # Ask the database whether any book still links to this element instead of
+            # loading del_element.books: for a common language or tag that pulls every
+            # linked book (plus all its selectin relationships) into memory, which took
+            # ~40 s per deleted book on a 190k-book library.
+            db_session.flush()
+            still_used = (db_session.query(db.Books.id)
+                          .with_parent(del_element, type(del_element).books)
+                          .limit(1)
+                          .first())
+            if still_used is None:
                 db_session.delete(del_element)
                 db_session.flush()
     return changed

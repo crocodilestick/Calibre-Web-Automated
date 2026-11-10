@@ -1272,7 +1272,10 @@ class NewBookProcessor:
             if not is_koreader_sync_enabled():
                 return
 
-            calibre_db_path = os.path.join(self.library_dir, 'metadata.db')
+            # self.library_dir points at the book-files root in split-library
+            # mode. self.metadata_db is captured before that switch and always
+            # points at the configured Calibre database.
+            calibre_db_path = self.metadata_db
 
             with sqlite3.connect(calibre_db_path, timeout=30) as con:
                 cur = con.cursor()

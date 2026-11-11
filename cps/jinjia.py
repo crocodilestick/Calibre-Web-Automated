@@ -14,9 +14,10 @@ from uuid import uuid4
 
 from flask import Blueprint, request, url_for, g
 from flask_babel import format_date
+from flask_babel import gettext as _
 from .cw_login import current_user
 
-from . import constants, logger
+from . import constants, logger, calibre_db, config
 
 jinjia = Blueprint('jinjia', __name__)
 log = logger.create()
@@ -30,6 +31,17 @@ def url_for_other_page(page):
     for get, val in request.args.items():
         args[get] = val
     return url_for(request.endpoint, **args)
+
+
+# fields for sorting book lists by rating and numeric custom columns: (sort parameter prefix, displayed name)
+@jinjia.app_template_global('numeric_sort_fields')
+def numeric_sort_fields():
+    fields = [("rating", _("Rating"))]
+    try:
+        fields += [("cc" + str(col.id), col.name) for col in calibre_db.get_numeric_cc_columns(config)]
+    except Exception as ex:
+        log.debug_or_exception(ex)
+    return fields
 
 
 # shortentitles to at longest nchar, shorten longer words if necessary

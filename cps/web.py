@@ -362,12 +362,31 @@ def query_char_list(data_colum, db_link):
     return results
 
 
+def get_numeric_sort_function(sort_param):
+    """Sort order for "ratingdesc", "ratingasc", "cc<id>desc" and "cc<id>asc" (numeric custom columns).
+
+    Returns None if sort_param is no numeric sort parameter, and False if it refers to a custom column
+    which doesn't exist (anymore) or is not numeric.
+    """
+    match = re.fullmatch(r"(rating|cc(\d{1,9}))(asc|desc)", sort_param or "")
+    if not match:
+        return None
+    field = "rating" if match.group(1) == "rating" else int(match.group(2))
+    return calibre_db.get_numeric_sort_order(field, match.group(3) == "desc", config) or False
+
+
 def get_sort_function(sort_param, data):
     order = [db.Books.timestamp.desc()]
-    if sort_param == 'stored':
+    stored = sort_param == 'stored'
+    if stored:
         sort_param = current_user.get_view_property(data, 'stored')
-    else:
+    numeric_order = get_numeric_sort_function(sort_param)
+    if numeric_order is False:
+        sort_param = "new"
+    if not stored:
         current_user.set_view_property(data, 'stored', sort_param)
+    if numeric_order:
+        order = numeric_order
     if sort_param == 'pubnew':
         order = [db.Books.pubdate.desc()]
     if sort_param == 'pubold':
@@ -1463,6 +1482,10 @@ def list_books():
     elif sort_param == "languages":
         order = [db.Languages.lang_code.asc()] if order == "asc" else [db.Languages.lang_code.desc()]
         join = db.books_languages_link, db.Books.id == db.books_languages_link.c.book, db.Languages
+    elif sort_param == "ratings" or re.fullmatch(r"custom_column_\d{1,9}", sort_param or ""):
+        field = "rating" if sort_param == "ratings" else sort_param.rsplit("_", 1)[1]
+        order = (calibre_db.get_numeric_sort_order(field, order != "asc", config)
+                 or [db.Books.timestamp.desc()])
     elif order and sort_param in ["sort", "title", "authors_sort", "series_index"]:
         order = [text(sort_param + " " + order)]
     elif not state:

@@ -1,0 +1,18 @@
+{# Dropdown for sorting book lists by rating and numeric custom columns, all keyword arguments are passed to url_for #}
+{% macro numeric_sort(order) -%}
+  {%- set fields = numeric_sort_fields() -%}
+  {%- set sort = namespace(active=false) -%}
+  {%- for key, name in fields -%}
+    {%- if order in [key ~ 'desc', key ~ 'asc'] %}{% set sort.active = true %}{% endif -%}
+  {%- endfor %}
+      <div class="btn-group sort-numeric">
+        <a id="sort_numeric" role="button" aria-label="{{_('Sort according to rating or numeric custom columns')}}" class="btn btn-primary dropdown-toggle{% if sort.active %} active{% endif %}" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-star" aria-hidden="true"></span><span class="caret" aria-hidden="true"></span></a>
+        <ul class="dropdown-menu sort-numeric-menu" role="menu" aria-labelledby="sort_numeric">
+        {% for key, name in fields %}
+          <li class="sort-numeric-label" role="presentation">{{ name }}</li>
+          <li role="none"{% if order == key ~ 'desc' %} class="active"{% endif %}><a id="sort_{{ key }}_desc" role="menuitem" href="{{url_for('web.books_list', sort_param=key ~ 'desc', **kwargs)}}">{{_('High to Low')}}</a></li>
+          <li role="none"{% if order == key ~ 'asc' %} class="active"{% endif %}><a id="sort_{{ key }}_asc" role="menuitem" href="{{url_for('web.books_list', sort_param=key ~ 'asc', **kwargs)}}">{{_('Low to High')}}</a></li>
+        {% endfor %}
+        </ul>
+      </div>
+{%- endmacro %}

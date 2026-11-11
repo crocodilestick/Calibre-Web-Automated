@@ -131,6 +131,7 @@ This tells CWA to avoid enabling WAL on the Calibre `metadata.db` and the `app.d
 | Public user registration support | Send eBooks to E-Readers with a single click | Sync Kobo devices with your Calibre library |
 | In-browser eBook reading support for multiple formats | Content hiding based on categories and Custom Column content per user | "Magic Link" login for easy access on eReaders |
 | Enhanced OAuth 2.0/OIDC authentication with auto-discovery | Advanced search and filtering options | Multilingual user interface supporting 20+ [languages](https://github.com/janeczku/calibre-web/wiki/Translation-Status) |
+| Sort the book catalog and the Books List by rating and by numeric custom columns | Books without a rating or custom-column value stay at the end of the list | The sort order is applied to the whole library, including search results |
 
 ## Plus these _**CWA Specific Features**_ on top:
 

@@ -1,4 +1,5 @@
 {% extends "layout.html" %}
+{% import 'sort_numeric.html' as sort_numeric %}
 {% block body %}
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 <h2>{{title}}</h2>
@@ -30,6 +31,7 @@
       <a id="desc" data-toggle="tooltip" title="{{_('Sort title in reverse alphabetical order')}}" class="btn btn-primary{% if order == "zyx" %} active{% endif%}" href="{{url_for('web.books_list', data='author', book_id=id, sort_param='zyx')}}"><span class="glyphicon glyphicon-font"></span><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span></a>
       <a id="pub_new" data-toggle="tooltip" title="{{_('Sort according to publishing date, newest first')}}" class="btn btn-primary{% if order == "pubnew" %} active{% endif%}" href="{{url_for('web.books_list', data='author', book_id=id, sort_param='pubnew')}}"><span class="glyphicon glyphicon-calendar"></span><span class="glyphicon glyphicon-sort-by-order"></span></a>
       <a id="pub_old" data-toggle="tooltip" title="{{_('Sort according to publishing date, oldest first')}}" class="btn btn-primary{% if order == "pubold" %} active{% endif%}" href="{{url_for('web.books_list', data='author', book_id=id, sort_param='pubold')}}"><span class="glyphicon glyphicon-calendar"></span><span class="glyphicon glyphicon-sort-by-order-alt"></span></a>
+      {{ sort_numeric.numeric_sort(order, data='author', book_id=id) }}
     </div>
   <div class="row display-flex">
     {% for entry in entries %}

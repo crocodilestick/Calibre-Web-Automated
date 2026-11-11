@@ -18,7 +18,7 @@ from uuid import uuid4
 
 from sqlite3 import OperationalError as sqliteOperationalError
 import sqlite3
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select
 from sqlalchemy import Table, Column, ForeignKey, CheckConstraint
 from sqlalchemy import String, Integer, Boolean, TIMESTAMP, Float
 from sqlalchemy.orm import relationship, sessionmaker, scoped_session, joinedload, selectinload, object_session
@@ -46,6 +46,8 @@ log = logger.create()
 
 cc_exceptions = ['composite', 'series']
 cc_classes = {}
+# Custom column datatypes books can be sorted by
+cc_numeric_datatypes = ['int', 'float']
 
 Base = declarative_base()
 
@@ -472,6 +474,38 @@ class Books(Base):
         return ""
 
 
+def rating_sort_value():
+    """Rating of a book (1-10) as correlated scalar subquery, NULL for unrated books.
+
+    Calibre stores ratings as 0-10 (half stars), a rating of 0 means "not rated".
+    A subquery is used instead of a join, so it can be combined with any other join
+    of the book lists without duplicating rows.
+    """
+    return (select(func.nullif(func.max(Ratings.rating), 0))
+            .select_from(books_ratings_link.join(Ratings, books_ratings_link.c.rating == Ratings.id))
+            .where(books_ratings_link.c.book == Books.id)
+            .correlate(Books)
+            .scalar_subquery())
+
+
+def custom_column_sort_value(cc_id):
+    """Value of a numeric custom column as correlated scalar subquery, NULL if the book has no value."""
+    cc_class = cc_classes[cc_id]
+    return (select(func.max(cc_class.value))
+            .where(cc_class.book == Books.id)
+            .correlate(Books)
+            .scalar_subquery())
+
+
+def numeric_sort_order(value, descending=True):
+    """Order books by a numeric value, books without a value are always listed last.
+
+    Title sort and id are appended to keep the order of books with the same value stable across pages.
+    """
+    primary = value.desc() if descending else value.asc()
+    return [primary.nulls_last(), Books.sort, Books.id]
+
+
 class CustomColumns(Base):
     __tablename__ = 'custom_columns'
 
@@ -532,6 +566,9 @@ class AlchemyEncoder(json.JSONEncoder):
                 try:
                     if isinstance(data, str):
                         data = data.replace("'", "\'")
+                    elif field == 'ratings' and isinstance(data, InstrumentedList):
+                        # get() returns the 0-10 rating as int, which cannot be joined into a string
+                        data = data[0].rating if data else 0
                     elif isinstance(data, InstrumentedList):
                         el = list()
                         # ele = None
@@ -542,7 +579,7 @@ class AlchemyEncoder(json.JSONEncoder):
                                 else:
                                     el.append(str(ele.value))
                             elif ele.get:
-                                el.append(ele.get())
+                                el.append(str(ele.get()))
                             else:
                                 el.append(json.dumps(ele, cls=AlchemyEncoder))
                         if field == 'authors':
@@ -1105,6 +1142,9 @@ class CalibreDB:
             else:
                 total_count = query.count()
             pagination = Pagination(page, pagesize, total_count)
+            if database == Books:
+                # tie-breaker, keeps the order of books with equal sort values stable across pages
+                order = list(order) + [Books.id]
             entries = query.order_by(*order).offset(off).limit(pagesize).all()
         except Exception as ex:
             log.error_or_exception(ex)
@@ -1227,6 +1267,26 @@ class CalibreDB:
             cc.append(col)
 
         return cc
+
+    def get_numeric_cc_columns(self, config):
+        """Custom columns books can be sorted by (datatype int or float)"""
+        return [col for col in self.get_cc_columns(config, filter_config_custom_read=True)
+                if col.datatype in cc_numeric_datatypes and col.id in cc_classes]
+
+    def get_numeric_sort_order(self, field, descending, config):
+        """Sort order for the book rating (field == "rating") or a numeric custom column (field == column id).
+
+        The column id is checked against the custom columns of the library, None is returned for unknown fields.
+        """
+        if field == "rating":
+            return numeric_sort_order(rating_sort_value(), descending)
+        try:
+            cc_id = int(field)
+        except (TypeError, ValueError):
+            return None
+        if cc_id not in [col.id for col in self.get_numeric_cc_columns(config)]:
+            return None
+        return numeric_sort_order(custom_column_sort_value(cc_id), descending)
 
     # read search results from calibre-database and return it (function is used for feed and simple search
     def get_search_results(self, term, config, offset=None, order=None, limit=None, *join):

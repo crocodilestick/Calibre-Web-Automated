@@ -24,14 +24,32 @@ body.blur {
 }
 
 /* ── Sort / shelf toolbar ───────────────────────────────────────────────── */
+/* The frosted fill lives on ::before. backdrop-filter on the bar itself
+   clips any descendant that paints outside the bar, which is exactly where
+   the rating menu has to open. */
 body.blur .shelf-actions {
+    position: relative;
+    z-index: 2;
     padding: 10px 12px;
     margin: 0 15px 20px;
-    background: var(--lr-surface);
+    background: transparent;
     border: 1px solid var(--lr-border);
     border-radius: 12px;
+    overflow: visible;
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+}
+
+body.blur .shelf-actions::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--lr-surface);
     -webkit-backdrop-filter: blur(10px);
     backdrop-filter: blur(10px);
+    pointer-events: none;
 }
 
 body.blur .shelf-actions .filterheader {
@@ -41,7 +59,8 @@ body.blur .shelf-actions .filterheader {
     gap: 6px;
 }
 
-body.blur .shelf-actions .filterheader > .btn {
+body.blur .shelf-actions .filterheader > .btn,
+body.blur .shelf-actions .filterheader > .btn-group > .btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -59,27 +78,130 @@ body.blur .shelf-actions .filterheader > .btn {
 }
 
 body.blur .shelf-actions .filterheader > .btn:hover,
-body.blur .shelf-actions .filterheader > .btn:focus {
+body.blur .shelf-actions .filterheader > .btn:focus,
+body.blur .shelf-actions .filterheader > .btn-group > .btn:hover,
+body.blur .shelf-actions .filterheader > .btn-group > .btn:focus {
     color: var(--lr-text);
     background: var(--lr-chip-hover);
     border-color: rgba(255, 255, 255, .16);
 }
 
 body.blur .shelf-actions .filterheader > .btn.active,
-body.blur .shelf-actions .filterheader > .btn.active:hover {
+body.blur .shelf-actions .filterheader > .btn.active:hover,
+body.blur .shelf-actions .filterheader > .btn-group > .btn.active,
+body.blur .shelf-actions .filterheader > .btn-group > .btn.active:hover {
     color: #fff;
     background: var(--lr-accent);
     border-color: transparent;
 }
 
-body.blur .shelf-actions .filterheader > .btn:focus-visible {
+body.blur .shelf-actions .filterheader > .btn:focus-visible,
+body.blur .shelf-actions .filterheader > .btn-group > .btn:focus-visible {
     outline: 2px solid var(--lr-text);
     outline-offset: 2px;
 }
 
-body.blur .shelf-actions .filterheader > .btn .glyphicon {
+body.blur .shelf-actions .filterheader > .btn .glyphicon,
+body.blur .shelf-actions .filterheader > .btn-group > .btn .glyphicon {
     top: 0;
     font-size: 13px;
+}
+
+body.blur .shelf-actions .filterheader > .btn-group {
+    display: inline-flex;
+    position: relative;
+    overflow: visible;
+    vertical-align: middle;
+}
+
+/* Rating menu. Scoped to this control so caliBlur's global dropdown rules
+   (nowrap links, overflow, a translucent or clipped panel) do not apply.
+   The panel is anchored to the star button and grows left, over the grid. */
+body.blur .sort-numeric {
+    position: relative;
+    overflow: visible;
+}
+
+body.blur .sort-numeric.open {
+    z-index: 30;
+}
+
+body.blur .sort-numeric > .btn .caret {
+    margin-left: 3px;
+}
+
+body.blur .sort-numeric > .sort-numeric-menu {
+    position: absolute;
+    top: calc(100% + 6px);
+    right: 0 !important;
+    left: auto !important;
+    display: none;
+    float: none;
+    width: max-content;
+    min-width: 196px;
+    max-width: min(320px, calc(100vw - 24px));
+    height: auto !important;
+    max-height: min(70vh, 420px);
+    margin: 0;
+    padding: 6px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    transform: none !important;
+    z-index: 30;
+    background: #1b2026 !important;
+    background-color: #1b2026 !important;
+    color: var(--lr-text);
+    border: 1px solid rgba(255, 255, 255, .12) !important;
+    border-radius: 10px !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, .55);
+}
+
+body.blur .sort-numeric.open > .sort-numeric-menu {
+    display: block;
+}
+
+body.blur .sort-numeric > .sort-numeric-menu > .sort-numeric-label {
+    display: block;
+    margin: 0;
+    padding: 8px 12px 2px;
+    color: var(--lr-muted);
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.35;
+    letter-spacing: .02em;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    pointer-events: none;
+}
+
+body.blur .sort-numeric > .sort-numeric-menu > li + .sort-numeric-label {
+    margin-top: 4px;
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, .08);
+}
+
+body.blur .sort-numeric > .sort-numeric-menu > li > a {
+    display: block;
+    width: auto;
+    margin: 0;
+    padding: 7px 12px;
+    border-radius: 6px;
+    color: var(--lr-text);
+    font-size: 13px;
+    font-weight: 400;
+    line-height: 1.35;
+    white-space: nowrap;
+    background: transparent;
+}
+
+body.blur .sort-numeric > .sort-numeric-menu > li.active > a,
+body.blur .sort-numeric > .sort-numeric-menu > li.active > a:hover,
+body.blur .sort-numeric > .sort-numeric-menu > li.active > a:focus,
+body.blur .sort-numeric > .sort-numeric-menu > li > a:hover,
+body.blur .sort-numeric > .sort-numeric-menu > li > a:focus {
+    color: #fff;
+    background: var(--lr-accent);
+    text-decoration: none;
 }
 
 body.blur .shelf-actions .magic-shelf-buttons .btn {
@@ -203,7 +325,8 @@ body.blur .container-fluid .book .meta .author {
         display: none;
     }
 
-    body.blur .shelf-actions .filterheader > .btn {
+    body.blur .shelf-actions .filterheader > .btn,
+    body.blur .shelf-actions .filterheader > .btn-group > .btn {
         flex: 0 0 auto;
         height: 32px;
         min-width: 40px;

@@ -543,6 +543,28 @@
           <input type="hidden" name="metadata_providers_enabled" id="metadata_providers_enabled_hidden" value="{}">
         </div>
       </div>
+
+      <!-- Amazon store (region) used by the Amazon metadata provider -->
+      <div class="form-group">
+        <h4 class="settings-section-header">{{_('Amazon Store')}}</h4>
+        <p class="settings-description">
+          {{_('Amazon store used by the Amazon metadata provider. Pick your country to get titles and descriptions of local editions, like the region setting of Calibre desktop.')}}
+        </p>
+        {% set amazon_stores = [
+          ('com', 'amazon.com'), ('co.uk', 'amazon.co.uk'), ('ca', 'amazon.ca'), ('com.au', 'amazon.com.au'),
+          ('in', 'amazon.in'), ('de', 'amazon.de'), ('fr', 'amazon.fr'), ('it', 'amazon.it'),
+          ('es', 'amazon.es'), ('nl', 'amazon.nl'), ('com.br', 'amazon.com.br'), ('com.mx', 'amazon.com.mx')
+        ] %}
+        <label for="metadata_amazon_domain" style="padding-right: 10px;">{{_('Store:')}}</label>
+        <select class="cwa-settings-select" name="metadata_amazon_domain" id="metadata_amazon_domain">
+          {% for value, label in amazon_stores %}
+            <option value="{{ value }}" {% if cwa_settings.get('metadata_amazon_domain', 'com') == value %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+        <div class="cwa-settings-tip">
+          <small class="settings-explanation">💡 <strong>{{_('Tip')}}:</strong> {{_('Amazon Japan has its own provider (AmazonJp).')}}</small>
+        </div>
+      </div>
     </div>
 
     <!-- Hardcover Auto-Fetch Settings -->

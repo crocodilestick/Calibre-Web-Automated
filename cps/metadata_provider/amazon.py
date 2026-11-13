@@ -23,6 +23,51 @@ import cps.logger as logger
 from operator import itemgetter
 log = logger.create()
 
+# Amazon stores selectable in the CWA settings (metadata_amazon_domain), with
+# the Accept-Language header sent to each one. Japan has its own provider (amazonjp).
+AMAZON_DOMAINS = {
+    "com": "en-US,en;q=0.9",
+    "co.uk": "en-GB,en;q=0.9",
+    "ca": "en-CA,en;q=0.9,fr-CA;q=0.8",
+    "com.au": "en-AU,en;q=0.9",
+    "in": "en-IN,en;q=0.9",
+    "de": "de-DE,de;q=0.9,en;q=0.5",
+    "fr": "fr-FR,fr;q=0.9,en;q=0.5",
+    "it": "it-IT,it;q=0.9,en;q=0.5",
+    "es": "es-ES,es;q=0.9,en;q=0.5",
+    "nl": "nl-NL,nl;q=0.9,en;q=0.5",
+    "com.br": "pt-BR,pt;q=0.9,en;q=0.5",
+    "com.mx": "es-MX,es;q=0.9,en;q=0.5",
+}
+DEFAULT_AMAZON_DOMAIN = "com"
+
+# "Book 2 of 5: Series", "Libro 2 di 5: Serie", "Buch 2 von 5: Reihe", "Tome 2 sur 5 : Série"...
+SERIES_RE = re.compile(
+    r'(?:Book|Libro|Buch|Band|Tome|Livre|Boek|Deel|Livro)\s+(\d+)'
+    r'(?:\s+(?:of|di|de|von|aus|sur|van|do)\s+\d+)?\s*:\s*(.+)',
+    re.IGNORECASE,
+)
+
+
+def normalize_amazon_domain(value) -> str:
+    """Return a supported Amazon domain suffix ("com", "it", "co.uk"...), defaulting to amazon.com."""
+    value = str(value or "").strip().lower()
+    for prefix in ("https://", "http://", "www.", "amazon."):
+        if value.startswith(prefix):
+            value = value[len(prefix):]
+    value = value.strip("/")
+    return value if value in AMAZON_DOMAINS else DEFAULT_AMAZON_DOMAIN
+
+
+def get_amazon_domain() -> str:
+    """Read the configured Amazon store from the CWA settings."""
+    try:
+        from scripts.cwa_db import CWA_DB  # imported here to avoid circular imports
+        return normalize_amazon_domain(CWA_DB().cwa_settings.get("metadata_amazon_domain"))
+    except Exception as e:
+        log.debug(f"Could not read metadata_amazon_domain, using amazon.{DEFAULT_AMAZON_DOMAIN}: {e}")
+        return DEFAULT_AMAZON_DOMAIN
+
 
 class Amazon(Metadata):
     __name__ = "Amazon"
@@ -38,16 +83,20 @@ class Amazon(Metadata):
     def search(
         self, query: str, generic_cover: str = "", locale: str = "en"
     ) -> Optional[List[MetaRecord]]:
+        domain = get_amazon_domain()
+        store_url = f"https://www.amazon.{domain}"
+        request_headers = {"Accept-Language": AMAZON_DOMAINS[domain]}
+
         def inner(link, index) -> [dict, int]:
-            if link.startswith("/sspa/"):
-                return []  # sspa links are not book pages
+            if link.startswith("/sspa/") or link.startswith(("http://", "https://")):
+                return []  # sponsored/ad links are not book pages
 
             # Ensure link starts with / for proper URL construction
             if not link.startswith('/'):
                 link = f"/{link}"
 
             try:
-                r = self.session.get(f"https://www.amazon.com{link}", timeout=10)
+                r = self.session.get(f"{store_url}{link}", headers=request_headers, timeout=10)
                 r.raise_for_status()
             except Exception as ex:
                 log.warning(ex)
@@ -63,7 +112,7 @@ class Amazon(Metadata):
             if soup2 is None:
                 return []
             if soup2.find("input", attrs={"name": "submit.preorder"}) is not None:
-                log.debug(f"Skipping pre-order page: https://www.amazon.com{link}")
+                log.debug(f"Skipping pre-order page: {store_url}{link}")
                 return []  # pre-order page, ignore
             try:
                 match = MetaRecord(
@@ -72,9 +121,9 @@ class Amazon(Metadata):
                     source=MetaSourceInfo(
                         id=self.__id__,
                         description="Amazon Books",
-                        link="https://amazon.com/"
+                        link=f"https://amazon.{domain}/"
                     ),
-                    url = f"https://www.amazon.com{link}",
+                    url = f"{store_url}{link}",
                     #the more searches the slower, these are too hard to find in reasonable time or might not even exist
                     publisher= "",  # very unreliable
                     publishedDate= "",  # very unreliable
@@ -123,7 +172,7 @@ class Amazon(Metadata):
                         if series_text:
                             series_str = str(series_text.text).strip()
                             # Match patterns like "Book X of Y: Series Title" or "Book X: Series Title"
-                            series_match = re.search(r'Book\s+(\d+)(?:\s+of\s+\d+)?:\s*(.+)', series_str, re.IGNORECASE)
+                            series_match = SERIES_RE.search(series_str)
                             if series_match:
                                 match.series_index = int(series_match.group(1))
                                 match.series = series_match.group(2).strip()
@@ -171,9 +220,9 @@ class Amazon(Metadata):
 
             try:
                 results = self.session.get(
-                    "https://www.amazon.com/s",
+                    f"{store_url}/s",
                     params=q,
-                    # headers=self.headers,
+                    headers=request_headers,
                     timeout=10,
                 )
                 results.raise_for_status()
@@ -193,7 +242,7 @@ class Amazon(Metadata):
                     if base_url not in links_list:
                         links_list.append(base_url)
             if len(links_list) == 0:
-                log.info(f"No Amazon search results found for query: {query}")
+                log.info(f"No amazon.{domain} search results found for query: {query}")
                 return []
             with concurrent.futures.ThreadPoolExecutor(max_workers=5) as executor:
                 fut = {executor.submit(inner, link, index) for index, link in enumerate(links_list[:3])}

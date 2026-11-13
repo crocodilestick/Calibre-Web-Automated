@@ -27,7 +27,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: https://github.com/crocodilestick/Calibre-Web-"
 "Automated\n"
 "POT-Creation-Date: 2026-10-01 13:53+0000\n"
-"PO-Revision-Date: 2026-02-11 09:17+0000\n"
+"PO-Revision-Date: 2026-11-13 17:20+0100\n"
 "Last-Translator: Tex <tex@grosist.fr>\n"
 "Language-Team: French\n"
 "Language: fr\n"
@@ -37,7 +37,7 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Loco-Source-Locale: fr_FR\n"
 "Generated-By: Babel 2.13.1\n"
-"X-Generator: Loco https://localise.biz/\n"
+"X-Generator: Poedit 3.10\n"
 "X-Loco-Parser: loco_parse_po\n"
 
 #: cps/about.py:65
@@ -48,7 +48,7 @@ msgstr "Statistiques"
 msgid "Calibre database unavailable. Please reconfigure the library path."
 msgstr ""
 "Base de données Calibre indisponible. Veuillez reconfigurer le chemin de la "
-"bibliothèque"
+"bibliothèque."
 
 #: cps/admin.py:180
 msgid "Server restarted, please reload page."
@@ -122,7 +122,7 @@ msgstr "Aucune correspondance en attente à rejeter"
 #: cps/admin.py:445
 #, python-format
 msgid "Rejected %(count)s match(es)"
-msgstr "%(count)s Correspondance(s) rejetée(s) "
+msgstr "%(count)s correspondance(s) rejetée(s)"
 
 #: cps/admin.py:482
 #, python-brace-format
@@ -1133,11 +1133,11 @@ msgstr ""
 
 #: cps/cwa_functions.py:2178
 msgid "Invalid book selection."
-msgstr "Sélection de livre invalide"
+msgstr "Sélection de livre invalide."
 
 #: cps/cwa_functions.py:2184
 msgid "Book not found."
-msgstr "Livre non trouvé"
+msgstr "Livre non trouvé."
 
 #: cps/cwa_functions.py:2190
 msgid "Selected book has no EPUB format."
@@ -1145,11 +1145,11 @@ msgstr "Le livre sélectionné n'a pas de format EPUB."
 
 #: cps/cwa_functions.py:2194
 msgid "EPUB file not found on disk."
-msgstr "Fichier EPUB introuvable sur le disque"
+msgstr "Fichier EPUB introuvable sur le disque."
 
 #: cps/cwa_functions.py:2209
 msgid "EPUB Fixer started for selected book."
-msgstr "EPUB Fixer démarré pour les livres sélectionnés"
+msgstr "EPUB Fixer démarré pour les livres sélectionnés."
 
 #: cps/cwa_functions.py:2212
 msgid "Failed to start EPUB Fixer for selected book."
@@ -1453,14 +1453,14 @@ msgid "This Email has been sent via Calibre-Web Automated."
 msgstr "Ce courriel a été envoyé depuis Calibre-Web Automated."
 
 #: cps/helper.py:129
-#, fuzzy, python-format
+#, python-format
 msgid "Conversion timed out for book id: %(book)d"
-msgstr "Format %(format)s introuvable pour le livre : %(book)d"
+msgstr "Le temps de conversion est trop long pour le livre : %(book)d"
 
 #: cps/helper.py:131
-#, fuzzy, python-format
+#, python-format
 msgid "Conversion failed for book id: %(book)d"
-msgstr "Format %(format)s introuvable pour le livre : %(book)d"
+msgstr "La conversion a échoué pour le livre : %(book)d"
 
 #: cps/helper.py:139
 msgid "Calibre-Web Automated Test Email"
@@ -2914,7 +2914,7 @@ msgstr "Gmail via Oauth2"
 
 #: cps/templates/admin.html:111
 msgid "Configuration&nbsp;&nbsp;⚙️"
-msgstr "Configuration"
+msgstr "Configuration&nbsp;&nbsp;⚙️"
 
 #: cps/templates/admin.html:114
 msgid "Calibre Database Directory"
@@ -2930,7 +2930,7 @@ msgstr "Port externe"
 
 #: cps/templates/admin.html:123
 msgid "Not set — reverse proxy detected"
-msgstr ""
+msgstr "Non défini - proxy inversé détecté"
 
 #: cps/templates/admin.html:134 cps/templates/config_view_edit.html:45
 msgid "Books per Page"
@@ -4661,9 +4661,9 @@ msgid ""
 "\">kindle-epub-fix.netlify.app</a> tool made by <a href=\"https://github.com/"
 "innocenat\">innocenat</a>."
 msgstr ""
-"Cet outil a été adapté à partir de l'outil <a href=\"https://kindle-epub-fix."
-"netlify.app/\">kindle-epub-fix.netlify.app</a> créé par <a href=\"https://"
-"github.com/innocenat\">innocenat</a>."
+"Cet outil a été adapté à partir de l'outil <a href=\"https://kindle-epub-"
+"fix.netlify.app/\">kindle-epub-fix.netlify.app</a> créé par <a "
+"href=\"https://github.com/innocenat\">innocenat</a>."
 
 #: cps/templates/cwa_settings.html:181
 msgid "Enable KOReader Sync (CWA Plugin)"
@@ -5851,7 +5851,7 @@ msgstr "Sélectionner tout"
 
 #: cps/templates/detail.html:917
 msgid "Additional email addresses:"
-msgstr "Adresses e-mail supplémentaires"
+msgstr "Adresses e-mail supplémentaires :"
 
 #: cps/templates/detail.html:918
 msgid "Enter additional email addresses (separated by commas):"
@@ -6442,7 +6442,7 @@ msgstr "Trier par ordre décroissant en fonction de l’index de série"
 
 #: cps/templates/kosync_plugin.html:112
 msgid "KOReader Sync is disabled."
-msgstr "La Synchronisation KOReader est désactivée"
+msgstr "La Synchronisation KOReader est désactivée."
 
 #: cps/templates/kosync_plugin.html:113
 msgid ""
@@ -6577,9 +6577,8 @@ msgid "Read"
 msgstr "Lu"
 
 #: cps/templates/login.html:11
-#, fuzzy
 msgid "Sign in to your library"
-msgstr "Séries dans la librairie"
+msgstr "Se connecter à sa bibliothèque"
 
 #: cps/templates/login.html:34
 msgid "Show Password"
@@ -6594,28 +6593,24 @@ msgid "Forgot Password?"
 msgstr "Mot de passe oublié ?"
 
 #: cps/templates/login.html:56
-#, fuzzy
 msgid "or"
-msgstr "Port"
+msgstr "ou"
 
 #: cps/templates/login.html:63
 msgid "Log in with SSO"
 msgstr "Se connecter avec SSO"
 
 #: cps/templates/login.html:72
-#, fuzzy
 msgid "Login with GitHub"
-msgstr "Échec de la connexion avec GitHub."
+msgstr "Se connecter avec GitHub"
 
 #: cps/templates/login.html:83
-#, fuzzy
 msgid "Login with Google"
-msgstr "Échec de la connexion avec Google."
+msgstr "Se connecter avec Google"
 
 #: cps/templates/login.html:90
-#, fuzzy
 msgid "Log in with Magic Link"
-msgstr "Connectez-vous avec Magic Link"
+msgstr "Se connecter avec Magic Link"
 
 #: cps/templates/login.html:98
 msgid ""
@@ -6626,7 +6621,7 @@ msgstr ""
 
 #: cps/templates/login.html:109
 msgid "Continue as guest"
-msgstr ""
+msgstr "Continuer en tant qu'invité"
 
 #: cps/templates/logviewer.html:6
 msgid "Show Calibre-Web Log: "

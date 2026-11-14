@@ -213,8 +213,8 @@
       
       <div class="form-group">
         <label for="kindle_mail">{{_('Send to eReader Email Address')}}</label>
-        <input type="email" class="form-control" name="kindle_mail" id="kindle_mail" value="{{ content.kindle_mail if content.kindle_mail != None }}" placeholder="{{_('Use comma to separate multiple addresses')}}">
-        <p class="cwa-settings-tip">{{_('Email address(es) for your eReader devices. Separate multiple addresses with commas.')}}</p>
+        <input type="text" class="form-control" name="kindle_mail" id="kindle_mail" value="{{ content.kindle_mail if content.kindle_mail != None }}" placeholder="{{_('Use comma to separate multiple addresses')}}">
+        <p class="cwa-settings-tip">{{_('Email address(es) for your eReader devices. Separate multiple addresses with commas.')}} {{_('Optionally add a label in front of an address, e.g.')}} <code>My Paperwhite &lt;name_abc@kindle.com&gt;, other@kindle.com</code></p>
       </div>
       
       <div class="form-group">

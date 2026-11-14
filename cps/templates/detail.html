@@ -900,11 +900,11 @@
                                             </div>
                                             <hr>
                                         {% endif %}
-                                        {% for email in current_user.kindle_mail.split(',') %}
+                                        {% for label, address in current_user.kindle_mail|ereader_emails %}
                                             <div class="checkbox">
                                                 <label for="email-{{ loop.index }}">
-                                                    <input type="checkbox" id="email-{{ loop.index }}" name="selected_emails" value="{{ email.strip() }}" checked>
-                                                    {{ email.strip() }}
+                                                    <input type="checkbox" id="email-{{ loop.index }}" name="selected_emails" value="{{ address }}" checked>
+                                                    {% if label %}{{ label }} <small class="text-muted">{{ address }}</small>{% else %}{{ address }}{% endif %}
                                                 </label>
                                             </div>
                                         {% endfor %}

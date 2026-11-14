@@ -42,6 +42,7 @@ except ImportError as e:
     advocate = requests
     UnacceptableAddressException = MissingSchema = BaseException
 
+from .ereader_emails import parse_ereader_email, format_ereader_email
 from . import calibre_db, cli_param
 from .string_helper import strip_whitespaces
 from .tasks.convert import TaskConvert
@@ -802,19 +803,20 @@ def check_username(username):
 
 
 def valid_email(emails):
+    """Validate a comma separated list of addresses, each optionally written as 'Label <address>'.
+    Returns the normalized list, keeping labels."""
     valid_emails = []
     for email in emails.split(','):
         email = strip_whitespaces(email)
         # if email is not deleted
         if email:
-            # Regex according to https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/email#validation
-            if not re.search(r"^[\w.!#$%&'*+\\/=?^_`{|}~-]+@[\w](?:[\w-]{0,61}[\w])?(?:\.[\w](?:[\w-]{0,61}[\w])?)*$",
-                             email):
+            try:
+                label, address = parse_ereader_email(email)
+            except ValueError:
                 log.error("Invalid Email address format for {}".format(email))
                 raise Exception(_("Invalid Email address format"))
-            valid_emails.append(email)
+            valid_emails.append(format_ereader_email(label, address))
     return ",".join(valid_emails)
-
 
 def valid_password(check_password):
     if config.config_password_policy:

@@ -408,7 +408,7 @@
         // Make user email data available for quick actions
         window.cwaUserData = {};
         {% if current_user.kindle_mail and current_user.kindle_mail.strip() %}
-        window.cwaUserData.primaryEmail = "{{ current_user.kindle_mail.split(',')[0].strip() }}";
+        window.cwaUserData.primaryEmail = "{{ (current_user.kindle_mail|ereader_emails)[0][1] }}";
         {% else %}
         window.cwaUserData.primaryEmail = null;
         {% endif %}

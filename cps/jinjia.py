@@ -17,6 +17,7 @@ from flask_babel import format_date
 from .cw_login import current_user
 
 from . import constants, logger
+from .ereader_emails import parse_ereader_email
 
 jinjia = Blueprint('jinjia', __name__)
 log = logger.create()
@@ -135,6 +136,20 @@ def formatseriesindex_filter(series_index):
 @jinjia.app_template_filter('escapedlink')
 def escapedlink_filter(url, text):
     return "<a href='{}'>{}</a>".format(url, escape(text))
+
+
+@jinjia.app_template_filter('ereader_emails')
+def ereader_emails_filter(emails):
+    """[(label, address), ...] for a stored eReader address list; tolerates legacy invalid entries"""
+    result = []
+    for entry in (emails or "").split(','):
+        entry = entry.strip()
+        if entry:
+            try:
+                result.append(parse_ereader_email(entry))
+            except ValueError:
+                result.append(("", entry))
+    return result
 
 
 @jinjia.app_template_filter('uuidfilter')

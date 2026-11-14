@@ -29,6 +29,7 @@ from sqlalchemy.sql.functions import coalesce
 from werkzeug.datastructures import Headers
 from werkzeug.security import generate_password_hash, check_password_hash
 
+from .ereader_emails import ereader_addresses
 from . import constants, logger, isoLanguages, services, helper
 from . import db, ub, config, app
 from . import calibre_db, kobo_sync_status
@@ -2018,8 +2019,8 @@ def send_to_selected_ereaders(book_id):
         return Response(json.dumps(response), mimetype='application/json')
 
     if not getattr(current_user, 'allow_additional_ereader_emails', True):
-        allowed = [email.strip().lower() for email in (current_user.kindle_mail or "").split(',') if email.strip()]
-        selected_list = [email.strip().lower() for email in selected_emails.split(',') if email.strip()]
+        allowed = [email.lower() for email in ereader_addresses(current_user.kindle_mail)]
+        selected_list = [email.lower() for email in ereader_addresses(selected_emails)]
         if any(email not in allowed for email in selected_list):
             response = [{'type': "danger", 'message': _("Additional email addresses are disabled for your account.")}]
             return Response(json.dumps(response), mimetype='application/json')

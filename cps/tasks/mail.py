@@ -18,6 +18,7 @@ from email.utils import formatdate, parseaddr, make_msgid
 from email.generator import Generator
 from flask_babel import lazy_gettext as N_
 
+from cps.ereader_emails import bare_address
 from cps.services.worker import CalibreTask
 from cps.services import gmail
 from cps.embed_helper import do_calibre_export
@@ -227,7 +228,8 @@ class TaskEmail(CalibreTask):
         gen = Generator(fp, mangle_from_=False)
         gen.flatten(msg)
 
-        self.asyncSMTP.sendmail(self.settings["mail_from"], self.recipient, fp.getvalue())
+        # Envelope recipient must be the bare address, the To header may carry a display name
+        self.asyncSMTP.sendmail(self.settings["mail_from"], bare_address(self.recipient), fp.getvalue())
         self.asyncSMTP.quit()
         self._handleSuccess()
         log.debug("E-mail send successfully")

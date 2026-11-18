@@ -437,6 +437,7 @@ class MagicShelf(Base):
     icon = Column(String, default="glyphicon-star")
     rules = Column(JSON, default={})
     kobo_sync = Column(Boolean, default=False)  # Sync to Kobo devices
+    display_as_series = Column(Boolean, default=False)
     created = Column(DateTime, default=lambda: datetime.now(timezone.utc))
     last_modified = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
 
@@ -1103,6 +1104,13 @@ def migrate_magic_shelf_table(engine, _session):
     except exc.OperationalError:
         _safe_session_rollback(_session, "magic_shelf.kobo_sync")
         _run_ddl_with_retry(engine, "ALTER TABLE magic_shelf ADD column 'kobo_sync' Boolean DEFAULT 0")
+
+    try:
+        _session.query(exists().where(MagicShelf.display_as_series)).scalar()
+        _session.commit()
+    except exc.OperationalError:
+        _safe_session_rollback(_session, "magic_shelf.display_as_series")
+        _run_ddl_with_retry(engine, "ALTER TABLE magic_shelf ADD column 'display_as_series' Boolean DEFAULT 0")
 
 
 def migrate_shelf_table(engine, _session):

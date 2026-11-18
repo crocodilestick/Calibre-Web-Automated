@@ -1,0 +1,53 @@
+{% import 'image.html' as image %}
+{% extends "layout.html" %}
+{% block header %}
+{{ super() }}
+<style>
+.series-detail-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 20px; align-items: center; justify-content: space-between; background: #202c358c; padding: 2rem; margin-inline: 15px; border-radius: 4px; }
+.series-detail-actions .filterheader { position: static !important; margin: 0 !important; display: block !important; width: auto !important; float: none !important; }
+@media (max-width: 767px) { .series-detail-actions { justify-content: center; } }
+</style>
+{% endblock %}
+{% block body %}
+<div class="discover load-more">
+  <h2>{{ title }}</h2>
+  <div class="series-detail-actions">
+    <a class="btn btn-default" href="{{ url_for('web.render_magic_shelf_series', shelf_id=id) }}"><span class="glyphicon glyphicon-chevron-left"></span> {{ _('All series') }}</a>
+    <div class="filterheader hidden-xs">
+      <a data-toggle="tooltip" title="{{_('Sort according to book date, newest first')}}" class="btn btn-primary{% if order == 'new' %} active{% endif %}" href="{{ url_for('web.render_magic_shelf_series_detail', shelf_id=id, series_id=series_id, sort_param='new') }}"><span class="glyphicon glyphicon-book"></span> <span class="glyphicon glyphicon-calendar"></span><span class="glyphicon glyphicon-sort-by-order"></span></a>
+      <a data-toggle="tooltip" title="{{_('Sort according to book date, oldest first')}}" class="btn btn-primary{% if order == 'old' %} active{% endif %}" href="{{ url_for('web.render_magic_shelf_series_detail', shelf_id=id, series_id=series_id, sort_param='old') }}"><span class="glyphicon glyphicon-book"></span> <span class="glyphicon glyphicon-calendar"></span><span class="glyphicon glyphicon-sort-by-order-alt"></span></a>
+      <a data-toggle="tooltip" title="{{_('Sort title in alphabetical order')}}" class="btn btn-primary{% if order == 'abc' %} active{% endif %}" href="{{ url_for('web.render_magic_shelf_series_detail', shelf_id=id, series_id=series_id, sort_param='abc') }}"><span class="glyphicon glyphicon-font"></span><span class="glyphicon glyphicon-sort-by-alphabet"></span></a>
+      <a data-toggle="tooltip" title="{{_('Sort title in reverse alphabetical order')}}" class="btn btn-primary{% if order == 'zyx' %} active{% endif %}" href="{{ url_for('web.render_magic_shelf_series_detail', shelf_id=id, series_id=series_id, sort_param='zyx') }}"><span class="glyphicon glyphicon-font"></span><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span></a>
+      <a data-toggle="tooltip" title="{{_('Sort authors in alphabetical order')}}" class="btn btn-primary{% if order == 'authaz' %} active{% endif %}" href="{{ url_for('web.render_magic_shelf_series_detail', shelf_id=id, series_id=series_id, sort_param='authaz') }}"><span class="glyphicon glyphicon-user"></span><span class="glyphicon glyphicon-sort-by-alphabet"></span></a>
+      <a data-toggle="tooltip" title="{{_('Sort authors in reverse alphabetical order')}}" class="btn btn-primary{% if order == 'authza' %} active{% endif %}" href="{{ url_for('web.render_magic_shelf_series_detail', shelf_id=id, series_id=series_id, sort_param='authza') }}"><span class="glyphicon glyphicon-user"></span><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span></a>
+      <a data-toggle="tooltip" title="{{_('Sort according to publishing date, newest first')}}" class="btn btn-primary{% if order == 'pubnew' %} active{% endif %}" href="{{ url_for('web.render_magic_shelf_series_detail', shelf_id=id, series_id=series_id, sort_param='pubnew') }}"><span class="glyphicon glyphicon-calendar"></span><span class="glyphicon glyphicon-sort-by-order"></span></a>
+      <a data-toggle="tooltip" title="{{_('Sort according to publishing date, oldest first')}}" class="btn btn-primary{% if order == 'pubold' %} active{% endif %}" href="{{ url_for('web.render_magic_shelf_series_detail', shelf_id=id, series_id=series_id, sort_param='pubold') }}"><span class="glyphicon glyphicon-calendar"></span><span class="glyphicon glyphicon-sort-by-order-alt"></span></a>
+      <a data-toggle="tooltip" title="{{_('Sort ascending according to series index')}}" class="btn btn-primary{% if order == 'seriesasc' %} active{% endif %}" href="{{ url_for('web.render_magic_shelf_series_detail', shelf_id=id, series_id=series_id, sort_param='seriesasc') }}"><span class="glyphicon glyphicon-sort-by-order"></span></a>
+      <a data-toggle="tooltip" title="{{_('Sort descending according to series index')}}" class="btn btn-primary{% if order == 'seriesdesc' %} active{% endif %}" href="{{ url_for('web.render_magic_shelf_series_detail', shelf_id=id, series_id=series_id, sort_param='seriesdesc') }}"><span class="glyphicon glyphicon-sort-by-order-alt"></span></a>
+    </div>
+  </div>
+  <div class="row display-flex">
+  {% for entry in entries %}
+    <div class="col-sm-3 col-lg-2 col-xs-6 book session" id="books">
+      <div class="cover">
+        <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}"
+           {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}
+           data-book-id="{{ entry.Books.id }}"
+           data-book-formats="{% for format in entry.Books.data %}{{ format.format.lower() }}{% if not loop.last %},{% endif %}{% endfor %}"
+           class="book-cover-link">
+          <span class="img" title="{{ entry.Books.title }}">
+            {{ image.book_cover(entry.Books) }}
+            {% if entry[2] == True %}<span class="badge read glyphicon glyphicon-ok"></span>{% endif %}
+          </span>
+        </a>
+      </div>
+      <div class="meta">
+        <a href="{{ url_for('web.show_book', book_id=entry.Books.id) }}" {% if simple==false %}data-toggle="modal" data-target="#bookDetailsModal" data-remote="false"{% endif %}><p class="title" title="{{ entry.Books.title }}">{{ entry.Books.title|shortentitle }}</p></a>
+        <p class="series">{{ series_name }} ({{ entry.Books.series_index|formatfloat(2) }})</p>
+      </div>
+    </div>
+  {% endfor %}
+  </div>
+</div>
+{% endblock %}
+

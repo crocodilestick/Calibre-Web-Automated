@@ -733,6 +733,63 @@ def get_books_for_magic_shelf(shelf_id, page=1, page_size=None, sort_order=None,
         return [], 0
 
 
+def get_series_groups_for_magic_shelf(shelf_id, page=1, page_size=None,
+                                      sort_order=None, sort_param='stored',
+                                      bypass_cache=False):
+    """Return the permission-filtered shelf results grouped by Calibre series."""
+    books, _ = get_books_for_magic_shelf(
+        shelf_id, page=1, page_size=None, sort_order=sort_order,
+        sort_param=sort_param, bypass_cache=bypass_cache)
+
+    groups = {}
+    for book in books:
+        series_list = list(book.series)
+        if not series_list:
+            group = groups.setdefault(None, {'series_id': None, 'name': 'Unseriesed',
+                                             'book': book, 'count': 0})
+            group['count'] += 1
+            continue
+        for series in series_list:
+            group = groups.setdefault(series.id, {'series_id': series.id, 'name': series.name,
+                                                  'book': book, 'count': 0})
+            group['count'] += 1
+
+    result = list(groups.values())
+    if sort_param in ('abc', 'zyx'):
+        named_groups = [group for group in result if group['series_id'] is not None]
+        unseriesed_groups = [group for group in result if group['series_id'] is None]
+        named_groups.sort(key=lambda group: (group['name'] or '').casefold(),
+                          reverse=sort_param == 'zyx')
+        result = named_groups + unseriesed_groups
+
+    total_count = len(result)
+    if page_size is not None and page_size > 0:
+        start = (page - 1) * page_size
+        result = result[start:start + page_size]
+    return result, total_count
+
+
+def get_books_for_magic_shelf_series(shelf_id, series_id, page=1, page_size=None,
+                                     sort_order=None, sort_param='seriesasc'):
+    """Re-evaluate a shelf and return only matching books in the selected series."""
+    books, _ = get_books_for_magic_shelf(
+        shelf_id, page=1, page_size=None,
+        sort_order=sort_order or [db.Books.series_index.asc(), db.Books.sort.asc()],
+        sort_param='series-detail-{}-{}'.format(
+            series_id if series_id is not None else 'unseriesed', sort_param),
+        bypass_cache=True)
+    if series_id is None:
+        matching_books = [book for book in books if not book.series]
+    else:
+        matching_books = [book for book in books
+                          if any(series.id == series_id for series in book.series)]
+    total_count = len(matching_books)
+    if page_size is not None and page_size > 0:
+        start = (page - 1) * page_size
+        matching_books = matching_books[start:start + page_size]
+    return matching_books, total_count
+
+
 def get_book_count_for_magic_shelf(shelf_id):
     """
     Efficiently gets the total count of books for a magic shelf.

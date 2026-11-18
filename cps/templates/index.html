@@ -124,6 +124,13 @@
   {% if show_shelf_actions %}<div class="shelf-actions">{% endif %}
     {% if page == 'magicshelf' %}
     <div class="magic-shelf-buttons">
+        <a href="{{url_for('web.render_magic_shelf_series', shelf_id=id)}}"
+           class="btn btn-default"
+           style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem;"
+           data-toggle="tooltip"
+           title="{{_('Group matching books by series')}}">
+          <span style="padding: 5px;" class="glyphicon glyphicon-th-large"></span> {{_('Series View')}}
+        </a>
         <a href="{{url_for('web.render_magic_shelf', shelf_id=id, sort_param=order, page=1, refresh=1)}}" 
            class="btn btn-default"
            style="display: flex;

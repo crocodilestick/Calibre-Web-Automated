@@ -390,6 +390,13 @@ div.help-panel > .panel-body {
                         </label>
                         <small class="form-text text-muted">Only works if Kobo integration is enabled</small>
                     </div>
+                    <div class="form-group" style="background: #21252b; padding: 2rem; padding-inline: 4rem; border-radius: 4px;">
+                        <label>
+                            <input style="margin-right: 2rem !important;" type="checkbox" id="shelf-display-as-series" {{ 'checked' if shelf and shelf.display_as_series else '' }}>
+                            Display as Series
+                        </label>
+                        <small class="form-text text-muted">Show one tile per matching series.</small>
+                    </div>
 
                     <!-- Public Shelf Checkbox (only for custom shelves with permission) -->
                     {% if current_user.role_edit_shelfs() and not (shelf and shelf.is_system) %}
@@ -827,6 +834,7 @@ $(function() {
             icon: $('#shelf-icon').val(),
             rules: rules,
             kobo_sync: $('#shelf-kobo-sync').is(':checked'),
+            display_as_series: $('#shelf-display-as-series').is(':checked'),
             is_public: $('#shelf-is-public').is(':checked')
         };
 

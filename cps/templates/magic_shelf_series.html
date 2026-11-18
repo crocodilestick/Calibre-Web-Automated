@@ -1,0 +1,96 @@
+{% import 'image.html' as image %}
+{% extends "layout.html" %}
+{% block header %}
+{{ super() }}
+<style>
+.shelf-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+    align-items: center;
+    justify-content: space-between;
+    background: #202c358c;
+    padding: 2rem;
+    flex-direction: row;
+    margin-inline: 15px;
+    border-radius: 4px;
+}
+.magic-shelf-buttons {
+    display: flex;
+    gap: 1rem;
+}
+.shelf-actions .filterheader {
+    position: static !important;
+    margin: 0 !important;
+    display: block !important;
+    width: auto !important;
+    float: none !important;
+}
+@media (max-width: 767px) {
+    .shelf-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .magic-shelf-buttons {
+        justify-content: center;
+    }
+    .shelf-actions .filterheader {
+        text-align: center;
+    }
+}
+</style>
+{% endblock %}
+{% block body %}
+<div class="discover load-more">
+  <h2 class="magicshelf">{{ title | safe }}</h2>
+  <div class="shelf-actions">
+    <div class="magic-shelf-buttons">
+      <a href="{{ url_for('web.render_magic_shelf', shelf_id=id, sort_param=order, page=1, view='books') }}"
+         class="btn btn-default"
+         style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem;"
+         data-toggle="tooltip"
+         title="{{_('Show matching books individually')}}">
+        <span style="padding: 5px;" class="glyphicon glyphicon-book"></span> {{ _('Book View') }}
+      </a>
+      <a href="{{ url_for('web.render_magic_shelf_series', shelf_id=id, sort_param=order, page=1, refresh=1) }}"
+         class="btn btn-default"
+         style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem;"
+         data-toggle="tooltip"
+         title="{{_('Refresh shelf to update with latest changes')}}">
+        <span style="padding: 5px;" class="glyphicon glyphicon-refresh"></span> {{ _('Refresh') }}
+      </a>
+      {% if shelf.user_id == current_user.id or current_user.role_admin() %}
+      <a href="{{ url_for('web.edit_magic_shelf', shelf_id=id) }}"
+         class="btn btn-default"
+         style="display: flex; align-items: center; flex-direction: row; gap: 0.5rem;"
+         data-toggle="tooltip"
+         title="{{_('Edit shelf rules')}}">
+        <span style="padding: 5px;" class="glyphicon glyphicon-edit"></span> {{ _('Edit') }}
+      </a>
+      {% endif %}
+    </div>
+    <div class="filterheader hidden-xs">
+      <a data-toggle="tooltip" title="{{_('Sort series name in alphabetical order')}}" id="asc" class="btn btn-primary{% if order == 'abc' %} active{% endif %}" href="{{ url_for('web.render_magic_shelf_series', shelf_id=id, sort_param='abc') }}"><span class="glyphicon glyphicon-sort-by-alphabet"></span></a>
+      <a data-toggle="tooltip" title="{{_('Sort series name in reverse alphabetical order')}}" id="desc" class="btn btn-primary{% if order == 'zyx' %} active{% endif %}" href="{{ url_for('web.render_magic_shelf_series', shelf_id=id, sort_param='zyx') }}"><span class="glyphicon glyphicon-sort-by-alphabet-alt"></span></a>
+    </div>
+  </div>
+  <div class="row display-flex">
+  {% for group in groups %}
+    <div class="col-sm-3 col-lg-2 col-xs-6 book session">
+      <div class="cover">
+        {% if group.series_id is none %}
+          {% set destination = url_for('web.render_magic_shelf_series_detail', shelf_id=id, series_id=None) %}
+        {% else %}
+          {% set destination = url_for('web.render_magic_shelf_series_detail', shelf_id=id, series_id=group.series_id) %}
+        {% endif %}
+        {% set group_name = _('Unseriesed') if group.series_id is none else group.name %}
+        <a href="{{ destination }}"><span class="img" title="{{ group_name }}">{{ image.book_cover(group.book) }}<span class="badge">{{ group.count }}</span></span></a>
+      </div>
+      <div class="meta"><a href="{{ destination }}"><p class="title" title="{{ group_name }}">{{ group_name|shortentitle }}</p></a></div>
+    </div>
+  {% endfor %}
+  </div>
+</div>
+{% endblock %}
+

@@ -880,21 +880,71 @@ def render_archived_books(page, sort_param):
                                  title=name, page=page_name, order=sort_param[1])
 
 
+def _get_accessible_magic_shelf(shelf_id):
+    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
+    if not shelf:
+        abort(404)
+    if shelf.user_id != current_user.id and shelf.is_public != 1:
+        abort(403)
+    return shelf
+
+
+@web.route("/magicshelf/<int:shelf_id>/series", defaults={"sort_param": "abc", 'page': 1})
+@web.route("/magicshelf/<int:shelf_id>/series/<sort_param>", defaults={'page': 1})
+@web.route("/magicshelf/<int:shelf_id>/series/<sort_param>/<int:page>")
+@login_required_if_no_ano
+def render_magic_shelf_series(shelf_id, sort_param, page):
+    shelf = _get_accessible_magic_shelf(shelf_id)
+    sort_param = sort_param if sort_param in ('abc', 'zyx') else 'abc'
+    per_page = config.config_books_per_page or 20
+    groups, total_count = magic_shelf.get_series_groups_for_magic_shelf(
+        shelf_id, page=page, page_size=per_page,
+        sort_order=[db.Books.series_index.asc(), db.Books.sort.asc()],
+        sort_param=sort_param, bypass_cache=request.args.get('refresh') == '1')
+    return render_title_template('magic_shelf_series.html', groups=groups,
+        pagination=Pagination(page, per_page, total_count),
+        title=_("Magic Shelf&nbsp;&nbsp;&nbsp;&mdash;&nbsp;&nbsp;&nbsp;%(icon)s %(name)s", icon=shelf.icon, name=shelf.name),
+        shelf=shelf, id=shelf_id, order=sort_param)
+
+
+@web.route("/magicshelf/<int:shelf_id>/series/unseriesed", defaults={'sort_param': 'seriesasc', 'page': 1, 'series_id': None})
+@web.route("/magicshelf/<int:shelf_id>/series/unseriesed/<sort_param>", defaults={'page': 1, 'series_id': None})
+@web.route("/magicshelf/<int:shelf_id>/series/unseriesed/<sort_param>/<int:page>", defaults={'series_id': None})
+@web.route("/magicshelf/<int:shelf_id>/series/group/<int:series_id>", defaults={'sort_param': 'seriesasc', 'page': 1})
+@web.route("/magicshelf/<int:shelf_id>/series/group/<int:series_id>/<sort_param>", defaults={'page': 1})
+@web.route("/magicshelf/<int:shelf_id>/series/group/<int:series_id>/<sort_param>/<int:page>")
+@login_required_if_no_ano
+def render_magic_shelf_series_detail(shelf_id, series_id, sort_param, page):
+    shelf = _get_accessible_magic_shelf(shelf_id)
+    order = get_sort_function(sort_param, "series")
+    per_page = config.config_books_per_page or 20
+    books, total_count = magic_shelf.get_books_for_magic_shelf_series(
+        shelf_id, series_id, page=page, page_size=per_page,
+        sort_order=order[0], sort_param=order[1])
+    if series_id is None:
+        series_name = _('Unseriesed')
+    else:
+        series = calibre_db.session.query(db.Series).filter(db.Series.id == series_id).first()
+        if not series:
+            abort(404)
+        series_name = series.name
+    class Entry:
+        def __init__(self, book): self.Books = book
+    return render_title_template('magic_shelf_series_detail.html',
+        entries=[Entry(book) for book in books], pagination=Pagination(page, per_page, total_count),
+        title=_('Magic Shelf: %(shelf)s - %(series)s', shelf=shelf.name, series=series_name),
+        shelf=shelf, id=shelf_id, series_id=series_id, series_name=series_name, order=order[1])
+
+
 @web.route("/magicshelf/<int:shelf_id>", defaults={"sort_param": "stored", 'page': 1})
 @web.route("/magicshelf/<int:shelf_id>/<sort_param>", defaults={'page': 1})
 @web.route("/magicshelf/<int:shelf_id>/<sort_param>/<int:page>")
 @login_required_if_no_ano
 def render_magic_shelf(shelf_id, sort_param, page):
     """Render a magic shelf with proper pagination and sorting."""
-    shelf = ub.session.query(ub.MagicShelf).get(shelf_id)
-    if not shelf:
-        log.warning(f"Magic shelf {shelf_id} not found")
-        abort(404)
-    
-    # Check access - users can view their own shelves OR public shelves
-    if shelf.user_id != current_user.id and shelf.is_public != 1:
-        log.warning(f"User {current_user.id} attempted to access private magic shelf {shelf_id} owned by {shelf.user_id}")
-        abort(403)
+    shelf = _get_accessible_magic_shelf(shelf_id)
+    if shelf.display_as_series and request.args.get('view') != 'books':
+        return render_magic_shelf_series(shelf_id, sort_param, page)
     
     # Get sort order using the same function as other book lists
     order = get_sort_function(sort_param, "magicshelf")
@@ -1103,6 +1153,7 @@ def create_magic_shelf():
         rules = data.get('rules')
         icon = data.get('icon', '🪄')
         kobo_sync = data.get('kobo_sync', False)
+        display_as_series = data.get('display_as_series', False)
         is_public = data.get('is_public', False)
         
         # Only allow public if user has permission
@@ -1127,6 +1178,7 @@ def create_magic_shelf():
                 rules=rules,
                 icon=icon,
                 kobo_sync=kobo_sync,
+                display_as_series=display_as_series,
                 is_public=1 if is_public else 0
             )
             ub.session.add(new_shelf)
@@ -1199,6 +1251,7 @@ def edit_magic_shelf(shelf_id):
         rules = data.get('rules', shelf.rules)
         icon = data.get('icon', shelf.icon)
         kobo_sync = data.get('kobo_sync', shelf.kobo_sync)
+        display_as_series = data.get('display_as_series', shelf.display_as_series)
         is_public = data.get('is_public', shelf.is_public == 1)
         
         # Only allow changing public status if user has permission
@@ -1222,6 +1275,7 @@ def edit_magic_shelf(shelf_id):
             shelf.rules = rules
             shelf.icon = icon
             shelf.kobo_sync = kobo_sync
+            shelf.display_as_series = display_as_series
             shelf.is_public = 1 if is_public else 0
             flag_modified(shelf, "rules")
             
@@ -1295,6 +1349,7 @@ def duplicate_magic_shelf(shelf_id):
             name=new_name,
             icon=shelf.icon,
             rules=shelf.rules.copy() if shelf.rules else {},
+            display_as_series=shelf.display_as_series,
             is_system=False,  # Duplicates are never system shelves
             is_public=0  # Duplicates start as private
         )

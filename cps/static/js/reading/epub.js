@@ -8,6 +8,25 @@ var reader;
     EPUBJS.filePath = calibre.filePath;
     EPUBJS.cssPath = calibre.cssPath;
 
+    // Match ePub.Contents.prototype.textHeight (which uses rect.bottom rather than rect.height)
+    // by using rect.right in LTR mode so offscreen screen-reader elements (e.g. left: -999em)
+    // do not inflate horizontal page count with trailing blank pages.
+    if (typeof ePub !== "undefined" && ePub.Contents && ePub.Contents.prototype) {
+        ePub.Contents.prototype.textWidth = function() {
+            var range = this.document.createRange();
+            var content = this.content || this.document.body;
+            var border = (ePub.utils && typeof ePub.utils.borders === "function") ? ePub.utils.borders(content) : null;
+            range.selectNodeContents(content);
+            var rect = range.getBoundingClientRect();
+            var dir = (this.window && this.window.getComputedStyle) ? this.window.getComputedStyle(content).direction : "ltr";
+            var width = (dir === "rtl") ? rect.width : rect.right;
+            if (border && border.width) {
+                width += border.width;
+            }
+            return Math.round(width);
+        };
+    }
+
     window.reader = reader = ePubReader(calibre.bookUrl, {
         restore: true,
         bookmarks: calibre.bookmark ? [calibre.bookmark] : []

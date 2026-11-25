@@ -154,7 +154,7 @@ class Kobo(Metadata):
         # Uma busca por loja escolhida no CWA Settings; os resultados são juntados e repetidos são removidos
         links: List[str] = []
         search_series_map: Dict[str, Tuple[str, Union[int, float]]] = {}
-        simple_q = "+".join(urllib.parse.quote(t) for t in (list(self.get_title_tokens(query, strip_joiners=False)) or [query]))
+        simple_q = urllib.parse.quote_plus('"' + query.strip() + '"')
         fallback_url = f"https://www.kobo.com/search?query={simple_q}&fcmedia=Book"
         for country, store_lang in self._configured_stores():
             primary_url = self._build_search_url(query=query, lang=store_lang, country=country)
@@ -224,7 +224,7 @@ class Kobo(Metadata):
         lang = str(lang or "en").lower()
         if country is None:
             country = "jp" if lang == "ja" else "us"
-        tokens = list(self.get_title_tokens(query, strip_joiners=False)) or [query]
+        tokens = [urllib.parse.quote_plus('"' + query.strip() + '"')]
         q = "+".join(urllib.parse.quote(t) for t in tokens)
         return f"https://www.kobo.com/{country}/{lang}/search?query={q}&fcmedia=Book"
 

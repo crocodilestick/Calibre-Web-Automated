@@ -702,6 +702,10 @@ def set_cwa_settings():
     if 'archived_cleanup_schedule_day' not in string_settings:
         string_settings.append('archived_cleanup_schedule_day')
 
+    kobo_store_options = ["us:en", "br:pt", "pt:pt", "uk:en", "ca:en", "au:en", "de:de", "fr:fr", "es:es", "it:it", "nl:nl", "mx:es", "jp:ja"]
+    for store in kobo_store_options:
+        string_settings.append("kobo_store_" + store.replace(":", "_"))
+
     for format in ignorable_formats:
         string_settings.append(f"ignore_ingest_{format}")
         string_settings.append(f"ignore_convert_{format}")
@@ -710,6 +714,7 @@ def set_cwa_settings():
     if request.method == 'POST':
         if request.form['submit_button'] == "Submit":
             result = {"auto_convert_ignored_formats":[], "auto_ingest_ignored_formats":[], "auto_convert_retained_formats":[]}
+            kobo_stores = []
             # set boolean_settings
             for setting in boolean_settings:
                 value = request.form.get(setting)
@@ -733,12 +738,17 @@ def set_cwa_settings():
                     if value is not None:
                         result["auto_convert_retained_formats"].append(value)
                     continue
+                elif setting.startswith("kobo_store_"):
+                    if value is not None:
+                        kobo_stores.append(setting[len("kobo_store_"):].replace("_", ":"))
+                    continue
                 elif setting == "auto_convert_target_format":
                     if value is None:
                         value = cwa_db.cwa_settings['auto_convert_target_format']
 
                 result |= {setting:value}
             
+            result["kobo_store_list"] = ",".join(kobo_stores) if kobo_stores else "us:en"
             # Prevent ignoring of target format
             if result['auto_convert_target_format'] in result['auto_convert_ignored_formats']:
                 result['auto_convert_ignored_formats'].remove(result['auto_convert_target_format'])

@@ -70,7 +70,7 @@ class Kobo(Metadata):
         "[itemprop='description']",
         ".text-synopsis",
     ]
-    BOOK_DT_PREFIX_RE = re.compile(r"^\s*Book\b", re.I)
+    BOOK_DT_PREFIX_RE = re.compile(r"^\s*(?:Book|Livro|Libro|Buch|Livre)\b", re.I)
     CARD_SELECTORS = (
         "[data-testid=\"book-card-search-result-items\"], [data-testid=\"search-result-widget\"]"
     )
@@ -150,34 +150,37 @@ class Kobo(Metadata):
         except Exception:
             pass
 
-        # Build primary and fallback search URLs
-        primary_url = self._build_search_url(query=query, lang=locale or "en")
+        # Uma busca por loja escolhida no CWA Settings; os resultados são juntados e repetidos são removidos
+        links: List[str] = []
+        search_series_map: Dict[str, Tuple[str, Union[int, float]]] = {}
         simple_q = "+".join(list(self.get_title_tokens(query, strip_joiners=False)) or [query])
         fallback_url = f"https://www.kobo.com/search?query={simple_q}&fcmedia=Book"
-
-        r = None
-        for url in (primary_url, fallback_url):
-            try:
-                r = self._get(url, headers=headers, timeout=self.DEFAULT_TIMEOUT, allow_redirects=True)
-                if r.status_code == 403:
+        for country, store_lang in self._configured_stores():
+            primary_url = self._build_search_url(query=query, lang=store_lang, country=country)
+            r = None
+            for url in (primary_url, fallback_url):
+                try:
+                    r = self._get(url, headers=headers, timeout=self.DEFAULT_TIMEOUT, allow_redirects=True)
+                    if r.status_code == 403:
+                        continue
+                    r.raise_for_status()
+                    break
+                except Exception as e:
+                    log.warning("Kobo search failed for %s: %s", url, e)
                     continue
-                r.raise_for_status()
-                break
-            except Exception as e:
-                log.warning("Kobo search failed for %s: %s", url, e)
-                continue  # Try next URL instead of returning immediately
-                
-        if not r or r.status_code >= 400:
-            log.warning("Kobo search failed: no usable response (last status %s)", r.status_code if r else None)
+            if not r or r.status_code >= 400:
+                log.warning("Kobo search failed for store %s/%s: no usable response (last status %s)", country, store_lang, r.status_code if r else None)
+                continue
+            soup = BS(r.text, "lxml")
+            next_data = self._get_next_data_json(soup)
+            search_series_map.update(self._extract_search_series_map(soup, next_data))
+            seen = {self._extract_kobo_id_from_url(link) for link in links}
+            for link in self._extract_result_links(soup):
+                if self._extract_kobo_id_from_url(link) not in seen:
+                    seen.add(self._extract_kobo_id_from_url(link))
+                    links.append(link)
+        if not links:
             return []
-
-        soup = BS(r.text, "lxml")
-        next_data = self._get_next_data_json(soup)
-        # Harvest search-level series hints for fallback (e.g., 'Book 6 -')
-        search_series_map = self._extract_search_series_map(soup, next_data)
-        
-
-        links = self._extract_result_links(soup)
         links = links[: self.SEARCH_MAX]
 
         results: List[Tuple[MetaRecord, int]] = []
@@ -216,13 +219,30 @@ class Kobo(Metadata):
         results.sort(key=lambda x: x[1])
         return [x[0] for x in results]
 
-    def _build_search_url(self, query: str, lang: str) -> str:
+    def _build_search_url(self, query: str, lang: str, country: Optional[str] = None) -> str:
         lang = str(lang or "en").lower()
-        country = "jp" if lang == "ja" else "us"
-        path_lang = "ja" if lang == "ja" else "en"
+        if country is None:
+            country = "jp" if lang == "ja" else "us"
         tokens = list(self.get_title_tokens(query, strip_joiners=False)) or [query]
         q = "+".join(tokens)
-        return f"https://www.kobo.com/{country}/{path_lang}/search?query={q}&fcmedia=Book"
+        return f"https://www.kobo.com/{country}/{lang}/search?query={q}&fcmedia=Book"
+
+    def _configured_stores(self) -> List[Tuple[str, str]]:
+        """Lojas Kobo escolhidas no CWA Settings (formato 'pais:idioma', ex.: 'br:pt')."""
+        raw = "us:en"
+        try:
+            from cwa_db import CWA_DB
+            value = CWA_DB().get_cwa_settings().get("kobo_store_list", raw)
+            raw = ",".join(value) if isinstance(value, list) else str(value or raw)
+        except Exception as e:
+            log.debug("Kobo store setting unavailable, using default: %s", e)
+        stores: List[Tuple[str, str]] = []
+        for item in raw.split(","):
+            if ":" in item:
+                country, lang = (part.strip().lower() for part in item.split(":", 1))
+                if country and lang and (country, lang) not in stores:
+                    stores.append((country, lang))
+        return stores or [("us", "en")]
 
     def _headers_for_locale(self, locale: str) -> Dict[str, str]:
         h = dict(self.headers)
@@ -417,9 +437,17 @@ class Kobo(Metadata):
 
         title = str(data.get("title", "")).strip()
         authors = data.get("authors", [])
-        description = self._clean_description(data.get("description", ""))
+        flight_desc = self._parse_flight_synopsis(str(soup))
+        description = flight_desc or self._clean_description(data.get("description", ""))
         language_code = str(data.get("language", locale or "")).lower()
-        cover = self._normalize_cover_url(data.get("image", generic_cover))
+        cover_src = data.get("image") or ""
+        if not cover_src:
+            # a capa certa tem o nome do livro no endereço (ex.: .../a-cadeira-de-prata-2.webp)
+            slug = url.split("?")[0].rstrip("/").split("/")[-1]
+            m = re.search(r"cdn\.kobo\.com/book-images/[0-9a-f-]+/[0-9]+/[0-9]+/[0-9]+/[A-Za-z]+/" + re.escape(slug) + r"\.(?:webp|jpg|jpeg|png)", str(soup))
+            if m:
+                cover_src = "https://" + m.group(0)
+        cover = self._normalize_cover_url(cover_src or generic_cover)
         publisher = data.get("publisher", "")
         published = data.get("publishedDate", "")
         series = data.get("series", "")
@@ -679,6 +707,22 @@ class Kobo(Metadata):
         #   <dd data-testid="series-product-type-and-number"> <a>Secret Projects</a>
         series_name = ""
         series_idx = 0  # type: Union[int, float]
+        # Layout atual da Kobo: <div role="group" aria-label="Livro 1 - "> + link de série (data-track-info="Series")
+        try:
+            scope0 = self._find_series_scope(soup) or soup
+            for grp in scope0.select("div[role='group'][aria-label]"):
+                label = str(grp.get("aria-label", ""))
+                if not self.BOOK_DT_PREFIX_RE.search(label):
+                    continue
+                a0 = grp.select_one("a[data-track-info*='Series'], a[href*='/series/']")
+                if not isinstance(a0, Tag):
+                    continue
+                name0 = a0.get_text(strip=True)
+                idx0 = self._parse_series_index(label)
+                if name0 and idx0:
+                    return name0, int(idx0)
+        except Exception:
+            pass
         try:
             # Try to limit parsing to the main product container that includes the title
             scope = self._find_series_scope(soup) or soup
@@ -730,7 +774,8 @@ class Kobo(Metadata):
                     return series_name, int(series_idx)
 
             # 2) Fallback: any anchor to a series page, try to find an adjacent dt
-            for a in scope.select(self.SERIES_LINK_SELECTOR):
+            # So aceita links dentro do bloco de série do produto (nao carrosseis da pagina)
+            for a in scope.select(f"dd[data-testid='{self.SERIES_DT_TESTID}'] {self.SERIES_LINK_SELECTOR}"):
                 if not isinstance(a, Tag):
                     continue
                 # Prefer within same dl block: dd -> dt
@@ -751,7 +796,7 @@ class Kobo(Metadata):
 
             # 3) Name-only fallback within scope
             if not series_name:
-                a = scope.select_one(f"{self.SERIES_LINK_SELECTOR} .link--label, {self.SERIES_LINK_SELECTOR}")
+                a = scope.select_one(f"dd[data-testid='{self.SERIES_DT_TESTID}'] {self.SERIES_LINK_SELECTOR}")
                 if isinstance(a, Tag):
                     series_name = a.get_text(strip=True)
         except Exception:
@@ -1225,6 +1270,31 @@ class Kobo(Metadata):
         # Use slug after /ebook/ as an identifier surrogate
         m = re.search(r"/ebook/([^/?#]+)", url)
         return m.group(1) if m else ""
+
+    def _parse_flight_synopsis(self, html_text: str) -> str:
+        """Sinopse em HTML que o Kobo traz no payload da página (self.__next_f.push)."""
+        try:
+            marker = 'self.__next_f.push([1,"'
+            chunks = []
+            pos = 0
+            while True:
+                i = html_text.find(marker, pos)
+                if i < 0:
+                    break
+                j = html_text.find('"])', i + len(marker))
+                if j < 0:
+                    break
+                chunks.append(json.loads('"' + html_text[i + len(marker):j] + '"'))
+                pos = j + 3
+            stream = "".join(chunks).encode("utf-8")
+            for mm in re.finditer(rb"[0-9a-f]+:T([0-9a-f]+),", stream):
+                n = int(mm.group(1), 16)
+                body = stream[mm.end(): mm.end() + n].decode("utf-8", "ignore")
+                if body.startswith("<p>"):
+                    return body
+        except Exception as e:
+            log.debug("flight synopsis parse failed: %s", e)
+        return ""
 
     def _normalize_cover_url(self, url: str, height: int = 1200, width: int = 1200, quality: int = 90) -> str:
         """Normalize Kobo cover URL with size parameters and validation."""

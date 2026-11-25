@@ -294,6 +294,15 @@
       });
       </script>
 
+      <div style="margin: 10px 0 14px 0;">
+        <label style="display: block; margin-bottom: 4px;">{{_('Kobo stores used for metadata search (choose one or more)')}}</label>
+        {% for store in ['us:en','br:pt','pt:pt','uk:en','ca:en','au:en','de:de','fr:fr','es:es','it:it','nl:nl','mx:es','jp:ja'] %}
+        <label style="display: inline-block; margin-right: 12px; font-weight: normal;">
+          <input type="checkbox" name="kobo_store_{{ store.replace(':', '_') }}" value="{{ store }}" {% if store in cwa_settings['kobo_store_list'] %}checked{% endif %} style="accent-color: var(--color-secondary);">
+          {{ store }}
+        </label>
+        {% endfor %}
+      </div>
       {% if cwa_settings['auto_metadata_fetch_enabled'] %}
       <input type="checkbox" id="auto_metadata_fetch_enabled" name="auto_metadata_fetch_enabled" value="True" checked style="accent-color: var(--color-secondary);" data-toggle="tooltip" data-placement="right" title="Automatically fetches metadata for newly ingested books">
       {% else %}

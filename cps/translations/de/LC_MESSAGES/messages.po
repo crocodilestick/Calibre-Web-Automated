@@ -1379,14 +1379,14 @@ msgid "This Email has been sent via Calibre-Web Automated."
 msgstr "Diese E-Mail wurde von Calibre-Web Automated gesendet."
 
 #: cps/helper.py:129
-#, fuzzy, python-format
+#, python-format
 msgid "Conversion timed out for book id: %(book)d"
-msgstr "%(format)s Format für Buch-ID %(book)d nicht gefunden"
+msgstr "Zeitüberschreitung bei der Konvertierung für Buch-ID %(book)d"
 
 #: cps/helper.py:131
-#, fuzzy, python-format
+#, python-format
 msgid "Conversion failed for book id: %(book)d"
-msgstr "%(format)s Format für Buch-ID %(book)d nicht gefunden"
+msgstr "Konvertierung für Buch-ID %(book)d fehlgeschlagen"
 
 #: cps/helper.py:139
 msgid "Calibre-Web Automated Test Email"
@@ -2848,7 +2848,7 @@ msgstr "Externer Port"
 
 #: cps/templates/admin.html:123
 msgid "Not set — reverse proxy detected"
-msgstr ""
+msgstr "Nicht gesetzt – Reverse-Proxy erkannt"
 
 #: cps/templates/admin.html:134 cps/templates/config_view_edit.html:45
 msgid "Books per Page"
@@ -3286,7 +3286,7 @@ msgstr "Lade..."
 
 #: cps/templates/book_edit.html:312
 msgid "Apply"
-msgstr ""
+msgstr "Übernehmen"
 
 #: cps/templates/book_edit.html:369
 msgid "Search error!"
@@ -3765,6 +3765,8 @@ msgid ""
 "A reverse proxy was detected. Leave blank unless you need to override the "
 "port for direct access."
 msgstr ""
+"Ein Reverse-Proxy wurde erkannt. Leer lassen, außer der Port muss für den "
+"direkten Zugriff überschrieben werden."
 
 #: cps/templates/config_edit.html:217
 msgid "Sync Kobo read progress to Hardcover (Requires API key per user)"
@@ -6402,7 +6404,7 @@ msgstr "Vorheriger Eintrag"
 
 #: cps/templates/layout.html:354
 msgid "Go to page"
-msgstr ""
+msgstr "Gehe zu Seite"
 
 #: cps/templates/layout.html:377
 msgid "Book Details"
@@ -6441,9 +6443,8 @@ msgid "Read"
 msgstr "Gelesen"
 
 #: cps/templates/login.html:11
-#, fuzzy
 msgid "Sign in to your library"
-msgstr "Serien in dieser Bibliothek"
+msgstr "Bei Ihrer Bibliothek anmelden"
 
 #: cps/templates/login.html:34
 msgid "Show Password"
@@ -6458,30 +6459,24 @@ msgid "Forgot Password?"
 msgstr "Passwort vergessen?"
 
 #: cps/templates/login.html:56
-#, fuzzy
 msgid "or"
-msgstr "Port"
+msgstr "oder"
 
 #: cps/templates/login.html:63
 msgid "Log in with SSO"
 msgstr "Anmelden mit SSO"
 
 #: cps/templates/login.html:72
-#, fuzzy
 msgid "Login with GitHub"
-msgstr "Login mit GitHub fehlgeschlagen."
+msgstr "Anmelden mit GitHub"
 
 #: cps/templates/login.html:83
-#, fuzzy
 msgid "Login with Google"
-msgstr "Login mit Google fehlgeschlagen."
+msgstr "Anmelden mit Google"
 
 #: cps/templates/login.html:90
-#, fuzzy
 msgid "Log in with Magic Link"
-msgstr ""
-"Anmelden mit magischem\n"
-"      Link"
+msgstr "Anmelden mit magischem Link"
 
 #: cps/templates/login.html:98
 msgid ""
@@ -6492,7 +6487,7 @@ msgstr ""
 
 #: cps/templates/login.html:109
 msgid "Continue as guest"
-msgstr ""
+msgstr "Als Gast fortfahren"
 
 #: cps/templates/logviewer.html:6
 msgid "Show Calibre-Web Log: "
